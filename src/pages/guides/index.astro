@@ -148,7 +148,7 @@ const allGuides = [
     </div>
   </section>
 
-  <AdUnit slot="horizontal" />
+  <AdUnit type="horizontal" />
 
   {allGuides.map((section, index) => (
     <>
@@ -162,7 +162,7 @@ const allGuides = [
           </div>
         </div>
       </section>
-      {index === 1 && <AdUnit slot="in-article" />}
+      {index === 1 && <AdUnit type="in-article" />}
     </>
   ))}
 

@@ -54,7 +54,7 @@ const toc = [
     The concepts you'll learn here apply to all programming languages.
   </p>
 
-  <AdUnit slot="in-article" />
+  <AdUnit type="in-article" />
 
   <h2 id="variables-data-types">Variables & Data Types</h2>
   <p>
@@ -146,7 +146,7 @@ print(a and b)  # AND: False (both must be true)
 print(a or b)   # OR: True (at least one true)
 print(not a)    # NOT: False (inverts the value)</code></pre>
 
-  <AdUnit slot="in-article" />
+  <AdUnit type="in-article" />
 
   <h2 id="control-flow">Control Flow</h2>
   <p>
@@ -194,23 +194,23 @@ while count < 5:
   </p>
 
   <h3>Defining Functions</h3>
-  <pre><code># Define a function
+  <pre><code>{`# Define a function
 def greet(name):
     return f"Hello, {name}!"
 
 # Call the function
 message = greet("Alice")
-print(message)  # Output: Hello, Alice!</code></pre>
+print(message)  # Output: Hello, Alice!`}</code></pre>
 
   <h3>Parameters and Return Values</h3>
-  <pre><code>def calculate_area(length, width):
+  <pre><code>{`def calculate_area(length, width):
     """Calculate the area of a rectangle."""
     area = length * width
     return area
 
 # Using the function
 result = calculate_area(5, 3)
-print(f"Area: {result}")  # Output: Area: 15</code></pre>
+print(f"Area: {result}")  # Output: Area: 15`}</code></pre>
 
   <h3>Why Use Functions?</h3>
   <ul>
@@ -220,7 +220,7 @@ print(f"Area: {result}")  # Output: Area: 15</code></pre>
     <li><strong>Readability:</strong> Well-named functions make code self-documenting</li>
   </ul>
 
-  <AdUnit slot="in-article" />
+  <AdUnit type="in-article" />
 
   <h2 id="arrays">Arrays & Collections</h2>
   <p>
@@ -256,7 +256,7 @@ print(len(fruits))           # Length of list
 print("apple" in fruits)     # Check membership</code></pre>
 
   <h3>Iterating Over Lists</h3>
-  <pre><code>scores = [85, 92, 78, 96, 88]
+  <pre><code>{`scores = [85, 92, 78, 96, 88]
 
 # Simple iteration
 for score in scores:
@@ -264,7 +264,7 @@ for score in scores:
 
 # With index
 for i, score in enumerate(scores):
-    print(f"Student {i+1}: {score}")</code></pre>
+    print(f"Student {i+1}: {score}")`}</code></pre>
 
   <h2 id="practice">Practice Exercises</h2>
   <p>The best way to learn programming is by doing. Try these exercises:</p>

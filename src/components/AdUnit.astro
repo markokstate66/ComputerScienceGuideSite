@@ -1,12 +1,12 @@
 ---
 interface Props {
-  slot: 'horizontal' | 'sidebar' | 'in-article' | 'responsive';
+  type: 'horizontal' | 'sidebar' | 'in-article' | 'responsive';
   className?: string;
 }
 
-const { slot, className = '' } = Astro.props;
+const { type, className = '' } = Astro.props;
 
-const slotConfig = {
+const typeConfig: Record<string, { format: string; style: string; className: string }> = {
   'horizontal': {
     format: 'horizontal',
     style: 'display:block',
@@ -29,7 +29,7 @@ const slotConfig = {
   }
 };
 
-const config = slotConfig[slot];
+const config = typeConfig[type];
 ---
 
 <div class={`ad-container ${config.className} ${className}`}>
@@ -44,7 +44,7 @@ const config = slotConfig[slot];
     data-ad-format={config.format}
     data-full-width-responsive="true">
   </ins>
-  <script>
+  <script is:inline>
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
 </div>

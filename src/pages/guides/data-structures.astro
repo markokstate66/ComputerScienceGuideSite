@@ -51,7 +51,7 @@ const toc = [
     <li><strong>Insert/Delete:</strong> O(n) - may need to shift elements</li>
   </ul>
 
-  <pre><code># Python array (list) operations
+  <pre><code>{`# Python array (list) operations
 arr = [10, 20, 30, 40, 50]
 
 # Access by index - O(1)
@@ -64,7 +64,7 @@ arr.append(60)
 arr.insert(1, 15)  # [10, 15, 20, 30, 40, 50, 60]
 
 # Delete by index - O(n)
-del arr[3]</code></pre>
+del arr[3]`}</code></pre>
 
   <h3>When to Use Arrays</h3>
   <ul>
@@ -73,7 +73,7 @@ del arr[3]</code></pre>
     <li>Memory locality matters (cache-friendly)</li>
   </ul>
 
-  <AdUnit slot="in-article" />
+  <AdUnit type="in-article" />
 
   <h2 id="linked-lists">Linked Lists</h2>
   <p>
@@ -88,7 +88,7 @@ del arr[3]</code></pre>
     <li><strong>Circular:</strong> Last node points back to the first</li>
   </ul>
 
-  <pre><code>class Node:
+  <pre><code>{`class Node:
     def __init__(self, data):
         self.data = data
         self.next = None
@@ -110,7 +110,7 @@ class LinkedList:
     def prepend(self, data):
         new_node = Node(data)
         new_node.next = self.head
-        self.head = new_node</code></pre>
+        self.head = new_node`}</code></pre>
 
   <h3>Complexity</h3>
   <ul>
@@ -128,12 +128,12 @@ class LinkedList:
 
   <h3>Operations</h3>
   <ul>
-    <li><strong>push:</strong> Add element to top - O(1)</li>
-    <li><strong>pop:</strong> Remove element from top - O(1)</li>
-    <li><strong>peek:</strong> View top element - O(1)</li>
+    <li><code>push</code> - Add element to top - O(1)</li>
+    <li><code>pop</code> - Remove element from top - O(1)</li>
+    <li><code>peek</code> - View top element - O(1)</li>
   </ul>
 
-  <pre><code>class Stack:
+  <pre><code>{`class Stack:
     def __init__(self):
         self.items = []
 
@@ -149,7 +149,7 @@ class LinkedList:
             return self.items[-1]
 
     def is_empty(self):
-        return len(self.items) == 0</code></pre>
+        return len(self.items) == 0`}</code></pre>
 
   <h3>Use Cases</h3>
   <ul>
@@ -159,7 +159,7 @@ class LinkedList:
     <li>Backtracking algorithms</li>
   </ul>
 
-  <AdUnit slot="in-article" />
+  <AdUnit type="in-article" />
 
   <h2 id="queues">Queues</h2>
   <p>
@@ -167,7 +167,7 @@ class LinkedList:
     the first person in line is served first.
   </p>
 
-  <pre><code>from collections import deque
+  <pre><code>{`from collections import deque
 
 class Queue:
     def __init__(self):
@@ -185,7 +185,7 @@ class Queue:
             return self.items[0]
 
     def is_empty(self):
-        return len(self.items) == 0</code></pre>
+        return len(self.items) == 0`}</code></pre>
 
   <h3>Use Cases</h3>
   <ul>
@@ -208,7 +208,7 @@ class Queue:
     <li><strong>Delete:</strong> O(1)</li>
   </ul>
 
-  <pre><code># Python dictionary (hash table)
+  <pre><code>{`# Python dictionary (hash table)
 user = {
     "name": "Alice",
     "age": 30,
@@ -226,7 +226,7 @@ del user["age"]
 
 # Check existence - O(1)
 if "email" in user:
-    print(user["email"])</code></pre>
+    print(user["email"])`}</code></pre>
 
   <h3>Collision Handling</h3>
   <p>When two keys hash to the same index (collision), common strategies include:</p>
@@ -235,7 +235,7 @@ if "email" in user:
     <li><strong>Open addressing:</strong> Find the next available slot</li>
   </ul>
 
-  <AdUnit slot="in-article" />
+  <AdUnit type="in-article" />
 
   <h2 id="trees">Trees</h2>
   <p>
@@ -306,7 +306,7 @@ class BST:
   </p>
 
   <h3>Representations</h3>
-  <pre><code># Adjacency List (most common)
+  <pre><code>{`# Adjacency List (most common)
 graph = {
     'A': ['B', 'C'],
     'B': ['A', 'D', 'E'],
@@ -323,10 +323,10 @@ graph = {
 # C  [1, 0, 0, 0, 0, 1],
 # D  [0, 1, 0, 0, 0, 0],
 # E  [0, 1, 0, 0, 0, 1],
-# F  [0, 0, 1, 0, 1, 0]]</code></pre>
+# F  [0, 0, 1, 0, 1, 0]]`}</code></pre>
 
   <h3>Graph Traversal</h3>
-  <pre><code># Breadth-First Search (BFS)
+  <pre><code>{`# Breadth-First Search (BFS)
 from collections import deque
 
 def bfs(graph, start):
@@ -351,7 +351,7 @@ def dfs(graph, start, visited=None):
 
     for neighbor in graph[start]:
         if neighbor not in visited:
-            dfs(graph, neighbor, visited)</code></pre>
+            dfs(graph, neighbor, visited)`}</code></pre>
 
   <h2 id="choosing">Choosing the Right Data Structure</h2>
 
@@ -409,30 +409,5 @@ def dfs(graph, start, visited=None):
     <li><a href="/resources/practice">Practice Problems</a> - Apply your knowledge</li>
   </ul>
 
-  <style>
-    .intro {
-      font-size: 1.125rem;
-      color: var(--color-text-muted);
-      border-left: 4px solid var(--color-primary);
-      padding-left: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1.5rem 0;
-    }
-
-    th, td {
-      padding: 0.75rem;
-      text-align: left;
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    th {
-      background: var(--color-bg-alt);
-      font-weight: 600;
-    }
-  </style>
 </GuideLayout>
+
