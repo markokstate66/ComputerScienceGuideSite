@@ -39,8 +39,8 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           # Astro outputs to dist folder
-          app_location: "/"
-          output_location: "dist"
+          app_location: "/dist"
+          output_location: ""
           skip_app_build: true
 
   close_pull_request_job:
