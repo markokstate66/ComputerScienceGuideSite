@@ -1,0 +1,169 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import AdUnit from '../components/AdUnit.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  lastUpdated?: string;
+  readTime?: string;
+  level?: 'beginner' | 'intermediate' | 'advanced';
+  toc?: { title: string; href: string }[];
+}
+
+const {
+  title,
+  description,
+  lastUpdated,
+  readTime = '10 min read',
+  level = 'beginner',
+  toc = []
+} = Astro.props;
+
+const levelLabels = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced'
+};
+
+// Generate breadcrumb from URL
+const pathParts = Astro.url.pathname.split('/').filter(Boolean);
+const breadcrumbs = pathParts.map((part, i) => ({
+  name: part.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+  href: '/' + pathParts.slice(0, i + 1).join('/')
+}));
+---
+
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": title,
+      "description": description,
+      "author": {
+        "@type": "Organization",
+        "name": "Computer Science Guide"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Computer Science Guide",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://computerscienceguide.com/logo.png"
+        }
+      },
+      "dateModified": lastUpdated || new Date().toISOString(),
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": Astro.url.href
+      }
+    })} />
+  </Fragment>
+
+  <article class="article">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        {breadcrumbs.map((crumb, i) => (
+          <>
+            <span> / </span>
+            {i === breadcrumbs.length - 1 ? (
+              <span>{crumb.name}</span>
+            ) : (
+              <a href={crumb.href}>{crumb.name}</a>
+            )}
+          </>
+        ))}
+      </div>
+
+      <header class="article-header">
+        <h1>{title}</h1>
+        <div class="article-meta">
+          <span class={`level level-${level}`}>{levelLabels[level]}</span>
+          <span class="separator">•</span>
+          <span>{readTime}</span>
+          {lastUpdated && (
+            <>
+              <span class="separator">•</span>
+              <span>Updated {lastUpdated}</span>
+            </>
+          )}
+        </div>
+      </header>
+
+      <AdUnit slot="horizontal" />
+
+      <div class="article-layout">
+        <aside class="article-sidebar">
+          {toc.length > 0 && (
+            <nav class="toc">
+              <h4>Table of Contents</h4>
+              <ul>
+                {toc.map(item => (
+                  <li><a href={item.href}>{item.title}</a></li>
+                ))}
+              </ul>
+            </nav>
+          )}
+          <AdUnit slot="sidebar" />
+        </aside>
+
+        <div class="article-content content">
+          <slot />
+        </div>
+      </div>
+
+      <AdUnit slot="in-article" />
+    </div>
+  </article>
+
+  <style>
+    .article-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+      .article-layout {
+        grid-template-columns: 260px 1fr;
+      }
+    }
+
+    .article-sidebar {
+      position: sticky;
+      top: 100px;
+      align-self: start;
+    }
+
+    .level {
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .level-beginner {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .level-intermediate {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .level-advanced {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .separator {
+      margin: 0 0.5rem;
+      color: var(--color-text-muted);
+    }
+  </style>
+</BaseLayout>

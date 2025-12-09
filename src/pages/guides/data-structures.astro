@@ -1,0 +1,438 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import AdUnit from '../../components/AdUnit.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'Arrays', href: '#arrays' },
+  { title: 'Linked Lists', href: '#linked-lists' },
+  { title: 'Stacks', href: '#stacks' },
+  { title: 'Queues', href: '#queues' },
+  { title: 'Hash Tables', href: '#hash-tables' },
+  { title: 'Trees', href: '#trees' },
+  { title: 'Graphs', href: '#graphs' },
+  { title: 'Choosing the Right Structure', href: '#choosing' }
+];
+---
+
+<GuideLayout
+  title="Data Structures: Complete Guide with Examples"
+  description="Master essential data structures: arrays, linked lists, stacks, queues, hash tables, trees, and graphs. Learn when to use each with clear explanations and code examples."
+  level="intermediate"
+  readTime="30 min read"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Data structures are the building blocks of efficient programs. Understanding how to organize and
+    store data effectively is crucial for writing fast, scalable software and acing technical interviews.
+  </p>
+
+  <h2 id="introduction">Why Data Structures Matter</h2>
+  <p>
+    Choosing the right data structure can mean the difference between a program that runs in milliseconds
+    and one that takes hours. Data structures determine:
+  </p>
+  <ul>
+    <li><strong>Speed:</strong> How fast can we access, insert, or delete data?</li>
+    <li><strong>Memory:</strong> How efficiently do we use computer memory?</li>
+    <li><strong>Simplicity:</strong> How easy is the code to write and maintain?</li>
+  </ul>
+
+  <h2 id="arrays">Arrays</h2>
+  <p>
+    Arrays store elements in contiguous memory locations, allowing instant access to any element by its index.
+  </p>
+
+  <h3>Characteristics</h3>
+  <ul>
+    <li><strong>Access:</strong> O(1) - instant by index</li>
+    <li><strong>Search:</strong> O(n) - must check each element</li>
+    <li><strong>Insert/Delete:</strong> O(n) - may need to shift elements</li>
+  </ul>
+
+  <pre><code># Python array (list) operations
+arr = [10, 20, 30, 40, 50]
+
+# Access by index - O(1)
+print(arr[2])  # Output: 30
+
+# Append to end - O(1) amortized
+arr.append(60)
+
+# Insert at position - O(n)
+arr.insert(1, 15)  # [10, 15, 20, 30, 40, 50, 60]
+
+# Delete by index - O(n)
+del arr[3]</code></pre>
+
+  <h3>When to Use Arrays</h3>
+  <ul>
+    <li>You need fast access by index</li>
+    <li>Data size is known or changes infrequently</li>
+    <li>Memory locality matters (cache-friendly)</li>
+  </ul>
+
+  <AdUnit slot="in-article" />
+
+  <h2 id="linked-lists">Linked Lists</h2>
+  <p>
+    Linked lists store elements in nodes, where each node points to the next. Unlike arrays,
+    elements aren't stored contiguously in memory.
+  </p>
+
+  <h3>Types of Linked Lists</h3>
+  <ul>
+    <li><strong>Singly Linked:</strong> Each node points to the next</li>
+    <li><strong>Doubly Linked:</strong> Nodes point to both next and previous</li>
+    <li><strong>Circular:</strong> Last node points back to the first</li>
+  </ul>
+
+  <pre><code>class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node
+            return
+        current = self.head
+        while current.next:
+            current = current.next
+        current.next = new_node
+
+    def prepend(self, data):
+        new_node = Node(data)
+        new_node.next = self.head
+        self.head = new_node</code></pre>
+
+  <h3>Complexity</h3>
+  <ul>
+    <li><strong>Access:</strong> O(n) - must traverse from head</li>
+    <li><strong>Insert at head:</strong> O(1)</li>
+    <li><strong>Insert at tail:</strong> O(n) or O(1) with tail pointer</li>
+    <li><strong>Delete:</strong> O(n) to find, O(1) to remove</li>
+  </ul>
+
+  <h2 id="stacks">Stacks</h2>
+  <p>
+    A stack is a Last-In-First-Out (LIFO) data structure. Think of a stack of plates - you can
+    only add or remove from the top.
+  </p>
+
+  <h3>Operations</h3>
+  <ul>
+    <li><strong>push:</strong> Add element to top - O(1)</li>
+    <li><strong>pop:</strong> Remove element from top - O(1)</li>
+    <li><strong>peek:</strong> View top element - O(1)</li>
+  </ul>
+
+  <pre><code>class Stack:
+    def __init__(self):
+        self.items = []
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        if not self.is_empty():
+            return self.items.pop()
+
+    def peek(self):
+        if not self.is_empty():
+            return self.items[-1]
+
+    def is_empty(self):
+        return len(self.items) == 0</code></pre>
+
+  <h3>Use Cases</h3>
+  <ul>
+    <li>Function call stack (recursion)</li>
+    <li>Undo/redo operations</li>
+    <li>Expression evaluation</li>
+    <li>Backtracking algorithms</li>
+  </ul>
+
+  <AdUnit slot="in-article" />
+
+  <h2 id="queues">Queues</h2>
+  <p>
+    A queue is a First-In-First-Out (FIFO) data structure. Like a line at a store -
+    the first person in line is served first.
+  </p>
+
+  <pre><code>from collections import deque
+
+class Queue:
+    def __init__(self):
+        self.items = deque()
+
+    def enqueue(self, item):
+        self.items.append(item)
+
+    def dequeue(self):
+        if not self.is_empty():
+            return self.items.popleft()
+
+    def front(self):
+        if not self.is_empty():
+            return self.items[0]
+
+    def is_empty(self):
+        return len(self.items) == 0</code></pre>
+
+  <h3>Use Cases</h3>
+  <ul>
+    <li>Task scheduling</li>
+    <li>Breadth-first search</li>
+    <li>Print job management</li>
+    <li>Message queues in distributed systems</li>
+  </ul>
+
+  <h2 id="hash-tables">Hash Tables</h2>
+  <p>
+    Hash tables (dictionaries in Python) provide near-instant lookup by converting keys into
+    array indices using a hash function.
+  </p>
+
+  <h3>Complexity (Average Case)</h3>
+  <ul>
+    <li><strong>Access/Search:</strong> O(1)</li>
+    <li><strong>Insert:</strong> O(1)</li>
+    <li><strong>Delete:</strong> O(1)</li>
+  </ul>
+
+  <pre><code># Python dictionary (hash table)
+user = {
+    "name": "Alice",
+    "age": 30,
+    "email": "alice@example.com"
+}
+
+# Access - O(1)
+print(user["name"])
+
+# Insert/Update - O(1)
+user["city"] = "New York"
+
+# Delete - O(1)
+del user["age"]
+
+# Check existence - O(1)
+if "email" in user:
+    print(user["email"])</code></pre>
+
+  <h3>Collision Handling</h3>
+  <p>When two keys hash to the same index (collision), common strategies include:</p>
+  <ul>
+    <li><strong>Chaining:</strong> Store colliding elements in a linked list</li>
+    <li><strong>Open addressing:</strong> Find the next available slot</li>
+  </ul>
+
+  <AdUnit slot="in-article" />
+
+  <h2 id="trees">Trees</h2>
+  <p>
+    Trees are hierarchical data structures with a root node and child nodes. They're fundamental
+    for organizing hierarchical data and enabling efficient operations.
+  </p>
+
+  <h3>Binary Search Tree (BST)</h3>
+  <p>A BST maintains the property: left children &lt; parent &lt; right children.</p>
+
+  <pre><code>class TreeNode:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+class BST:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, value):
+        if not self.root:
+            self.root = TreeNode(value)
+        else:
+            self._insert_recursive(self.root, value)
+
+    def _insert_recursive(self, node, value):
+        if value < node.value:
+            if node.left is None:
+                node.left = TreeNode(value)
+            else:
+                self._insert_recursive(node.left, value)
+        else:
+            if node.right is None:
+                node.right = TreeNode(value)
+            else:
+                self._insert_recursive(node.right, value)
+
+    def search(self, value):
+        return self._search_recursive(self.root, value)
+
+    def _search_recursive(self, node, value):
+        if node is None or node.value == value:
+            return node
+        if value < node.value:
+            return self._search_recursive(node.left, value)
+        return self._search_recursive(node.right, value)</code></pre>
+
+  <h3>BST Complexity (Balanced)</h3>
+  <ul>
+    <li><strong>Search:</strong> O(log n)</li>
+    <li><strong>Insert:</strong> O(log n)</li>
+    <li><strong>Delete:</strong> O(log n)</li>
+  </ul>
+
+  <h3>Other Tree Types</h3>
+  <ul>
+    <li><strong>AVL Trees:</strong> Self-balancing BST</li>
+    <li><strong>Red-Black Trees:</strong> Balanced with color properties</li>
+    <li><strong>B-Trees:</strong> Used in databases and file systems</li>
+    <li><strong>Heaps:</strong> Complete binary tree for priority queues</li>
+  </ul>
+
+  <h2 id="graphs">Graphs</h2>
+  <p>
+    Graphs consist of vertices (nodes) connected by edges. They model relationships between
+    objects - social networks, maps, dependencies, etc.
+  </p>
+
+  <h3>Representations</h3>
+  <pre><code># Adjacency List (most common)
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+
+# Adjacency Matrix
+#     A  B  C  D  E  F
+# A [[0, 1, 1, 0, 0, 0],
+# B  [1, 0, 0, 1, 1, 0],
+# C  [1, 0, 0, 0, 0, 1],
+# D  [0, 1, 0, 0, 0, 0],
+# E  [0, 1, 0, 0, 0, 1],
+# F  [0, 0, 1, 0, 1, 0]]</code></pre>
+
+  <h3>Graph Traversal</h3>
+  <pre><code># Breadth-First Search (BFS)
+from collections import deque
+
+def bfs(graph, start):
+    visited = set([start])
+    queue = deque([start])
+
+    while queue:
+        vertex = queue.popleft()
+        print(vertex, end=' ')
+
+        for neighbor in graph[vertex]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+
+# Depth-First Search (DFS)
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(start)
+    print(start, end=' ')
+
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)</code></pre>
+
+  <h2 id="choosing">Choosing the Right Data Structure</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Use Case</th>
+        <th>Best Choice</th>
+        <th>Why</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Fast lookup by key</td>
+        <td>Hash Table</td>
+        <td>O(1) average access</td>
+      </tr>
+      <tr>
+        <td>Ordered data with fast search</td>
+        <td>BST / Balanced Tree</td>
+        <td>O(log n) operations, maintains order</td>
+      </tr>
+      <tr>
+        <td>LIFO operations</td>
+        <td>Stack</td>
+        <td>O(1) push/pop</td>
+      </tr>
+      <tr>
+        <td>FIFO operations</td>
+        <td>Queue</td>
+        <td>O(1) enqueue/dequeue</td>
+      </tr>
+      <tr>
+        <td>Frequent insertions/deletions</td>
+        <td>Linked List</td>
+        <td>O(1) insert/delete at known position</td>
+      </tr>
+      <tr>
+        <td>Fast access by index</td>
+        <td>Array</td>
+        <td>O(1) random access</td>
+      </tr>
+      <tr>
+        <td>Relationships/connections</td>
+        <td>Graph</td>
+        <td>Models connections naturally</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Next Steps</h2>
+  <ul>
+    <li><a href="/guides/algorithms">Algorithms</a> - Learn sorting, searching, and problem-solving techniques</li>
+    <li><a href="/guides/interview-prep">Interview Prep</a> - Practice data structure problems</li>
+    <li><a href="/resources/practice">Practice Problems</a> - Apply your knowledge</li>
+  </ul>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+    }
+  </style>
+</GuideLayout>

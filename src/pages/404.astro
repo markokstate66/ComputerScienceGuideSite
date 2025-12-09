@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page Not Found"
+  description="The page you're looking for doesn't exist."
+  noindex={true}
+>
+  <section class="error-page">
+    <div class="container">
+      <h1>404</h1>
+      <p>Oops! The page you're looking for doesn't exist.</p>
+      <p>It might have been moved, deleted, or you may have mistyped the URL.</p>
+      <div class="actions">
+        <a href="/" class="btn">Go Home</a>
+        <a href="/guides" class="btn btn-secondary">Browse Guides</a>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .error-page {
+      text-align: center;
+      padding: 6rem 0;
+    }
+
+    h1 {
+      font-size: 8rem;
+      color: var(--color-primary);
+      margin: 0;
+      line-height: 1;
+    }
+
+    p {
+      font-size: 1.25rem;
+      color: var(--color-text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .actions {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+  </style>
+</BaseLayout>

@@ -1,0 +1,344 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdUnit from '../components/AdUnit.astro';
+---
+
+<BaseLayout
+  title="Computer Science Learning Roadmap"
+  description="A structured path to learn computer science from beginner to advanced. Follow this roadmap to master programming, data structures, algorithms, and software development."
+>
+  <section class="hero" style="padding: 3rem 0;">
+    <div class="container">
+      <h1>CS Learning Roadmap</h1>
+      <p>A structured path from beginner to job-ready developer. Follow at your own pace.</p>
+    </div>
+  </section>
+
+  <AdUnit slot="horizontal" />
+
+  <section class="section">
+    <div class="container">
+      <div class="roadmap">
+        <!-- Stage 1 -->
+        <div class="stage">
+          <div class="stage-header">
+            <span class="stage-number">1</span>
+            <h2>Foundations</h2>
+            <span class="stage-time">4-6 weeks</span>
+          </div>
+          <div class="stage-content">
+            <p>Start here if you've never written code before.</p>
+            <div class="topics">
+              <div class="topic">
+                <h4><a href="/guides/programming-fundamentals">Programming Fundamentals</a></h4>
+                <ul>
+                  <li>Variables & data types</li>
+                  <li>Control flow (if/else, loops)</li>
+                  <li>Functions</li>
+                  <li>Basic I/O</li>
+                </ul>
+              </div>
+              <div class="topic">
+                <h4><a href="/guides/cs-basics">Computer Science Basics</a></h4>
+                <ul>
+                  <li>How computers work</li>
+                  <li>Binary & data representation</li>
+                  <li>Command line basics</li>
+                </ul>
+              </div>
+              <div class="topic">
+                <h4><a href="/guides/git">Version Control (Git)</a></h4>
+                <ul>
+                  <li>Basic commands</li>
+                  <li>Branches & merging</li>
+                  <li>GitHub basics</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="stage">
+          <div class="stage-header">
+            <span class="stage-number">2</span>
+            <h2>Core CS Concepts</h2>
+            <span class="stage-time">6-8 weeks</span>
+          </div>
+          <div class="stage-content">
+            <p>Build a strong theoretical foundation.</p>
+            <div class="topics">
+              <div class="topic">
+                <h4><a href="/guides/data-structures">Data Structures</a></h4>
+                <ul>
+                  <li>Arrays & strings</li>
+                  <li>Linked lists</li>
+                  <li>Stacks & queues</li>
+                  <li>Trees & graphs</li>
+                  <li>Hash tables</li>
+                </ul>
+              </div>
+              <div class="topic">
+                <h4><a href="/guides/algorithms">Algorithms</a></h4>
+                <ul>
+                  <li>Big O notation</li>
+                  <li>Sorting algorithms</li>
+                  <li>Searching algorithms</li>
+                  <li>Recursion</li>
+                </ul>
+              </div>
+              <div class="topic">
+                <h4><a href="/guides/oop">Object-Oriented Programming</a></h4>
+                <ul>
+                  <li>Classes & objects</li>
+                  <li>Inheritance</li>
+                  <li>Polymorphism</li>
+                  <li>Design patterns</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <AdUnit slot="in-article" />
+
+        <!-- Stage 3 -->
+        <div class="stage">
+          <div class="stage-header">
+            <span class="stage-number">3</span>
+            <h2>Specialization (Choose Your Path)</h2>
+            <span class="stage-time">8-12 weeks</span>
+          </div>
+          <div class="stage-content">
+            <p>Focus on the area that interests you most.</p>
+
+            <div class="path-grid">
+              <div class="path">
+                <h3>Web Development</h3>
+                <div class="topics">
+                  <div class="topic">
+                    <h4>Frontend</h4>
+                    <ul>
+                      <li><a href="/guides/html-css">HTML & CSS</a></li>
+                      <li><a href="/guides/javascript">JavaScript</a></li>
+                      <li><a href="/guides/react">React or Vue</a></li>
+                    </ul>
+                  </div>
+                  <div class="topic">
+                    <h4>Backend</h4>
+                    <ul>
+                      <li><a href="/guides/nodejs">Node.js</a></li>
+                      <li><a href="/guides/databases">SQL & Databases</a></li>
+                      <li><a href="/guides/api-design">REST APIs</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="path">
+                <h3>Data Science / ML</h3>
+                <div class="topics">
+                  <div class="topic">
+                    <ul>
+                      <li>Python (NumPy, Pandas)</li>
+                      <li>Statistics & probability</li>
+                      <li>Machine learning basics</li>
+                      <li>Data visualization</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="path">
+                <h3>Mobile Development</h3>
+                <div class="topics">
+                  <div class="topic">
+                    <ul>
+                      <li>React Native / Flutter</li>
+                      <li>iOS (Swift)</li>
+                      <li>Android (Kotlin)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="stage">
+          <div class="stage-header">
+            <span class="stage-number">4</span>
+            <h2>Advanced Topics</h2>
+            <span class="stage-time">Ongoing</span>
+          </div>
+          <div class="stage-content">
+            <p>Level up your skills for senior roles.</p>
+            <div class="topics">
+              <div class="topic">
+                <h4><a href="/guides/system-design">System Design</a></h4>
+                <ul>
+                  <li>Scalability</li>
+                  <li>Distributed systems</li>
+                  <li>Caching strategies</li>
+                  <li>Database design</li>
+                </ul>
+              </div>
+              <div class="topic">
+                <h4>DevOps & Infrastructure</h4>
+                <ul>
+                  <li>Docker & containers</li>
+                  <li>CI/CD pipelines</li>
+                  <li>Cloud services (AWS/Azure/GCP)</li>
+                </ul>
+              </div>
+              <div class="topic">
+                <h4>Software Engineering</h4>
+                <ul>
+                  <li>Testing strategies</li>
+                  <li>Code review</li>
+                  <li>Architecture patterns</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 5 -->
+        <div class="stage">
+          <div class="stage-header">
+            <span class="stage-number">5</span>
+            <h2>Career Preparation</h2>
+            <span class="stage-time">4-8 weeks</span>
+          </div>
+          <div class="stage-content">
+            <p>Get job-ready with projects and interview prep.</p>
+            <div class="topics">
+              <div class="topic">
+                <h4><a href="/guides/portfolio">Build Your Portfolio</a></h4>
+                <ul>
+                  <li>Personal projects</li>
+                  <li>Open source contributions</li>
+                  <li>GitHub profile</li>
+                </ul>
+              </div>
+              <div class="topic">
+                <h4><a href="/guides/interview-prep">Interview Preparation</a></h4>
+                <ul>
+                  <li>LeetCode practice</li>
+                  <li>System design interviews</li>
+                  <li>Behavioral questions</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <AdUnit slot="horizontal" />
+
+  <style>
+    .roadmap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .stage {
+      position: relative;
+      padding-left: 3rem;
+      padding-bottom: 2rem;
+      border-left: 3px solid var(--color-border);
+    }
+
+    .stage:last-child {
+      border-left-color: transparent;
+    }
+
+    .stage-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .stage-number {
+      position: absolute;
+      left: -1rem;
+      width: 2rem;
+      height: 2rem;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .stage-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .stage-time {
+      color: var(--color-text-muted);
+      font-size: 0.875rem;
+      background: var(--color-bg-alt);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .stage-content {
+      background: var(--color-bg-alt);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .stage-content > p {
+      margin-top: 0;
+      color: var(--color-text-muted);
+    }
+
+    .topics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .topic h4 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+    }
+
+    .topic ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: var(--color-text-muted);
+    }
+
+    .topic li {
+      margin-bottom: 0.25rem;
+    }
+
+    .path-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .path {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .path h3 {
+      margin: 0 0 1rem;
+      font-size: 1.125rem;
+      color: var(--color-primary);
+    }
+  </style>
+</BaseLayout>

@@ -1,0 +1,331 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import AdUnit from '../../components/AdUnit.astro';
+
+const toc = [
+  { title: 'What is Programming?', href: '#what-is-programming' },
+  { title: 'Variables & Data Types', href: '#variables-data-types' },
+  { title: 'Operators', href: '#operators' },
+  { title: 'Control Flow', href: '#control-flow' },
+  { title: 'Functions', href: '#functions' },
+  { title: 'Arrays & Collections', href: '#arrays' },
+  { title: 'Practice Exercises', href: '#practice' },
+  { title: 'Next Steps', href: '#next-steps' }
+];
+---
+
+<GuideLayout
+  title="Programming Fundamentals: A Complete Beginner's Guide"
+  description="Learn the core concepts of programming from scratch. This comprehensive guide covers variables, data types, control flow, functions, and more with practical examples."
+  level="beginner"
+  readTime="25 min read"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Programming is the art of giving instructions to computers to solve problems. Whether you want to build
+    websites, create mobile apps, analyze data, or automate tasks, understanding programming fundamentals
+    is your first step into the world of software development.
+  </p>
+
+  <h2 id="what-is-programming">What is Programming?</h2>
+  <p>
+    At its core, programming is writing a sequence of instructions that a computer can understand and execute.
+    These instructions are written in <strong>programming languages</strong> - special languages designed to
+    communicate with computers.
+  </p>
+  <p>
+    Think of it like writing a recipe. A recipe tells someone exactly what ingredients to use and what steps
+    to follow. Similarly, a program tells a computer exactly what data to work with and what operations to perform.
+  </p>
+
+  <h3>Why Learn Programming?</h3>
+  <ul>
+    <li><strong>Problem-solving skills:</strong> Programming teaches you to break complex problems into smaller, manageable pieces</li>
+    <li><strong>Career opportunities:</strong> Software development is one of the fastest-growing and highest-paying fields</li>
+    <li><strong>Creative expression:</strong> Build apps, games, websites, and tools that millions can use</li>
+    <li><strong>Automation:</strong> Save time by automating repetitive tasks</li>
+  </ul>
+
+  <h3>Choosing Your First Language</h3>
+  <p>
+    Popular beginner-friendly languages include <strong>Python</strong> (great for readability),
+    <strong>JavaScript</strong> (essential for web development), and <strong>Java</strong> (widely used in enterprise).
+    The concepts you'll learn here apply to all programming languages.
+  </p>
+
+  <AdUnit slot="in-article" />
+
+  <h2 id="variables-data-types">Variables & Data Types</h2>
+  <p>
+    <strong>Variables</strong> are containers that store data. Think of them as labeled boxes where you can
+    put information and retrieve it later using the label (variable name).
+  </p>
+
+  <pre><code># Python examples
+name = "Alice"          # String (text)
+age = 25                # Integer (whole number)
+height = 5.6            # Float (decimal number)
+is_student = True       # Boolean (true/false)</code></pre>
+
+  <h3>Common Data Types</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Data Type</th>
+        <th>Description</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>String</td>
+        <td>Text data enclosed in quotes</td>
+        <td><code>"Hello World"</code></td>
+      </tr>
+      <tr>
+        <td>Integer</td>
+        <td>Whole numbers</td>
+        <td><code>42</code>, <code>-7</code></td>
+      </tr>
+      <tr>
+        <td>Float</td>
+        <td>Decimal numbers</td>
+        <td><code>3.14</code>, <code>-0.5</code></td>
+      </tr>
+      <tr>
+        <td>Boolean</td>
+        <td>True or false values</td>
+        <td><code>True</code>, <code>False</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Variable Naming Rules</h3>
+  <ul>
+    <li>Start with a letter or underscore, not a number</li>
+    <li>Use only letters, numbers, and underscores</li>
+    <li>Be descriptive: <code>user_age</code> is better than <code>x</code></li>
+    <li>Use consistent naming conventions (snake_case or camelCase)</li>
+  </ul>
+
+  <h2 id="operators">Operators</h2>
+  <p>
+    Operators are symbols that perform operations on values. They're the verbs of programming -
+    they make things happen.
+  </p>
+
+  <h3>Arithmetic Operators</h3>
+  <pre><code>a = 10
+b = 3
+
+print(a + b)   # Addition: 13
+print(a - b)   # Subtraction: 7
+print(a * b)   # Multiplication: 30
+print(a / b)   # Division: 3.333...
+print(a // b)  # Integer division: 3
+print(a % b)   # Modulo (remainder): 1
+print(a ** b)  # Exponent: 1000</code></pre>
+
+  <h3>Comparison Operators</h3>
+  <pre><code>x = 5
+y = 10
+
+print(x == y)  # Equal to: False
+print(x != y)  # Not equal: True
+print(x < y)   # Less than: True
+print(x > y)   # Greater than: False
+print(x <= y)  # Less than or equal: True
+print(x >= y)  # Greater than or equal: False</code></pre>
+
+  <h3>Logical Operators</h3>
+  <pre><code>a = True
+b = False
+
+print(a and b)  # AND: False (both must be true)
+print(a or b)   # OR: True (at least one true)
+print(not a)    # NOT: False (inverts the value)</code></pre>
+
+  <AdUnit slot="in-article" />
+
+  <h2 id="control-flow">Control Flow</h2>
+  <p>
+    Control flow determines the order in which code executes. Instead of running line by line,
+    we can make decisions and repeat actions based on conditions.
+  </p>
+
+  <h3>If Statements (Conditionals)</h3>
+  <p>If statements let your program make decisions:</p>
+  <pre><code>age = 18
+
+if age >= 21:
+    print("You can drink alcohol")
+elif age >= 18:
+    print("You can vote")
+else:
+    print("You're a minor")</code></pre>
+
+  <h3>Loops</h3>
+  <p><strong>For loops</strong> iterate a specific number of times:</p>
+  <pre><code># Print numbers 1-5
+for i in range(1, 6):
+    print(i)
+
+# Iterate over a list
+fruits = ["apple", "banana", "cherry"]
+for fruit in fruits:
+    print(fruit)</code></pre>
+
+  <p><strong>While loops</strong> continue until a condition becomes false:</p>
+  <pre><code>count = 0
+while count < 5:
+    print(count)
+    count += 1  # Don't forget to update the condition!</code></pre>
+
+  <div class="tip">
+    <strong>Tip:</strong> Be careful with while loops! If the condition never becomes false,
+    you'll create an infinite loop that crashes your program.
+  </div>
+
+  <h2 id="functions">Functions</h2>
+  <p>
+    Functions are reusable blocks of code that perform specific tasks. They help you organize
+    code, avoid repetition, and make programs easier to understand.
+  </p>
+
+  <h3>Defining Functions</h3>
+  <pre><code># Define a function
+def greet(name):
+    return f"Hello, {name}!"
+
+# Call the function
+message = greet("Alice")
+print(message)  # Output: Hello, Alice!</code></pre>
+
+  <h3>Parameters and Return Values</h3>
+  <pre><code>def calculate_area(length, width):
+    """Calculate the area of a rectangle."""
+    area = length * width
+    return area
+
+# Using the function
+result = calculate_area(5, 3)
+print(f"Area: {result}")  # Output: Area: 15</code></pre>
+
+  <h3>Why Use Functions?</h3>
+  <ul>
+    <li><strong>Reusability:</strong> Write once, use many times</li>
+    <li><strong>Organization:</strong> Break complex programs into manageable pieces</li>
+    <li><strong>Testing:</strong> Test individual functions independently</li>
+    <li><strong>Readability:</strong> Well-named functions make code self-documenting</li>
+  </ul>
+
+  <AdUnit slot="in-article" />
+
+  <h2 id="arrays">Arrays & Collections</h2>
+  <p>
+    Arrays (called <strong>lists</strong> in Python) let you store multiple values in a single variable.
+    They're essential for working with collections of data.
+  </p>
+
+  <h3>Creating and Accessing Lists</h3>
+  <pre><code># Create a list
+numbers = [1, 2, 3, 4, 5]
+names = ["Alice", "Bob", "Charlie"]
+
+# Access by index (starts at 0)
+print(numbers[0])   # Output: 1
+print(names[2])     # Output: Charlie
+
+# Negative indexing
+print(numbers[-1])  # Output: 5 (last item)</code></pre>
+
+  <h3>Common List Operations</h3>
+  <pre><code>fruits = ["apple", "banana"]
+
+# Add items
+fruits.append("cherry")      # Add to end
+fruits.insert(0, "apricot")  # Insert at position
+
+# Remove items
+fruits.remove("banana")      # Remove by value
+removed = fruits.pop()       # Remove and return last item
+
+# Other operations
+print(len(fruits))           # Length of list
+print("apple" in fruits)     # Check membership</code></pre>
+
+  <h3>Iterating Over Lists</h3>
+  <pre><code>scores = [85, 92, 78, 96, 88]
+
+# Simple iteration
+for score in scores:
+    print(score)
+
+# With index
+for i, score in enumerate(scores):
+    print(f"Student {i+1}: {score}")</code></pre>
+
+  <h2 id="practice">Practice Exercises</h2>
+  <p>The best way to learn programming is by doing. Try these exercises:</p>
+
+  <h3>Exercise 1: Temperature Converter</h3>
+  <p>Write a function that converts Fahrenheit to Celsius: <code>C = (F - 32) × 5/9</code></p>
+
+  <h3>Exercise 2: FizzBuzz</h3>
+  <p>
+    Print numbers 1-100. For multiples of 3, print "Fizz". For multiples of 5, print "Buzz".
+    For multiples of both, print "FizzBuzz".
+  </p>
+
+  <h3>Exercise 3: Sum of List</h3>
+  <p>Write a function that takes a list of numbers and returns their sum (without using the built-in <code>sum()</code> function).</p>
+
+  <h3>Exercise 4: Palindrome Checker</h3>
+  <p>Write a function that checks if a string is a palindrome (reads the same forwards and backwards).</p>
+
+  <h2 id="next-steps">Next Steps</h2>
+  <p>Congratulations on learning the fundamentals! Here's where to go next:</p>
+
+  <ul>
+    <li><a href="/guides/data-structures">Data Structures</a> - Learn about arrays, linked lists, trees, and more</li>
+    <li><a href="/guides/oop">Object-Oriented Programming</a> - Organize code with classes and objects</li>
+    <li><a href="/guides/algorithms">Algorithms</a> - Learn problem-solving techniques and efficiency</li>
+    <li><a href="/resources/practice">Practice Problems</a> - Apply your skills with coding challenges</li>
+  </ul>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+    }
+
+    .tip {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1.5rem 0;
+    }
+  </style>
+</GuideLayout>

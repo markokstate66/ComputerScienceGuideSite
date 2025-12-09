@@ -1,0 +1,262 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdUnit from '../components/AdUnit.astro';
+
+const resources = {
+  books: [
+    {
+      title: "Clean Code",
+      author: "Robert C. Martin",
+      description: "A must-read for writing maintainable, professional software.",
+      level: "Intermediate"
+    },
+    {
+      title: "Introduction to Algorithms (CLRS)",
+      author: "Cormen, Leiserson, Rivest, Stein",
+      description: "The definitive textbook on algorithms. Comprehensive and rigorous.",
+      level: "Advanced"
+    },
+    {
+      title: "Cracking the Coding Interview",
+      author: "Gayle Laakmann McDowell",
+      description: "189 programming questions and solutions for interview prep.",
+      level: "Intermediate"
+    },
+    {
+      title: "The Pragmatic Programmer",
+      author: "David Thomas, Andrew Hunt",
+      description: "Timeless advice on software craftsmanship and career development.",
+      level: "All levels"
+    },
+    {
+      title: "Design Patterns",
+      author: "Gang of Four",
+      description: "Classic book on reusable object-oriented design patterns.",
+      level: "Advanced"
+    }
+  ],
+  courses: [
+    {
+      title: "CS50: Introduction to Computer Science",
+      platform: "Harvard / edX",
+      description: "World-famous intro course covering C, Python, SQL, and more.",
+      url: "https://cs50.harvard.edu/",
+      free: true
+    },
+    {
+      title: "freeCodeCamp",
+      platform: "freeCodeCamp",
+      description: "Full-stack curriculum with certifications. Great for web development.",
+      url: "https://www.freecodecamp.org/",
+      free: true
+    },
+    {
+      title: "The Odin Project",
+      platform: "The Odin Project",
+      description: "Full-stack JavaScript/Ruby curriculum with hands-on projects.",
+      url: "https://www.theodinproject.com/",
+      free: true
+    },
+    {
+      title: "Algorithms Specialization",
+      platform: "Stanford / Coursera",
+      description: "Tim Roughgarden's excellent algorithm course series.",
+      url: "https://www.coursera.org/specializations/algorithms",
+      free: false
+    }
+  ],
+  practice: [
+    {
+      title: "LeetCode",
+      description: "2000+ coding problems with company-specific questions. Essential for interviews.",
+      url: "https://leetcode.com/"
+    },
+    {
+      title: "HackerRank",
+      description: "Practice problems, competitions, and skill certifications.",
+      url: "https://www.hackerrank.com/"
+    },
+    {
+      title: "Codewars",
+      description: "Community-driven coding challenges (kata) with ranking system.",
+      url: "https://www.codewars.com/"
+    },
+    {
+      title: "Project Euler",
+      description: "Mathematical/computational problems for the analytically minded.",
+      url: "https://projecteuler.net/"
+    },
+    {
+      title: "Exercism",
+      description: "Free coding exercises with mentorship in 60+ languages.",
+      url: "https://exercism.org/"
+    }
+  ],
+  tools: [
+    {
+      title: "Visual Studio Code",
+      description: "Free, powerful code editor with excellent extension ecosystem.",
+      url: "https://code.visualstudio.com/"
+    },
+    {
+      title: "Git",
+      description: "Essential version control system. Learn it early.",
+      url: "https://git-scm.com/"
+    },
+    {
+      title: "GitHub",
+      description: "Host code, collaborate, and build your portfolio.",
+      url: "https://github.com/"
+    },
+    {
+      title: "Postman",
+      description: "API development and testing tool.",
+      url: "https://www.postman.com/"
+    },
+    {
+      title: "Docker",
+      description: "Containerization platform for consistent development environments.",
+      url: "https://www.docker.com/"
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title="Computer Science Resources"
+  description="Curated list of the best books, courses, practice platforms, and tools for learning computer science and programming."
+>
+  <section class="hero" style="padding: 3rem 0;">
+    <div class="container">
+      <h1>Learning Resources</h1>
+      <p>Curated recommendations to accelerate your learning journey.</p>
+    </div>
+  </section>
+
+  <AdUnit slot="horizontal" />
+
+  <section class="section">
+    <div class="container">
+      <h2 id="books">Recommended Books</h2>
+      <div class="resource-grid">
+        {resources.books.map(book => (
+          <div class="resource-card">
+            <h3>{book.title}</h3>
+            <p class="author">by {book.author}</p>
+            <p>{book.description}</p>
+            <span class="badge">{book.level}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <h2 id="courses">Online Courses</h2>
+      <div class="resource-grid">
+        {resources.courses.map(course => (
+          <a href={course.url} class="resource-card" target="_blank" rel="noopener">
+            <h3>{course.title}</h3>
+            <p class="platform">{course.platform}</p>
+            <p>{course.description}</p>
+            <span class={`badge ${course.free ? 'badge-free' : ''}`}>
+              {course.free ? 'Free' : 'Paid'}
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <AdUnit slot="in-article" />
+
+  <section class="section">
+    <div class="container">
+      <h2 id="practice">Practice Platforms</h2>
+      <div class="resource-grid">
+        {resources.practice.map(platform => (
+          <a href={platform.url} class="resource-card" target="_blank" rel="noopener">
+            <h3>{platform.title}</h3>
+            <p>{platform.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <h2 id="tools">Developer Tools</h2>
+      <div class="resource-grid">
+        {resources.tools.map(tool => (
+          <a href={tool.url} class="resource-card" target="_blank" rel="noopener">
+            <h3>{tool.title}</h3>
+            <p>{tool.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <AdUnit slot="horizontal" />
+
+  <style>
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .resource-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .resource-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+
+    .resource-card h3 {
+      margin: 0 0 0.5rem;
+      color: var(--color-text);
+    }
+
+    a.resource-card:hover h3 {
+      color: var(--color-primary);
+    }
+
+    .author, .platform {
+      color: var(--color-text-muted);
+      font-size: 0.875rem;
+      margin: 0 0 0.5rem;
+    }
+
+    .resource-card p {
+      margin: 0 0 1rem;
+      color: var(--color-text-muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background: var(--color-bg-alt);
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-free {
+      background: #d1fae5;
+      color: #065f46;
+    }
+  </style>
+</BaseLayout>

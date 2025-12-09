@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdUnit from '../components/AdUnit.astro';
+---
+
+<BaseLayout
+  title="About Computer Science Guide"
+  description="Learn about Computer Science Guide - a free educational resource helping people learn programming, data structures, algorithms, and software development."
+>
+  <article class="article">
+    <div class="container">
+      <div class="content">
+        <h1>About Computer Science Guide</h1>
+
+        <p class="intro">
+          Computer Science Guide is a free educational resource dedicated to helping people learn
+          programming and computer science fundamentals, regardless of their background.
+        </p>
+
+        <AdUnit slot="in-article" />
+
+        <h2>Our Mission</h2>
+        <p>
+          We believe quality computer science education should be accessible to everyone. Our goal
+          is to provide clear, comprehensive guides that take you from complete beginner to job-ready
+          developer.
+        </p>
+        <p>
+          Unlike many resources that assume prior knowledge, we explain concepts from first principles.
+          Every guide is written with the assumption that you're encountering the topic for the first time.
+        </p>
+
+        <h2>What We Offer</h2>
+        <ul>
+          <li><strong>Structured Learning Paths:</strong> Follow our roadmap from fundamentals to advanced topics</li>
+          <li><strong>In-Depth Guides:</strong> Comprehensive tutorials with code examples and practice exercises</li>
+          <li><strong>Curated Resources:</strong> Recommendations for books, courses, and tools</li>
+          <li><strong>Interview Preparation:</strong> Tips and practice for landing your first tech job</li>
+        </ul>
+
+        <h2>Our Approach</h2>
+        <p>
+          Each guide follows a consistent structure:
+        </p>
+        <ol>
+          <li><strong>Explain the "why":</strong> Understanding when and why to use a concept</li>
+          <li><strong>Clear examples:</strong> Practical code samples you can run and modify</li>
+          <li><strong>Visual aids:</strong> Diagrams and illustrations where helpful</li>
+          <li><strong>Practice exercises:</strong> Reinforce learning through hands-on problems</li>
+          <li><strong>Next steps:</strong> Clear path to continue learning</li>
+        </ol>
+
+        <AdUnit slot="in-article" />
+
+        <h2>Who This Is For</h2>
+        <ul>
+          <li><strong>Complete beginners</strong> who want to learn programming from scratch</li>
+          <li><strong>Self-taught developers</strong> looking to fill gaps in CS fundamentals</li>
+          <li><strong>Career changers</strong> transitioning into software development</li>
+          <li><strong>Students</strong> supplementing their coursework</li>
+          <li><strong>Interview candidates</strong> preparing for technical interviews</li>
+        </ul>
+
+        <h2>Stay Updated</h2>
+        <p>
+          We regularly add new guides and update existing content. Bookmark this site and check back
+          often for new material.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          Have questions, suggestions, or found an error? We'd love to hear from you.
+          Reach out at <a href="mailto:hello@computerscienceguide.com">hello@computerscienceguide.com</a>.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <style>
+    .intro {
+      font-size: 1.25rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+  </style>
+</BaseLayout>

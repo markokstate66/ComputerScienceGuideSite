@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GuideCard from '../components/GuideCard.astro';
+import AdUnit from '../components/AdUnit.astro';
+
+const guides = [
+  {
+    title: 'Programming Fundamentals',
+    description: 'Learn the core concepts of programming: variables, loops, functions, and more.',
+    href: '/guides/programming-fundamentals',
+    icon: '💻',
+    level: 'beginner' as const
+  },
+  {
+    title: 'Data Structures',
+    description: 'Master arrays, linked lists, trees, graphs, and other essential data structures.',
+    href: '/guides/data-structures',
+    icon: '🗃️',
+    level: 'intermediate' as const
+  },
+  {
+    title: 'Algorithms',
+    description: 'Understand sorting, searching, dynamic programming, and algorithm analysis.',
+    href: '/guides/algorithms',
+    icon: '⚡',
+    level: 'intermediate' as const
+  },
+  {
+    title: 'Web Development',
+    description: 'Build modern websites with HTML, CSS, JavaScript, and popular frameworks.',
+    href: '/guides/web-development',
+    icon: '🌐',
+    level: 'beginner' as const
+  },
+  {
+    title: 'Databases',
+    description: 'Learn SQL, NoSQL, database design, and data modeling fundamentals.',
+    href: '/guides/databases',
+    icon: '🗄️',
+    level: 'intermediate' as const
+  },
+  {
+    title: 'System Design',
+    description: 'Design scalable systems and prepare for technical interviews.',
+    href: '/guides/system-design',
+    icon: '🏗️',
+    level: 'advanced' as const
+  }
+];
+---
+
+<BaseLayout
+  title="Computer Science Guide"
+  description="Free comprehensive guides to learn computer science, programming, and software development. Master data structures, algorithms, web development, and more."
+>
+  <section class="hero">
+    <div class="container">
+      <h1>Learn Computer Science</h1>
+      <p>
+        Free, comprehensive guides to help you master programming, data structures,
+        algorithms, and software development. Start your journey today.
+      </p>
+      <a href="/roadmap" class="btn">View Learning Roadmap</a>
+    </div>
+  </section>
+
+  <AdUnit slot="horizontal" />
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Popular Guides</h2>
+      <div class="card-grid">
+        {guides.map(guide => (
+          <GuideCard {...guide} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <h2 class="section-title">Why Learn Computer Science?</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>High Demand Careers</h3>
+          <p>Software engineering consistently ranks among the highest-paying and most in-demand careers globally.</p>
+        </div>
+        <div class="card">
+          <h3>Problem-Solving Skills</h3>
+          <p>Develop logical thinking and analytical abilities that transfer to any field or challenge.</p>
+        </div>
+        <div class="card">
+          <h3>Build Anything</h3>
+          <p>From mobile apps to AI systems, programming skills let you create solutions to real-world problems.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <AdUnit slot="in-article" />
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Start Your Learning Path</h2>
+      <div class="learning-paths">
+        <div class="card">
+          <h3>Complete Beginner</h3>
+          <p>Never written code before? Start here with our beginner-friendly introduction to programming concepts.</p>
+          <a href="/guides/programming-fundamentals" class="btn">Start Learning</a>
+        </div>
+        <div class="card">
+          <h3>Career Changer</h3>
+          <p>Looking to transition into tech? Follow our structured roadmap to become job-ready.</p>
+          <a href="/roadmap" class="btn">View Roadmap</a>
+        </div>
+        <div class="card">
+          <h3>Interview Prep</h3>
+          <p>Preparing for technical interviews? Master data structures, algorithms, and system design.</p>
+          <a href="/guides/interview-prep" class="btn">Prepare Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .learning-paths {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .learning-paths .card {
+      text-align: center;
+    }
+
+    .learning-paths .btn {
+      margin-top: 1rem;
+    }
+  </style>
+</BaseLayout>

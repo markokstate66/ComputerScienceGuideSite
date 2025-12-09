@@ -1,0 +1,174 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GuideCard from '../../components/GuideCard.astro';
+import AdUnit from '../../components/AdUnit.astro';
+
+const allGuides = [
+  {
+    category: 'Fundamentals',
+    guides: [
+      {
+        title: 'Programming Fundamentals',
+        description: 'Learn the core concepts of programming: variables, control flow, functions, and OOP basics.',
+        href: '/guides/programming-fundamentals',
+        icon: '💻',
+        level: 'beginner' as const
+      },
+      {
+        title: 'Computer Science Basics',
+        description: 'Understand how computers work: binary, memory, CPU architecture, and operating systems.',
+        href: '/guides/cs-basics',
+        icon: '🖥️',
+        level: 'beginner' as const
+      },
+      {
+        title: 'Git & Version Control',
+        description: 'Master Git commands, branching strategies, and collaborative workflows.',
+        href: '/guides/git',
+        icon: '🔀',
+        level: 'beginner' as const
+      }
+    ]
+  },
+  {
+    category: 'Core Computer Science',
+    guides: [
+      {
+        title: 'Data Structures',
+        description: 'Master arrays, linked lists, stacks, queues, trees, graphs, and hash tables.',
+        href: '/guides/data-structures',
+        icon: '🗃️',
+        level: 'intermediate' as const
+      },
+      {
+        title: 'Algorithms',
+        description: 'Learn sorting, searching, recursion, dynamic programming, and complexity analysis.',
+        href: '/guides/algorithms',
+        icon: '⚡',
+        level: 'intermediate' as const
+      },
+      {
+        title: 'Object-Oriented Programming',
+        description: 'Deep dive into OOP principles: encapsulation, inheritance, polymorphism, and design patterns.',
+        href: '/guides/oop',
+        icon: '🎯',
+        level: 'intermediate' as const
+      }
+    ]
+  },
+  {
+    category: 'Web Development',
+    guides: [
+      {
+        title: 'HTML & CSS',
+        description: 'Build beautiful, responsive web pages from scratch with modern CSS techniques.',
+        href: '/guides/html-css',
+        icon: '🎨',
+        level: 'beginner' as const
+      },
+      {
+        title: 'JavaScript',
+        description: 'Master JavaScript from basics to advanced concepts like closures, async/await, and ES6+.',
+        href: '/guides/javascript',
+        icon: '📜',
+        level: 'beginner' as const
+      },
+      {
+        title: 'React',
+        description: 'Build modern UIs with React: components, hooks, state management, and best practices.',
+        href: '/guides/react',
+        icon: '⚛️',
+        level: 'intermediate' as const
+      },
+      {
+        title: 'Node.js',
+        description: 'Server-side JavaScript with Express, REST APIs, authentication, and databases.',
+        href: '/guides/nodejs',
+        icon: '🟢',
+        level: 'intermediate' as const
+      }
+    ]
+  },
+  {
+    category: 'Backend & Databases',
+    guides: [
+      {
+        title: 'SQL & Databases',
+        description: 'Relational database design, SQL queries, joins, indexes, and optimization.',
+        href: '/guides/databases',
+        icon: '🗄️',
+        level: 'intermediate' as const
+      },
+      {
+        title: 'API Design',
+        description: 'Design RESTful APIs, understand GraphQL, and learn authentication patterns.',
+        href: '/guides/api-design',
+        icon: '🔌',
+        level: 'intermediate' as const
+      },
+      {
+        title: 'System Design',
+        description: 'Design scalable distributed systems: load balancing, caching, databases, and microservices.',
+        href: '/guides/system-design',
+        icon: '🏗️',
+        level: 'advanced' as const
+      }
+    ]
+  },
+  {
+    category: 'Career',
+    guides: [
+      {
+        title: 'Interview Preparation',
+        description: 'Ace technical interviews with coding problems, system design, and behavioral tips.',
+        href: '/guides/interview-prep',
+        icon: '🎯',
+        level: 'intermediate' as const
+      },
+      {
+        title: 'Building a Portfolio',
+        description: 'Create projects that showcase your skills and land your first developer job.',
+        href: '/guides/portfolio',
+        icon: '💼',
+        level: 'beginner' as const
+      }
+    ]
+  }
+];
+---
+
+<BaseLayout
+  title="Programming & CS Guides"
+  description="Comprehensive computer science tutorials covering programming, data structures, algorithms, web development, databases, and system design. Free guides for all skill levels."
+>
+  <section class="hero" style="padding: 3rem 0;">
+    <div class="container">
+      <h1>Computer Science Guides</h1>
+      <p>Free, in-depth tutorials to help you master programming and computer science concepts.</p>
+    </div>
+  </section>
+
+  <AdUnit slot="horizontal" />
+
+  {allGuides.map((section, index) => (
+    <>
+      <section class={`section ${index % 2 === 1 ? 'section-alt' : ''}`}>
+        <div class="container">
+          <h2>{section.category}</h2>
+          <div class="card-grid">
+            {section.guides.map(guide => (
+              <GuideCard {...guide} />
+            ))}
+          </div>
+        </div>
+      </section>
+      {index === 1 && <AdUnit slot="in-article" />}
+    </>
+  ))}
+
+  <style>
+    h2 {
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</BaseLayout>

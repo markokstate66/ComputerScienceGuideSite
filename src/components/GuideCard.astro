@@ -1,0 +1,62 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  icon?: string;
+  level?: 'beginner' | 'intermediate' | 'advanced';
+}
+
+const { title, description, href, icon = '📚', level = 'beginner' } = Astro.props;
+
+const levelColors = {
+  beginner: '#10b981',
+  intermediate: '#f59e0b',
+  advanced: '#ef4444'
+};
+---
+
+<a href={href} class="card guide-card">
+  <div class="guide-icon">{icon}</div>
+  <div class="guide-content">
+    <h3>{title}</h3>
+    <p>{description}</p>
+    <span class="guide-level" style={`color: ${levelColors[level]}`}>
+      {level.charAt(0).toUpperCase() + level.slice(1)}
+    </span>
+  </div>
+</a>
+
+<style>
+  .guide-card {
+    display: flex;
+    gap: 1rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .guide-card:hover {
+    text-decoration: none;
+  }
+
+  .guide-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .guide-content h3 {
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+  }
+
+  .guide-card:hover h3 {
+    color: var(--color-primary);
+  }
+
+  .guide-level {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>

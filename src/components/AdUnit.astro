@@ -1,0 +1,50 @@
+---
+interface Props {
+  slot: 'horizontal' | 'sidebar' | 'in-article' | 'responsive';
+  className?: string;
+}
+
+const { slot, className = '' } = Astro.props;
+
+const slotConfig = {
+  'horizontal': {
+    format: 'horizontal',
+    style: 'display:block',
+    className: 'ad-container-horizontal'
+  },
+  'sidebar': {
+    format: 'rectangle',
+    style: 'display:block',
+    className: 'ad-container-sidebar'
+  },
+  'in-article': {
+    format: 'fluid',
+    style: 'display:block; text-align:center;',
+    className: 'ad-container-in-article'
+  },
+  'responsive': {
+    format: 'auto',
+    style: 'display:block',
+    className: ''
+  }
+};
+
+const config = slotConfig[slot];
+---
+
+<div class={`ad-container ${config.className} ${className}`}>
+  <!--
+    Google AdSense Ad Unit
+    Replace data-ad-client and data-ad-slot with your actual values
+  -->
+  <ins class="adsbygoogle"
+    style={config.style}
+    data-ad-client="ca-pub-XXXXXXXXXX"
+    data-ad-slot="XXXXXXXXXX"
+    data-ad-format={config.format}
+    data-full-width-responsive="true">
+  </ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
