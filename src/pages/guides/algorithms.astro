@@ -1,0 +1,550 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import AdUnit from '../../components/AdUnit.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'Big O Notation', href: '#big-o' },
+  { title: 'Sorting Algorithms', href: '#sorting' },
+  { title: 'Searching Algorithms', href: '#searching' },
+  { title: 'Recursion', href: '#recursion' },
+  { title: 'Dynamic Programming', href: '#dynamic-programming' },
+  { title: 'Greedy Algorithms', href: '#greedy' },
+  { title: 'Common Patterns', href: '#patterns' }
+];
+---
+
+<GuideLayout
+  title="Algorithms: Essential Techniques for Problem Solving"
+  description="Master fundamental algorithms including sorting, searching, recursion, dynamic programming, and greedy approaches. Learn Big O notation and common problem-solving patterns."
+  level="intermediate"
+  readTime="35 min read"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Algorithms are step-by-step procedures for solving problems. Mastering algorithms helps you write
+    efficient code, ace technical interviews, and think systematically about complex problems.
+  </p>
+
+  <h2 id="introduction">Why Learn Algorithms?</h2>
+  <p>
+    Understanding algorithms allows you to:
+  </p>
+  <ul>
+    <li><strong>Write efficient code:</strong> Choose the best approach for your problem</li>
+    <li><strong>Optimize performance:</strong> Reduce time and memory usage</li>
+    <li><strong>Solve complex problems:</strong> Break down challenges into manageable steps</li>
+    <li><strong>Succeed in interviews:</strong> Algorithm questions are a core part of technical interviews</li>
+  </ul>
+
+  <h2 id="big-o">Big O Notation</h2>
+  <p>
+    Big O notation describes how an algorithm's runtime or space requirements grow as input size increases.
+    It helps us compare algorithms and predict performance at scale.
+  </p>
+
+  <h3>Common Complexities (Fastest to Slowest)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Notation</th>
+        <th>Name</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>O(1)</td>
+        <td>Constant</td>
+        <td>Array access by index</td>
+      </tr>
+      <tr>
+        <td>O(log n)</td>
+        <td>Logarithmic</td>
+        <td>Binary search</td>
+      </tr>
+      <tr>
+        <td>O(n)</td>
+        <td>Linear</td>
+        <td>Simple loop through array</td>
+      </tr>
+      <tr>
+        <td>O(n log n)</td>
+        <td>Linearithmic</td>
+        <td>Merge sort, Quick sort</td>
+      </tr>
+      <tr>
+        <td>O(n²)</td>
+        <td>Quadratic</td>
+        <td>Nested loops, Bubble sort</td>
+      </tr>
+      <tr>
+        <td>O(2ⁿ)</td>
+        <td>Exponential</td>
+        <td>Recursive Fibonacci</td>
+      </tr>
+      <tr>
+        <td>O(n!)</td>
+        <td>Factorial</td>
+        <td>Generating permutations</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pre><code>{`# O(1) - Constant time
+def get_first(arr):
+    return arr[0]  # Always one operation
+
+# O(n) - Linear time
+def find_max(arr):
+    max_val = arr[0]
+    for num in arr:  # Loops through n elements
+        if num > max_val:
+            max_val = num
+    return max_val
+
+# O(n²) - Quadratic time
+def find_pairs(arr):
+    pairs = []
+    for i in range(len(arr)):      # n iterations
+        for j in range(len(arr)):  # n iterations each
+            pairs.append((arr[i], arr[j]))
+    return pairs`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="sorting">Sorting Algorithms</h2>
+  <p>
+    Sorting is one of the most fundamental operations in computer science. Different algorithms
+    have different trade-offs in terms of speed, memory usage, and stability.
+  </p>
+
+  <h3>Bubble Sort - O(n²)</h3>
+  <p>
+    Repeatedly swaps adjacent elements if they're in the wrong order. Simple but inefficient
+    for large datasets.
+  </p>
+  <pre><code>{`def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        # Flag to optimize if no swaps occur
+        swapped = False
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:
+            break
+    return arr`}</code></pre>
+
+  <h3>Merge Sort - O(n log n)</h3>
+  <p>
+    A divide-and-conquer algorithm that splits the array, sorts each half, then merges them.
+    Consistently efficient but requires extra space.
+  </p>
+  <pre><code>{`def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result`}</code></pre>
+
+  <h3>Quick Sort - O(n log n) average</h3>
+  <p>
+    Picks a pivot element and partitions the array around it. Very fast in practice
+    but can degrade to O(n²) with poor pivot choices.
+  </p>
+  <pre><code>{`def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+
+    return quick_sort(left) + middle + quick_sort(right)`}</code></pre>
+
+  <h3>Sorting Algorithm Comparison</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Algorithm</th>
+        <th>Best</th>
+        <th>Average</th>
+        <th>Worst</th>
+        <th>Space</th>
+        <th>Stable</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Bubble Sort</td>
+        <td>O(n)</td>
+        <td>O(n²)</td>
+        <td>O(n²)</td>
+        <td>O(1)</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td>Merge Sort</td>
+        <td>O(n log n)</td>
+        <td>O(n log n)</td>
+        <td>O(n log n)</td>
+        <td>O(n)</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td>Quick Sort</td>
+        <td>O(n log n)</td>
+        <td>O(n log n)</td>
+        <td>O(n²)</td>
+        <td>O(log n)</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>Heap Sort</td>
+        <td>O(n log n)</td>
+        <td>O(n log n)</td>
+        <td>O(n log n)</td>
+        <td>O(1)</td>
+        <td>No</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="searching">Searching Algorithms</h2>
+
+  <h3>Linear Search - O(n)</h3>
+  <p>
+    Checks each element one by one. Works on any array but is slow for large datasets.
+  </p>
+  <pre><code>{`def linear_search(arr, target):
+    for i, element in enumerate(arr):
+        if element == target:
+            return i
+    return -1`}</code></pre>
+
+  <h3>Binary Search - O(log n)</h3>
+  <p>
+    Repeatedly divides the search space in half. Requires a sorted array but is extremely fast.
+  </p>
+  <pre><code>{`def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+
+    while left <= right:
+        mid = (left + right) // 2
+
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+
+    return -1
+
+# Recursive version
+def binary_search_recursive(arr, target, left, right):
+    if left > right:
+        return -1
+
+    mid = (left + right) // 2
+
+    if arr[mid] == target:
+        return mid
+    elif arr[mid] < target:
+        return binary_search_recursive(arr, target, mid + 1, right)
+    else:
+        return binary_search_recursive(arr, target, left, mid - 1)`}</code></pre>
+
+  <h2 id="recursion">Recursion</h2>
+  <p>
+    Recursion is when a function calls itself to solve smaller instances of the same problem.
+    Every recursive solution needs a base case to stop the recursion.
+  </p>
+
+  <h3>Anatomy of Recursion</h3>
+  <pre><code>{`def factorial(n):
+    # Base case: stops recursion
+    if n <= 1:
+        return 1
+    # Recursive case: calls itself with smaller input
+    return n * factorial(n - 1)
+
+# factorial(5) = 5 * factorial(4)
+#              = 5 * 4 * factorial(3)
+#              = 5 * 4 * 3 * factorial(2)
+#              = 5 * 4 * 3 * 2 * factorial(1)
+#              = 5 * 4 * 3 * 2 * 1
+#              = 120`}</code></pre>
+
+  <h3>Fibonacci - Classic Example</h3>
+  <pre><code>{`# Naive recursive - O(2^n) - Very slow!
+def fib_naive(n):
+    if n <= 1:
+        return n
+    return fib_naive(n - 1) + fib_naive(n - 2)
+
+# Memoized - O(n) - Much faster
+def fib_memo(n, memo={}):
+    if n in memo:
+        return memo[n]
+    if n <= 1:
+        return n
+    memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
+    return memo[n]
+
+# Iterative - O(n) time, O(1) space - Best
+def fib_iterative(n):
+    if n <= 1:
+        return n
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="dynamic-programming">Dynamic Programming</h2>
+  <p>
+    Dynamic Programming (DP) solves complex problems by breaking them into overlapping subproblems,
+    solving each once, and storing the results. It's an optimization over plain recursion.
+  </p>
+
+  <h3>Two Approaches</h3>
+  <ul>
+    <li><strong>Top-down (Memoization):</strong> Start with the main problem, recurse down, cache results</li>
+    <li><strong>Bottom-up (Tabulation):</strong> Start with smallest subproblems, build up to the solution</li>
+  </ul>
+
+  <h3>Example: Climbing Stairs</h3>
+  <p>
+    You can climb 1 or 2 steps at a time. How many distinct ways can you climb n steps?
+  </p>
+  <pre><code>{`# Top-down with memoization
+def climb_stairs_memo(n, memo={}):
+    if n in memo:
+        return memo[n]
+    if n <= 2:
+        return n
+    memo[n] = climb_stairs_memo(n - 1, memo) + climb_stairs_memo(n - 2, memo)
+    return memo[n]
+
+# Bottom-up with tabulation
+def climb_stairs_tab(n):
+    if n <= 2:
+        return n
+    dp = [0] * (n + 1)
+    dp[1] = 1
+    dp[2] = 2
+    for i in range(3, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+    return dp[n]
+
+# Space-optimized bottom-up
+def climb_stairs_optimized(n):
+    if n <= 2:
+        return n
+    a, b = 1, 2
+    for _ in range(3, n + 1):
+        a, b = b, a + b
+    return b`}</code></pre>
+
+  <h3>Example: Longest Common Subsequence</h3>
+  <pre><code>{`def lcs(text1, text2):
+    m, n = len(text1), len(text2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if text1[i - 1] == text2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+
+    return dp[m][n]
+
+# lcs("abcde", "ace") = 3  # "ace"`}</code></pre>
+
+  <h2 id="greedy">Greedy Algorithms</h2>
+  <p>
+    Greedy algorithms make the locally optimal choice at each step, hoping to find a global optimum.
+    They don't always give the best solution, but when they do, they're often simple and efficient.
+  </p>
+
+  <h3>Example: Coin Change (Greedy)</h3>
+  <pre><code>{`def coin_change_greedy(coins, amount):
+    """
+    Works for standard coin systems (1, 5, 10, 25)
+    May not work for arbitrary coin denominations
+    """
+    coins.sort(reverse=True)
+    count = 0
+    for coin in coins:
+        while amount >= coin:
+            amount -= coin
+            count += 1
+    return count if amount == 0 else -1
+
+# For coins = [25, 10, 5, 1] and amount = 41
+# Result: 25 + 10 + 5 + 1 = 4 coins`}</code></pre>
+
+  <h3>Example: Activity Selection</h3>
+  <pre><code>{`def activity_selection(activities):
+    """
+    Select maximum number of non-overlapping activities.
+    activities: list of (start, end) tuples
+    """
+    # Sort by end time
+    sorted_activities = sorted(activities, key=lambda x: x[1])
+
+    selected = [sorted_activities[0]]
+    last_end = sorted_activities[0][1]
+
+    for start, end in sorted_activities[1:]:
+        if start >= last_end:
+            selected.append((start, end))
+            last_end = end
+
+    return selected
+
+# activities = [(1, 4), (3, 5), (0, 6), (5, 7), (8, 9), (5, 9)]
+# Result: [(1, 4), (5, 7), (8, 9)] - 3 activities`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="patterns">Common Problem-Solving Patterns</h2>
+
+  <h3>Two Pointers</h3>
+  <p>Use two pointers moving through an array to solve problems efficiently.</p>
+  <pre><code>{`def two_sum_sorted(arr, target):
+    """Find two numbers that add up to target in sorted array."""
+    left, right = 0, len(arr) - 1
+
+    while left < right:
+        current_sum = arr[left] + arr[right]
+        if current_sum == target:
+            return [left, right]
+        elif current_sum < target:
+            left += 1
+        else:
+            right -= 1
+
+    return []`}</code></pre>
+
+  <h3>Sliding Window</h3>
+  <p>Maintain a window of elements as you iterate through an array.</p>
+  <pre><code>{`def max_sum_subarray(arr, k):
+    """Find maximum sum of subarray with length k."""
+    if len(arr) < k:
+        return None
+
+    # Calculate sum of first window
+    window_sum = sum(arr[:k])
+    max_sum = window_sum
+
+    # Slide the window
+    for i in range(k, len(arr)):
+        window_sum += arr[i] - arr[i - k]
+        max_sum = max(max_sum, window_sum)
+
+    return max_sum`}</code></pre>
+
+  <h3>Fast and Slow Pointers</h3>
+  <p>Useful for cycle detection and finding middle elements.</p>
+  <pre><code>{`def has_cycle(head):
+    """Detect if a linked list has a cycle."""
+    slow = fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            return True
+
+    return False
+
+def find_middle(head):
+    """Find the middle node of a linked list."""
+    slow = fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    return slow`}</code></pre>
+
+  <h3>Pattern Summary</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Pattern</th>
+        <th>When to Use</th>
+        <th>Example Problems</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Two Pointers</td>
+        <td>Sorted arrays, finding pairs</td>
+        <td>Two Sum, Container With Water</td>
+      </tr>
+      <tr>
+        <td>Sliding Window</td>
+        <td>Contiguous subarrays/substrings</td>
+        <td>Max Sum Subarray, Longest Substring</td>
+      </tr>
+      <tr>
+        <td>Fast/Slow</td>
+        <td>Linked lists, cycle detection</td>
+        <td>Cycle Detection, Find Middle</td>
+      </tr>
+      <tr>
+        <td>BFS/DFS</td>
+        <td>Trees, graphs, mazes</td>
+        <td>Level Order, Path Finding</td>
+      </tr>
+      <tr>
+        <td>Binary Search</td>
+        <td>Sorted data, search space</td>
+        <td>Search, Find Minimum</td>
+      </tr>
+      <tr>
+        <td>Dynamic Programming</td>
+        <td>Overlapping subproblems</td>
+        <td>Fibonacci, Knapsack, LCS</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Next Steps</h2>
+  <ul>
+    <li><a href="/guides/data-structures">Data Structures</a> - Review the data structures these algorithms operate on</li>
+    <li><a href="/guides/interview-prep">Interview Prep</a> - Practice algorithm problems with strategies</li>
+    <li><a href="/resources/practice">Practice Problems</a> - Apply your knowledge on coding platforms</li>
+  </ul>
+
+</GuideLayout>

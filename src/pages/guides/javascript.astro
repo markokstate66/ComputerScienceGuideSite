@@ -1,0 +1,637 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import AdUnit from '../../components/AdUnit.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'Variables & Data Types', href: '#variables' },
+  { title: 'Operators & Control Flow', href: '#operators' },
+  { title: 'Functions', href: '#functions' },
+  { title: 'Arrays', href: '#arrays' },
+  { title: 'Objects', href: '#objects' },
+  { title: 'DOM Manipulation', href: '#dom' },
+  { title: 'Events', href: '#events' },
+  { title: 'Async JavaScript', href: '#async' }
+];
+---
+
+<GuideLayout
+  title="JavaScript: From Basics to Interactive Web Pages"
+  description="Learn JavaScript fundamentals including variables, functions, arrays, objects, DOM manipulation, events, and asynchronous programming. Build interactive websites."
+  level="beginner"
+  readTime="35 min read"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    JavaScript brings web pages to life. It's the programming language of the browser, enabling
+    interactivity, dynamic content, and modern web applications. It's also used on servers with Node.js.
+  </p>
+
+  <h2 id="introduction">Why JavaScript?</h2>
+  <ul>
+    <li><strong>Universal:</strong> Runs in every browser, no installation needed</li>
+    <li><strong>Versatile:</strong> Frontend, backend, mobile apps, desktop apps</li>
+    <li><strong>In demand:</strong> Most popular programming language (Stack Overflow surveys)</li>
+    <li><strong>Immediate feedback:</strong> See results instantly in the browser</li>
+  </ul>
+
+  <h3>Running JavaScript</h3>
+  <pre><code>{`<!-- In HTML file -->
+<script>
+    console.log("Hello, World!");
+</script>
+
+<!-- Or link external file -->
+<script src="script.js"></script>
+
+<!-- In browser console (F12 or Cmd+Option+J) -->
+console.log("Hello from console!");`}</code></pre>
+
+  <h2 id="variables">Variables & Data Types</h2>
+
+  <h3>Declaring Variables</h3>
+  <pre><code>{`// let - can be reassigned
+let age = 25;
+age = 26;  // OK
+
+// const - cannot be reassigned (preferred for most cases)
+const name = "Alice";
+// name = "Bob";  // Error!
+
+// var - old way, avoid using (function-scoped, hoisted)
+var oldWay = "legacy";`}</code></pre>
+
+  <h3>Data Types</h3>
+  <pre><code>{`// Primitive types
+const string = "Hello";           // Text
+const number = 42;                // Numbers (integers and decimals)
+const decimal = 3.14;
+const boolean = true;             // true or false
+const nothing = null;             // Intentional empty value
+const notDefined = undefined;     // Not yet assigned
+const unique = Symbol("id");      // Unique identifier
+const bigInt = 9007199254740991n; // Very large integers
+
+// Reference types
+const array = [1, 2, 3];          // List of values
+const object = { name: "Alice" }; // Key-value pairs
+const func = function() {};       // Functions are objects too
+
+// Check type
+typeof "hello"    // "string"
+typeof 42         // "number"
+typeof true       // "boolean"
+typeof undefined  // "undefined"
+typeof null       // "object" (historical bug)
+typeof []         // "object"
+typeof {}         // "object"`}</code></pre>
+
+  <h3>Strings</h3>
+  <pre><code>{`// String creation
+const single = 'Hello';
+const double = "World";
+const template = \`Hello, \${name}!\`;  // Template literal
+
+// String methods
+const text = "JavaScript";
+text.length;              // 10
+text.toUpperCase();       // "JAVASCRIPT"
+text.toLowerCase();       // "javascript"
+text.includes("Script");  // true
+text.indexOf("S");        // 4
+text.slice(0, 4);         // "Java"
+text.split("");           // ["J","a","v","a","S","c","r","i","p","t"]
+text.replace("Java", "Type"); // "TypeScript"
+
+// Template literals (backticks)
+const name = "Alice";
+const greeting = \`Hello, \${name}!
+This is a multi-line string.\`;`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="operators">Operators & Control Flow</h2>
+
+  <h3>Operators</h3>
+  <pre><code>{`// Arithmetic
+5 + 3    // 8
+10 - 4   // 6
+3 * 4    // 12
+15 / 3   // 5
+17 % 5   // 2 (remainder)
+2 ** 3   // 8 (exponentiation)
+
+// Comparison
+5 == "5"   // true (loose equality, converts types)
+5 === "5"  // false (strict equality, recommended)
+5 !== "5"  // true
+5 > 3      // true
+5 >= 5     // true
+
+// Logical
+true && false  // false (AND)
+true || false  // true (OR)
+!true          // false (NOT)
+
+// Assignment
+let x = 10;
+x += 5;   // x = x + 5 = 15
+x -= 3;   // x = 12
+x *= 2;   // x = 24
+x++;      // x = 25
+x--;      // x = 24`}</code></pre>
+
+  <h3>Conditionals</h3>
+  <pre><code>{`// if-else
+const age = 18;
+
+if (age >= 21) {
+    console.log("Can drink alcohol");
+} else if (age >= 18) {
+    console.log("Can vote");
+} else {
+    console.log("Minor");
+}
+
+// Ternary operator
+const status = age >= 18 ? "adult" : "minor";
+
+// Switch
+const day = "Monday";
+
+switch (day) {
+    case "Monday":
+    case "Tuesday":
+        console.log("Weekday");
+        break;
+    case "Saturday":
+    case "Sunday":
+        console.log("Weekend");
+        break;
+    default:
+        console.log("Invalid day");
+}`}</code></pre>
+
+  <h3>Loops</h3>
+  <pre><code>{`// for loop
+for (let i = 0; i < 5; i++) {
+    console.log(i);  // 0, 1, 2, 3, 4
+}
+
+// while loop
+let count = 0;
+while (count < 3) {
+    console.log(count);
+    count++;
+}
+
+// do-while (runs at least once)
+let num = 0;
+do {
+    console.log(num);
+    num++;
+} while (num < 3);
+
+// for...of (iterate values)
+const fruits = ["apple", "banana", "cherry"];
+for (const fruit of fruits) {
+    console.log(fruit);
+}
+
+// for...in (iterate keys/indices)
+const person = { name: "Alice", age: 30 };
+for (const key in person) {
+    console.log(key, person[key]);
+}`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="functions">Functions</h2>
+
+  <h3>Function Declaration</h3>
+  <pre><code>{`// Function declaration (hoisted)
+function greet(name) {
+    return "Hello, " + name + "!";
+}
+
+console.log(greet("Alice"));  // "Hello, Alice!"
+
+// Function expression
+const greet = function(name) {
+    return \`Hello, \${name}!\`;
+};
+
+// Arrow function (modern, concise)
+const greet = (name) => {
+    return \`Hello, \${name}!\`;
+};
+
+// Arrow function (short form for single expression)
+const greet = name => \`Hello, \${name}!\`;
+const add = (a, b) => a + b;`}</code></pre>
+
+  <h3>Parameters and Arguments</h3>
+  <pre><code>{`// Default parameters
+function greet(name = "World") {
+    return \`Hello, \${name}!\`;
+}
+greet();          // "Hello, World!"
+greet("Alice");   // "Hello, Alice!"
+
+// Rest parameters (gather remaining arguments)
+function sum(...numbers) {
+    return numbers.reduce((total, n) => total + n, 0);
+}
+sum(1, 2, 3, 4);  // 10
+
+// Destructuring parameters
+function createUser({ name, age, city = "Unknown" }) {
+    return \`\${name}, \${age}, from \${city}\`;
+}
+createUser({ name: "Alice", age: 30 });`}</code></pre>
+
+  <h3>Higher-Order Functions</h3>
+  <pre><code>{`// Functions can take functions as arguments
+function doTwice(fn) {
+    fn();
+    fn();
+}
+
+doTwice(() => console.log("Hello!"));
+
+// Functions can return functions
+function multiplier(factor) {
+    return (number) => number * factor;
+}
+
+const double = multiplier(2);
+const triple = multiplier(3);
+
+double(5);  // 10
+triple(5);  // 15`}</code></pre>
+
+  <h2 id="arrays">Arrays</h2>
+
+  <pre><code>{`// Creating arrays
+const numbers = [1, 2, 3, 4, 5];
+const mixed = [1, "two", true, null];
+const empty = [];
+
+// Accessing elements (0-indexed)
+numbers[0];      // 1
+numbers[2];      // 3
+numbers.length;  // 5
+
+// Modifying arrays
+numbers.push(6);      // Add to end: [1,2,3,4,5,6]
+numbers.pop();        // Remove from end: [1,2,3,4,5]
+numbers.unshift(0);   // Add to start: [0,1,2,3,4,5]
+numbers.shift();      // Remove from start: [1,2,3,4,5]
+numbers.splice(2, 1); // Remove 1 item at index 2`}</code></pre>
+
+  <h3>Essential Array Methods</h3>
+  <pre><code>{`const numbers = [1, 2, 3, 4, 5];
+
+// forEach - iterate (no return value)
+numbers.forEach(n => console.log(n));
+
+// map - transform each element
+const doubled = numbers.map(n => n * 2);
+// [2, 4, 6, 8, 10]
+
+// filter - keep elements that pass test
+const evens = numbers.filter(n => n % 2 === 0);
+// [2, 4]
+
+// find - get first matching element
+const found = numbers.find(n => n > 3);
+// 4
+
+// reduce - accumulate to single value
+const sum = numbers.reduce((total, n) => total + n, 0);
+// 15
+
+// some/every - test conditions
+numbers.some(n => n > 4);   // true (at least one)
+numbers.every(n => n > 0);  // true (all of them)
+
+// includes - check if exists
+numbers.includes(3);  // true
+
+// sort - sort in place
+const names = ["Charlie", "Alice", "Bob"];
+names.sort();  // ["Alice", "Bob", "Charlie"]
+
+// Chaining methods
+const result = numbers
+    .filter(n => n % 2 === 0)
+    .map(n => n * 10);
+// [20, 40]`}</code></pre>
+
+  <h3>Spread and Destructuring</h3>
+  <pre><code>{`// Spread operator (...)
+const arr1 = [1, 2, 3];
+const arr2 = [4, 5, 6];
+const combined = [...arr1, ...arr2];  // [1, 2, 3, 4, 5, 6]
+
+const copy = [...arr1];  // Create shallow copy
+
+// Destructuring
+const [first, second, ...rest] = [1, 2, 3, 4, 5];
+// first = 1, second = 2, rest = [3, 4, 5]
+
+const [a, , c] = [1, 2, 3];  // Skip elements
+// a = 1, c = 3`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="objects">Objects</h2>
+
+  <pre><code>{`// Creating objects
+const person = {
+    name: "Alice",
+    age: 30,
+    city: "New York",
+    hobbies: ["reading", "coding"],
+    greet() {
+        return \`Hi, I'm \${this.name}\`;
+    }
+};
+
+// Accessing properties
+person.name;           // "Alice"
+person["age"];         // 30
+person.greet();        // "Hi, I'm Alice"
+
+// Modifying properties
+person.age = 31;
+person.email = "alice@example.com";  // Add new property
+delete person.city;                   // Remove property
+
+// Check if property exists
+"name" in person;                    // true
+person.hasOwnProperty("name");       // true`}</code></pre>
+
+  <h3>Object Methods</h3>
+  <pre><code>{`const user = { name: "Alice", age: 30, city: "NYC" };
+
+// Get keys, values, entries
+Object.keys(user);     // ["name", "age", "city"]
+Object.values(user);   // ["Alice", 30, "NYC"]
+Object.entries(user);  // [["name","Alice"], ["age",30], ["city","NYC"]]
+
+// Spread and merge
+const defaults = { theme: "light", lang: "en" };
+const settings = { theme: "dark" };
+const merged = { ...defaults, ...settings };
+// { theme: "dark", lang: "en" }
+
+// Destructuring
+const { name, age } = user;
+// name = "Alice", age = 30
+
+const { name: userName, city = "Unknown" } = user;
+// userName = "Alice", city = "NYC"`}</code></pre>
+
+  <h2 id="dom">DOM Manipulation</h2>
+  <p>
+    The Document Object Model (DOM) represents your HTML as a tree of objects.
+    JavaScript can read and modify this tree to change what users see.
+  </p>
+
+  <h3>Selecting Elements</h3>
+  <pre><code>{`// By ID (returns one element)
+const header = document.getElementById("header");
+
+// By class (returns collection)
+const items = document.getElementsByClassName("item");
+
+// By tag (returns collection)
+const paragraphs = document.getElementsByTagName("p");
+
+// Modern selectors (recommended)
+const first = document.querySelector(".item");        // First match
+const all = document.querySelectorAll(".item");       // All matches
+const nested = document.querySelector("nav > ul > li");`}</code></pre>
+
+  <h3>Modifying Elements</h3>
+  <pre><code>{`const element = document.querySelector("#myDiv");
+
+// Content
+element.textContent = "New text";        // Text only
+element.innerHTML = "<strong>Bold</strong>";  // HTML (careful with XSS)
+
+// Attributes
+element.setAttribute("class", "active");
+element.getAttribute("id");
+element.removeAttribute("disabled");
+element.id = "newId";
+
+// Classes
+element.classList.add("active");
+element.classList.remove("hidden");
+element.classList.toggle("selected");
+element.classList.contains("active");    // true/false
+
+// Styles
+element.style.color = "red";
+element.style.backgroundColor = "blue";
+element.style.display = "none";`}</code></pre>
+
+  <h3>Creating Elements</h3>
+  <pre><code>{`// Create new element
+const newDiv = document.createElement("div");
+newDiv.textContent = "Hello!";
+newDiv.className = "message";
+
+// Add to page
+document.body.appendChild(newDiv);
+parentElement.insertBefore(newDiv, referenceElement);
+
+// Modern insertion methods
+parent.append(newDiv);           // Add to end
+parent.prepend(newDiv);          // Add to start
+element.before(newDiv);          // Before element
+element.after(newDiv);           // After element
+element.replaceWith(newDiv);     // Replace element
+
+// Remove element
+element.remove();`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="events">Events</h2>
+  <p>Events let your code respond to user actions like clicks, typing, and scrolling.</p>
+
+  <h3>Adding Event Listeners</h3>
+  <pre><code>{`const button = document.querySelector("#myButton");
+
+// addEventListener (recommended)
+button.addEventListener("click", function(event) {
+    console.log("Button clicked!");
+    console.log(event.target);  // The clicked element
+});
+
+// Arrow function
+button.addEventListener("click", (e) => {
+    console.log("Clicked!");
+});
+
+// Remove event listener
+function handleClick() {
+    console.log("Clicked!");
+}
+button.addEventListener("click", handleClick);
+button.removeEventListener("click", handleClick);`}</code></pre>
+
+  <h3>Common Events</h3>
+  <pre><code>{`// Mouse events
+element.addEventListener("click", handler);
+element.addEventListener("dblclick", handler);
+element.addEventListener("mouseenter", handler);
+element.addEventListener("mouseleave", handler);
+
+// Keyboard events
+document.addEventListener("keydown", (e) => {
+    console.log(e.key);  // "Enter", "Escape", "a", etc.
+});
+
+// Form events
+form.addEventListener("submit", (e) => {
+    e.preventDefault();  // Stop form from submitting
+    // Handle form data
+});
+
+input.addEventListener("input", (e) => {
+    console.log(e.target.value);  // As user types
+});
+
+input.addEventListener("change", handler);  // When value changes
+
+// Window events
+window.addEventListener("load", handler);    // Page loaded
+window.addEventListener("scroll", handler);  // User scrolls
+window.addEventListener("resize", handler);  // Window resized`}</code></pre>
+
+  <h3>Event Delegation</h3>
+  <pre><code>{`// Instead of adding listeners to many elements...
+// Add one listener to the parent
+
+document.querySelector("#todoList").addEventListener("click", (e) => {
+    if (e.target.classList.contains("delete-btn")) {
+        e.target.parentElement.remove();
+    }
+    if (e.target.classList.contains("toggle-btn")) {
+        e.target.parentElement.classList.toggle("completed");
+    }
+});`}</code></pre>
+
+  <h2 id="async">Asynchronous JavaScript</h2>
+  <p>
+    JavaScript is single-threaded but can handle async operations (network requests, timers)
+    without blocking. This is crucial for responsive web applications.
+  </p>
+
+  <h3>Callbacks</h3>
+  <pre><code>{`// setTimeout - run code after delay
+setTimeout(() => {
+    console.log("Runs after 2 seconds");
+}, 2000);
+
+// setInterval - run code repeatedly
+const intervalId = setInterval(() => {
+    console.log("Runs every second");
+}, 1000);
+
+clearInterval(intervalId);  // Stop interval`}</code></pre>
+
+  <h3>Promises</h3>
+  <pre><code>{`// Creating a promise
+const promise = new Promise((resolve, reject) => {
+    const success = true;
+    if (success) {
+        resolve("Data loaded!");
+    } else {
+        reject("Error loading data");
+    }
+});
+
+// Using a promise
+promise
+    .then(result => console.log(result))
+    .catch(error => console.error(error))
+    .finally(() => console.log("Done"));
+
+// Promise methods
+Promise.all([promise1, promise2])   // Wait for all
+Promise.race([promise1, promise2])  // First to complete
+Promise.any([promise1, promise2])   // First to succeed`}</code></pre>
+
+  <h3>Async/Await</h3>
+  <pre><code>{`// async function returns a Promise
+async function fetchUser(id) {
+    try {
+        const response = await fetch(\`/api/users/\${id}\`);
+        if (!response.ok) {
+            throw new Error("User not found");
+        }
+        const user = await response.json();
+        return user;
+    } catch (error) {
+        console.error("Error:", error.message);
+        throw error;
+    }
+}
+
+// Using async function
+async function displayUser() {
+    const user = await fetchUser(123);
+    console.log(user.name);
+}
+
+displayUser();`}</code></pre>
+
+  <h3>Fetch API</h3>
+  <pre><code>{`// GET request
+async function getUsers() {
+    const response = await fetch("/api/users");
+    const users = await response.json();
+    return users;
+}
+
+// POST request
+async function createUser(userData) {
+    const response = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(userData)
+    });
+    return response.json();
+}
+
+// With error handling
+async function fetchData(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(\`HTTP error! status: \${response.status}\`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Fetch failed:", error);
+        throw error;
+    }
+}`}</code></pre>
+
+  <h2>Next Steps</h2>
+  <ul>
+    <li><a href="/guides/react">React</a> - Build modern user interfaces</li>
+    <li><a href="/guides/nodejs">Node.js</a> - Run JavaScript on the server</li>
+    <li><a href="/guides/api-design">API Design</a> - Build and consume web APIs</li>
+    <li><a href="/resources/practice">Practice Projects</a> - Apply your skills</li>
+  </ul>
+
+</GuideLayout>

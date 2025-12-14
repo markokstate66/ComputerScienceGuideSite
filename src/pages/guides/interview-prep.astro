@@ -1,0 +1,491 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import AdUnit from '../../components/AdUnit.astro';
+
+const toc = [
+  { title: 'Overview', href: '#overview' },
+  { title: 'Resume & Application', href: '#resume' },
+  { title: 'Coding Interviews', href: '#coding' },
+  { title: 'System Design', href: '#system-design' },
+  { title: 'Behavioral Questions', href: '#behavioral' },
+  { title: 'Practice Strategy', href: '#practice' },
+  { title: 'During the Interview', href: '#during' },
+  { title: 'Resources', href: '#resources' }
+];
+---
+
+<GuideLayout
+  title="Technical Interview Preparation: Complete Guide"
+  description="Comprehensive guide to technical interview preparation. Cover coding challenges, system design, behavioral questions, and strategies for landing your dream job."
+  level="intermediate"
+  readTime="30 min read"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Technical interviews can be challenging, but with the right preparation strategy, you can
+    walk in confident and showcase your abilities. This guide covers everything from resume
+    optimization to acing the final rounds.
+  </p>
+
+  <h2 id="overview">The Interview Process</h2>
+  <p>Most tech companies follow a similar hiring process:</p>
+  <ol>
+    <li><strong>Application/Referral:</strong> Resume screening</li>
+    <li><strong>Recruiter Screen:</strong> 15-30 min call about background and role</li>
+    <li><strong>Technical Phone Screen:</strong> 45-60 min coding interview</li>
+    <li><strong>Onsite/Virtual Interviews:</strong> 4-6 hours of interviews
+      <ul>
+        <li>2-3 coding rounds</li>
+        <li>1 system design round (for senior roles)</li>
+        <li>1-2 behavioral rounds</li>
+      </ul>
+    </li>
+    <li><strong>Offer/Negotiation:</strong> Compensation discussion</li>
+  </ol>
+
+  <h2 id="resume">Resume & Application</h2>
+
+  <h3>Resume Best Practices</h3>
+  <ul>
+    <li><strong>One page:</strong> Unless you have 10+ years of experience</li>
+    <li><strong>Clear format:</strong> Easy to scan, consistent styling</li>
+    <li><strong>Action verbs:</strong> Led, Built, Improved, Implemented, Designed</li>
+    <li><strong>Quantify impact:</strong> Numbers make achievements concrete</li>
+    <li><strong>Relevant skills:</strong> Match job description keywords</li>
+    <li><strong>No typos:</strong> Have others proofread</li>
+  </ul>
+
+  <h3>Writing Strong Bullet Points</h3>
+  <pre><code>{`❌ Weak: "Worked on the search feature"
+
+✅ Strong: "Implemented full-text search using Elasticsearch,
+reducing query latency by 60% and improving user engagement by 25%"
+
+Formula: [Action Verb] + [What You Did] + [Technology/Method] + [Impact/Result]
+
+Examples:
+• Reduced API response time by 40% by implementing Redis caching layer
+• Built CI/CD pipeline using GitHub Actions, cutting deployment time from 2 hours to 15 minutes
+• Led migration of 500K users from legacy system to microservices architecture
+• Mentored 3 junior developers, resulting in 2 promotions within 6 months`}</code></pre>
+
+  <h3>Resume Sections</h3>
+  <ol>
+    <li><strong>Contact Info:</strong> Name, email, phone, LinkedIn, GitHub, portfolio</li>
+    <li><strong>Summary (optional):</strong> 2-3 sentences for experienced candidates</li>
+    <li><strong>Experience:</strong> Most recent first, 3-5 bullet points each</li>
+    <li><strong>Projects:</strong> Especially important for new grads</li>
+    <li><strong>Education:</strong> Degree, school, graduation year, relevant coursework</li>
+    <li><strong>Skills:</strong> Languages, frameworks, tools (avoid rating yourself)</li>
+  </ol>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="coding">Coding Interviews</h2>
+  <p>
+    Coding interviews test your problem-solving ability, coding skills, and how you
+    communicate your thought process.
+  </p>
+
+  <h3>Key Topics to Master</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Topic</th>
+        <th>What to Know</th>
+        <th>Common Problems</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Arrays/Strings</td>
+        <td>Traversal, two pointers, sliding window</td>
+        <td>Two Sum, Valid Anagram, Longest Substring</td>
+      </tr>
+      <tr>
+        <td>Hash Tables</td>
+        <td>O(1) lookup, counting, grouping</td>
+        <td>Group Anagrams, LRU Cache</td>
+      </tr>
+      <tr>
+        <td>Linked Lists</td>
+        <td>Traversal, reversal, fast/slow pointers</td>
+        <td>Reverse List, Detect Cycle, Merge Lists</td>
+      </tr>
+      <tr>
+        <td>Trees</td>
+        <td>BFS, DFS, traversals, BST operations</td>
+        <td>Max Depth, Validate BST, Level Order</td>
+      </tr>
+      <tr>
+        <td>Graphs</td>
+        <td>BFS, DFS, topological sort, shortest path</td>
+        <td>Number of Islands, Clone Graph</td>
+      </tr>
+      <tr>
+        <td>Dynamic Programming</td>
+        <td>Memoization, tabulation, state transitions</td>
+        <td>Climbing Stairs, Coin Change, LCS</td>
+      </tr>
+      <tr>
+        <td>Sorting/Searching</td>
+        <td>Binary search, merge sort, quick sort</td>
+        <td>Search Rotated Array, Merge Intervals</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Problem-Solving Framework</h3>
+  <pre><code>{`1. UNDERSTAND (2-3 minutes)
+   • Repeat the problem back
+   • Ask clarifying questions
+   • Confirm input/output format
+   • Discuss edge cases
+
+2. PLAN (3-5 minutes)
+   • Think out loud
+   • Consider multiple approaches
+   • Analyze time/space complexity
+   • Choose approach and explain why
+
+3. IMPLEMENT (15-20 minutes)
+   • Write clean, readable code
+   • Use meaningful variable names
+   • Comment if logic is complex
+   • Keep talking through your code
+
+4. TEST (3-5 minutes)
+   • Walk through with a simple example
+   • Test edge cases (empty, single element, duplicates)
+   • Fix bugs if found
+
+5. OPTIMIZE (if time permits)
+   • Discuss potential improvements
+   • Trade-offs between time and space`}</code></pre>
+
+  <h3>Example Problem Walkthrough</h3>
+  <pre><code>{`Problem: Given an array of integers, return indices of two numbers that add up to target.
+
+Step 1: UNDERSTAND
+"So I need to find two different numbers in the array that sum to the target,
+and return their indices. Can there be multiple valid pairs? Should I return
+the first one found? Can the array have duplicates?"
+
+Step 2: PLAN
+"Brute force would be O(n²) with nested loops. But I can use a hash map to
+store numbers I've seen, giving O(n) time and O(n) space."
+
+Step 3: IMPLEMENT`}</code></pre>
+
+  <pre><code>{`def two_sum(nums, target):
+    seen = {}  # value -> index
+
+    for i, num in enumerate(nums):
+        complement = target - num
+
+        if complement in seen:
+            return [seen[complement], i]
+
+        seen[num] = i
+
+    return []  # No solution found`}</code></pre>
+
+  <pre><code>{`Step 4: TEST
+"Let me trace through [2, 7, 11, 15] with target 9:
+- i=0: num=2, complement=7, not in seen, add 2:0
+- i=1: num=7, complement=2, 2 IS in seen at index 0
+- Return [0, 1] ✓"
+
+Step 5: OPTIMIZE
+"This is already O(n) time and O(n) space. We could sort and use two pointers
+for O(n log n) time and O(1) space if we didn't need indices."`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="system-design">System Design</h2>
+  <p>
+    System design interviews assess your ability to design large-scale systems.
+    They're typically asked for senior or mid-level positions.
+  </p>
+
+  <h3>System Design Framework</h3>
+  <pre><code>{`1. REQUIREMENTS (5 minutes)
+   Functional: What should the system do?
+   Non-functional: Scale, latency, availability, consistency
+
+2. ESTIMATIONS (5 minutes)
+   Users, requests/second, storage needs, bandwidth
+
+3. HIGH-LEVEL DESIGN (10 minutes)
+   Draw main components: clients, servers, databases, caches
+
+4. DETAILED DESIGN (15 minutes)
+   Dive deep into 2-3 components based on interviewer interest
+
+5. SCALING & TRADE-OFFS (10 minutes)
+   Identify bottlenecks, discuss solutions, trade-offs`}</code></pre>
+
+  <h3>Key Concepts</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Concept</th>
+        <th>What to Know</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Load Balancing</td>
+        <td>Round robin, least connections, consistent hashing</td>
+      </tr>
+      <tr>
+        <td>Caching</td>
+        <td>CDN, Redis/Memcached, cache invalidation strategies</td>
+      </tr>
+      <tr>
+        <td>Databases</td>
+        <td>SQL vs NoSQL, sharding, replication, indexing</td>
+      </tr>
+      <tr>
+        <td>Message Queues</td>
+        <td>Kafka, RabbitMQ, async processing</td>
+      </tr>
+      <tr>
+        <td>Microservices</td>
+        <td>Service boundaries, API design, communication patterns</td>
+      </tr>
+      <tr>
+        <td>CAP Theorem</td>
+        <td>Consistency, Availability, Partition tolerance trade-offs</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Common System Design Questions</h3>
+  <ul>
+    <li>Design a URL shortener (like bit.ly)</li>
+    <li>Design Twitter/Instagram feed</li>
+    <li>Design a chat application</li>
+    <li>Design a rate limiter</li>
+    <li>Design YouTube/Netflix</li>
+    <li>Design Uber/Lyft</li>
+    <li>Design a search autocomplete system</li>
+    <li>Design a distributed cache</li>
+  </ul>
+
+  <h2 id="behavioral">Behavioral Questions</h2>
+  <p>
+    Behavioral interviews assess soft skills, culture fit, and how you've handled
+    past situations. Use the STAR method to structure your answers.
+  </p>
+
+  <h3>The STAR Method</h3>
+  <pre><code>{`S - Situation: Set the context (brief)
+T - Task: What was your responsibility?
+A - Action: What specifically did YOU do?
+R - Result: What was the outcome? (quantify if possible)
+
+Example:
+Q: "Tell me about a time you had a conflict with a teammate."
+
+S: "On my last project, a senior developer and I disagreed about
+   whether to use GraphQL or REST for our new API."
+
+T: "As the tech lead, I needed to make a decision that the team
+   could align on while considering both technical and timeline constraints."
+
+A: "I organized a meeting where we both presented our cases with
+   concrete criteria: learning curve, team familiarity, and project
+   requirements. I created a decision matrix and we evaluated each
+   option objectively."
+
+R: "We chose REST due to team expertise and tighter deadline. The
+   senior dev appreciated the fair process, and we delivered on time.
+   We documented GraphQL as a future consideration."`}</code></pre>
+
+  <h3>Common Behavioral Questions</h3>
+  <ul>
+    <li>Tell me about yourself (have a 2-minute pitch ready)</li>
+    <li>Why do you want to work here?</li>
+    <li>Describe a challenging project you worked on</li>
+    <li>Tell me about a time you failed/made a mistake</li>
+    <li>How do you handle disagreements with teammates?</li>
+    <li>Describe a time you had to learn something quickly</li>
+    <li>Tell me about a time you went above and beyond</li>
+    <li>How do you prioritize when you have multiple deadlines?</li>
+    <li>Where do you see yourself in 5 years?</li>
+    <li>Do you have any questions for me? (always ask questions!)</li>
+  </ul>
+
+  <h3>Questions to Ask Interviewers</h3>
+  <pre><code>{`About the role:
+• What does a typical day look like?
+• What would success look like in the first 90 days?
+• What are the biggest challenges facing the team?
+
+About the team:
+• How is the team structured?
+• What's the code review process like?
+• How do you handle technical debt?
+
+About growth:
+• What learning opportunities are available?
+• How does the promotion process work?
+• Can you tell me about someone who's grown in this role?
+
+About culture:
+• How would you describe the engineering culture?
+• What do you enjoy most about working here?
+• How does the team celebrate wins?`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="practice">Practice Strategy</h2>
+
+  <h3>Study Plan (8-12 weeks)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Weeks</th>
+        <th>Focus Area</th>
+        <th>Goals</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1-2</td>
+        <td>Fundamentals</td>
+        <td>Review data structures, Big O, basic patterns</td>
+      </tr>
+      <tr>
+        <td>3-4</td>
+        <td>Arrays, Strings, Hash Tables</td>
+        <td>50+ problems, master common patterns</td>
+      </tr>
+      <tr>
+        <td>5-6</td>
+        <td>Trees, Graphs, Recursion</td>
+        <td>40+ problems, BFS/DFS fluency</td>
+      </tr>
+      <tr>
+        <td>7-8</td>
+        <td>Dynamic Programming</td>
+        <td>30+ problems, recognize DP patterns</td>
+      </tr>
+      <tr>
+        <td>9-10</td>
+        <td>System Design</td>
+        <td>Study 5-6 systems, practice explaining</td>
+      </tr>
+      <tr>
+        <td>11-12</td>
+        <td>Mock Interviews</td>
+        <td>2-3 mock interviews per week</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Daily Practice Tips</h3>
+  <ul>
+    <li><strong>Consistency beats intensity:</strong> 1-2 problems daily is better than cramming</li>
+    <li><strong>Time yourself:</strong> 20-25 minutes for medium problems</li>
+    <li><strong>Review solutions:</strong> Understand multiple approaches</li>
+    <li><strong>Explain out loud:</strong> Practice articulating your thought process</li>
+    <li><strong>Track progress:</strong> Keep a log of problems solved and patterns learned</li>
+    <li><strong>Revisit problems:</strong> Redo problems after a week to reinforce learning</li>
+  </ul>
+
+  <h3>When You're Stuck</h3>
+  <ol>
+    <li>Try for 20 minutes before looking at hints</li>
+    <li>Look at the hint, then try again</li>
+    <li>If still stuck after 10 more minutes, read the solution</li>
+    <li>Understand the solution completely</li>
+    <li>Implement it yourself without looking</li>
+    <li>Add the problem to your review list</li>
+  </ol>
+
+  <h2 id="during">During the Interview</h2>
+
+  <h3>Before the Interview</h3>
+  <ul>
+    <li>Test your setup (camera, microphone, IDE/whiteboard)</li>
+    <li>Have water nearby</li>
+    <li>Review the job description and company</li>
+    <li>Prepare your "tell me about yourself" response</li>
+    <li>Get a good night's sleep</li>
+  </ul>
+
+  <h3>During the Interview</h3>
+  <ul>
+    <li><strong>Think out loud:</strong> Interviewers can't read your mind</li>
+    <li><strong>Ask questions:</strong> Clarify requirements before coding</li>
+    <li><strong>Start simple:</strong> Get a working solution, then optimize</li>
+    <li><strong>Test your code:</strong> Walk through examples manually</li>
+    <li><strong>Stay calm:</strong> Getting stuck is normal, talk through it</li>
+    <li><strong>Be coachable:</strong> Listen to hints and adapt</li>
+  </ul>
+
+  <h3>What Interviewers Look For</h3>
+  <ol>
+    <li><strong>Problem solving:</strong> Can you break down complex problems?</li>
+    <li><strong>Coding ability:</strong> Can you write clean, correct code?</li>
+    <li><strong>Communication:</strong> Can you explain your thinking clearly?</li>
+    <li><strong>Coachability:</strong> Do you respond well to hints and feedback?</li>
+    <li><strong>Culture fit:</strong> Would you be enjoyable to work with?</li>
+  </ol>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="resources">Practice Resources</h2>
+
+  <h3>Coding Practice Platforms</h3>
+  <ul>
+    <li><strong>LeetCode:</strong> Most comprehensive, great for FAANG prep</li>
+    <li><strong>HackerRank:</strong> Good for beginners, company-specific tests</li>
+    <li><strong>CodeSignal:</strong> Used by many companies for assessments</li>
+    <li><strong>AlgoExpert:</strong> Curated problems with video explanations</li>
+    <li><strong>Exercism:</strong> Free, mentor-reviewed exercises</li>
+  </ul>
+
+  <h3>System Design Resources</h3>
+  <ul>
+    <li><strong>Designing Data-Intensive Applications</strong> (book by Martin Kleppmann)</li>
+    <li><strong>System Design Interview</strong> (book by Alex Xu)</li>
+    <li><strong>ByteByteGo</strong> (YouTube channel)</li>
+    <li><strong>Grokking the System Design Interview</strong> (course)</li>
+  </ul>
+
+  <h3>Mock Interview Platforms</h3>
+  <ul>
+    <li><strong>Pramp:</strong> Free peer-to-peer mock interviews</li>
+    <li><strong>Interviewing.io:</strong> Practice with engineers from top companies</li>
+    <li><strong>Exponent:</strong> Product and system design mocks</li>
+  </ul>
+
+  <h3>Curated Problem Lists</h3>
+  <ul>
+    <li><strong>Blind 75:</strong> 75 essential problems covering all patterns</li>
+    <li><strong>NeetCode 150:</strong> Expanded list with video solutions</li>
+    <li><strong>LeetCode Top Interview Questions:</strong> Company-specific lists</li>
+  </ul>
+
+  <h2>Final Tips</h2>
+  <ul>
+    <li><strong>Don't memorize solutions:</strong> Understand patterns and principles</li>
+    <li><strong>Quality over quantity:</strong> Deep understanding beats surface coverage</li>
+    <li><strong>Practice under pressure:</strong> Mock interviews are invaluable</li>
+    <li><strong>Take care of yourself:</strong> Sleep, exercise, and breaks matter</li>
+    <li><strong>Rejection is normal:</strong> Even great engineers fail interviews</li>
+    <li><strong>Keep learning:</strong> Every interview is a learning opportunity</li>
+  </ul>
+
+  <h2>Next Steps</h2>
+  <ul>
+    <li><a href="/guides/algorithms">Algorithms</a> - Review essential algorithm patterns</li>
+    <li><a href="/guides/data-structures">Data Structures</a> - Master fundamental data structures</li>
+    <li><a href="/resources/practice">Practice Problems</a> - Start solving problems daily</li>
+  </ul>
+
+</GuideLayout>

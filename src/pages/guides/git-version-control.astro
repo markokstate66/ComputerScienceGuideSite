@@ -1,0 +1,505 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import AdUnit from '../../components/AdUnit.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'Getting Started', href: '#getting-started' },
+  { title: 'Basic Commands', href: '#basic-commands' },
+  { title: 'Branching', href: '#branching' },
+  { title: 'Merging & Conflicts', href: '#merging' },
+  { title: 'Remote Repositories', href: '#remote' },
+  { title: 'Collaboration Workflows', href: '#workflows' },
+  { title: 'Best Practices', href: '#best-practices' }
+];
+---
+
+<GuideLayout
+  title="Git & Version Control: Complete Beginner's Guide"
+  description="Learn Git from scratch. Master version control, branching, merging, and collaboration workflows used by professional developers worldwide."
+  level="beginner"
+  readTime="25 min read"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Git is the most widely used version control system in the world. It tracks changes to your code,
+    enables collaboration with other developers, and provides a safety net for your projects.
+  </p>
+
+  <h2 id="introduction">What is Version Control?</h2>
+  <p>
+    Version control is a system that records changes to files over time. It allows you to:
+  </p>
+  <ul>
+    <li><strong>Track history:</strong> See who changed what and when</li>
+    <li><strong>Revert changes:</strong> Go back to any previous version</li>
+    <li><strong>Collaborate:</strong> Work with others without overwriting each other's work</li>
+    <li><strong>Branch:</strong> Experiment safely without affecting the main code</li>
+    <li><strong>Backup:</strong> Your code is stored in multiple places</li>
+  </ul>
+
+  <h3>Why Git?</h3>
+  <ul>
+    <li><strong>Distributed:</strong> Every developer has a full copy of the repository</li>
+    <li><strong>Fast:</strong> Most operations are local and instant</li>
+    <li><strong>Industry standard:</strong> Used by almost every tech company</li>
+    <li><strong>Free and open source:</strong> Works with GitHub, GitLab, Bitbucket, etc.</li>
+  </ul>
+
+  <h2 id="getting-started">Getting Started</h2>
+
+  <h3>Installing Git</h3>
+  <pre><code>{`# Windows: Download from git-scm.com or use:
+winget install Git.Git
+
+# macOS:
+brew install git
+
+# Linux (Debian/Ubuntu):
+sudo apt install git
+
+# Verify installation
+git --version`}</code></pre>
+
+  <h3>Initial Configuration</h3>
+  <pre><code>{`# Set your identity (required for commits)
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+
+# Set default branch name
+git config --global init.defaultBranch main
+
+# Enable colored output
+git config --global color.ui auto
+
+# View your configuration
+git config --list`}</code></pre>
+
+  <h3>Creating a Repository</h3>
+  <pre><code>{`# Create a new repository
+mkdir my-project
+cd my-project
+git init
+
+# Or clone an existing repository
+git clone https://github.com/username/repo.git
+git clone git@github.com:username/repo.git  # SSH`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="basic-commands">Basic Commands</h2>
+
+  <h3>The Git Workflow</h3>
+  <p>Git has three main areas:</p>
+  <ul>
+    <li><strong>Working Directory:</strong> Your actual files</li>
+    <li><strong>Staging Area:</strong> Files ready to be committed</li>
+    <li><strong>Repository:</strong> Committed history</li>
+  </ul>
+
+  <pre><code>{`Working Directory → Staging Area → Repository
+     (edit)           (git add)     (git commit)`}</code></pre>
+
+  <h3>Checking Status</h3>
+  <pre><code>{`# See the state of your working directory
+git status
+
+# Short status format
+git status -s`}</code></pre>
+
+  <h3>Staging Changes</h3>
+  <pre><code>{`# Stage a specific file
+git add filename.txt
+
+# Stage multiple files
+git add file1.txt file2.txt
+
+# Stage all changes in current directory
+git add .
+
+# Stage all changes everywhere
+git add -A
+
+# Interactive staging
+git add -p  # Choose which changes to stage`}</code></pre>
+
+  <h3>Committing Changes</h3>
+  <pre><code>{`# Commit with a message
+git commit -m "Add user login feature"
+
+# Stage and commit in one step (tracked files only)
+git commit -am "Fix navigation bug"
+
+# Commit with detailed message (opens editor)
+git commit`}</code></pre>
+
+  <h3>Viewing History</h3>
+  <pre><code>{`# View commit history
+git log
+
+# Compact one-line format
+git log --oneline
+
+# Show changes in each commit
+git log -p
+
+# Show last 5 commits
+git log -5
+
+# Visual branch graph
+git log --oneline --graph --all`}</code></pre>
+
+  <h3>Viewing Changes</h3>
+  <pre><code>{`# Changes not yet staged
+git diff
+
+# Changes staged for commit
+git diff --staged
+
+# Changes in a specific file
+git diff filename.txt
+
+# Compare two commits
+git diff abc123 def456`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="branching">Branching</h2>
+  <p>
+    Branches let you work on different features or fixes independently. The main branch (usually
+    called <code>main</code> or <code>master</code>) contains your stable code.
+  </p>
+
+  <h3>Branch Commands</h3>
+  <pre><code>{`# List all branches
+git branch
+
+# List remote branches
+git branch -r
+
+# List all branches (local and remote)
+git branch -a
+
+# Create a new branch
+git branch feature-login
+
+# Switch to a branch
+git checkout feature-login
+# Or (Git 2.23+)
+git switch feature-login
+
+# Create and switch in one command
+git checkout -b feature-login
+# Or
+git switch -c feature-login
+
+# Rename current branch
+git branch -m new-name
+
+# Delete a branch (must not be checked out)
+git branch -d feature-login
+
+# Force delete (unmerged branch)
+git branch -D feature-login`}</code></pre>
+
+  <h3>Common Branching Strategy</h3>
+  <pre><code>{`main          ●───●───●───●───●───●
+                    \\         /
+feature-login        ●───●───●
+
+# 1. Create feature branch
+git checkout -b feature-login
+
+# 2. Work on your feature (add, commit, repeat)
+git add .
+git commit -m "Add login form"
+git commit -m "Add validation"
+git commit -m "Add authentication logic"
+
+# 3. Merge back to main
+git checkout main
+git merge feature-login
+
+# 4. Delete feature branch
+git branch -d feature-login`}</code></pre>
+
+  <h2 id="merging">Merging & Conflicts</h2>
+
+  <h3>Merging Branches</h3>
+  <pre><code>{`# Merge feature branch into current branch
+git merge feature-login
+
+# Merge with a commit message
+git merge feature-login -m "Merge login feature"
+
+# Abort a merge in progress
+git merge --abort`}</code></pre>
+
+  <h3>Handling Merge Conflicts</h3>
+  <p>
+    Conflicts occur when the same lines were changed in both branches. Git marks these conflicts
+    in your files:
+  </p>
+  <pre><code>{`<<<<<<< HEAD
+Your changes on the current branch
+=======
+Changes from the branch being merged
+>>>>>>> feature-login`}</code></pre>
+
+  <p>To resolve conflicts:</p>
+  <ol>
+    <li>Open the conflicted file(s)</li>
+    <li>Find the conflict markers (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>)</li>
+    <li>Edit the file to keep the correct code (remove markers)</li>
+    <li>Stage the resolved file: <code>git add filename</code></li>
+    <li>Complete the merge: <code>git commit</code></li>
+  </ol>
+
+  <h3>Rebasing (Alternative to Merging)</h3>
+  <pre><code>{`# Rebase current branch onto main
+git rebase main
+
+# Interactive rebase (edit, squash, reorder commits)
+git rebase -i main
+
+# Abort a rebase
+git rebase --abort
+
+# Continue after resolving conflicts
+git rebase --continue`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="remote">Remote Repositories</h2>
+  <p>
+    Remote repositories (like GitHub, GitLab) store your code online, enabling backup and collaboration.
+  </p>
+
+  <h3>Managing Remotes</h3>
+  <pre><code>{`# View remotes
+git remote -v
+
+# Add a remote
+git remote add origin https://github.com/user/repo.git
+
+# Change remote URL
+git remote set-url origin https://github.com/user/new-repo.git
+
+# Remove a remote
+git remote remove origin`}</code></pre>
+
+  <h3>Fetching and Pulling</h3>
+  <pre><code>{`# Fetch changes (download but don't merge)
+git fetch origin
+
+# Pull changes (fetch + merge)
+git pull origin main
+
+# Pull with rebase instead of merge
+git pull --rebase origin main`}</code></pre>
+
+  <h3>Pushing Changes</h3>
+  <pre><code>{`# Push to remote
+git push origin main
+
+# Push and set upstream (first push of a branch)
+git push -u origin feature-login
+
+# After setting upstream, just use:
+git push
+
+# Force push (use with caution!)
+git push --force  # Overwrites remote history`}</code></pre>
+
+  <h2 id="workflows">Collaboration Workflows</h2>
+
+  <h3>Feature Branch Workflow</h3>
+  <pre><code>{`# 1. Update main branch
+git checkout main
+git pull origin main
+
+# 2. Create feature branch
+git checkout -b feature/add-search
+
+# 3. Work on feature
+git add .
+git commit -m "Implement search functionality"
+
+# 4. Push feature branch
+git push -u origin feature/add-search
+
+# 5. Create Pull Request on GitHub/GitLab
+
+# 6. After PR is merged, clean up
+git checkout main
+git pull origin main
+git branch -d feature/add-search`}</code></pre>
+
+  <h3>Fork and Pull Request Workflow</h3>
+  <pre><code>{`# 1. Fork repository on GitHub
+
+# 2. Clone your fork
+git clone https://github.com/YOUR-USER/repo.git
+
+# 3. Add upstream remote
+git remote add upstream https://github.com/ORIGINAL/repo.git
+
+# 4. Keep fork synced
+git fetch upstream
+git checkout main
+git merge upstream/main
+
+# 5. Create branch, make changes, push to your fork
+git checkout -b fix/typo
+git commit -am "Fix typo in readme"
+git push origin fix/typo
+
+# 6. Create Pull Request from your fork to original repo`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="best-practices">Best Practices</h2>
+
+  <h3>Write Good Commit Messages</h3>
+  <pre><code>{`# Good commit messages
+git commit -m "Add user authentication with JWT"
+git commit -m "Fix memory leak in image processor"
+git commit -m "Refactor database queries for performance"
+
+# Bad commit messages
+git commit -m "fix"
+git commit -m "updates"
+git commit -m "WIP"`}</code></pre>
+
+  <h3>Commit Message Format</h3>
+  <pre><code>{`# Short (50 chars or less) summary
+
+Add user authentication with JWT
+
+# Longer explanation if needed (wrap at 72 chars)
+# Explain what and why, not how
+
+Implement JWT-based authentication to replace session cookies.
+This improves security and enables stateless API design.
+
+- Add login/logout endpoints
+- Create JWT middleware
+- Update user model with password hashing`}</code></pre>
+
+  <h3>Useful Shortcuts</h3>
+  <pre><code>{`# Undo last commit (keep changes)
+git reset --soft HEAD~1
+
+# Undo last commit (discard changes)
+git reset --hard HEAD~1
+
+# Discard changes in working directory
+git checkout -- filename.txt
+# Or (Git 2.23+)
+git restore filename.txt
+
+# Unstage a file
+git reset HEAD filename.txt
+# Or
+git restore --staged filename.txt
+
+# Stash changes temporarily
+git stash
+git stash pop  # Restore stashed changes
+
+# View a file from another branch
+git show branch-name:path/to/file`}</code></pre>
+
+  <h3>Git Ignore</h3>
+  <p>Create a <code>.gitignore</code> file to exclude files from tracking:</p>
+  <pre><code>{`# .gitignore example
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/`}</code></pre>
+
+  <h3>Quick Reference</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Task</th>
+        <th>Command</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Initialize repo</td>
+        <td><code>git init</code></td>
+      </tr>
+      <tr>
+        <td>Clone repo</td>
+        <td><code>git clone url</code></td>
+      </tr>
+      <tr>
+        <td>Check status</td>
+        <td><code>git status</code></td>
+      </tr>
+      <tr>
+        <td>Stage changes</td>
+        <td><code>git add .</code></td>
+      </tr>
+      <tr>
+        <td>Commit</td>
+        <td><code>git commit -m "message"</code></td>
+      </tr>
+      <tr>
+        <td>View history</td>
+        <td><code>git log --oneline</code></td>
+      </tr>
+      <tr>
+        <td>Create branch</td>
+        <td><code>git checkout -b name</code></td>
+      </tr>
+      <tr>
+        <td>Switch branch</td>
+        <td><code>git checkout name</code></td>
+      </tr>
+      <tr>
+        <td>Merge branch</td>
+        <td><code>git merge name</code></td>
+      </tr>
+      <tr>
+        <td>Push changes</td>
+        <td><code>git push origin branch</code></td>
+      </tr>
+      <tr>
+        <td>Pull changes</td>
+        <td><code>git pull origin branch</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Next Steps</h2>
+  <ul>
+    <li><a href="/guides/html-css">HTML & CSS</a> - Build web pages to version control</li>
+    <li><a href="/guides/javascript">JavaScript</a> - Add interactivity to your projects</li>
+    <li><a href="/resources/tools">Developer Tools</a> - Explore Git GUIs and integrations</li>
+  </ul>
+
+</GuideLayout>

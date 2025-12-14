@@ -1,0 +1,569 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import AdUnit from '../../components/AdUnit.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'HTML Basics', href: '#html-basics' },
+  { title: 'HTML Elements', href: '#html-elements' },
+  { title: 'CSS Basics', href: '#css-basics' },
+  { title: 'CSS Selectors', href: '#selectors' },
+  { title: 'Box Model', href: '#box-model' },
+  { title: 'Flexbox', href: '#flexbox' },
+  { title: 'CSS Grid', href: '#css-grid' },
+  { title: 'Responsive Design', href: '#responsive' }
+];
+---
+
+<GuideLayout
+  title="HTML & CSS: Build Your First Web Pages"
+  description="Learn HTML and CSS from scratch. Master semantic markup, styling, layouts with Flexbox and Grid, and responsive design for modern websites."
+  level="beginner"
+  readTime="30 min read"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    HTML and CSS are the foundation of every website. HTML structures your content while CSS
+    makes it look beautiful. Together, they're the first skills every web developer learns.
+  </p>
+
+  <h2 id="introduction">The Building Blocks of the Web</h2>
+  <ul>
+    <li><strong>HTML (HyperText Markup Language):</strong> Defines the structure and content</li>
+    <li><strong>CSS (Cascading Style Sheets):</strong> Controls the visual presentation</li>
+    <li><strong>JavaScript:</strong> Adds interactivity (covered in a separate guide)</li>
+  </ul>
+
+  <h2 id="html-basics">HTML Basics</h2>
+
+  <h3>Basic HTML Document</h3>
+  <pre><code>{`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>Welcome to my website.</p>
+</body>
+</html>`}</code></pre>
+
+  <h3>Key Parts Explained</h3>
+  <ul>
+    <li><code>&lt;!DOCTYPE html&gt;</code> - Declares HTML5 document</li>
+    <li><code>&lt;html&gt;</code> - Root element, contains everything</li>
+    <li><code>&lt;head&gt;</code> - Metadata, title, links to CSS</li>
+    <li><code>&lt;body&gt;</code> - Visible content</li>
+    <li><code>lang="en"</code> - Page language (accessibility)</li>
+    <li><code>charset="UTF-8"</code> - Character encoding</li>
+    <li><code>viewport</code> - Enables responsive design</li>
+  </ul>
+
+  <h3>HTML Syntax</h3>
+  <pre><code>{`<!-- This is a comment -->
+
+<!-- Most elements have opening and closing tags -->
+<tagname>content</tagname>
+
+<!-- Self-closing elements (no content) -->
+<img src="photo.jpg" alt="Description">
+<br>
+<hr>
+<input type="text">
+
+<!-- Elements can have attributes -->
+<a href="https://example.com" target="_blank">Link Text</a>
+
+<!-- Attributes provide additional information -->
+<img src="photo.jpg" alt="A sunset" width="300" height="200">`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="html-elements">Essential HTML Elements</h2>
+
+  <h3>Text Content</h3>
+  <pre><code>{`<!-- Headings (h1 = most important, h6 = least) -->
+<h1>Main Title</h1>
+<h2>Section Title</h2>
+<h3>Subsection</h3>
+
+<!-- Paragraphs -->
+<p>This is a paragraph of text.</p>
+
+<!-- Emphasis -->
+<strong>Bold/important text</strong>
+<em>Italic/emphasized text</em>
+
+<!-- Line break and horizontal rule -->
+<br>
+<hr>`}</code></pre>
+
+  <h3>Links and Images</h3>
+  <pre><code>{`<!-- Links -->
+<a href="https://example.com">External Link</a>
+<a href="/about">Internal Link</a>
+<a href="#section-id">Anchor Link</a>
+<a href="mailto:email@example.com">Email Link</a>
+
+<!-- Images -->
+<img src="photo.jpg" alt="Description of image">
+<img src="logo.png" alt="Company Logo" width="200">`}</code></pre>
+
+  <h3>Lists</h3>
+  <pre><code>{`<!-- Unordered list (bullets) -->
+<ul>
+    <li>First item</li>
+    <li>Second item</li>
+    <li>Third item</li>
+</ul>
+
+<!-- Ordered list (numbers) -->
+<ol>
+    <li>Step one</li>
+    <li>Step two</li>
+    <li>Step three</li>
+</ol>
+
+<!-- Description list -->
+<dl>
+    <dt>HTML</dt>
+    <dd>HyperText Markup Language</dd>
+    <dt>CSS</dt>
+    <dd>Cascading Style Sheets</dd>
+</dl>`}</code></pre>
+
+  <h3>Semantic Structure</h3>
+  <pre><code>{`<header>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+    </nav>
+</header>
+
+<main>
+    <article>
+        <h1>Article Title</h1>
+        <p>Article content...</p>
+    </article>
+
+    <aside>
+        <h2>Related Links</h2>
+    </aside>
+</main>
+
+<footer>
+    <p>&copy; 2024 My Website</p>
+</footer>`}</code></pre>
+
+  <h3>Forms</h3>
+  <pre><code>{`<form action="/submit" method="POST">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="message">Message:</label>
+    <textarea id="message" name="message" rows="4"></textarea>
+
+    <label>
+        <input type="checkbox" name="subscribe">
+        Subscribe to newsletter
+    </label>
+
+    <button type="submit">Send</button>
+</form>`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="css-basics">CSS Basics</h2>
+
+  <h3>Adding CSS to HTML</h3>
+  <pre><code>{`<!-- Method 1: External stylesheet (recommended) -->
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<!-- Method 2: Internal styles -->
+<head>
+    <style>
+        p { color: blue; }
+    </style>
+</head>
+
+<!-- Method 3: Inline styles (avoid when possible) -->
+<p style="color: blue;">Blue text</p>`}</code></pre>
+
+  <h3>CSS Syntax</h3>
+  <pre><code>{`/* CSS Rule Structure */
+selector {
+    property: value;
+    another-property: value;
+}
+
+/* Example */
+h1 {
+    color: navy;
+    font-size: 32px;
+    text-align: center;
+}
+
+p {
+    color: #333333;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}`}</code></pre>
+
+  <h3>Common Properties</h3>
+  <pre><code>{`/* Text */
+color: #333;
+font-family: Arial, sans-serif;
+font-size: 16px;
+font-weight: bold;
+text-align: center;
+text-decoration: underline;
+line-height: 1.5;
+
+/* Background */
+background-color: #f0f0f0;
+background-image: url('bg.jpg');
+background-size: cover;
+
+/* Dimensions */
+width: 100%;
+max-width: 800px;
+height: 200px;
+min-height: 100vh;
+
+/* Spacing */
+margin: 20px;           /* all sides */
+margin: 10px 20px;      /* vertical horizontal */
+margin: 10px 20px 30px 40px;  /* top right bottom left */
+padding: 20px;
+
+/* Border */
+border: 1px solid #ccc;
+border-radius: 8px;`}</code></pre>
+
+  <h2 id="selectors">CSS Selectors</h2>
+
+  <pre><code>{`/* Element selector */
+p { color: black; }
+
+/* Class selector (reusable) */
+.highlight { background: yellow; }
+<p class="highlight">Highlighted text</p>
+
+/* ID selector (unique) */
+#header { height: 80px; }
+<div id="header">...</div>
+
+/* Descendant selector */
+article p { font-size: 18px; }
+
+/* Child selector (direct children only) */
+ul > li { list-style: square; }
+
+/* Multiple selectors */
+h1, h2, h3 { font-family: Georgia; }
+
+/* Pseudo-classes */
+a:hover { color: red; }
+a:visited { color: purple; }
+li:first-child { font-weight: bold; }
+li:nth-child(odd) { background: #f5f5f5; }
+
+/* Pseudo-elements */
+p::first-line { font-weight: bold; }
+p::before { content: "→ "; }`}</code></pre>
+
+  <h3>Selector Specificity</h3>
+  <p>When rules conflict, more specific selectors win:</p>
+  <ol>
+    <li>Inline styles (most specific)</li>
+    <li>ID selectors (#header)</li>
+    <li>Class selectors (.highlight)</li>
+    <li>Element selectors (p, div)</li>
+  </ol>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="box-model">The Box Model</h2>
+  <p>Every element is a rectangular box with:</p>
+  <ul>
+    <li><strong>Content:</strong> The actual content (text, image)</li>
+    <li><strong>Padding:</strong> Space inside the border</li>
+    <li><strong>Border:</strong> The edge around padding</li>
+    <li><strong>Margin:</strong> Space outside the border</li>
+  </ul>
+
+  <pre><code>{`/* Default box model: width = content only */
+.box {
+    width: 200px;        /* content width */
+    padding: 20px;       /* adds to total width */
+    border: 5px solid;   /* adds to total width */
+    /* Total width = 200 + 40 + 10 = 250px */
+}
+
+/* Better: border-box includes padding and border */
+.box {
+    box-sizing: border-box;
+    width: 200px;        /* total width */
+    padding: 20px;
+    border: 5px solid;
+    /* Total width = 200px */
+}
+
+/* Apply border-box to everything (recommended) */
+*, *::before, *::after {
+    box-sizing: border-box;
+}`}</code></pre>
+
+  <h2 id="flexbox">Flexbox Layout</h2>
+  <p>
+    Flexbox makes it easy to align and distribute space among items in a container.
+    It's perfect for navigation bars, card layouts, and centering content.
+  </p>
+
+  <pre><code>{`/* Container (parent) */
+.flex-container {
+    display: flex;
+
+    /* Direction */
+    flex-direction: row;          /* default: horizontal */
+    flex-direction: column;       /* vertical stack */
+
+    /* Main axis alignment */
+    justify-content: flex-start;  /* default: start */
+    justify-content: center;      /* center items */
+    justify-content: space-between; /* spread out */
+    justify-content: space-around;  /* equal space around */
+
+    /* Cross axis alignment */
+    align-items: stretch;         /* default: fill height */
+    align-items: center;          /* center vertically */
+    align-items: flex-start;      /* top */
+    align-items: flex-end;        /* bottom */
+
+    /* Wrapping */
+    flex-wrap: wrap;              /* allow items to wrap */
+    gap: 20px;                    /* space between items */
+}`}</code></pre>
+
+  <pre><code>{`/* Items (children) */
+.flex-item {
+    flex-grow: 1;    /* grow to fill space */
+    flex-shrink: 0;  /* don't shrink */
+    flex-basis: 200px; /* starting size */
+
+    /* Shorthand */
+    flex: 1;         /* grow equally */
+    flex: 0 0 200px; /* fixed 200px width */
+}`}</code></pre>
+
+  <h3>Common Flexbox Patterns</h3>
+  <pre><code>{`/* Center anything */
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Navigation bar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+/* Card grid */
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.card {
+    flex: 1 1 300px; /* grow, shrink, min 300px */
+}`}</code></pre>
+
+  <AdUnit type="in-article" />
+
+  <h2 id="css-grid">CSS Grid Layout</h2>
+  <p>
+    CSS Grid is powerful for two-dimensional layouts with rows and columns.
+    It's ideal for page layouts and complex component structures.
+  </p>
+
+  <pre><code>{`/* Basic grid */
+.grid-container {
+    display: grid;
+    grid-template-columns: 200px 1fr 200px; /* 3 columns */
+    grid-template-rows: auto 1fr auto;       /* 3 rows */
+    gap: 20px;
+}
+
+/* Flexible columns */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);   /* 3 equal columns */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Named areas */
+.page-layout {
+    display: grid;
+    grid-template-areas:
+        "header header header"
+        "sidebar main aside"
+        "footer footer footer";
+    grid-template-columns: 200px 1fr 200px;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+}
+
+.header { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.main { grid-area: main; }
+.aside { grid-area: aside; }
+.footer { grid-area: footer; }`}</code></pre>
+
+  <h3>Grid vs Flexbox</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Use Case</th>
+        <th>Choose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Single row/column of items</td>
+        <td>Flexbox</td>
+      </tr>
+      <tr>
+        <td>Two-dimensional layout</td>
+        <td>Grid</td>
+      </tr>
+      <tr>
+        <td>Content-first (size based on content)</td>
+        <td>Flexbox</td>
+      </tr>
+      <tr>
+        <td>Layout-first (fit content to layout)</td>
+        <td>Grid</td>
+      </tr>
+      <tr>
+        <td>Navigation bars, button groups</td>
+        <td>Flexbox</td>
+      </tr>
+      <tr>
+        <td>Page layouts, card grids</td>
+        <td>Grid</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="responsive">Responsive Design</h2>
+  <p>
+    Responsive design ensures your website looks good on all screen sizes,
+    from mobile phones to large desktop monitors.
+  </p>
+
+  <h3>Media Queries</h3>
+  <pre><code>{`/* Base styles (mobile-first) */
+.container {
+    padding: 10px;
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+    .container {
+        padding: 20px;
+        max-width: 750px;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1000px;
+    }
+}
+
+/* Large desktop */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}`}</code></pre>
+
+  <h3>Responsive Typography</h3>
+  <pre><code>{`/* Fluid typography */
+html {
+    font-size: 16px;
+}
+
+h1 {
+    font-size: 1.75rem;  /* 28px */
+}
+
+@media (min-width: 768px) {
+    h1 {
+        font-size: 2.5rem;  /* 40px */
+    }
+}
+
+/* Modern approach: clamp() */
+h1 {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    /* min: 28px, preferred: 4% of viewport, max: 48px */
+}`}</code></pre>
+
+  <h3>Responsive Images</h3>
+  <pre><code>{`/* Make images responsive */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Background image */
+.hero {
+    background-image: url('hero-mobile.jpg');
+    background-size: cover;
+}
+
+@media (min-width: 768px) {
+    .hero {
+        background-image: url('hero-desktop.jpg');
+    }
+}`}</code></pre>
+
+  <h3>Responsive Navigation</h3>
+  <pre><code>{`/* Mobile: vertical stack */
+.nav {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Desktop: horizontal */
+@media (min-width: 768px) {
+    .nav {
+        flex-direction: row;
+        gap: 20px;
+    }
+}`}</code></pre>
+
+  <h2>Next Steps</h2>
+  <ul>
+    <li><a href="/guides/javascript">JavaScript</a> - Add interactivity to your pages</li>
+    <li><a href="/guides/git-version-control">Git & Version Control</a> - Track your code changes</li>
+    <li><a href="/resources/practice">Practice Projects</a> - Build real websites</li>
+  </ul>
+
+</GuideLayout>
