@@ -1,6 +1,5 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import AdUnit from '../components/AdUnit.astro';
 
 interface Props {
   title: string;
@@ -92,8 +91,6 @@ const breadcrumbs = pathParts.map((part, i) => ({
         </div>
       </header>
 
-      <AdUnit type="horizontal" />
-
       <div class="article-layout">
         <aside class="article-sidebar">
           {toc.length > 0 && (
@@ -106,15 +103,12 @@ const breadcrumbs = pathParts.map((part, i) => ({
               </ul>
             </nav>
           )}
-          <AdUnit type="sidebar" />
         </aside>
 
         <div class="article-content content">
           <slot />
         </div>
       </div>
-
-      <AdUnit type="in-article" />
     </div>
   </article>
 
