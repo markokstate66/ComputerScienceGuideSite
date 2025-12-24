@@ -26,6 +26,12 @@ const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content={Astro.generator}>
 
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="W1fRrbtzjKXN6cAPGyiSBlyKfNfyY23qQgSy-q4-vMg">
+
+  <!-- Bing Webmaster Tools Verification -->
+  <meta name="msvalidate.01" content="E4792860CAB72733FACE91C7EE52BB14">
+
   <!-- Primary Meta Tags -->
   <title>{fullTitle}</title>
   <meta name="title" content={fullTitle}>
@@ -60,6 +66,15 @@ const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6676281664229738" crossorigin="anonymous"></script>
+
+  <!-- Google Analytics 4 (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-08FYJQ54RN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-08FYJQ54RN');
+  </script>
 
   <!-- Azure Application Insights -->
   <script>
@@ -148,7 +163,20 @@ const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
     })();
   </script>
 
-  <!-- Structured Data -->
+  <!-- Structured Data: Organization -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Computer Science Guide",
+      "url": "https://www.computerscienceguide.com",
+      "logo": "https://www.computerscienceguide.com/logo.png",
+      "description": "Free comprehensive guides to learn computer science, programming, and software development",
+      "sameAs": []
+    }
+  </script>
+
+  <!-- Structured Data: WebSite with SearchAction -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -156,6 +184,11 @@ const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
       "name": "Computer Science Guide",
       "url": "https://www.computerscienceguide.com",
       "description": "Free comprehensive guides to learn computer science, programming, and software development",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Computer Science Guide",
+        "url": "https://www.computerscienceguide.com"
+      },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://www.computerscienceguide.com/search?q={search_term_string}",

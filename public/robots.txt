@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://computerscienceguide.com/sitemap-index.xml
+Sitemap: https://www.computerscienceguide.com/sitemap-index.xml
 
 # Crawl-delay for polite crawlers
 Crawl-delay: 1
