@@ -60,108 +60,10 @@ const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
-  <!-- Preconnect to Google Ads -->
+  <!-- Preconnect to third-party domains (improves LCP) -->
+  <link rel="preconnect" href="https://www.googletagmanager.com">
   <link rel="preconnect" href="https://pagead2.googlesyndication.com">
-  <link rel="preconnect" href="https://www.googletagservices.com">
-
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6676281664229738" crossorigin="anonymous"></script>
-
-  <!-- Google Analytics 4 (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-08FYJQ54RN"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-08FYJQ54RN');
-  </script>
-
-  <!-- Azure Application Insights -->
-  <script>
-    var defined,connectionString="InstrumentationKey=56e3930d-2200-4571-82b1-71ca51404713;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/";
-    !(function(e,n,t,i,o,r,s,a,c,l,d,u,p){
-      function h(e,n){return typeof e===n}function f(e){var n=document.createElement("script");n.src=e,n.async=!0,n.onload=function(){},document.head.appendChild(n)}
-      e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].v="1.0.0",e[o].r=r,
-      e[o]("init",{connectionString:connectionString,autoTrackPageVisitTime:!0,autoExceptionInstrumented:!0}),
-      e[o]("trackPageView"),
-      f("https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js")
-    })(window,document,0,0,"appInsights",1);
-  </script>
-
-  <!-- Custom Analytics: Scroll Depth, Engagement, Clicks -->
-  <script>
-    (function() {
-      // Track scroll depth
-      var scrollMarks = [25, 50, 75, 90, 100];
-      var scrollTracked = {};
-
-      function getScrollPercent() {
-        var h = document.documentElement;
-        var b = document.body;
-        var st = 'scrollTop';
-        var sh = 'scrollHeight';
-        return Math.round((h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100);
-      }
-
-      window.addEventListener('scroll', function() {
-        var percent = getScrollPercent();
-        scrollMarks.forEach(function(mark) {
-          if (percent >= mark && !scrollTracked[mark]) {
-            scrollTracked[mark] = true;
-            if (window.appInsights) {
-              appInsights('trackEvent', {name: 'ScrollDepth', properties: {depth: mark + '%', page: location.pathname}});
-            }
-          }
-        });
-      }, {passive: true});
-
-      // Track time on page
-      var startTime = Date.now();
-      window.addEventListener('beforeunload', function() {
-        var timeOnPage = Math.round((Date.now() - startTime) / 1000);
-        if (window.appInsights) {
-          appInsights('trackEvent', {name: 'TimeOnPage', properties: {seconds: timeOnPage, page: location.pathname}});
-        }
-      });
-
-      // Track outbound link clicks
-      document.addEventListener('click', function(e) {
-        var link = e.target.closest('a');
-        if (link && link.hostname !== location.hostname) {
-          if (window.appInsights) {
-            appInsights('trackEvent', {name: 'OutboundClick', properties: {url: link.href, page: location.pathname}});
-          }
-        }
-      });
-
-      // Track internal navigation clicks
-      document.addEventListener('click', function(e) {
-        var link = e.target.closest('a');
-        if (link && link.hostname === location.hostname && link.pathname !== location.pathname) {
-          if (window.appInsights) {
-            appInsights('trackEvent', {name: 'InternalNavigation', properties: {to: link.pathname, from: location.pathname}});
-          }
-        }
-      });
-
-      // Track guide section views (for guide pages)
-      if (location.pathname.startsWith('/guides/') && location.pathname !== '/guides/') {
-        var observer = new IntersectionObserver(function(entries) {
-          entries.forEach(function(entry) {
-            if (entry.isIntersecting && entry.target.id) {
-              if (window.appInsights) {
-                appInsights('trackEvent', {name: 'SectionView', properties: {section: entry.target.id, guide: location.pathname}});
-              }
-            }
-          });
-        }, {threshold: 0.5});
-
-        document.querySelectorAll('h2[id]').forEach(function(h2) {
-          observer.observe(h2);
-        });
-      }
-    })();
-  </script>
+  <link rel="dns-prefetch" href="https://js.monitor.azure.com">
 
   <!-- Structured Data: Organization -->
   <script type="application/ld+json">
@@ -263,5 +165,120 @@ const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
   <style is:global>
     @import '../styles/global.css';
   </style>
+
+  <!-- Deferred Third-Party Scripts (loaded after page content for better LCP/FCP) -->
+  <script>
+    // Load non-critical scripts after page is interactive
+    function loadDeferredScripts() {
+      // Google Analytics 4
+      var gaScript = document.createElement('script');
+      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-08FYJQ54RN';
+      gaScript.async = true;
+      document.head.appendChild(gaScript);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-08FYJQ54RN');
+
+      // Google AdSense (loaded after analytics)
+      setTimeout(function() {
+        var adsScript = document.createElement('script');
+        adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6676281664229738';
+        adsScript.async = true;
+        adsScript.crossOrigin = 'anonymous';
+        document.head.appendChild(adsScript);
+      }, 100);
+
+      // Azure Application Insights
+      var connectionString = "InstrumentationKey=56e3930d-2200-4571-82b1-71ca51404713;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/";
+      window.appInsights = window.appInsights || function(){(window.appInsights.q=window.appInsights.q||[]).push(arguments)};
+      window.appInsights.v = "1.0.0";
+      window.appInsights("init", {connectionString: connectionString, autoTrackPageVisitTime: true, autoExceptionInstrumented: true});
+      window.appInsights("trackPageView");
+
+      var aiScript = document.createElement('script');
+      aiScript.src = 'https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js';
+      aiScript.async = true;
+      document.head.appendChild(aiScript);
+    }
+
+    // Use requestIdleCallback for best performance, fallback to load event
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadDeferredScripts, {timeout: 2000});
+    } else {
+      window.addEventListener('load', loadDeferredScripts);
+    }
+  </script>
+
+  <!-- Custom Analytics (runs after Azure Insights loads) -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        // Track scroll depth
+        var scrollMarks = [25, 50, 75, 90, 100];
+        var scrollTracked = {};
+
+        function getScrollPercent() {
+          var h = document.documentElement;
+          var b = document.body;
+          return Math.round((h.scrollTop || b.scrollTop) / ((h.scrollHeight || b.scrollHeight) - h.clientHeight) * 100);
+        }
+
+        window.addEventListener('scroll', function() {
+          var percent = getScrollPercent();
+          scrollMarks.forEach(function(mark) {
+            if (percent >= mark && !scrollTracked[mark]) {
+              scrollTracked[mark] = true;
+              if (window.appInsights) {
+                appInsights('trackEvent', {name: 'ScrollDepth', properties: {depth: mark + '%', page: location.pathname}});
+              }
+            }
+          });
+        }, {passive: true});
+
+        // Track time on page
+        var startTime = Date.now();
+        window.addEventListener('beforeunload', function() {
+          var timeOnPage = Math.round((Date.now() - startTime) / 1000);
+          if (window.appInsights) {
+            appInsights('trackEvent', {name: 'TimeOnPage', properties: {seconds: timeOnPage, page: location.pathname}});
+          }
+        });
+
+        // Track outbound link clicks
+        document.addEventListener('click', function(e) {
+          var link = e.target.closest('a');
+          if (link && link.hostname !== location.hostname && window.appInsights) {
+            appInsights('trackEvent', {name: 'OutboundClick', properties: {url: link.href, page: location.pathname}});
+          }
+        });
+
+        // Track internal navigation clicks
+        document.addEventListener('click', function(e) {
+          var link = e.target.closest('a');
+          if (link && link.hostname === location.hostname && link.pathname !== location.pathname && window.appInsights) {
+            appInsights('trackEvent', {name: 'InternalNavigation', properties: {to: link.pathname, from: location.pathname}});
+          }
+        });
+
+        // Track guide section views
+        if (location.pathname.startsWith('/guides/') && location.pathname !== '/guides/') {
+          var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting && entry.target.id && window.appInsights) {
+                appInsights('trackEvent', {name: 'SectionView', properties: {section: entry.target.id, guide: location.pathname}});
+              }
+            });
+          }, {threshold: 0.5});
+
+          document.querySelectorAll('h2[id]').forEach(function(h2) {
+            observer.observe(h2);
+          });
+        }
+      }, 500); // Small delay to ensure Azure Insights is loaded
+    });
+  </script>
 </body>
 </html>
