@@ -1,0 +1,9 @@
+{
+  "name": "computerscienceguide-api",
+  "version": "1.0.0",
+  "description": "API functions for Computer Science Guide",
+  "main": "contact/index.js",
+  "dependencies": {
+    "@azure/communication-email": "^1.0.0"
+  }
+}

@@ -11,96 +11,118 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="content">
         <h1>Contact Us</h1>
         <p class="intro">
-          Have a question, suggestion, or feedback? We'd love to hear from you!
-          Choose the best way to reach us below.
+          Have a question, suggestion, or feedback? Fill out the form below and we'll get back to you
+          within 24-48 hours.
         </p>
 
-        <div class="contact-grid">
-          <div class="contact-card">
-            <div class="contact-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-            </div>
-            <h2>General Inquiries</h2>
-            <p>Questions about our guides, suggestions for new content, or general feedback.</p>
-            <a href="mailto:hello@computerscienceguide.com" class="contact-link">
-              hello@computerscienceguide.com
-            </a>
+        <div class="contact-layout">
+          <div class="form-section">
+            <form id="contact-form" class="contact-form">
+              <div class="form-group">
+                <label for="name">Full Name <span class="required">*</span></label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  placeholder="Your name"
+                  autocomplete="name"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  placeholder="you@example.com"
+                  autocomplete="email"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="topic">Topic <span class="required">*</span></label>
+                <select id="topic" name="topic" required>
+                  <option value="">Select a topic...</option>
+                  <option value="General Question">General Question</option>
+                  <option value="Content Suggestion">Content Suggestion</option>
+                  <option value="Bug Report">Bug Report / Technical Issue</option>
+                  <option value="Feedback">Feedback / Suggestions</option>
+                  <option value="Partnership">Partnership Opportunity</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="message">Your Message <span class="required">*</span></label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="6"
+                  required
+                  placeholder="How can we help you?"
+                ></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                  <span class="btn-text">Send Message</span>
+                  <span class="btn-loading" style="display: none;">Sending...</span>
+                </button>
+              </div>
+
+              <div id="form-status" class="form-status" style="display: none;"></div>
+
+              <p class="privacy-note">
+                By submitting this form, you agree to our <a href="/privacy">Privacy Policy</a>.
+                We'll only use your information to respond to your inquiry.
+              </p>
+            </form>
           </div>
 
-          <div class="contact-card">
-            <div class="contact-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
+          <div class="info-section">
+            <div class="info-card">
+              <div class="info-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <h3>Response Time</h3>
+              <p>We typically respond within 24-48 hours during business days.</p>
             </div>
-            <h2>Privacy Concerns</h2>
-            <p>Questions about your data, privacy policy, or requests to access or delete your information.</p>
-            <a href="mailto:privacy@computerscienceguide.com" class="contact-link">
-              privacy@computerscienceguide.com
-            </a>
-          </div>
 
-          <div class="contact-card">
-            <div class="contact-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
+            <div class="info-card">
+              <div class="info-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <h3>Direct Email</h3>
+              <p>Prefer email? Reach us at <a href="mailto:hello@computerscienceguide.com">hello@computerscienceguide.com</a></p>
             </div>
-            <h2>Technical Issues</h2>
-            <p>Report bugs, broken links, or technical problems with the website.</p>
-            <a href="mailto:support@computerscienceguide.com" class="contact-link">
-              support@computerscienceguide.com
-            </a>
+
+            <div class="info-card">
+              <div class="info-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </div>
+              <h3>Common Topics</h3>
+              <ul>
+                <li>Content suggestions</li>
+                <li>Technical questions</li>
+                <li>Bug reports</li>
+                <li>Partnership inquiries</li>
+              </ul>
+            </div>
           </div>
         </div>
-
-        <h2>Response Time</h2>
-        <p>
-          We typically respond to all inquiries within <strong>1-2 business days</strong>.
-          During busy periods, it may take up to 5 business days. Thank you for your patience!
-        </p>
-
-        <h2>Content Suggestions</h2>
-        <p>
-          We're always looking to improve and expand our guides. If you have suggestions for:
-        </p>
-        <ul>
-          <li>New topics you'd like us to cover</li>
-          <li>Improvements to existing guides</li>
-          <li>Corrections or updates to outdated information</li>
-          <li>Resources you think we should include</li>
-        </ul>
-        <p>
-          Please don't hesitate to reach out! Your feedback helps us create better content for everyone.
-        </p>
-
-        <h2>Connect With Us</h2>
-        <p>
-          Follow us for updates on new guides and computer science tips:
-        </p>
-        <div class="social-note">
-          <p>
-            <em>Social media profiles coming soon! For now, the best way to stay updated is to
-            bookmark our site and check back regularly for new content.</em>
-          </p>
-        </div>
-
-        <h2>Frequently Asked Questions</h2>
-        <p>
-          Before reaching out, you might find your answer in our guides:
-        </p>
-        <ul>
-          <li><a href="/guides">Browse all guides</a></li>
-          <li><a href="/roadmap">View the learning roadmap</a></li>
-          <li><a href="/resources">Check our curated resources</a></li>
-          <li><a href="/about">Learn more about us</a></li>
-        </ul>
       </div>
     </div>
   </article>
@@ -112,56 +134,220 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       margin-bottom: 2rem;
     }
 
-    .contact-grid {
+    .contact-layout {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin: 2rem 0;
+      grid-template-columns: 1fr;
+      gap: 2rem;
     }
 
-    .contact-card {
+    @media (min-width: 768px) {
+      .contact-layout {
+        grid-template-columns: 1.5fr 1fr;
+      }
+    }
+
+    .contact-form {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--color-text);
+    }
+
+    .required {
+      color: #ef4444;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--color-border);
       border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: var(--color-bg);
+      color: var(--color-text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-actions {
+      margin-top: 1.5rem;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      padding: 0.875rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: #4f46e5;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .form-status {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .form-status.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .form-status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .privacy-note {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+    }
+
+    .privacy-note a {
+      color: var(--color-primary);
+    }
+
+    .info-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .info-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
       padding: 1.5rem;
     }
 
-    .contact-icon {
+    .info-icon {
       color: var(--color-primary);
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
 
-    .contact-card h2 {
-      font-size: 1.25rem;
+    .info-card h3 {
+      font-size: 1.1rem;
       margin-bottom: 0.5rem;
     }
 
-    .contact-card p {
+    .info-card p {
       color: var(--color-text-muted);
       font-size: 0.9rem;
-      margin-bottom: 1rem;
-    }
-
-    .contact-link {
-      color: var(--color-primary);
-      font-weight: 500;
-      text-decoration: none;
-    }
-
-    .contact-link:hover {
-      text-decoration: underline;
-    }
-
-    .social-note {
-      background: var(--color-surface);
-      border-left: 3px solid var(--color-primary);
-      padding: 1rem 1.5rem;
-      border-radius: 0 8px 8px 0;
-    }
-
-    .social-note p {
       margin: 0;
+    }
+
+    .info-card ul {
       color: var(--color-text-muted);
+      font-size: 0.9rem;
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .info-card a {
+      color: var(--color-primary);
     }
   </style>
+
+  <script>
+    const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+    const formStatus = document.getElementById('form-status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Show loading state
+      submitBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnLoading.style.display = 'inline';
+      formStatus.style.display = 'none';
+
+      // Gather form data
+      const formData = {
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        topic: form.topic.value,
+        message: form.message.value.trim()
+      };
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          formStatus.className = 'form-status success';
+          formStatus.textContent = result.message;
+          formStatus.style.display = 'block';
+          form.reset();
+        } else {
+          throw new Error(result.message || 'Something went wrong');
+        }
+      } catch (error) {
+        formStatus.className = 'form-status error';
+        formStatus.textContent = error.message || 'Failed to send message. Please try again.';
+        formStatus.style.display = 'block';
+      } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
+      }
+    });
+  </script>
 </BaseLayout>
