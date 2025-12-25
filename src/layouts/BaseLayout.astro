@@ -238,12 +238,16 @@ const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
           });
         }, {passive: true});
 
-        // Track time on page
+        // Track time on page (using visibilitychange instead of deprecated beforeunload)
         var startTime = Date.now();
-        window.addEventListener('beforeunload', function() {
-          var timeOnPage = Math.round((Date.now() - startTime) / 1000);
-          if (window.appInsights) {
-            appInsights('trackEvent', {name: 'TimeOnPage', properties: {seconds: timeOnPage, page: location.pathname}});
+        var timeTracked = false;
+        document.addEventListener('visibilitychange', function() {
+          if (document.visibilityState === 'hidden' && !timeTracked) {
+            timeTracked = true;
+            var timeOnPage = Math.round((Date.now() - startTime) / 1000);
+            if (window.appInsights) {
+              appInsights('trackEvent', {name: 'TimeOnPage', properties: {seconds: timeOnPage, page: location.pathname}});
+            }
           }
         });
 
