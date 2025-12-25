@@ -1,0 +1,167 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Contact Us"
+  description="Get in touch with Computer Science Guide. We'd love to hear your feedback, questions, or suggestions."
+>
+  <article class="article">
+    <div class="container">
+      <div class="content">
+        <h1>Contact Us</h1>
+        <p class="intro">
+          Have a question, suggestion, or feedback? We'd love to hear from you!
+          Choose the best way to reach us below.
+        </p>
+
+        <div class="contact-grid">
+          <div class="contact-card">
+            <div class="contact-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <h2>General Inquiries</h2>
+            <p>Questions about our guides, suggestions for new content, or general feedback.</p>
+            <a href="mailto:hello@computerscienceguide.com" class="contact-link">
+              hello@computerscienceguide.com
+            </a>
+          </div>
+
+          <div class="contact-card">
+            <div class="contact-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h2>Privacy Concerns</h2>
+            <p>Questions about your data, privacy policy, or requests to access or delete your information.</p>
+            <a href="mailto:privacy@computerscienceguide.com" class="contact-link">
+              privacy@computerscienceguide.com
+            </a>
+          </div>
+
+          <div class="contact-card">
+            <div class="contact-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <h2>Technical Issues</h2>
+            <p>Report bugs, broken links, or technical problems with the website.</p>
+            <a href="mailto:support@computerscienceguide.com" class="contact-link">
+              support@computerscienceguide.com
+            </a>
+          </div>
+        </div>
+
+        <h2>Response Time</h2>
+        <p>
+          We typically respond to all inquiries within <strong>1-2 business days</strong>.
+          During busy periods, it may take up to 5 business days. Thank you for your patience!
+        </p>
+
+        <h2>Content Suggestions</h2>
+        <p>
+          We're always looking to improve and expand our guides. If you have suggestions for:
+        </p>
+        <ul>
+          <li>New topics you'd like us to cover</li>
+          <li>Improvements to existing guides</li>
+          <li>Corrections or updates to outdated information</li>
+          <li>Resources you think we should include</li>
+        </ul>
+        <p>
+          Please don't hesitate to reach out! Your feedback helps us create better content for everyone.
+        </p>
+
+        <h2>Connect With Us</h2>
+        <p>
+          Follow us for updates on new guides and computer science tips:
+        </p>
+        <div class="social-note">
+          <p>
+            <em>Social media profiles coming soon! For now, the best way to stay updated is to
+            bookmark our site and check back regularly for new content.</em>
+          </p>
+        </div>
+
+        <h2>Frequently Asked Questions</h2>
+        <p>
+          Before reaching out, you might find your answer in our guides:
+        </p>
+        <ul>
+          <li><a href="/guides">Browse all guides</a></li>
+          <li><a href="/roadmap">View the learning roadmap</a></li>
+          <li><a href="/resources">Check our curated resources</a></li>
+          <li><a href="/about">Learn more about us</a></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .contact-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .contact-icon {
+      color: var(--color-primary);
+      margin-bottom: 1rem;
+    }
+
+    .contact-card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-card p {
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .contact-link {
+      color: var(--color-primary);
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .contact-link:hover {
+      text-decoration: underline;
+    }
+
+    .social-note {
+      background: var(--color-surface);
+      border-left: 3px solid var(--color-primary);
+      padding: 1rem 1.5rem;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .social-note p {
+      margin: 0;
+      color: var(--color-text-muted);
+    }
+  </style>
+</BaseLayout>
