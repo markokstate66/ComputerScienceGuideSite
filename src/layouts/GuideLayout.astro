@@ -4,6 +4,7 @@ import BaseLayout from './BaseLayout.astro';
 interface Props {
   title: string;
   description: string;
+  datePublished?: string;
   lastUpdated?: string;
   readTime?: string;
   level?: 'beginner' | 'intermediate' | 'advanced';
@@ -13,6 +14,7 @@ interface Props {
 const {
   title,
   description,
+  datePublished,
   lastUpdated,
   readTime = '10 min read',
   level = 'beginner',
@@ -53,6 +55,7 @@ const breadcrumbs = pathParts.map((part, i) => ({
           "url": "https://www.computerscienceguide.com/logo.png"
         }
       },
+      "datePublished": datePublished || lastUpdated || new Date().toISOString(),
       "dateModified": lastUpdated || new Date().toISOString(),
       "mainEntityOfPage": {
         "@type": "WebPage",
