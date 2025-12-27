@@ -3,38 +3,41 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
-  title="404 - Page Not Found"
-  description="The page you're looking for doesn't exist."
+  title="500 - Server Error"
+  description="Something went wrong on our end."
   noindex={true}
 >
   <section class="error-page">
     <div class="container">
       <div class="error-art">
         <pre class="ascii-art">{`
-   _____ _____ _____
-  |  |  |     |  |  |
-  |__|__|  |  |__|__|
-     |__|_____|__|
+    (╯°□°)╯︵ ┻━┻
         `}</pre>
       </div>
-      <h1>404</h1>
-      <p class="tagline">Segmentation fault: page not found</p>
+      <h1>500</h1>
+      <p class="tagline">Unhandled exception in production</p>
       <div class="terminal">
         <code>
-          <span class="prompt">$</span> find / -name "your-page" 2>/dev/null<br/>
-          <span class="output">Error: No such file or directory</span><br/>
+          <span class="error-line">Error: Something went catastrophically wrong</span><br/>
+          <span class="stack">&nbsp;&nbsp;at Server.handleRequest (server.js:42)</span><br/>
+          <span class="stack">&nbsp;&nbsp;at processTicksAndRejections (internal)</span><br/>
+          <span class="stack">&nbsp;&nbsp;at async Universe.maintainOrder (reality.js:1)</span><br/>
           <span class="prompt">$</span> <span class="cursor">_</span>
         </code>
       </div>
       <p class="message">
-        Looks like this page got garbage collected, or maybe it never existed in the first place.
-        Either way, it's not in our memory.
+        Our server threw an exception and forgot to catch it.
+        We're blaming it on cosmic rays flipping bits, but honestly, it's probably our fault.
       </p>
+      <div class="status-box">
+        <span class="status-icon">&#9881;</span>
+        <span>Our engineers have been notified (or will be, once they check their alerts)</span>
+      </div>
       <div class="actions">
-        <a href="/" class="btn">cd ~</a>
+        <a href="/" class="btn">Try Again</a>
         <a href="/guides" class="btn btn-secondary">Browse Guides</a>
       </div>
-      <p class="hint">Pro tip: Check the URL for typos. Even senior devs make them.</p>
+      <p class="hint">In the meantime, have you tried turning it off and on again?</p>
     </div>
   </section>
 
@@ -57,8 +60,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     .ascii-art {
       font-family: var(--font-mono);
-      font-size: 1rem;
-      color: var(--color-primary);
+      font-size: 1.5rem;
+      color: #ef4444;
       background: transparent;
       display: inline-block;
       line-height: 1.2;
@@ -66,7 +69,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     h1 {
       font-size: 6rem;
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -90,15 +93,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       text-align: left;
       margin: 1.5rem 0;
       font-family: var(--font-mono);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+    }
+
+    .error-line {
+      color: #ef4444;
+    }
+
+    .stack {
+      color: var(--color-text-muted);
     }
 
     .prompt {
       color: var(--color-secondary);
-    }
-
-    .output {
-      color: #ef4444;
     }
 
     .cursor {
@@ -113,8 +120,31 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     .message {
       font-size: 1.1rem;
       color: var(--color-text-muted);
-      max-width: 500px;
+      max-width: 550px;
       margin: 1.5rem auto;
+    }
+
+    .status-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      margin: 1rem 0;
+    }
+
+    .status-icon {
+      font-size: 1.1rem;
+      animation: spin 3s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .actions {
@@ -149,11 +179,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       }
 
       .ascii-art {
-        font-size: 0.7rem;
+        font-size: 1.2rem;
       }
 
       .terminal {
         padding: 1rem;
+        font-size: 0.75rem;
+      }
+
+      .status-box {
         font-size: 0.8rem;
       }
     }
