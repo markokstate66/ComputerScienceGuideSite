@@ -1,0 +1,379 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'REST Principles', href: '#rest' },
+  { title: 'Designing Endpoints', href: '#endpoints' },
+  { title: 'Request & Response', href: '#request-response' },
+  { title: 'Authentication', href: '#authentication' },
+  { title: 'Error Handling', href: '#errors' },
+  { title: 'Versioning', href: '#versioning' },
+  { title: 'Best Practices', href: '#best-practices' }
+];
+---
+
+<GuideLayout
+  title="API Design: Building Great REST APIs"
+  description="Learn how to design clean, intuitive REST APIs. Cover endpoints, HTTP methods, authentication, error handling, and API best practices."
+  level="intermediate"
+  readTime="30 min read"
+  datePublished="2024-12-01"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    A well-designed API is a joy to use. It's intuitive, consistent, and well-documented.
+    This guide teaches you how to design APIs that developers love.
+  </p>
+
+  <h2 id="introduction">What is an API?</h2>
+  <p>
+    An API (Application Programming Interface) is a contract between software systems.
+    It defines how applications communicate with each other, typically over HTTP.
+  </p>
+
+  <h3>Why Good API Design Matters</h3>
+  <ul>
+    <li><strong>Developer experience:</strong> Easy to understand and use correctly</li>
+    <li><strong>Maintainability:</strong> Consistent patterns reduce bugs</li>
+    <li><strong>Scalability:</strong> Well-structured APIs handle growth better</li>
+    <li><strong>Documentation:</strong> Clear design makes docs easier to write</li>
+  </ul>
+
+  <h2 id="rest">REST Principles</h2>
+  <p>
+    REST (Representational State Transfer) is the most common API architecture.
+  </p>
+
+  <h3>Core Principles</h3>
+  <ul>
+    <li><strong>Resources:</strong> Everything is a resource (users, posts, orders)</li>
+    <li><strong>HTTP Methods:</strong> Use verbs to indicate actions</li>
+    <li><strong>Stateless:</strong> Each request contains all needed information</li>
+    <li><strong>Uniform Interface:</strong> Consistent URL patterns and responses</li>
+  </ul>
+
+  <h3>HTTP Methods</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Purpose</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GET</td>
+        <td>Retrieve resource(s)</td>
+        <td>GET /users</td>
+      </tr>
+      <tr>
+        <td>POST</td>
+        <td>Create new resource</td>
+        <td>POST /users</td>
+      </tr>
+      <tr>
+        <td>PUT</td>
+        <td>Replace entire resource</td>
+        <td>PUT /users/123</td>
+      </tr>
+      <tr>
+        <td>PATCH</td>
+        <td>Partial update</td>
+        <td>PATCH /users/123</td>
+      </tr>
+      <tr>
+        <td>DELETE</td>
+        <td>Remove resource</td>
+        <td>DELETE /users/123</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="endpoints">Designing Endpoints</h2>
+
+  <h3>URL Structure</h3>
+  <pre><code>{`# Good: Noun-based, hierarchical
+GET    /users              # List all users
+GET    /users/123          # Get user 123
+POST   /users              # Create user
+PUT    /users/123          # Update user 123
+DELETE /users/123          # Delete user 123
+
+# Nested resources
+GET    /users/123/posts    # Get posts by user 123
+POST   /users/123/posts    # Create post for user 123
+
+# Bad: Verb-based (anti-pattern)
+GET    /getUsers           # Don't do this
+POST   /createUser         # HTTP method already indicates action
+GET    /deleteUser/123     # Never use GET for mutations`}</code></pre>
+
+  <h3>Query Parameters</h3>
+  <pre><code>{`# Filtering
+GET /products?category=electronics&in_stock=true
+
+# Sorting
+GET /products?sort=price&order=desc
+
+# Pagination
+GET /products?page=2&limit=20
+GET /products?cursor=abc123&limit=20
+
+# Searching
+GET /products?search=laptop
+
+# Field selection
+GET /users/123?fields=name,email,avatar`}</code></pre>
+
+  <h2 id="request-response">Request & Response</h2>
+
+  <h3>Request Body (JSON)</h3>
+  <pre><code>{`// POST /users
+{
+  "name": "Alice Johnson",
+  "email": "alice@example.com",
+  "password": "securepassword123"
+}
+
+// PATCH /users/123 (partial update)
+{
+  "name": "Alicia Johnson"
+}`}</code></pre>
+
+  <h3>Response Structure</h3>
+  <pre><code>{`// Single resource
+{
+  "id": 123,
+  "name": "Alice Johnson",
+  "email": "alice@example.com",
+  "created_at": "2024-01-15T10:30:00Z"
+}
+
+// Collection with pagination
+{
+  "data": [
+    { "id": 1, "name": "Alice" },
+    { "id": 2, "name": "Bob" }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 100,
+    "total_pages": 5
+  }
+}`}</code></pre>
+
+  <h3>HTTP Status Codes</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Meaning</th>
+        <th>When to Use</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>200</td>
+        <td>OK</td>
+        <td>Successful GET, PUT, PATCH</td>
+      </tr>
+      <tr>
+        <td>201</td>
+        <td>Created</td>
+        <td>Successful POST</td>
+      </tr>
+      <tr>
+        <td>204</td>
+        <td>No Content</td>
+        <td>Successful DELETE</td>
+      </tr>
+      <tr>
+        <td>400</td>
+        <td>Bad Request</td>
+        <td>Invalid input data</td>
+      </tr>
+      <tr>
+        <td>401</td>
+        <td>Unauthorized</td>
+        <td>Missing/invalid authentication</td>
+      </tr>
+      <tr>
+        <td>403</td>
+        <td>Forbidden</td>
+        <td>Authenticated but not allowed</td>
+      </tr>
+      <tr>
+        <td>404</td>
+        <td>Not Found</td>
+        <td>Resource doesn't exist</td>
+      </tr>
+      <tr>
+        <td>422</td>
+        <td>Unprocessable Entity</td>
+        <td>Validation failed</td>
+      </tr>
+      <tr>
+        <td>500</td>
+        <td>Internal Server Error</td>
+        <td>Unexpected server error</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="authentication">Authentication</h2>
+
+  <h3>JWT (JSON Web Tokens)</h3>
+  <pre><code>{`// Login endpoint returns token
+POST /auth/login
+{ "email": "user@example.com", "password": "secret" }
+
+// Response
+{ "token": "eyJhbGciOiJIUzI1NiIs..." }
+
+// Use token in subsequent requests
+GET /users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...`}</code></pre>
+
+  <h3>API Keys</h3>
+  <pre><code>{`// API key in header
+GET /api/data
+X-API-Key: your-api-key-here
+
+// Or in query parameter (less secure)
+GET /api/data?api_key=your-api-key-here`}</code></pre>
+
+  <h3>OAuth 2.0 Flow</h3>
+  <ol>
+    <li>User clicks "Login with Google"</li>
+    <li>Redirect to Google's authorization page</li>
+    <li>User grants permission</li>
+    <li>Google redirects back with authorization code</li>
+    <li>Your server exchanges code for access token</li>
+    <li>Use token to access Google APIs</li>
+  </ol>
+
+  <h2 id="errors">Error Handling</h2>
+
+  <h3>Consistent Error Format</h3>
+  <pre><code>{`// Error response structure
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      {
+        "field": "email",
+        "message": "Invalid email format"
+      },
+      {
+        "field": "password",
+        "message": "Must be at least 8 characters"
+      }
+    ]
+  }
+}
+
+// Simple error
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "User with ID 123 not found"
+  }
+}`}</code></pre>
+
+  <h3>Error Codes</h3>
+  <p>Use specific error codes that clients can handle programmatically:</p>
+  <ul>
+    <li><code>VALIDATION_ERROR</code> - Input validation failed</li>
+    <li><code>UNAUTHORIZED</code> - Authentication required</li>
+    <li><code>FORBIDDEN</code> - Permission denied</li>
+    <li><code>NOT_FOUND</code> - Resource doesn't exist</li>
+    <li><code>RATE_LIMITED</code> - Too many requests</li>
+    <li><code>INTERNAL_ERROR</code> - Server error</li>
+  </ul>
+
+  <h2 id="versioning">Versioning</h2>
+  <p>APIs evolve. Versioning lets you make breaking changes without breaking existing clients.</p>
+
+  <h3>URL Path Versioning (Recommended)</h3>
+  <pre><code>{`GET /v1/users
+GET /v2/users
+
+# Clear, visible, easy to route`}</code></pre>
+
+  <h3>Header Versioning</h3>
+  <pre><code>{`GET /users
+Accept: application/vnd.api+json; version=2`}</code></pre>
+
+  <h3>When to Version</h3>
+  <ul>
+    <li><strong>Breaking changes:</strong> Removing fields, changing types</li>
+    <li><strong>Major restructuring:</strong> Different response format</li>
+    <li><strong>Additive changes don't need versions:</strong> New optional fields are safe</li>
+  </ul>
+
+  <h2 id="best-practices">Best Practices</h2>
+
+  <h3>Naming Conventions</h3>
+  <ul>
+    <li>Use <strong>plural nouns</strong> for resources: <code>/users</code>, not <code>/user</code></li>
+    <li>Use <strong>kebab-case</strong> for multi-word resources: <code>/order-items</code></li>
+    <li>Use <strong>snake_case</strong> for JSON fields: <code>created_at</code></li>
+    <li>Be <strong>consistent</strong> across your entire API</li>
+  </ul>
+
+  <h3>Security</h3>
+  <ul>
+    <li><strong>Always use HTTPS</strong> - Never expose APIs over HTTP</li>
+    <li><strong>Rate limiting</strong> - Prevent abuse and DDoS</li>
+    <li><strong>Input validation</strong> - Validate all input server-side</li>
+    <li><strong>Don't expose internal IDs</strong> - Use UUIDs when possible</li>
+    <li><strong>Audit logging</strong> - Log all API access</li>
+  </ul>
+
+  <h3>Documentation</h3>
+  <ul>
+    <li><strong>OpenAPI/Swagger</strong> - Industry standard for API docs</li>
+    <li><strong>Include examples</strong> - Show request/response examples</li>
+    <li><strong>Error documentation</strong> - Document all error codes</li>
+    <li><strong>Authentication guide</strong> - Step-by-step auth instructions</li>
+  </ul>
+
+  <h3>Related Guides</h3>
+  <ul>
+    <li><a href="/guides/nodejs">Node.js Backend Development</a></li>
+    <li><a href="/guides/databases">Databases Guide</a></li>
+    <li><a href="/guides/system-design">System Design</a></li>
+  </ul>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+    }
+  </style>
+</GuideLayout>

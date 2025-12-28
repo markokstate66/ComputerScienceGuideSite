@@ -1,0 +1,327 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+
+const toc = [
+  { title: 'What is Computer Science?', href: '#what-is-cs' },
+  { title: 'Binary & Data Representation', href: '#binary' },
+  { title: 'Computer Architecture', href: '#architecture' },
+  { title: 'Operating Systems', href: '#operating-systems' },
+  { title: 'Networking Basics', href: '#networking' },
+  { title: 'Computational Thinking', href: '#thinking' },
+  { title: 'Next Steps', href: '#next-steps' }
+];
+---
+
+<GuideLayout
+  title="Computer Science Basics: Foundation Concepts"
+  description="Learn the foundational concepts of computer science including binary, computer architecture, operating systems, and computational thinking."
+  level="beginner"
+  readTime="25 min read"
+  datePublished="2024-12-01"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Computer science is more than just programming. It's the study of computation, information processing,
+    and the design of computer systems. Understanding the fundamentals helps you become a better developer.
+  </p>
+
+  <h2 id="what-is-cs">What is Computer Science?</h2>
+  <p>
+    Computer science is the study of algorithms, data structures, and the principles underlying
+    computation. It bridges mathematics, engineering, and problem-solving.
+  </p>
+
+  <h3>Key Areas of CS</h3>
+  <ul>
+    <li><strong>Algorithms:</strong> Step-by-step procedures for solving problems</li>
+    <li><strong>Data Structures:</strong> Ways to organize and store data</li>
+    <li><strong>Programming Languages:</strong> Tools to express computations</li>
+    <li><strong>Computer Architecture:</strong> How hardware works</li>
+    <li><strong>Operating Systems:</strong> Software that manages hardware</li>
+    <li><strong>Networks:</strong> Communication between computers</li>
+    <li><strong>Databases:</strong> Storing and retrieving data</li>
+    <li><strong>AI/Machine Learning:</strong> Making computers "intelligent"</li>
+  </ul>
+
+  <h2 id="binary">Binary & Data Representation</h2>
+  <p>
+    Computers only understand 1s and 0s (binary). Everything - numbers, text, images, sounds -
+    must be converted to binary.
+  </p>
+
+  <h3>Binary Numbers</h3>
+  <pre><code>{`Decimal (Base 10):  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10...
+Binary (Base 2):    0, 1, 10, 11, 100, 101, 110, 111, 1000, 1001, 1010...
+
+Converting binary to decimal:
+1011 = (1×2³) + (0×2²) + (1×2¹) + (1×2⁰)
+     = 8 + 0 + 2 + 1
+     = 11
+
+Converting decimal to binary:
+13 ÷ 2 = 6 remainder 1
+6 ÷ 2 = 3 remainder 0
+3 ÷ 2 = 1 remainder 1
+1 ÷ 2 = 0 remainder 1
+13 in binary = 1101 (read remainders bottom-up)`}</code></pre>
+
+  <h3>Data Units</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Unit</th>
+        <th>Size</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Bit</td>
+        <td>1 or 0</td>
+        <td>Single binary digit</td>
+      </tr>
+      <tr>
+        <td>Byte</td>
+        <td>8 bits</td>
+        <td>One character</td>
+      </tr>
+      <tr>
+        <td>Kilobyte (KB)</td>
+        <td>~1,000 bytes</td>
+        <td>Short text document</td>
+      </tr>
+      <tr>
+        <td>Megabyte (MB)</td>
+        <td>~1,000 KB</td>
+        <td>MP3 song</td>
+      </tr>
+      <tr>
+        <td>Gigabyte (GB)</td>
+        <td>~1,000 MB</td>
+        <td>HD movie</td>
+      </tr>
+      <tr>
+        <td>Terabyte (TB)</td>
+        <td>~1,000 GB</td>
+        <td>Large hard drive</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Text Encoding</h3>
+  <pre><code>{`ASCII: Maps characters to numbers (0-127)
+'A' = 65 = 01000001
+'a' = 97 = 01100001
+'0' = 48 = 00110000
+
+UTF-8: Extends ASCII for all languages and emojis
+'😀' = 128512 = 11110000 10011111 10011000 10000000`}</code></pre>
+
+  <h2 id="architecture">Computer Architecture</h2>
+  <p>Understanding how computers work at the hardware level.</p>
+
+  <h3>Main Components</h3>
+  <ul>
+    <li><strong>CPU (Central Processing Unit):</strong> The "brain" - executes instructions</li>
+    <li><strong>RAM (Random Access Memory):</strong> Fast, temporary storage</li>
+    <li><strong>Storage (SSD/HDD):</strong> Permanent data storage</li>
+    <li><strong>GPU (Graphics Processing Unit):</strong> Parallel processing</li>
+    <li><strong>Motherboard:</strong> Connects all components</li>
+  </ul>
+
+  <h3>How the CPU Works</h3>
+  <pre><code>{`The Fetch-Decode-Execute Cycle:
+
+1. FETCH: Get instruction from memory
+   CPU reads instruction at memory address
+
+2. DECODE: Interpret the instruction
+   "ADD R1, R2" means add registers 1 and 2
+
+3. EXECUTE: Perform the operation
+   ALU (Arithmetic Logic Unit) does the math
+
+4. STORE: Save the result
+   Write back to register or memory
+
+This cycle happens billions of times per second!`}</code></pre>
+
+  <h3>Memory Hierarchy</h3>
+  <pre><code>{`Speed (fastest to slowest) | Size (smallest to largest)
+
+  CPU Registers     ← Fastest, tiny (bytes)
+  L1 Cache          ← Very fast, small (KB)
+  L2/L3 Cache       ← Fast, larger (MB)
+  RAM               ← Moderate, sizeable (GB)
+  SSD               ← Slower, large (TB)
+  HDD               ← Slowest, very large (TB)`}</code></pre>
+
+  <h2 id="operating-systems">Operating Systems</h2>
+  <p>
+    The OS is software that manages hardware and provides services to applications.
+  </p>
+
+  <h3>OS Responsibilities</h3>
+  <ul>
+    <li><strong>Process Management:</strong> Run multiple programs simultaneously</li>
+    <li><strong>Memory Management:</strong> Allocate RAM to programs</li>
+    <li><strong>File System:</strong> Organize and store files</li>
+    <li><strong>Device Drivers:</strong> Interface with hardware</li>
+    <li><strong>Security:</strong> User permissions and access control</li>
+    <li><strong>User Interface:</strong> GUI or command line</li>
+  </ul>
+
+  <h3>Common Operating Systems</h3>
+  <ul>
+    <li><strong>Windows:</strong> Most common desktop OS</li>
+    <li><strong>macOS:</strong> Apple's desktop OS (Unix-based)</li>
+    <li><strong>Linux:</strong> Open-source, powers most servers</li>
+    <li><strong>Android/iOS:</strong> Mobile operating systems</li>
+  </ul>
+
+  <h3>Processes vs Threads</h3>
+  <pre><code>{`Process:
+- Independent program execution
+- Has its own memory space
+- More overhead to create
+- Better isolation
+
+Thread:
+- Lightweight unit within a process
+- Shares memory with other threads
+- Less overhead
+- Faster communication
+
+Example: A web browser
+- Main process manages the application
+- Each tab might be a separate process (isolation)
+- Within a tab, threads handle: rendering, networking, JavaScript`}</code></pre>
+
+  <h2 id="networking">Networking Basics</h2>
+  <p>How computers communicate with each other.</p>
+
+  <h3>IP Addresses</h3>
+  <pre><code>{`IPv4: 192.168.1.100 (4 numbers, 0-255 each)
+IPv6: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+
+Special addresses:
+127.0.0.1 - Localhost (your own computer)
+192.168.x.x - Private network
+8.8.8.8 - Google's DNS server`}</code></pre>
+
+  <h3>The OSI Model (Simplified)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Purpose</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Application</td>
+        <td>User-facing protocols</td>
+        <td>HTTP, SMTP, FTP</td>
+      </tr>
+      <tr>
+        <td>Transport</td>
+        <td>Reliable delivery</td>
+        <td>TCP, UDP</td>
+      </tr>
+      <tr>
+        <td>Network</td>
+        <td>Routing between networks</td>
+        <td>IP</td>
+      </tr>
+      <tr>
+        <td>Data Link</td>
+        <td>Local network delivery</td>
+        <td>Ethernet, WiFi</td>
+      </tr>
+      <tr>
+        <td>Physical</td>
+        <td>Actual cables/signals</td>
+        <td>Wires, radio waves</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>TCP vs UDP</h3>
+  <ul>
+    <li><strong>TCP:</strong> Reliable, ordered delivery. Used for web, email, file transfer.</li>
+    <li><strong>UDP:</strong> Fast but unreliable. Used for video streaming, gaming, VoIP.</li>
+  </ul>
+
+  <h2 id="thinking">Computational Thinking</h2>
+  <p>A problem-solving approach that computer scientists use.</p>
+
+  <h3>Four Key Concepts</h3>
+  <ol>
+    <li><strong>Decomposition:</strong> Break complex problems into smaller parts</li>
+    <li><strong>Pattern Recognition:</strong> Find similarities and trends</li>
+    <li><strong>Abstraction:</strong> Focus on important details, ignore the rest</li>
+    <li><strong>Algorithm Design:</strong> Create step-by-step solutions</li>
+  </ol>
+
+  <h3>Example: Planning a Trip</h3>
+  <pre><code>{`Decomposition:
+- Book flights
+- Reserve hotel
+- Plan daily activities
+- Pack luggage
+
+Pattern Recognition:
+- Similar to previous trips
+- Morning activities, afternoon rest, evening dinner
+
+Abstraction:
+- Don't need to know how planes fly
+- Focus on departure/arrival times
+
+Algorithm:
+1. Choose destination
+2. Set budget
+3. Search flights within budget
+4. Compare hotels near attractions
+5. Book both
+6. Create daily itinerary`}</code></pre>
+
+  <h2 id="next-steps">Next Steps</h2>
+  <p>Now that you understand the basics, dive deeper into specific areas:</p>
+
+  <ul>
+    <li><a href="/guides/programming-fundamentals">Programming Fundamentals</a> - Learn to code</li>
+    <li><a href="/guides/data-structures">Data Structures</a> - Organize data efficiently</li>
+    <li><a href="/guides/algorithms">Algorithms</a> - Solve problems systematically</li>
+    <li><a href="/guides/web-development">Web Development</a> - Build websites and apps</li>
+  </ul>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+    }
+  </style>
+</GuideLayout>

@@ -1,0 +1,393 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'SQL vs NoSQL', href: '#sql-vs-nosql' },
+  { title: 'SQL Fundamentals', href: '#sql-fundamentals' },
+  { title: 'Database Design', href: '#database-design' },
+  { title: 'NoSQL Databases', href: '#nosql' },
+  { title: 'ORMs & Query Builders', href: '#orms' },
+  { title: 'Performance & Indexing', href: '#performance' },
+  { title: 'Choosing a Database', href: '#choosing' }
+];
+---
+
+<GuideLayout
+  title="Databases: Complete Guide to Data Persistence"
+  description="Learn database fundamentals including SQL, NoSQL, database design, and best practices for storing and querying data in your applications."
+  level="intermediate"
+  readTime="35 min read"
+  datePublished="2024-12-01"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Databases are the backbone of modern applications. They store, organize, and retrieve data efficiently,
+    making it possible to build everything from simple blogs to complex enterprise systems.
+  </p>
+
+  <h2 id="introduction">Why Learn Databases?</h2>
+  <p>
+    Nearly every application needs to store data persistently. Understanding databases helps you:
+  </p>
+  <ul>
+    <li><strong>Design efficient data models:</strong> Structure data for your application's needs</li>
+    <li><strong>Write performant queries:</strong> Retrieve data quickly, even at scale</li>
+    <li><strong>Choose the right database:</strong> Pick the best tool for your use case</li>
+    <li><strong>Avoid common pitfalls:</strong> Prevent data loss, inconsistency, and security issues</li>
+  </ul>
+
+  <h2 id="sql-vs-nosql">SQL vs NoSQL</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>SQL (Relational)</th>
+        <th>NoSQL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Data Structure</td>
+        <td>Tables with rows and columns</td>
+        <td>Documents, key-value, graphs, etc.</td>
+      </tr>
+      <tr>
+        <td>Schema</td>
+        <td>Fixed, predefined schema</td>
+        <td>Flexible, dynamic schema</td>
+      </tr>
+      <tr>
+        <td>Relationships</td>
+        <td>JOINs between tables</td>
+        <td>Embedded or referenced</td>
+      </tr>
+      <tr>
+        <td>Scaling</td>
+        <td>Vertical (bigger server)</td>
+        <td>Horizontal (more servers)</td>
+      </tr>
+      <tr>
+        <td>ACID Compliance</td>
+        <td>Strong guarantees</td>
+        <td>Varies by database</td>
+      </tr>
+      <tr>
+        <td>Best For</td>
+        <td>Complex queries, transactions</td>
+        <td>Flexible data, high scale</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="sql-fundamentals">SQL Fundamentals</h2>
+  <p>
+    SQL (Structured Query Language) is the standard language for relational databases.
+  </p>
+
+  <h3>Creating Tables</h3>
+  <pre><code>{`CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE posts (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    title VARCHAR(200) NOT NULL,
+    content TEXT,
+    published BOOLEAN DEFAULT false
+);`}</code></pre>
+
+  <h3>CRUD Operations</h3>
+  <pre><code>{`-- CREATE: Insert data
+INSERT INTO users (name, email)
+VALUES ('Alice', 'alice@example.com');
+
+-- READ: Select data
+SELECT * FROM users;
+SELECT name, email FROM users WHERE id = 1;
+SELECT * FROM users ORDER BY created_at DESC LIMIT 10;
+
+-- UPDATE: Modify data
+UPDATE users
+SET name = 'Alicia'
+WHERE id = 1;
+
+-- DELETE: Remove data
+DELETE FROM users WHERE id = 1;`}</code></pre>
+
+  <h3>JOINs - Combining Tables</h3>
+  <pre><code>{`-- INNER JOIN: Only matching rows
+SELECT users.name, posts.title
+FROM users
+INNER JOIN posts ON users.id = posts.user_id;
+
+-- LEFT JOIN: All users, matching posts
+SELECT users.name, COUNT(posts.id) as post_count
+FROM users
+LEFT JOIN posts ON users.id = posts.user_id
+GROUP BY users.id;
+
+-- Multiple conditions
+SELECT u.name, p.title, p.published
+FROM users u
+JOIN posts p ON u.id = p.user_id
+WHERE p.published = true
+ORDER BY p.created_at DESC;`}</code></pre>
+
+  <h3>Aggregations</h3>
+  <pre><code>{`-- Count, Sum, Average
+SELECT COUNT(*) FROM users;
+SELECT AVG(price) FROM products;
+SELECT SUM(quantity) FROM orders;
+
+-- Group By with Having
+SELECT user_id, COUNT(*) as post_count
+FROM posts
+GROUP BY user_id
+HAVING COUNT(*) > 5;`}</code></pre>
+
+  <h2 id="database-design">Database Design</h2>
+
+  <h3>Normalization</h3>
+  <p>Normalization reduces data redundancy and improves integrity:</p>
+  <ul>
+    <li><strong>1NF:</strong> Each column contains atomic values, no repeating groups</li>
+    <li><strong>2NF:</strong> All non-key columns depend on the entire primary key</li>
+    <li><strong>3NF:</strong> No transitive dependencies (non-key depends only on key)</li>
+  </ul>
+
+  <h3>Example: E-commerce Schema</h3>
+  <pre><code>{`-- Users table
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
+);
+
+-- Products table
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    stock INTEGER DEFAULT 0
+);
+
+-- Orders table
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    total DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Order items (many-to-many relationship)
+CREATE TABLE order_items (
+    order_id INTEGER REFERENCES orders(id),
+    product_id INTEGER REFERENCES products(id),
+    quantity INTEGER NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    PRIMARY KEY (order_id, product_id)
+);`}</code></pre>
+
+  <h2 id="nosql">NoSQL Databases</h2>
+
+  <h3>Document Databases (MongoDB)</h3>
+  <pre><code>{`// MongoDB document structure
+{
+  "_id": ObjectId("..."),
+  "name": "Alice",
+  "email": "alice@example.com",
+  "address": {
+    "street": "123 Main St",
+    "city": "New York"
+  },
+  "orders": [
+    { "product": "Widget", "quantity": 2 },
+    { "product": "Gadget", "quantity": 1 }
+  ]
+}
+
+// MongoDB queries
+db.users.find({ "address.city": "New York" })
+db.users.find({ orders: { $elemMatch: { quantity: { $gt: 1 } } } })
+db.users.updateOne({ _id: id }, { $push: { orders: newOrder } })`}</code></pre>
+
+  <h3>Key-Value Stores (Redis)</h3>
+  <pre><code>{`# Simple key-value
+SET user:1:name "Alice"
+GET user:1:name
+
+# With expiration (for caching)
+SET session:abc123 "user_data" EX 3600
+
+# Lists
+LPUSH notifications:user:1 "New message"
+LRANGE notifications:user:1 0 10
+
+# Hashes
+HSET user:1 name "Alice" email "alice@example.com"
+HGETALL user:1`}</code></pre>
+
+  <h3>When to Use NoSQL</h3>
+  <ul>
+    <li><strong>Document DB:</strong> Flexible schemas, nested data, rapid iteration</li>
+    <li><strong>Key-Value:</strong> Caching, sessions, real-time leaderboards</li>
+    <li><strong>Graph DB:</strong> Social networks, recommendation engines</li>
+    <li><strong>Time-Series:</strong> IoT data, metrics, logs</li>
+  </ul>
+
+  <h2 id="orms">ORMs & Query Builders</h2>
+  <p>
+    ORMs (Object-Relational Mappers) let you work with databases using your programming language's objects.
+  </p>
+
+  <h3>Prisma (Node.js)</h3>
+  <pre><code>{`// schema.prisma
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String
+  posts Post[]
+}
+
+model Post {
+  id       Int    @id @default(autoincrement())
+  title    String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId Int
+}
+
+// Usage
+const user = await prisma.user.create({
+  data: { name: 'Alice', email: 'alice@example.com' }
+});
+
+const usersWithPosts = await prisma.user.findMany({
+  include: { posts: true }
+});`}</code></pre>
+
+  <h3>SQLAlchemy (Python)</h3>
+  <pre><code>{`from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100))
+    posts = relationship('Post', back_populates='author')
+
+class Post(Base):
+    __tablename__ = 'posts'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(200))
+    author_id = Column(Integer, ForeignKey('users.id'))
+    author = relationship('User', back_populates='posts')
+
+# Query
+users = session.query(User).filter(User.name.like('%Ali%')).all()`}</code></pre>
+
+  <h2 id="performance">Performance & Indexing</h2>
+
+  <h3>Indexes</h3>
+  <p>Indexes speed up queries but slow down writes. Create them for frequently queried columns.</p>
+  <pre><code>{`-- Create index for faster lookups
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_posts_user_id ON posts(user_id);
+
+-- Composite index for queries on multiple columns
+CREATE INDEX idx_orders_user_status ON orders(user_id, status);
+
+-- View query execution plan
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'alice@example.com';`}</code></pre>
+
+  <h3>Performance Tips</h3>
+  <ul>
+    <li><strong>Index foreign keys:</strong> Speed up JOINs significantly</li>
+    <li><strong>Avoid SELECT *:</strong> Only fetch columns you need</li>
+    <li><strong>Use LIMIT:</strong> Don't fetch more rows than necessary</li>
+    <li><strong>Batch operations:</strong> Insert/update many rows at once</li>
+    <li><strong>Connection pooling:</strong> Reuse database connections</li>
+  </ul>
+
+  <h2 id="choosing">Choosing a Database</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Use Case</th>
+        <th>Recommended Database</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>General web app</td>
+        <td>PostgreSQL</td>
+      </tr>
+      <tr>
+        <td>Rapid prototyping</td>
+        <td>SQLite, MongoDB</td>
+      </tr>
+      <tr>
+        <td>High-scale web app</td>
+        <td>PostgreSQL, MongoDB</td>
+      </tr>
+      <tr>
+        <td>Caching layer</td>
+        <td>Redis</td>
+      </tr>
+      <tr>
+        <td>Social network</td>
+        <td>Neo4j (graph)</td>
+      </tr>
+      <tr>
+        <td>Time-series/metrics</td>
+        <td>InfluxDB, TimescaleDB</td>
+      </tr>
+      <tr>
+        <td>Full-text search</td>
+        <td>Elasticsearch</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Related Guides</h3>
+  <ul>
+    <li><a href="/guides/nodejs">Node.js Backend Development</a></li>
+    <li><a href="/guides/api-design">API Design</a></li>
+    <li><a href="/guides/system-design">System Design</a></li>
+  </ul>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+    }
+  </style>
+</GuideLayout>

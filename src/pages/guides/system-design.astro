@@ -1,0 +1,345 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'Key Concepts', href: '#concepts' },
+  { title: 'Scalability', href: '#scalability' },
+  { title: 'Load Balancing', href: '#load-balancing' },
+  { title: 'Caching', href: '#caching' },
+  { title: 'Databases', href: '#databases' },
+  { title: 'Message Queues', href: '#queues' },
+  { title: 'Design Process', href: '#process' }
+];
+---
+
+<GuideLayout
+  title="System Design: Building Scalable Systems"
+  description="Learn system design fundamentals including scalability, load balancing, caching, and distributed systems. Essential for senior engineering roles and interviews."
+  level="advanced"
+  readTime="40 min read"
+  datePublished="2024-12-01"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    System design is the art of designing large-scale distributed systems. It's essential for
+    senior engineering roles and a key part of technical interviews at top companies.
+  </p>
+
+  <h2 id="introduction">Why Learn System Design?</h2>
+  <ul>
+    <li><strong>Senior interviews:</strong> Required for staff/senior engineer roles</li>
+    <li><strong>Real-world impact:</strong> Design systems that handle millions of users</li>
+    <li><strong>Architectural thinking:</strong> See the big picture beyond code</li>
+    <li><strong>Trade-off analysis:</strong> Every decision has pros and cons</li>
+  </ul>
+
+  <h2 id="concepts">Key Concepts</h2>
+
+  <h3>Latency vs Throughput</h3>
+  <ul>
+    <li><strong>Latency:</strong> Time to complete a single request (milliseconds)</li>
+    <li><strong>Throughput:</strong> Requests handled per second (RPS)</li>
+    <li>Optimizing one often affects the other</li>
+  </ul>
+
+  <h3>CAP Theorem</h3>
+  <p>In a distributed system, you can only guarantee two of three:</p>
+  <ul>
+    <li><strong>Consistency:</strong> All nodes see the same data at the same time</li>
+    <li><strong>Availability:</strong> Every request gets a response</li>
+    <li><strong>Partition Tolerance:</strong> System works despite network failures</li>
+  </ul>
+  <p>Since network partitions are unavoidable, you must choose between CP (consistent) or AP (available).</p>
+
+  <h3>Availability Levels</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Availability</th>
+        <th>Downtime/Year</th>
+        <th>Downtime/Month</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>99% (two nines)</td>
+        <td>3.65 days</td>
+        <td>7.3 hours</td>
+      </tr>
+      <tr>
+        <td>99.9% (three nines)</td>
+        <td>8.76 hours</td>
+        <td>43.8 minutes</td>
+      </tr>
+      <tr>
+        <td>99.99% (four nines)</td>
+        <td>52.6 minutes</td>
+        <td>4.38 minutes</td>
+      </tr>
+      <tr>
+        <td>99.999% (five nines)</td>
+        <td>5.26 minutes</td>
+        <td>26.3 seconds</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="scalability">Scalability</h2>
+
+  <h3>Vertical vs Horizontal Scaling</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Vertical (Scale Up)</th>
+        <th>Horizontal (Scale Out)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Add more CPU, RAM, storage</td>
+        <td>Add more servers</td>
+      </tr>
+      <tr>
+        <td>Simple, no code changes</td>
+        <td>Requires distributed design</td>
+      </tr>
+      <tr>
+        <td>Limited by hardware</td>
+        <td>Near-infinite scalability</td>
+      </tr>
+      <tr>
+        <td>Single point of failure</td>
+        <td>Built-in redundancy</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Stateless Services</h3>
+  <p>Stateless services are easier to scale horizontally:</p>
+  <pre><code>{`// Stateful (bad for scaling)
+class Server {
+  sessions = {};  // State stored in memory
+
+  handleRequest(sessionId) {
+    return this.sessions[sessionId];  // Only works on this server
+  }
+}
+
+// Stateless (good for scaling)
+class Server {
+  handleRequest(sessionId) {
+    return redis.get(sessionId);  // State stored externally
+  }
+}`}</code></pre>
+
+  <h2 id="load-balancing">Load Balancing</h2>
+  <p>Distribute traffic across multiple servers to improve reliability and performance.</p>
+
+  <h3>Load Balancing Algorithms</h3>
+  <ul>
+    <li><strong>Round Robin:</strong> Distribute requests sequentially</li>
+    <li><strong>Least Connections:</strong> Send to server with fewest active connections</li>
+    <li><strong>IP Hash:</strong> Same client always goes to same server</li>
+    <li><strong>Weighted:</strong> More powerful servers get more traffic</li>
+  </ul>
+
+  <h3>Architecture</h3>
+  <pre><code>{`                    ┌─────────────┐
+                    │   Client    │
+                    └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │Load Balancer│
+                    └──────┬──────┘
+           ┌───────────────┼───────────────┐
+           │               │               │
+    ┌──────▼──────┐ ┌──────▼──────┐ ┌──────▼──────┐
+    │  Server 1   │ │  Server 2   │ │  Server 3   │
+    └─────────────┘ └─────────────┘ └─────────────┘`}</code></pre>
+
+  <h2 id="caching">Caching</h2>
+  <p>Store frequently accessed data in fast storage to reduce latency and database load.</p>
+
+  <h3>Caching Layers</h3>
+  <ul>
+    <li><strong>Browser cache:</strong> Static assets (CSS, JS, images)</li>
+    <li><strong>CDN:</strong> Geographically distributed edge servers</li>
+    <li><strong>Application cache:</strong> In-memory (Redis, Memcached)</li>
+    <li><strong>Database cache:</strong> Query result caching</li>
+  </ul>
+
+  <h3>Cache Strategies</h3>
+  <pre><code>{`// Cache-Aside (Lazy Loading)
+async function getUser(id) {
+  // 1. Check cache
+  let user = await cache.get(\`user:\${id}\`);
+
+  if (!user) {
+    // 2. Cache miss - fetch from DB
+    user = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+
+    // 3. Store in cache
+    await cache.set(\`user:\${id}\`, user, { ttl: 3600 });
+  }
+
+  return user;
+}
+
+// Write-Through
+async function updateUser(id, data) {
+  // 1. Update database
+  await db.query('UPDATE users SET ? WHERE id = ?', [data, id]);
+
+  // 2. Update cache immediately
+  await cache.set(\`user:\${id}\`, { id, ...data });
+}`}</code></pre>
+
+  <h3>Cache Invalidation</h3>
+  <ul>
+    <li><strong>TTL (Time To Live):</strong> Auto-expire after time period</li>
+    <li><strong>Event-based:</strong> Invalidate on data changes</li>
+    <li><strong>Version keys:</strong> Include version in cache key</li>
+  </ul>
+
+  <h2 id="databases">Databases at Scale</h2>
+
+  <h3>Replication</h3>
+  <p>Copy data across multiple servers for redundancy and read scaling.</p>
+  <pre><code>{`                    ┌─────────────┐
+           ┌────────│   Primary   │────────┐
+           │        │   (Write)   │        │
+           │        └─────────────┘        │
+           │ Replicate         Replicate   │
+           ▼                               ▼
+    ┌─────────────┐               ┌─────────────┐
+    │  Replica 1  │               │  Replica 2  │
+    │   (Read)    │               │   (Read)    │
+    └─────────────┘               └─────────────┘`}</code></pre>
+
+  <h3>Sharding (Partitioning)</h3>
+  <p>Split data across multiple databases based on a key.</p>
+  <pre><code>{`// Shard by user ID
+function getShardId(userId) {
+  return userId % NUM_SHARDS;
+}
+
+// User 1-1000 → Shard 0
+// User 1001-2000 → Shard 1
+// etc.`}</code></pre>
+
+  <h3>Sharding Strategies</h3>
+  <ul>
+    <li><strong>Range-based:</strong> Users A-M → Shard 1, N-Z → Shard 2</li>
+    <li><strong>Hash-based:</strong> hash(key) % num_shards</li>
+    <li><strong>Directory-based:</strong> Lookup table maps keys to shards</li>
+  </ul>
+
+  <h2 id="queues">Message Queues</h2>
+  <p>Decouple services and handle asynchronous processing.</p>
+
+  <h3>Use Cases</h3>
+  <ul>
+    <li><strong>Email sending:</strong> Queue emails for async processing</li>
+    <li><strong>Image processing:</strong> Resize/optimize uploaded images</li>
+    <li><strong>Order processing:</strong> Handle orders asynchronously</li>
+    <li><strong>Event streaming:</strong> Real-time data pipelines</li>
+  </ul>
+
+  <h3>Architecture</h3>
+  <pre><code>{`                    ┌─────────────┐
+                    │  Producer   │
+                    │ (Web Server)│
+                    └──────┬──────┘
+                           │ Publish
+                    ┌──────▼──────┐
+                    │   Queue     │
+                    │ (RabbitMQ)  │
+                    └──────┬──────┘
+                           │ Consume
+                    ┌──────▼──────┐
+                    │  Consumer   │
+                    │  (Worker)   │
+                    └─────────────┘`}</code></pre>
+
+  <h3>Popular Tools</h3>
+  <ul>
+    <li><strong>RabbitMQ:</strong> Traditional message broker</li>
+    <li><strong>Apache Kafka:</strong> Distributed streaming platform</li>
+    <li><strong>Amazon SQS:</strong> Managed cloud queue</li>
+    <li><strong>Redis:</strong> Can also function as a simple queue</li>
+  </ul>
+
+  <h2 id="process">System Design Process</h2>
+
+  <h3>Step 1: Clarify Requirements</h3>
+  <ul>
+    <li>What features are required?</li>
+    <li>How many users? What scale?</li>
+    <li>What are the latency requirements?</li>
+    <li>What consistency guarantees are needed?</li>
+  </ul>
+
+  <h3>Step 2: Estimate Scale</h3>
+  <pre><code>{`// Example: Design Twitter
+Daily Active Users: 200 million
+Tweets per day: 500 million
+Read/Write ratio: 100:1
+
+// Calculations
+Tweets/second: 500M / 86400 ≈ 6000 TPS
+Reads/second: 600,000 TPS
+
+// Storage (assuming 280 chars avg)
+Per tweet: ~1 KB (with metadata)
+Daily: 500 GB
+Yearly: ~180 TB`}</code></pre>
+
+  <h3>Step 3: High-Level Design</h3>
+  <p>Draw the major components and their interactions.</p>
+
+  <h3>Step 4: Deep Dive</h3>
+  <p>Focus on critical components and potential bottlenecks.</p>
+
+  <h3>Step 5: Address Bottlenecks</h3>
+  <ul>
+    <li>Single points of failure</li>
+    <li>Data consistency issues</li>
+    <li>Scaling limitations</li>
+  </ul>
+
+  <h3>Related Guides</h3>
+  <ul>
+    <li><a href="/guides/databases">Databases Guide</a></li>
+    <li><a href="/guides/api-design">API Design</a></li>
+    <li><a href="/guides/interview-prep">Interview Preparation</a></li>
+  </ul>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+    }
+  </style>
+</GuideLayout>

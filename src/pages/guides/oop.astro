@@ -1,0 +1,377 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'Classes & Objects', href: '#classes-objects' },
+  { title: 'Encapsulation', href: '#encapsulation' },
+  { title: 'Inheritance', href: '#inheritance' },
+  { title: 'Polymorphism', href: '#polymorphism' },
+  { title: 'Abstraction', href: '#abstraction' },
+  { title: 'SOLID Principles', href: '#solid' },
+  { title: 'Design Patterns', href: '#patterns' }
+];
+---
+
+<GuideLayout
+  title="Object-Oriented Programming: Complete Guide"
+  description="Master OOP concepts including classes, inheritance, polymorphism, encapsulation, SOLID principles, and common design patterns."
+  level="intermediate"
+  readTime="35 min read"
+  datePublished="2024-12-01"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Object-Oriented Programming (OOP) is a programming paradigm that organizes code around objects
+    rather than functions. It's the foundation of languages like Java, C++, Python, and JavaScript.
+  </p>
+
+  <h2 id="introduction">Why OOP?</h2>
+  <p>OOP helps you write code that is:</p>
+  <ul>
+    <li><strong>Modular:</strong> Break complex systems into manageable pieces</li>
+    <li><strong>Reusable:</strong> Write once, use many times through inheritance</li>
+    <li><strong>Maintainable:</strong> Changes in one place don't break others</li>
+    <li><strong>Intuitive:</strong> Model real-world entities naturally</li>
+  </ul>
+
+  <h3>The Four Pillars of OOP</h3>
+  <ol>
+    <li><strong>Encapsulation:</strong> Bundle data and methods together</li>
+    <li><strong>Inheritance:</strong> Create new classes from existing ones</li>
+    <li><strong>Polymorphism:</strong> Same interface, different implementations</li>
+    <li><strong>Abstraction:</strong> Hide complexity, expose simplicity</li>
+  </ol>
+
+  <h2 id="classes-objects">Classes & Objects</h2>
+  <p>
+    A <strong>class</strong> is a blueprint. An <strong>object</strong> is an instance of that blueprint.
+  </p>
+
+  <h3>Defining a Class</h3>
+  <pre><code>{`# Python
+class Dog:
+    def __init__(self, name, breed):
+        self.name = name
+        self.breed = breed
+
+    def bark(self):
+        return f"{self.name} says woof!"
+
+# Create objects (instances)
+buddy = Dog("Buddy", "Golden Retriever")
+max = Dog("Max", "German Shepherd")
+
+print(buddy.bark())  # "Buddy says woof!"
+print(max.name)      # "Max"`}</code></pre>
+
+  <h3>JavaScript Class</h3>
+  <pre><code>{`class Dog {
+    constructor(name, breed) {
+        this.name = name;
+        this.breed = breed;
+    }
+
+    bark() {
+        return \`\${this.name} says woof!\`;
+    }
+}
+
+const buddy = new Dog("Buddy", "Golden Retriever");
+console.log(buddy.bark());  // "Buddy says woof!"`}</code></pre>
+
+  <h2 id="encapsulation">Encapsulation</h2>
+  <p>
+    Encapsulation bundles data (attributes) and methods that operate on that data within a class,
+    and restricts direct access to some components.
+  </p>
+
+  <h3>Private vs Public</h3>
+  <pre><code>{`class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner        # Public
+        self.__balance = balance  # Private (convention: __)
+
+    def deposit(self, amount):
+        if amount > 0:
+            self.__balance += amount
+            return True
+        return False
+
+    def withdraw(self, amount):
+        if 0 < amount <= self.__balance:
+            self.__balance -= amount
+            return True
+        return False
+
+    def get_balance(self):
+        return self.__balance  # Controlled access
+
+# Usage
+account = BankAccount("Alice", 1000)
+account.deposit(500)
+print(account.get_balance())  # 1500
+
+# Can't access directly
+# account.__balance  # AttributeError`}</code></pre>
+
+  <h3>Benefits</h3>
+  <ul>
+    <li>Protect internal state from invalid modifications</li>
+    <li>Change implementation without affecting external code</li>
+    <li>Validate data before changes</li>
+  </ul>
+
+  <h2 id="inheritance">Inheritance</h2>
+  <p>
+    Inheritance allows a class to inherit attributes and methods from another class.
+  </p>
+
+  <h3>Basic Inheritance</h3>
+  <pre><code>{`class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        pass  # To be implemented by subclasses
+
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name} says woof!"
+
+class Cat(Animal):
+    def speak(self):
+        return f"{self.name} says meow!"
+
+# Usage
+dog = Dog("Buddy")
+cat = Cat("Whiskers")
+
+print(dog.speak())  # "Buddy says woof!"
+print(cat.speak())  # "Whiskers says meow!"`}</code></pre>
+
+  <h3>Using super()</h3>
+  <pre><code>{`class Employee:
+    def __init__(self, name, salary):
+        self.name = name
+        self.salary = salary
+
+class Manager(Employee):
+    def __init__(self, name, salary, department):
+        super().__init__(name, salary)  # Call parent constructor
+        self.department = department
+
+    def give_raise(self, employee, amount):
+        employee.salary += amount
+
+manager = Manager("Alice", 80000, "Engineering")
+print(manager.name)        # "Alice"
+print(manager.department)  # "Engineering"`}</code></pre>
+
+  <h3>When to Use Inheritance</h3>
+  <ul>
+    <li><strong>"Is-a" relationship:</strong> A Dog IS AN Animal</li>
+    <li><strong>Shared behavior:</strong> Multiple classes share common methods</li>
+    <li><strong>Prefer composition over inheritance</strong> when in doubt</li>
+  </ul>
+
+  <h2 id="polymorphism">Polymorphism</h2>
+  <p>
+    Polymorphism means "many forms." The same interface can have different implementations.
+  </p>
+
+  <h3>Method Overriding</h3>
+  <pre><code>{`class Shape:
+    def area(self):
+        raise NotImplementedError
+
+class Rectangle(Shape):
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+class Circle(Shape):
+    def __init__(self, radius):
+        self.radius = radius
+
+    def area(self):
+        return 3.14159 * self.radius ** 2
+
+# Polymorphism in action
+shapes = [Rectangle(4, 5), Circle(3)]
+for shape in shapes:
+    print(shape.area())  # Different implementation, same interface`}</code></pre>
+
+  <h3>Duck Typing (Python)</h3>
+  <pre><code>{`# "If it walks like a duck and quacks like a duck, it's a duck"
+class Duck:
+    def speak(self):
+        return "Quack!"
+
+class Person:
+    def speak(self):
+        return "Hello!"
+
+def make_speak(thing):
+    print(thing.speak())  # Works with any object that has speak()
+
+make_speak(Duck())    # "Quack!"
+make_speak(Person())  # "Hello!"`}</code></pre>
+
+  <h2 id="abstraction">Abstraction</h2>
+  <p>
+    Abstraction hides complex implementation details and exposes only what's necessary.
+  </p>
+
+  <h3>Abstract Classes</h3>
+  <pre><code>{`from abc import ABC, abstractmethod
+
+class Database(ABC):
+    @abstractmethod
+    def connect(self):
+        pass
+
+    @abstractmethod
+    def query(self, sql):
+        pass
+
+class PostgreSQL(Database):
+    def connect(self):
+        print("Connecting to PostgreSQL...")
+
+    def query(self, sql):
+        print(f"Executing: {sql}")
+
+class MongoDB(Database):
+    def connect(self):
+        print("Connecting to MongoDB...")
+
+    def query(self, sql):
+        print(f"Converting SQL to MongoDB query: {sql}")
+
+# Can't instantiate abstract class
+# db = Database()  # TypeError
+
+# Must use concrete implementation
+db = PostgreSQL()
+db.connect()
+db.query("SELECT * FROM users")`}</code></pre>
+
+  <h2 id="solid">SOLID Principles</h2>
+  <p>SOLID is a set of five design principles for writing maintainable OOP code.</p>
+
+  <h3>S - Single Responsibility Principle</h3>
+  <p>A class should have only one reason to change.</p>
+  <pre><code>{`# Bad: Multiple responsibilities
+class User:
+    def save_to_database(self): ...
+    def generate_report(self): ...
+    def send_email(self): ...
+
+# Good: Single responsibility
+class User:
+    def __init__(self, name, email): ...
+
+class UserRepository:
+    def save(self, user): ...
+
+class UserReportGenerator:
+    def generate(self, user): ...`}</code></pre>
+
+  <h3>O - Open/Closed Principle</h3>
+  <p>Open for extension, closed for modification.</p>
+
+  <h3>L - Liskov Substitution Principle</h3>
+  <p>Subclasses should be substitutable for their base classes.</p>
+
+  <h3>I - Interface Segregation Principle</h3>
+  <p>Many specific interfaces are better than one general interface.</p>
+
+  <h3>D - Dependency Inversion Principle</h3>
+  <p>Depend on abstractions, not concretions.</p>
+  <pre><code>{`# Bad: Depends on concrete class
+class OrderService:
+    def __init__(self):
+        self.db = MySQLDatabase()  # Tightly coupled
+
+# Good: Depends on abstraction
+class OrderService:
+    def __init__(self, database: Database):
+        self.db = database  # Can use any Database implementation`}</code></pre>
+
+  <h2 id="patterns">Design Patterns</h2>
+  <p>Common solutions to recurring design problems.</p>
+
+  <h3>Singleton</h3>
+  <p>Ensure only one instance of a class exists.</p>
+  <pre><code>{`class DatabaseConnection:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+# Both variables point to the same instance
+db1 = DatabaseConnection()
+db2 = DatabaseConnection()
+print(db1 is db2)  # True`}</code></pre>
+
+  <h3>Factory</h3>
+  <p>Create objects without specifying the exact class.</p>
+  <pre><code>{`class AnimalFactory:
+    @staticmethod
+    def create(animal_type):
+        if animal_type == "dog":
+            return Dog()
+        elif animal_type == "cat":
+            return Cat()
+        raise ValueError(f"Unknown animal: {animal_type}")
+
+# Usage
+animal = AnimalFactory.create("dog")`}</code></pre>
+
+  <h3>Observer</h3>
+  <p>Notify multiple objects when state changes.</p>
+
+  <h3>Strategy</h3>
+  <p>Define a family of algorithms and make them interchangeable.</p>
+
+  <h3>Related Guides</h3>
+  <ul>
+    <li><a href="/guides/programming-fundamentals">Programming Fundamentals</a></li>
+    <li><a href="/guides/data-structures">Data Structures</a></li>
+    <li><a href="/guides/system-design">System Design</a></li>
+  </ul>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+    }
+  </style>
+</GuideLayout>

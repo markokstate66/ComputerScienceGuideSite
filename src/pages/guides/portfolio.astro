@@ -1,0 +1,272 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+
+const toc = [
+  { title: 'Why You Need a Portfolio', href: '#why' },
+  { title: 'Project Ideas', href: '#project-ideas' },
+  { title: 'Building Your Portfolio Site', href: '#building' },
+  { title: 'Showcasing Projects', href: '#showcasing' },
+  { title: 'GitHub Profile', href: '#github' },
+  { title: 'Resume Tips', href: '#resume' },
+  { title: 'Standing Out', href: '#standing-out' }
+];
+---
+
+<GuideLayout
+  title="Building Your Developer Portfolio"
+  description="Learn how to create a standout portfolio, choose impactful projects, and present your work to land developer jobs and freelance clients."
+  level="beginner"
+  readTime="20 min read"
+  datePublished="2024-12-01"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Your portfolio is your professional identity as a developer. It showcases your skills, projects,
+    and personality to potential employers and clients. A great portfolio can open doors that a resume alone cannot.
+  </p>
+
+  <h2 id="why">Why You Need a Portfolio</h2>
+  <ul>
+    <li><strong>Show, don't tell:</strong> Demonstrate skills with real projects</li>
+    <li><strong>Stand out:</strong> Differentiate yourself from other candidates</li>
+    <li><strong>Prove you can finish:</strong> Complete projects show follow-through</li>
+    <li><strong>Conversation starters:</strong> Give interviewers something to discuss</li>
+    <li><strong>Attract opportunities:</strong> Recruiters search for developers online</li>
+  </ul>
+
+  <h3>Quality Over Quantity</h3>
+  <p>
+    3-5 polished projects are better than 20 incomplete ones. Each project should demonstrate
+    specific skills and be something you can discuss confidently in interviews.
+  </p>
+
+  <h2 id="project-ideas">Project Ideas by Skill Level</h2>
+
+  <h3>Beginner Projects</h3>
+  <ul>
+    <li><strong>Personal Portfolio Site:</strong> Your first project can be the portfolio itself!</li>
+    <li><strong>To-Do App:</strong> CRUD operations, local storage</li>
+    <li><strong>Calculator:</strong> JavaScript logic, CSS Grid</li>
+    <li><strong>Weather App:</strong> API integration, async JavaScript</li>
+    <li><strong>Quiz App:</strong> State management, user interaction</li>
+  </ul>
+
+  <h3>Intermediate Projects</h3>
+  <ul>
+    <li><strong>E-commerce Store:</strong> Products, cart, checkout (mock or real payments)</li>
+    <li><strong>Blog Platform:</strong> Authentication, database, Markdown rendering</li>
+    <li><strong>Social Media Clone:</strong> User profiles, posts, follows</li>
+    <li><strong>Task Management:</strong> Teams, assignments, due dates (Trello/Notion clone)</li>
+    <li><strong>Real-time Chat:</strong> WebSockets, message history</li>
+  </ul>
+
+  <h3>Advanced Projects</h3>
+  <ul>
+    <li><strong>SaaS Application:</strong> Subscriptions, dashboards, multi-tenancy</li>
+    <li><strong>AI/ML Integration:</strong> Chatbots, image recognition, recommendations</li>
+    <li><strong>Developer Tool:</strong> CLI tool, VS Code extension, npm package</li>
+    <li><strong>Mobile App:</strong> React Native or native iOS/Android</li>
+    <li><strong>Open Source Contribution:</strong> Contribute to established projects</li>
+  </ul>
+
+  <h2 id="building">Building Your Portfolio Site</h2>
+
+  <h3>What to Include</h3>
+  <ul>
+    <li><strong>Hero Section:</strong> Name, title, brief tagline</li>
+    <li><strong>About Me:</strong> Your background, interests, and goals</li>
+    <li><strong>Projects:</strong> 3-5 best projects with descriptions</li>
+    <li><strong>Skills:</strong> Technologies you're proficient in</li>
+    <li><strong>Contact:</strong> How to reach you (email, LinkedIn, GitHub)</li>
+    <li><strong>Resume:</strong> Downloadable PDF</li>
+  </ul>
+
+  <h3>Tech Stack Options</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Best For</th>
+        <th>Deployment</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>HTML/CSS/JS</td>
+        <td>Beginners</td>
+        <td>GitHub Pages, Netlify</td>
+      </tr>
+      <tr>
+        <td>Astro</td>
+        <td>Content-focused sites</td>
+        <td>Vercel, Netlify</td>
+      </tr>
+      <tr>
+        <td>Next.js</td>
+        <td>React developers</td>
+        <td>Vercel</td>
+      </tr>
+      <tr>
+        <td>Gatsby</td>
+        <td>Blog + portfolio</td>
+        <td>Netlify, Gatsby Cloud</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Design Tips</h3>
+  <ul>
+    <li><strong>Keep it simple:</strong> Clean design beats flashy animations</li>
+    <li><strong>Mobile responsive:</strong> Many recruiters browse on phones</li>
+    <li><strong>Fast loading:</strong> Optimize images, minimize JavaScript</li>
+    <li><strong>Consistent branding:</strong> Colors, fonts, tone of voice</li>
+    <li><strong>Dark mode:</strong> Developers love it!</li>
+  </ul>
+
+  <h2 id="showcasing">Showcasing Projects</h2>
+
+  <h3>Each Project Should Include</h3>
+  <ul>
+    <li><strong>Title and Description:</strong> What it is and what problem it solves</li>
+    <li><strong>Screenshot/Demo:</strong> Visual preview or live demo link</li>
+    <li><strong>Tech Stack:</strong> Technologies used</li>
+    <li><strong>Key Features:</strong> What makes it interesting</li>
+    <li><strong>Challenges:</strong> Problems you solved (great interview material)</li>
+    <li><strong>Links:</strong> Live demo AND source code</li>
+  </ul>
+
+  <h3>Project Description Template</h3>
+  <pre><code>{`## Project Name
+
+**Description:** One-sentence summary of what it does.
+
+**Problem Solved:** Why you built it and who it helps.
+
+**Tech Stack:** React, Node.js, PostgreSQL, Tailwind CSS
+
+**Key Features:**
+- User authentication with JWT
+- Real-time updates with WebSockets
+- Responsive design for mobile
+
+**Challenges & Learnings:**
+- Implemented optimistic UI updates for better UX
+- Learned to handle WebSocket reconnection logic
+
+**Links:**
+- Live Demo: https://project.example.com
+- GitHub: https://github.com/username/project`}</code></pre>
+
+  <h2 id="github">GitHub Profile</h2>
+  <p>Your GitHub is an extension of your portfolio. Keep it professional.</p>
+
+  <h3>GitHub Profile README</h3>
+  <p>Create a repository named your username (e.g., <code>username/username</code>) with a README.md:</p>
+  <pre><code>{`# Hi, I'm [Your Name] 👋
+
+## About Me
+Frontend developer passionate about building user-friendly web apps.
+
+## Tech Stack
+![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
+
+## Featured Projects
+- [Project 1](link) - Brief description
+- [Project 2](link) - Brief description
+
+## Connect
+- Portfolio: yoursite.com
+- LinkedIn: linkedin.com/in/yourname`}</code></pre>
+
+  <h3>Repository Best Practices</h3>
+  <ul>
+    <li><strong>Good README:</strong> Every project should explain what it is and how to run it</li>
+    <li><strong>Clean commit history:</strong> Meaningful commit messages</li>
+    <li><strong>Pin best repos:</strong> Highlight your top 6 projects</li>
+    <li><strong>Active contribution:</strong> Green squares show you're actively coding</li>
+  </ul>
+
+  <h2 id="resume">Resume Tips</h2>
+
+  <h3>Developer Resume Structure</h3>
+  <ol>
+    <li><strong>Header:</strong> Name, email, phone, LinkedIn, GitHub, portfolio</li>
+    <li><strong>Summary:</strong> 2-3 sentences about your focus and experience</li>
+    <li><strong>Skills:</strong> Languages, frameworks, tools (be honest!)</li>
+    <li><strong>Experience:</strong> Jobs, internships, freelance work</li>
+    <li><strong>Projects:</strong> 2-3 best projects with brief descriptions</li>
+    <li><strong>Education:</strong> Degrees, bootcamps, certifications</li>
+  </ol>
+
+  <h3>Action Verbs for Projects</h3>
+  <ul>
+    <li>Built, Developed, Designed, Implemented, Created</li>
+    <li>Improved, Optimized, Reduced, Increased</li>
+    <li>Integrated, Deployed, Migrated, Automated</li>
+  </ul>
+
+  <h3>Quantify Impact</h3>
+  <pre><code>{`❌ "Built a web application"
+✓ "Built a web app that reduced data entry time by 40%"
+
+❌ "Improved website performance"
+✓ "Reduced page load time from 4s to 1.2s (70% improvement)"
+
+❌ "Worked on the frontend"
+✓ "Developed 15+ React components used across 3 products"`}</code></pre>
+
+  <h2 id="standing-out">Standing Out</h2>
+
+  <h3>Beyond the Portfolio</h3>
+  <ul>
+    <li><strong>Write blog posts:</strong> Share what you learn (Dev.to, Medium, personal blog)</li>
+    <li><strong>Open source:</strong> Contribute to projects you use</li>
+    <li><strong>Build in public:</strong> Tweet/post about your progress</li>
+    <li><strong>Create tutorials:</strong> Teaching demonstrates deep understanding</li>
+    <li><strong>Attend meetups:</strong> Network with other developers</li>
+  </ul>
+
+  <h3>Unique Project Ideas</h3>
+  <ul>
+    <li>Solve a problem YOU have (authenticity shows)</li>
+    <li>Build for a niche community you're part of</li>
+    <li>Recreate a popular app with a twist</li>
+    <li>Combine two technologies in an unusual way</li>
+  </ul>
+
+  <h3>Related Guides</h3>
+  <ul>
+    <li><a href="/guides/interview-prep">Interview Preparation</a></li>
+    <li><a href="/guides/web-development">Web Development</a></li>
+    <li><a href="/guides/git-version-control">Git & Version Control</a></li>
+  </ul>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+    }
+  </style>
+</GuideLayout>

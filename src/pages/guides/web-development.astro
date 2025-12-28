@@ -1,0 +1,294 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+
+const toc = [
+  { title: 'Introduction', href: '#introduction' },
+  { title: 'How the Web Works', href: '#how-web-works' },
+  { title: 'Frontend Development', href: '#frontend' },
+  { title: 'Backend Development', href: '#backend' },
+  { title: 'Databases', href: '#databases' },
+  { title: 'APIs & REST', href: '#apis' },
+  { title: 'Development Tools', href: '#tools' },
+  { title: 'Learning Path', href: '#learning-path' }
+];
+---
+
+<GuideLayout
+  title="Web Development: Complete Beginner's Roadmap"
+  description="Learn web development from scratch. Understand frontend, backend, databases, and APIs to build modern web applications."
+  level="beginner"
+  readTime="25 min read"
+  datePublished="2024-12-01"
+  lastUpdated="December 2024"
+  toc={toc}
+>
+  <p class="intro">
+    Web development is the art of building websites and web applications. From simple landing pages
+    to complex platforms like social networks, web developers create the digital experiences we use every day.
+  </p>
+
+  <h2 id="introduction">What is Web Development?</h2>
+  <p>
+    Web development encompasses everything involved in building websites: writing code, designing layouts,
+    setting up servers, and managing databases. It's typically divided into two main areas:
+  </p>
+  <ul>
+    <li><strong>Frontend (Client-side):</strong> What users see and interact with in their browser</li>
+    <li><strong>Backend (Server-side):</strong> The logic, databases, and servers that power the application</li>
+    <li><strong>Full-stack:</strong> Developers who work on both frontend and backend</li>
+  </ul>
+
+  <h3>Why Learn Web Development?</h3>
+  <ul>
+    <li><strong>High demand:</strong> Every business needs a web presence</li>
+    <li><strong>Creative + technical:</strong> Blend design with problem-solving</li>
+    <li><strong>Immediate results:</strong> See your work come to life in the browser</li>
+    <li><strong>Low barrier to entry:</strong> Start with just a text editor and browser</li>
+  </ul>
+
+  <h2 id="how-web-works">How the Web Works</h2>
+  <p>
+    Understanding the fundamentals helps you become a better developer. Here's what happens when you visit a website:
+  </p>
+
+  <h3>The Request-Response Cycle</h3>
+  <ol>
+    <li><strong>You type a URL</strong> in your browser (e.g., www.example.com)</li>
+    <li><strong>DNS lookup</strong> translates the domain name to an IP address</li>
+    <li><strong>Browser sends a request</strong> to the server at that IP address</li>
+    <li><strong>Server processes the request</strong> and prepares a response</li>
+    <li><strong>Server sends back HTML, CSS, and JavaScript</strong></li>
+    <li><strong>Browser renders the page</strong> for you to see</li>
+  </ol>
+
+  <h3>Key Technologies</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Technology</th>
+        <th>Purpose</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>HTTP/HTTPS</td>
+        <td>Protocol for communication</td>
+        <td>GET, POST requests</td>
+      </tr>
+      <tr>
+        <td>HTML</td>
+        <td>Structure and content</td>
+        <td>&lt;h1&gt;, &lt;p&gt;, &lt;div&gt;</td>
+      </tr>
+      <tr>
+        <td>CSS</td>
+        <td>Styling and layout</td>
+        <td>Colors, fonts, flexbox</td>
+      </tr>
+      <tr>
+        <td>JavaScript</td>
+        <td>Interactivity and logic</td>
+        <td>Click handlers, API calls</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="frontend">Frontend Development</h2>
+  <p>
+    Frontend development focuses on the user interface - everything visible in the browser.
+  </p>
+
+  <h3>Core Technologies</h3>
+  <ul>
+    <li><strong>HTML:</strong> The skeleton - defines structure and content</li>
+    <li><strong>CSS:</strong> The skin - controls appearance and layout</li>
+    <li><strong>JavaScript:</strong> The muscles - adds interactivity and dynamic behavior</li>
+  </ul>
+
+  <h3>Modern Frontend Development</h3>
+  <pre><code>{`<!-- Modern HTML5 structure -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav><!-- Navigation --></nav>
+    </header>
+    <main>
+        <article><!-- Content --></article>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>`}</code></pre>
+
+  <h3>Popular Frontend Frameworks</h3>
+  <ul>
+    <li><strong>React:</strong> Component-based library by Facebook (most popular)</li>
+    <li><strong>Vue.js:</strong> Progressive framework, easy to learn</li>
+    <li><strong>Angular:</strong> Full-featured framework by Google</li>
+    <li><strong>Svelte:</strong> Compiler-based approach, minimal runtime</li>
+  </ul>
+
+  <h2 id="backend">Backend Development</h2>
+  <p>
+    Backend development handles server-side logic, database operations, authentication, and business logic.
+  </p>
+
+  <h3>Popular Backend Technologies</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Language</th>
+        <th>Framework</th>
+        <th>Best For</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>JavaScript</td>
+        <td>Node.js / Express</td>
+        <td>Full-stack JS, real-time apps</td>
+      </tr>
+      <tr>
+        <td>Python</td>
+        <td>Django / Flask</td>
+        <td>Rapid development, data science</td>
+      </tr>
+      <tr>
+        <td>Java</td>
+        <td>Spring Boot</td>
+        <td>Enterprise applications</td>
+      </tr>
+      <tr>
+        <td>C#</td>
+        <td>ASP.NET Core</td>
+        <td>Microsoft ecosystem</td>
+      </tr>
+      <tr>
+        <td>Go</td>
+        <td>Gin / Echo</td>
+        <td>High-performance services</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Backend Responsibilities</h3>
+  <ul>
+    <li><strong>API endpoints:</strong> Handle requests from the frontend</li>
+    <li><strong>Authentication:</strong> User login, sessions, JWT tokens</li>
+    <li><strong>Database operations:</strong> CRUD (Create, Read, Update, Delete)</li>
+    <li><strong>Business logic:</strong> Rules, calculations, validations</li>
+    <li><strong>Security:</strong> Input validation, encryption, protection against attacks</li>
+  </ul>
+
+  <h2 id="databases">Databases</h2>
+  <p>
+    Databases store and organize your application's data. There are two main types:
+  </p>
+
+  <h3>SQL (Relational) Databases</h3>
+  <p>Store data in tables with defined relationships. Great for structured data.</p>
+  <pre><code>{`-- Example SQL query
+SELECT users.name, orders.total
+FROM users
+JOIN orders ON users.id = orders.user_id
+WHERE orders.total > 100;`}</code></pre>
+  <ul>
+    <li><strong>PostgreSQL:</strong> Feature-rich, great for complex queries</li>
+    <li><strong>MySQL:</strong> Popular, widely supported</li>
+    <li><strong>SQLite:</strong> Lightweight, file-based (great for learning)</li>
+  </ul>
+
+  <h3>NoSQL Databases</h3>
+  <p>Flexible schema, great for unstructured or rapidly changing data.</p>
+  <ul>
+    <li><strong>MongoDB:</strong> Document-based, JSON-like storage</li>
+    <li><strong>Redis:</strong> In-memory, great for caching</li>
+    <li><strong>Firebase:</strong> Real-time database, great for mobile apps</li>
+  </ul>
+
+  <h2 id="apis">APIs & REST</h2>
+  <p>
+    APIs (Application Programming Interfaces) allow different software systems to communicate.
+    REST is the most common architectural style for web APIs.
+  </p>
+
+  <h3>RESTful API Principles</h3>
+  <ul>
+    <li><strong>Resources:</strong> Everything is a resource (users, posts, products)</li>
+    <li><strong>HTTP Methods:</strong> GET (read), POST (create), PUT (update), DELETE (remove)</li>
+    <li><strong>Stateless:</strong> Each request contains all needed information</li>
+    <li><strong>JSON:</strong> Standard format for data exchange</li>
+  </ul>
+
+  <pre><code>{`// Example API request with JavaScript
+fetch('https://api.example.com/users')
+  .then(response => response.json())
+  .then(users => console.log(users))
+  .catch(error => console.error('Error:', error));`}</code></pre>
+
+  <h2 id="tools">Development Tools</h2>
+  <p>Modern web development relies on various tools to improve productivity:</p>
+
+  <h3>Essential Tools</h3>
+  <ul>
+    <li><strong>VS Code:</strong> Popular code editor with great extensions</li>
+    <li><strong>Git:</strong> Version control for tracking code changes</li>
+    <li><strong>Browser DevTools:</strong> Debug, inspect, and profile your code</li>
+    <li><strong>npm/yarn:</strong> Package managers for JavaScript libraries</li>
+  </ul>
+
+  <h3>Deployment & Hosting</h3>
+  <ul>
+    <li><strong>Vercel:</strong> Great for frontend frameworks (Next.js, Astro)</li>
+    <li><strong>Netlify:</strong> Easy static site and serverless deployment</li>
+    <li><strong>Railway/Render:</strong> Full-stack app hosting</li>
+    <li><strong>AWS/Azure/GCP:</strong> Enterprise cloud platforms</li>
+  </ul>
+
+  <h2 id="learning-path">Recommended Learning Path</h2>
+  <p>Follow this path to build a strong web development foundation:</p>
+
+  <ol>
+    <li><strong>HTML & CSS</strong> - Build static pages (<a href="/guides/html-css">HTML & CSS Guide</a>)</li>
+    <li><strong>JavaScript</strong> - Add interactivity (<a href="/guides/javascript">JavaScript Guide</a>)</li>
+    <li><strong>Git</strong> - Version control (<a href="/guides/git-version-control">Git Guide</a>)</li>
+    <li><strong>React or Vue</strong> - Modern frontend framework (<a href="/guides/react">React Guide</a>)</li>
+    <li><strong>Node.js</strong> - Backend with JavaScript (<a href="/guides/nodejs">Node.js Guide</a>)</li>
+    <li><strong>Databases</strong> - Data persistence (<a href="/guides/databases">Databases Guide</a>)</li>
+    <li><strong>Build projects!</strong> - Apply your skills to real projects</li>
+  </ol>
+
+  <style>
+    .intro {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+    }
+  </style>
+</GuideLayout>
