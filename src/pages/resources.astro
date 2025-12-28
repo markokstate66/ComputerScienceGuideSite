@@ -142,31 +142,36 @@ const practice = [
     title: "LeetCode",
     description: "2000+ coding problems with company-specific questions. Essential for FAANG-level interview preparation.",
     url: "https://leetcode.com/",
-    features: ["Company-tagged problems", "Weekly contests", "Discussion forums"]
+    features: ["Company-tagged problems", "Weekly contests", "Discussion forums"],
+    logoUrl: "https://leetcode.com/static/images/LeetCode_logo_rvs.png"
   },
   {
     title: "HackerRank",
     description: "Practice problems, competitions, and skill certifications. Great for building a verified skill profile.",
     url: "https://www.hackerrank.com/",
-    features: ["Skill certifications", "Interview prep kits", "Domain-specific challenges"]
+    features: ["Skill certifications", "Interview prep kits", "Domain-specific challenges"],
+    logoUrl: "https://www.hackerrank.com/wp-content/uploads/2018/08/hackerrank_logo.png"
   },
   {
     title: "Codewars",
     description: "Community-driven coding challenges (kata) with a ranking system. Level up from 8 kyu to 1 dan.",
     url: "https://www.codewars.com/",
-    features: ["Gamified progression", "Multiple languages", "Community solutions"]
+    features: ["Gamified progression", "Multiple languages", "Community solutions"],
+    logoUrl: "https://www.codewars.com/packs/assets/logo.61192cf7.svg"
   },
   {
     title: "Exercism",
     description: "Free coding exercises with optional mentorship in 60+ programming languages. Learn idiomatically.",
     url: "https://exercism.org/",
-    features: ["Human mentorship", "60+ languages", "Learning tracks"]
+    features: ["Human mentorship", "60+ languages", "Learning tracks"],
+    logoUrl: "https://assets.exercism.org/assets/icons/exercism-with-logo-black-b427c06c6b8a89cb43a26a9e9116df10.svg"
   },
   {
     title: "Project Euler",
     description: "Mathematical and computational problems for the analytically minded. Great for developing algorithmic thinking.",
     url: "https://projecteuler.net/",
-    features: ["500+ problems", "Math-focused", "Progress tracking"]
+    features: ["500+ problems", "Math-focused", "Progress tracking"],
+    logoUrl: "https://projecteuler.net/themes/logo_default.png"
   }
 ];
 
@@ -310,6 +315,9 @@ const tools = [
       <div class="practice-grid">
         {practice.map(platform => (
           <a href={platform.url} class="practice-card" target="_blank" rel="noopener">
+            <div class="practice-logo">
+              <img src={platform.logoUrl} alt={platform.title} loading="lazy" />
+            </div>
             <h3>{platform.title}</h3>
             <p>{platform.description}</p>
             <div class="practice-features">
@@ -606,6 +614,22 @@ const tools = [
       box-shadow: 0 4px 20px var(--color-shadow);
       transform: translateY(-2px);
       text-decoration: none;
+    }
+
+    .practice-logo {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--color-bg-alt);
+      padding: 8px;
+    }
+
+    .practice-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     .practice-card h3 {
