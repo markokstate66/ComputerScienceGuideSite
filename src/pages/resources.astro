@@ -1,196 +1,316 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
+const books = [
+  {
+    title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+    author: "Robert C. Martin",
+    description: "A must-read for writing maintainable, professional software. Learn to write code that's easy to read, understand, and modify.",
+    tags: ["Best Seller", "All Levels"],
+    amazonUrl: "https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882?tag=dreamscribe09-20"
+  },
+  {
+    title: "Introduction to Algorithms (CLRS)",
+    author: "Cormen, Leiserson, Rivest, Stein",
+    description: "The definitive textbook on algorithms. Comprehensive and rigorous coverage of algorithms and data structures used worldwide in universities.",
+    tags: ["Advanced", "Textbook"],
+    amazonUrl: "https://www.amazon.com/Introduction-Algorithms-3rd-MIT-Press/dp/0262033844?tag=dreamscribe09-20"
+  },
+  {
+    title: "Cracking the Coding Interview",
+    author: "Gayle Laakmann McDowell",
+    description: "189 programming questions and solutions. The essential guide for technical interview preparation at top tech companies.",
+    tags: ["Must Read", "Interviews"],
+    amazonUrl: "https://www.amazon.com/Cracking-Coding-Interview-Programming-Questions/dp/0984782850?tag=dreamscribe09-20"
+  },
+  {
+    title: "The Pragmatic Programmer",
+    author: "David Thomas & Andrew Hunt",
+    description: "Timeless advice on software craftsmanship and career development. Updated 20th anniversary edition with modern best practices.",
+    tags: ["Classic", "All Levels"],
+    amazonUrl: "https://www.amazon.com/Pragmatic-Programmer-journey-mastery-Anniversary/dp/0135957052?tag=dreamscribe09-20"
+  },
+  {
+    title: "Design Patterns: Elements of Reusable Object-Oriented Software",
+    author: "Gang of Four",
+    description: "The classic book on reusable object-oriented design patterns. Essential knowledge for software architects and senior developers.",
+    tags: ["Advanced", "Architecture"],
+    amazonUrl: "https://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612?tag=dreamscribe09-20"
+  },
+  {
+    title: "Designing Data-Intensive Applications",
+    author: "Martin Kleppmann",
+    description: "The definitive guide to building reliable, scalable, and maintainable systems. Covers databases, distributed systems, and data processing.",
+    tags: ["Must Read", "System Design"],
+    amazonUrl: "https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321?tag=dreamscribe09-20"
+  },
+  {
+    title: "You Don't Know JS (Book Series)",
+    author: "Kyle Simpson",
+    description: "Deep dive into JavaScript mechanics. Goes beyond surface-level understanding to explain how JavaScript really works under the hood.",
+    tags: ["JavaScript", "Intermediate"],
+    amazonUrl: "https://www.amazon.com/You-Dont-Know-JS-Yet/dp/B084DFZ6GW?tag=dreamscribe09-20"
+  },
+  {
+    title: "System Design Interview",
+    author: "Alex Xu",
+    description: "An insider's guide to system design interviews. Learn to design scalable systems like URL shorteners, chat apps, and news feeds.",
+    tags: ["Interviews", "System Design"],
+    amazonUrl: "https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF?tag=dreamscribe09-20"
+  }
+];
 
-const resources = {
-  books: [
-    {
-      title: "Clean Code",
-      author: "Robert C. Martin",
-      description: "A must-read for writing maintainable, professional software.",
-      level: "Intermediate"
-    },
-    {
-      title: "Introduction to Algorithms (CLRS)",
-      author: "Cormen, Leiserson, Rivest, Stein",
-      description: "The definitive textbook on algorithms. Comprehensive and rigorous.",
-      level: "Advanced"
-    },
-    {
-      title: "Cracking the Coding Interview",
-      author: "Gayle Laakmann McDowell",
-      description: "189 programming questions and solutions for interview prep.",
-      level: "Intermediate"
-    },
-    {
-      title: "The Pragmatic Programmer",
-      author: "David Thomas, Andrew Hunt",
-      description: "Timeless advice on software craftsmanship and career development.",
-      level: "All levels"
-    },
-    {
-      title: "Design Patterns",
-      author: "Gang of Four",
-      description: "Classic book on reusable object-oriented design patterns.",
-      level: "Advanced"
-    }
-  ],
-  courses: [
-    {
-      title: "CS50: Introduction to Computer Science",
-      platform: "Harvard / edX",
-      description: "World-famous intro course covering C, Python, SQL, and more.",
-      url: "https://cs50.harvard.edu/",
-      free: true
-    },
-    {
-      title: "freeCodeCamp",
-      platform: "freeCodeCamp",
-      description: "Full-stack curriculum with certifications. Great for web development.",
-      url: "https://www.freecodecamp.org/",
-      free: true
-    },
-    {
-      title: "The Odin Project",
-      platform: "The Odin Project",
-      description: "Full-stack JavaScript/Ruby curriculum with hands-on projects.",
-      url: "https://www.theodinproject.com/",
-      free: true
-    },
-    {
-      title: "Algorithms Specialization",
-      platform: "Stanford / Coursera",
-      description: "Tim Roughgarden's excellent algorithm course series.",
-      url: "https://www.coursera.org/specializations/algorithms",
-      free: false
-    }
-  ],
-  practice: [
-    {
-      title: "LeetCode",
-      description: "2000+ coding problems with company-specific questions. Essential for interviews.",
-      url: "https://leetcode.com/"
-    },
-    {
-      title: "HackerRank",
-      description: "Practice problems, competitions, and skill certifications.",
-      url: "https://www.hackerrank.com/"
-    },
-    {
-      title: "Codewars",
-      description: "Community-driven coding challenges (kata) with ranking system.",
-      url: "https://www.codewars.com/"
-    },
-    {
-      title: "Project Euler",
-      description: "Mathematical/computational problems for the analytically minded.",
-      url: "https://projecteuler.net/"
-    },
-    {
-      title: "Exercism",
-      description: "Free coding exercises with mentorship in 60+ languages.",
-      url: "https://exercism.org/"
-    }
-  ],
-  tools: [
-    {
-      title: "Visual Studio Code",
-      description: "Free, powerful code editor with excellent extension ecosystem.",
-      url: "https://code.visualstudio.com/"
-    },
-    {
-      title: "Git",
-      description: "Essential version control system. Learn it early.",
-      url: "https://git-scm.com/"
-    },
-    {
-      title: "GitHub",
-      description: "Host code, collaborate, and build your portfolio.",
-      url: "https://github.com/"
-    },
-    {
-      title: "Postman",
-      description: "API development and testing tool.",
-      url: "https://www.postman.com/"
-    },
-    {
-      title: "Docker",
-      description: "Containerization platform for consistent development environments.",
-      url: "https://www.docker.com/"
-    }
-  ]
-};
+const courses = [
+  {
+    title: "CS50: Introduction to Computer Science",
+    platform: "Harvard / edX",
+    description: "World-famous intro course taught by David Malan. Covers C, Python, SQL, web development, and more. The best starting point for beginners.",
+    duration: "12 weeks",
+    level: "Beginner",
+    topics: ["Programming fundamentals", "Algorithms and data structures", "Web development basics", "SQL and databases"],
+    url: "https://cs50.harvard.edu/",
+    free: true
+  },
+  {
+    title: "The Complete Web Development Bootcamp",
+    platform: "Udemy",
+    description: "Comprehensive full-stack bootcamp by Angela Yu. Build real projects with HTML, CSS, JavaScript, Node.js, React, and MongoDB.",
+    duration: "65+ hours",
+    level: "Beginner",
+    topics: ["HTML, CSS, JavaScript", "React and Node.js", "MongoDB and SQL", "Authentication and security"],
+    url: "https://www.udemy.com/course/the-complete-web-development-bootcamp/",
+    free: false
+  },
+  {
+    title: "Algorithms Specialization",
+    platform: "Stanford / Coursera",
+    description: "Tim Roughgarden's excellent algorithm course series. Master divide-and-conquer, graph algorithms, greedy algorithms, and dynamic programming.",
+    duration: "4 months",
+    level: "Intermediate",
+    topics: ["Divide and conquer", "Graph algorithms", "Greedy algorithms", "Dynamic programming"],
+    url: "https://www.coursera.org/specializations/algorithms",
+    free: false
+  },
+  {
+    title: "The Odin Project",
+    platform: "The Odin Project",
+    description: "Full-stack curriculum with hands-on projects. Choose between JavaScript/React or Ruby on Rails paths. Completely free and open source.",
+    duration: "Self-paced",
+    level: "Beginner",
+    topics: ["Full-stack JavaScript", "React or Ruby on Rails", "Git and deployment", "Real-world projects"],
+    url: "https://www.theodinproject.com/",
+    free: true
+  },
+  {
+    title: "freeCodeCamp",
+    platform: "freeCodeCamp",
+    description: "Earn free certifications in responsive web design, JavaScript, front-end libraries, data visualization, APIs, and more.",
+    duration: "Self-paced",
+    level: "Beginner",
+    topics: ["Web design and development", "JavaScript algorithms", "Front-end libraries", "Data visualization"],
+    url: "https://www.freecodecamp.org/",
+    free: true
+  },
+  {
+    title: "Neetcode.io",
+    platform: "NeetCode",
+    description: "Structured roadmap for coding interview preparation. 150 curated LeetCode problems organized by pattern with video explanations.",
+    duration: "Self-paced",
+    level: "Intermediate",
+    topics: ["Arrays and hashing", "Two pointers and sliding window", "Trees and graphs", "Dynamic programming"],
+    url: "https://neetcode.io/",
+    free: true
+  }
+];
+
+const practice = [
+  {
+    title: "LeetCode",
+    description: "2000+ coding problems with company-specific questions. Essential for FAANG-level interview preparation.",
+    url: "https://leetcode.com/",
+    features: ["Company-tagged problems", "Weekly contests", "Discussion forums"]
+  },
+  {
+    title: "HackerRank",
+    description: "Practice problems, competitions, and skill certifications. Great for building a verified skill profile.",
+    url: "https://www.hackerrank.com/",
+    features: ["Skill certifications", "Interview prep kits", "Domain-specific challenges"]
+  },
+  {
+    title: "Codewars",
+    description: "Community-driven coding challenges (kata) with a ranking system. Level up from 8 kyu to 1 dan.",
+    url: "https://www.codewars.com/",
+    features: ["Gamified progression", "Multiple languages", "Community solutions"]
+  },
+  {
+    title: "Exercism",
+    description: "Free coding exercises with optional mentorship in 60+ programming languages. Learn idiomatically.",
+    url: "https://exercism.org/",
+    features: ["Human mentorship", "60+ languages", "Learning tracks"]
+  },
+  {
+    title: "Project Euler",
+    description: "Mathematical and computational problems for the analytically minded. Great for developing algorithmic thinking.",
+    url: "https://projecteuler.net/",
+    features: ["500+ problems", "Math-focused", "Progress tracking"]
+  }
+];
+
+const tools = [
+  {
+    title: "Visual Studio Code",
+    description: "Free, powerful code editor with excellent extension ecosystem. The most popular choice for web developers.",
+    url: "https://code.visualstudio.com/",
+    category: "Editor"
+  },
+  {
+    title: "Git",
+    description: "Essential version control system. Learn it early and use it for every project.",
+    url: "https://git-scm.com/",
+    category: "Version Control"
+  },
+  {
+    title: "GitHub",
+    description: "Host code, collaborate on projects, and build your portfolio. Includes free CI/CD with GitHub Actions.",
+    url: "https://github.com/",
+    category: "Platform"
+  },
+  {
+    title: "Postman",
+    description: "API development and testing tool. Essential for backend development and debugging.",
+    url: "https://www.postman.com/",
+    category: "API"
+  },
+  {
+    title: "Docker",
+    description: "Containerization platform for consistent development environments. Industry standard for deployment.",
+    url: "https://www.docker.com/",
+    category: "DevOps"
+  },
+  {
+    title: "Figma",
+    description: "Collaborative design tool. Useful for frontend developers to work with designs and create mockups.",
+    url: "https://www.figma.com/",
+    category: "Design"
+  }
+];
 ---
 
 <BaseLayout
   title="Computer Science Resources"
-  description="Curated list of the best books, courses, practice platforms, and tools for learning computer science and programming."
+  description="Curated list of the best programming books, online courses, practice platforms, and developer tools for learning computer science."
 >
   <section class="hero" style="padding: 3rem 0;">
     <div class="container">
       <h1>Learning Resources</h1>
-      <p>Curated recommendations to accelerate your learning journey.</p>
+      <p>Curated books, courses, and tools to accelerate your learning journey</p>
     </div>
   </section>
 
-  
-
+  <!-- Books Section -->
   <section class="section">
     <div class="container">
       <h2 id="books">Recommended Books</h2>
-      <div class="resource-grid">
-        {resources.books.map(book => (
-          <div class="resource-card">
-            <h3>{book.title}</h3>
-            <p class="author">by {book.author}</p>
-            <p>{book.description}</p>
-            <span class="badge">{book.level}</span>
+      <p class="section-subtitle">Essential reading for every developer's bookshelf</p>
+
+      <div class="books-grid">
+        {books.map(book => (
+          <div class="book-card">
+            <div class="book-info">
+              <h3>{book.title}</h3>
+              <p class="book-author">by {book.author}</p>
+              <p class="book-description">{book.description}</p>
+              <div class="book-tags">
+                {book.tags.map(tag => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+              <a href={book.amazonUrl} class="book-link" target="_blank" rel="noopener">
+                View on Amazon
+              </a>
+            </div>
           </div>
         ))}
       </div>
     </div>
   </section>
 
+  <!-- Courses Section -->
   <section class="section section-alt">
     <div class="container">
       <h2 id="courses">Online Courses</h2>
-      <div class="resource-grid">
-        {resources.courses.map(course => (
-          <a href={course.url} class="resource-card" target="_blank" rel="noopener">
-            <h3>{course.title}</h3>
-            <p class="platform">{course.platform}</p>
-            <p>{course.description}</p>
-            <span class={`badge ${course.free ? 'badge-free' : ''}`}>
-              {course.free ? 'Free' : 'Paid'}
-            </span>
-          </a>
+      <p class="section-subtitle">Structured learning paths from beginner to advanced</p>
+
+      <div class="courses-grid">
+        {courses.map(course => (
+          <div class="course-card">
+            <div class="course-header">
+              <span class={`course-badge ${course.free ? 'badge-free' : 'badge-paid'}`}>
+                {course.free ? 'Free' : 'Paid'}
+              </span>
+              <h3>{course.title}</h3>
+              <p class="course-platform">{course.platform}</p>
+            </div>
+            <div class="course-content">
+              <p>{course.description}</p>
+              <div class="course-meta">
+                <span class="meta-item">
+                  <strong>Duration:</strong> {course.duration}
+                </span>
+                <span class="meta-item">
+                  <strong>Level:</strong> {course.level}
+                </span>
+              </div>
+              <div class="course-topics">
+                <strong>Topics Covered:</strong>
+                <ul>
+                  {course.topics.map(topic => (
+                    <li>{topic}</li>
+                  ))}
+                </ul>
+              </div>
+              <a href={course.url} class="course-link" target="_blank" rel="noopener">
+                View Course
+              </a>
+            </div>
+          </div>
         ))}
       </div>
     </div>
   </section>
 
-  
-
+  <!-- Practice Section -->
   <section class="section">
     <div class="container">
       <h2 id="practice">Practice Platforms</h2>
-      <div class="resource-grid">
-        {resources.practice.map(platform => (
-          <a href={platform.url} class="resource-card" target="_blank" rel="noopener">
+      <p class="section-subtitle">Sharpen your skills with coding challenges</p>
+
+      <div class="practice-grid">
+        {practice.map(platform => (
+          <a href={platform.url} class="practice-card" target="_blank" rel="noopener">
             <h3>{platform.title}</h3>
             <p>{platform.description}</p>
+            <div class="practice-features">
+              {platform.features.map(feature => (
+                <span class="feature-tag">{feature}</span>
+              ))}
+            </div>
           </a>
         ))}
       </div>
     </div>
   </section>
 
+  <!-- Tools Section -->
   <section class="section section-alt">
     <div class="container">
       <h2 id="tools">Developer Tools</h2>
-      <div class="resource-grid">
-        {resources.tools.map(tool => (
-          <a href={tool.url} class="resource-card" target="_blank" rel="noopener">
+      <p class="section-subtitle">Essential tools for your development workflow</p>
+
+      <div class="tools-grid">
+        {tools.map(tool => (
+          <a href={tool.url} class="tool-card" target="_blank" rel="noopener">
+            <span class="tool-category">{tool.category}</span>
             <h3>{tool.title}</h3>
             <p>{tool.description}</p>
           </a>
@@ -199,16 +319,208 @@ const resources = {
     </div>
   </section>
 
-  
-
   <style>
-    .resource-grid {
+    .section-subtitle {
+      text-align: center;
+      color: var(--color-text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Books Grid */
+    .books-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 1.5rem;
     }
 
-    .resource-card {
+    .book-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .book-card:hover {
+      box-shadow: 0 4px 20px var(--color-shadow);
+      transform: translateY(-2px);
+    }
+
+    .book-info h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .book-author {
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+      margin: 0 0 0.75rem;
+    }
+
+    .book-description {
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+      margin: 0 0 1rem;
+      line-height: 1.6;
+    }
+
+    .book-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tag {
+      background: var(--color-bg-alt);
+      color: var(--color-text-muted);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .book-link {
+      display: inline-block;
+      background: var(--color-primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .book-link:hover {
+      background: var(--color-primary-dark);
+      text-decoration: none;
+      color: white;
+    }
+
+    /* Courses Grid */
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .course-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .course-card:hover {
+      box-shadow: 0 4px 20px var(--color-shadow);
+      transform: translateY(-2px);
+    }
+
+    .course-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .course-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .badge-free {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-paid {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .course-header h3 {
+      margin: 0 0 0.25rem;
+      font-size: 1.1rem;
+    }
+
+    .course-platform {
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .course-content {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .course-content > p {
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+      margin: 0 0 1rem;
+      line-height: 1.6;
+    }
+
+    .course-meta {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .meta-item {
+      color: var(--color-text-muted);
+    }
+
+    .meta-item strong {
+      color: var(--color-text);
+    }
+
+    .course-topics {
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .course-topics strong {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .course-topics ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: var(--color-text-muted);
+    }
+
+    .course-topics li {
+      margin-bottom: 0.25rem;
+    }
+
+    .course-link {
+      display: inline-block;
+      color: var(--color-primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .course-link:hover {
+      color: var(--color-primary-dark);
+    }
+
+    /* Practice Grid */
+    .practice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .practice-card {
       background: var(--color-bg);
       border: 1px solid var(--color-border);
       border-radius: 12px;
@@ -218,45 +530,103 @@ const resources = {
       transition: box-shadow 0.2s, transform 0.2s;
     }
 
-    .resource-card:hover {
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    .practice-card:hover {
+      box-shadow: 0 4px 20px var(--color-shadow);
       transform: translateY(-2px);
       text-decoration: none;
     }
 
-    .resource-card h3 {
+    .practice-card h3 {
       margin: 0 0 0.5rem;
       color: var(--color-text);
     }
 
-    a.resource-card:hover h3 {
+    .practice-card:hover h3 {
       color: var(--color-primary);
     }
 
-    .author, .platform {
+    .practice-card p {
       color: var(--color-text-muted);
-      font-size: 0.875rem;
-      margin: 0 0 0.5rem;
-    }
-
-    .resource-card p {
       margin: 0 0 1rem;
-      color: var(--color-text-muted);
+      font-size: 0.95rem;
     }
 
-    .badge {
-      display: inline-block;
-      padding: 0.25rem 0.5rem;
+    .practice-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .feature-tag {
       background: var(--color-bg-alt);
+      color: var(--color-text-muted);
+      padding: 0.25rem 0.5rem;
       border-radius: 4px;
       font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
     }
 
-    .badge-free {
-      background: #d1fae5;
-      color: #065f46;
+    /* Tools Grid */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .tool-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .tool-card:hover {
+      box-shadow: 0 4px 20px var(--color-shadow);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+
+    .tool-category {
+      display: inline-block;
+      background: var(--color-primary);
+      color: white;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .tool-card h3 {
+      margin: 0 0 0.5rem;
+      color: var(--color-text);
+    }
+
+    .tool-card:hover h3 {
+      color: var(--color-primary);
+    }
+
+    .tool-card p {
+      color: var(--color-text-muted);
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      .books-grid,
+      .courses-grid,
+      .practice-grid,
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .course-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
     }
   </style>
 </BaseLayout>
