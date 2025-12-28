@@ -180,37 +180,43 @@ const tools = [
     title: "Visual Studio Code",
     description: "Free, powerful code editor with excellent extension ecosystem. The most popular choice for web developers.",
     url: "https://code.visualstudio.com/",
-    category: "Editor"
+    category: "Editor",
+    logoUrl: "https://code.visualstudio.com/assets/images/code-stable.png"
   },
   {
     title: "Git",
     description: "Essential version control system. Learn it early and use it for every project.",
     url: "https://git-scm.com/",
-    category: "Version Control"
+    category: "Version Control",
+    logoUrl: "https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png"
   },
   {
     title: "GitHub",
     description: "Host code, collaborate on projects, and build your portfolio. Includes free CI/CD with GitHub Actions.",
     url: "https://github.com/",
-    category: "Platform"
+    category: "Platform",
+    logoUrl: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
   },
   {
     title: "Postman",
     description: "API development and testing tool. Essential for backend development and debugging.",
     url: "https://www.postman.com/",
-    category: "API"
+    category: "API",
+    logoUrl: "https://www.postman.com/_ar-assets/images/favicon-1-48.png"
   },
   {
     title: "Docker",
     description: "Containerization platform for consistent development environments. Industry standard for deployment.",
     url: "https://www.docker.com/",
-    category: "DevOps"
+    category: "DevOps",
+    logoUrl: "https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png"
   },
   {
     title: "Figma",
     description: "Collaborative design tool. Useful for frontend developers to work with designs and create mockups.",
     url: "https://www.figma.com/",
-    category: "Design"
+    category: "Design",
+    logoUrl: "https://static.figma.com/app/icon/1/favicon.png"
   }
 ];
 ---
@@ -340,7 +346,12 @@ const tools = [
       <div class="tools-grid">
         {tools.map(tool => (
           <a href={tool.url} class="tool-card" target="_blank" rel="noopener">
-            <span class="tool-category">{tool.category}</span>
+            <div class="tool-header">
+              <div class="tool-logo">
+                <img src={tool.logoUrl} alt={tool.title} loading="lazy" />
+              </div>
+              <span class="tool-category">{tool.category}</span>
+            </div>
             <h3>{tool.title}</h3>
             <p>{tool.description}</p>
           </a>
@@ -684,6 +695,28 @@ const tools = [
       text-decoration: none;
     }
 
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .tool-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--color-bg-alt);
+      padding: 6px;
+    }
+
+    .tool-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
     .tool-category {
       display: inline-block;
       background: var(--color-primary);
@@ -693,7 +726,6 @@ const tools = [
       font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
-      margin-bottom: 0.75rem;
     }
 
     .tool-card h3 {
