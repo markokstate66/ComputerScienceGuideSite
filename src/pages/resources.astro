@@ -7,56 +7,64 @@ const books = [
     author: "Robert C. Martin",
     description: "A must-read for writing maintainable, professional software. Learn to write code that's easy to read, understand, and modify.",
     tags: ["Best Seller", "All Levels"],
-    amazonUrl: "https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882?tag=dreamscribe09-20"
+    amazonUrl: "https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882?tag=dreamscribe09-20",
+    imageUrl: "https://m.media-amazon.com/images/I/41xShlnTZTL._SX218_.jpg"
   },
   {
     title: "Introduction to Algorithms (CLRS)",
     author: "Cormen, Leiserson, Rivest, Stein",
     description: "The definitive textbook on algorithms. Comprehensive and rigorous coverage of algorithms and data structures used worldwide in universities.",
     tags: ["Advanced", "Textbook"],
-    amazonUrl: "https://www.amazon.com/Introduction-Algorithms-3rd-MIT-Press/dp/0262033844?tag=dreamscribe09-20"
+    amazonUrl: "https://www.amazon.com/Introduction-Algorithms-3rd-MIT-Press/dp/0262033844?tag=dreamscribe09-20",
+    imageUrl: "https://m.media-amazon.com/images/I/41T0iBxY8FL._SX218_.jpg"
   },
   {
     title: "Cracking the Coding Interview",
     author: "Gayle Laakmann McDowell",
     description: "189 programming questions and solutions. The essential guide for technical interview preparation at top tech companies.",
     tags: ["Must Read", "Interviews"],
-    amazonUrl: "https://www.amazon.com/Cracking-Coding-Interview-Programming-Questions/dp/0984782850?tag=dreamscribe09-20"
+    amazonUrl: "https://www.amazon.com/Cracking-Coding-Interview-Programming-Questions/dp/0984782850?tag=dreamscribe09-20",
+    imageUrl: "https://m.media-amazon.com/images/I/41oYsXjLvZL._SX218_.jpg"
   },
   {
     title: "The Pragmatic Programmer",
     author: "David Thomas & Andrew Hunt",
     description: "Timeless advice on software craftsmanship and career development. Updated 20th anniversary edition with modern best practices.",
     tags: ["Classic", "All Levels"],
-    amazonUrl: "https://www.amazon.com/Pragmatic-Programmer-journey-mastery-Anniversary/dp/0135957052?tag=dreamscribe09-20"
+    amazonUrl: "https://www.amazon.com/Pragmatic-Programmer-journey-mastery-Anniversary/dp/0135957052?tag=dreamscribe09-20",
+    imageUrl: "https://m.media-amazon.com/images/I/51cUVaBWZzL._SX218_.jpg"
   },
   {
     title: "Design Patterns: Elements of Reusable Object-Oriented Software",
     author: "Gang of Four",
     description: "The classic book on reusable object-oriented design patterns. Essential knowledge for software architects and senior developers.",
     tags: ["Advanced", "Architecture"],
-    amazonUrl: "https://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612?tag=dreamscribe09-20"
+    amazonUrl: "https://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612?tag=dreamscribe09-20",
+    imageUrl: "https://m.media-amazon.com/images/I/51szD9HC9pL._SX218_.jpg"
   },
   {
     title: "Designing Data-Intensive Applications",
     author: "Martin Kleppmann",
     description: "The definitive guide to building reliable, scalable, and maintainable systems. Covers databases, distributed systems, and data processing.",
     tags: ["Must Read", "System Design"],
-    amazonUrl: "https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321?tag=dreamscribe09-20"
+    amazonUrl: "https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321?tag=dreamscribe09-20",
+    imageUrl: "https://m.media-amazon.com/images/I/51ZSpMl1-LL._SX218_.jpg"
   },
   {
     title: "You Don't Know JS (Book Series)",
     author: "Kyle Simpson",
     description: "Deep dive into JavaScript mechanics. Goes beyond surface-level understanding to explain how JavaScript really works under the hood.",
     tags: ["JavaScript", "Intermediate"],
-    amazonUrl: "https://www.amazon.com/You-Dont-Know-JS-Yet/dp/B084DFZ6GW?tag=dreamscribe09-20"
+    amazonUrl: "https://www.amazon.com/You-Dont-Know-JS-Yet-ebook/dp/B084BNMN7T?tag=dreamscribe09-20",
+    imageUrl: "https://m.media-amazon.com/images/I/41T5H8u7fUL._SX218_.jpg"
   },
   {
     title: "System Design Interview",
     author: "Alex Xu",
     description: "An insider's guide to system design interviews. Learn to design scalable systems like URL shorteners, chat apps, and news feeds.",
     tags: ["Interviews", "System Design"],
-    amazonUrl: "https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF?tag=dreamscribe09-20"
+    amazonUrl: "https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF?tag=dreamscribe09-20",
+    imageUrl: "https://m.media-amazon.com/images/I/4129lOcVWtL._SX218_.jpg"
   }
 ];
 
@@ -216,6 +224,9 @@ const tools = [
       <div class="books-grid">
         {books.map(book => (
           <div class="book-card">
+            <a href={book.amazonUrl} class="book-cover" target="_blank" rel="noopener">
+              <img src={book.imageUrl} alt={book.title} loading="lazy" />
+            </a>
             <div class="book-info">
               <h3>{book.title}</h3>
               <p class="book-author">by {book.author}</p>
@@ -330,7 +341,7 @@ const tools = [
     /* Books Grid */
     .books-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
       gap: 1.5rem;
     }
 
@@ -339,12 +350,35 @@ const tools = [
       border: 1px solid var(--color-border);
       border-radius: 12px;
       padding: 1.5rem;
+      display: flex;
+      gap: 1.25rem;
       transition: box-shadow 0.2s, transform 0.2s;
     }
 
     .book-card:hover {
       box-shadow: 0 4px 20px var(--color-shadow);
       transform: translateY(-2px);
+    }
+
+    .book-cover {
+      flex-shrink: 0;
+    }
+
+    .book-cover img {
+      width: 100px;
+      height: auto;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px var(--color-shadow);
+      transition: transform 0.2s;
+    }
+
+    .book-cover:hover img {
+      transform: scale(1.05);
+    }
+
+    .book-info {
+      flex: 1;
+      min-width: 0;
     }
 
     .book-info h3 {
@@ -621,6 +655,20 @@ const tools = [
       .practice-grid,
       .tools-grid {
         grid-template-columns: 1fr;
+      }
+
+      .book-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .book-cover img {
+        width: 120px;
+      }
+
+      .book-tags {
+        justify-content: center;
       }
 
       .course-meta {
