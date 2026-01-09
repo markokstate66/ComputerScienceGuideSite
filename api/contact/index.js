@@ -52,7 +52,7 @@ module.exports = async function (context, req) {
     const emailMessage = {
       senderAddress: process.env.ACS_SENDER_EMAIL || "DoNotReply@feb1b99e-f855-4a7f-9d42-640a721a7083.azurecomm.net",
       content: {
-        subject: `[CS Guide Contact] ${topic} - from ${name}`,
+        subject: `[CS Guide] ${topic} - from ${name}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #1a1a2e; border-bottom: 2px solid #6366f1; padding-bottom: 10px;">
