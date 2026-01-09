@@ -99,7 +99,7 @@ Sent from computerscienceguide.com contact form
         `
       },
       recipients: {
-        to: [{ address: process.env.CONTACT_EMAIL || "markokstate@gmail.com" }]
+        to: [{ address: process.env.CONTACT_EMAIL || "mark@stgengineer.com" }]
       }
     };
 
