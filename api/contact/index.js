@@ -107,18 +107,34 @@ Sent from computerscienceguide.com contact form
     const poller = await emailClient.beginSend(emailMessage);
     const result = await poller.pollUntilDone();
 
-    context.log('Email sent successfully:', result.id);
+    context.log('Email sent successfully:', result.id, result.status);
 
     context.res = {
       status: 200,
-      body: { success: true, message: "Thank you! Your message has been sent." }
+      body: {
+        success: true,
+        message: "Thank you! Your message has been sent.",
+        debug: {
+          id: result.id,
+          status: result.status,
+          hasConnectionString: !!connectionString,
+          recipient: process.env.CONTACT_EMAIL || "mark@stgengineer.com"
+        }
+      }
     };
 
   } catch (error) {
     context.log.error('Error sending email:', error);
     context.res = {
       status: 500,
-      body: { success: false, message: "Failed to send message. Please try again later." }
+      body: {
+        success: false,
+        message: "Failed to send message. Please try again later.",
+        debug: {
+          error: error.message,
+          hasConnectionString: !!process.env.ACS_CONNECTION_STRING
+        }
+      }
     };
   }
 };
