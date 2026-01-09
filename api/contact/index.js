@@ -111,30 +111,14 @@ Sent from computerscienceguide.com contact form
 
     context.res = {
       status: 200,
-      body: {
-        success: true,
-        message: "Thank you! Your message has been sent.",
-        debug: {
-          id: result.id,
-          status: result.status,
-          hasConnectionString: !!connectionString,
-          recipient: process.env.CONTACT_EMAIL || "mark@stgengineer.com"
-        }
-      }
+      body: { success: true, message: "Thank you! Your message has been sent." }
     };
 
   } catch (error) {
     context.log.error('Error sending email:', error);
     context.res = {
       status: 500,
-      body: {
-        success: false,
-        message: "Failed to send message. Please try again later.",
-        debug: {
-          error: error.message,
-          hasConnectionString: !!process.env.ACS_CONNECTION_STRING
-        }
-      }
+      body: { success: false, message: "Failed to send message. Please try again later." }
     };
   }
 };
