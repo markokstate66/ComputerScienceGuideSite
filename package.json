@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node -e \"const fs=require('fs'); fs.renameSync('dist/sitemap-0.xml','dist/sitemap.xml'); fs.unlinkSync('dist/sitemap-index.xml');\"",
     "preview": "astro preview",
     "astro": "astro"
   },
