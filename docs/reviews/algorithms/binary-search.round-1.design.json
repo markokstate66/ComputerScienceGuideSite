@@ -1,0 +1,68 @@
+{
+  "article": "src/content/articles/algorithms/binary-search.md",
+  "route": "/algorithms/binary-search/",
+  "round": 1,
+  "role": "design",
+  "score": 8.5,
+  "comparedAgainst": [
+    "https://cp-algorithms.com/num_methods/binary_search.html",
+    "https://www.geeksforgeeks.org/dsa/binary-search/"
+  ],
+  "lighthouse": { "performance": 94, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "node tools/verify-page.mjs --drafts /algorithms/binary-search/ : FAIL only on the expected NEEDS_MARKUS placeholder. words=3950, code=29, figures=2, h1=1, mobileOverflowPx=0, consoleErrors=[], consoleWarnings=[], broken=[]. Lighthouse 94/100/100/100 on the first run (no re-run needed; another agent re-ran verify on the same route a minute later with identical results). Lighthouse sub-audits below 1: FCP 2.5 s, unused CSS ~12 KiB, bf-cache blocked, forced reflow. Screenshots read: all 14 desktop-light, all 21 mobile-dark, desktop-dark fold+part02+part07, mobile-light fold+part03+part10. realpython.com/binary-search-python/ returned 403 to the fetcher and is not counted.",
+  "justification": "Rhythm is very good: the page opens on a runnable program, never runs more than three paragraphs without code, a figure, a table or an exercise, and the only dense paragraph (probe-count derivation) is followed at once by a program that checks it. Headings are specific and form a clean H2/H3 outline; the desktop TOC reads as a summary of the argument. Both SVG figures are informative rather than decorative (Fig. 1 shows the unexamined cell being discarded, Fig. 2 shows the two-sided invariant closing in), are theme-correct in light and dark (accent/bad/good classes all remap, no hard-coded fills), keep annotations under each row, and stay legible at 390 px (three-digit cell values are small but readable). Captions say what to notice. Both tables fit a phone without scrolling. Callouts are restrained (one .NET note, one pitfall), exercises sit mid-article where they belong with varied forms (trace, find-the-hang, write, break-then-fix), solutions are collapsed, and exercise 2's visible output is the passing check rather than a give-away. Output panels are all within 40 columns. Sources render as a clean numbered list. Against the ranking pages this is clearly better presented: cp-algorithms has two code blocks, one borrowed Wikipedia image, no worked exercises and no library coverage; GeeksforGeeks has 15 near-identical multi-language code blocks, one frame image and heavy navigation clutter. What keeps it at the bar rather than above it is phone code clipping in exactly the place the article is about: the 8-space-indented one-line `if (a[mid] < target) lo = mid + 1;` loses its `+ 1;` into the fade at 390 px in every search function on the page (in UpperBound it cuts at `lo = mid +`), which is the binding 'operative part not clipped' lesson. It is a mechanical fix and the prose/table restate the update in full, so I score it 8.5, not lower. Desktop code looks narrow because of the 40-column discipline; that is the brief's trade-off and not counted.",
+  "issues": [
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "Every search function (blocks buggy, second program, fixed, exercise-1 solution, Probes, bounds LowerBound/UpperBound, CountBetween and LastAtOrBefore solutions): lines `if (a[mid] == target) return mid;` and `if (a[mid] < target) lo = mid + 1;` at 8 spaces of indent (41-43 columns); mobile-dark part01, part02, part05, part07, part11",
+      "problem": "At 390 px the tail of the update line is in the scroll fade or cut: `lo = mid + 1` shows as `lo = mid + ` (UpperBound: `lo = mid +`), and `return mid;` loses `mid;`. In an article whose subject is off-by-one errors in precisely these assignments, the operative token is the one clipped, about ten times. Violates the binding Phones lesson (operative part not clipped).",
+      "fixLooksLike": "Put the assignment on its own line in every variant so nothing exceeds ~36 columns, e.g. `if (a[mid] < target)` / `    lo = mid + 1;` / `else` / `    hi = mid;` (and `if (a[mid] == target)` / `    return mid;`). Apply identically to all copies so the 'differ in one character' comparison between LowerBound and UpperBound still holds. Re-run run-code and re-check mobile screenshots."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Collapsed solutions: exercise 2 (`throw new InvalidOperationException(` + 16-space `$\"stuck at lo = {lo}, hi = {hi}\");`, `Console.WriteLine(LastAtOrBefore(two, 400));`), exercise 3 (`static int CountBetween(int[] a, int from, int to) =>`, `Console.WriteLine(CountBetween(departures, 440, 710));`), exercise 4 (`FirstTrue(1, long.MaxValue, x => x * x > n) - 1;`, `Console.WriteLine($\"naive  {IsqrtNaive(1_000_000)}\");`); also signatures `static int LowerBound(int[] a, int target)` (mobile-dark part11)",
+      "problem": "Solution code was not wrapped to the 40-column discipline the visible blocks follow; lines run 50-57 columns, so on a phone the predicate (`x * x > n`) and the stuck-state message are off-screen once the solution is opened. Signatures of LowerBound/UpperBound also clip `target)`.",
+      "fixLooksLike": "Wrap solution code the same way as body code: hoist results into locals before printing, break lambdas and the `=>` member onto a second line, break signatures after `(` as already done for LastAtOrBefore and FirstTrue."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Section 'Searching a range of answers instead of an array', block id=thumbs (mobile-dark part15-part16)",
+      "problem": "A single 62-line program with no visual between it and the prose: roughly two and a half phone screens of unbroken code, the longest stretch on the page, and the one section where the core idea (false, false, ..., true, true over widths 1..1920 with the boundary at 634) has no picture even though the prose describes exactly that strip.",
+      "fixLooksLike": "Either add a small Figure 3 (a number line of widths with a false region, a true region and the boundary marked, 11 probes optional) before the program, or split the program's presentation so FirstTrue is shown first as a short block and the thumbnail driver second. One of the two is enough."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Figure 1 vs Figure 2 colour semantics; Figure 2 lo/hi labels",
+      "problem": "The accent box means 'the probe' in Figure 1 and 'unknown region' in Figure 2, where the probe is instead a bold digit with a thin underline that is easy to miss at phone size. Separately, Figure 2's `lo`/`hi` labels float under cell edges with no tick, so a reader can take `lo` as pointing at the cell to its left or right rather than at the boundary.",
+      "fixLooksLike": "Keep one encoding for the probe across both figures (for example a heavier outline or a small caret under the probed cell in both), and add a short vertical tick from each `lo`/`hi` label to the cell boundary it marks. Mention in the Figure 2 caption that the labels mark boundaries, not cells."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Body citations throughout ('the documentation defines it as...', 'In 2006 Joshua Bloch reported...', '`List<T>.Insert` is documented as O(n)', the :::dotnet callout naming ArraySortHelper.cs)",
+      "problem": "Sources are named in prose but never hyperlinked or numbered, so a reader on a 20-minute page has to scroll to the bottom and guess which of twelve entries backs a given sentence.",
+      "fixLooksLike": "Link the naming phrase to the source URL at the point of the claim (e.g. 'the documentation' -> Array.BinarySearch page, 'Joshua Bloch reported' -> the Google Research post, file names in the callout -> the GitHub files), or use whatever inline-citation convention the pilot articles settled on."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "`Console.WriteLine($\"...\")` lines in blocks buggy, overflow demo, bounds, thumbs (mobile-dark part01, part08, part10, part15)",
+      "problem": "Many print lines end 1-4 characters past the visible width so the closing `}\");` sits in the fade. Nothing essential is lost, but it makes almost every block look slightly overflowing on a phone.",
+      "fixLooksLike": "Shorten labels or padding by a few characters, or break after `Console.WriteLine(` as already done elsewhere, so these lines end within 40 columns."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Shell performance (lighthouse.json failing audits)",
+      "problem": "Performance is 94 and passes, but FCP is 2.5 s with 'forced reflow', 'bf-cache prevented (2 reasons)' and ~12 KiB unused CSS flagged; on a loaded CI machine this leaves little headroom above 90 for a 29-code-block page.",
+      "fixLooksLike": "Find the script doing layout reads on load (likely TOC/scroll-spy or copy-button setup) and defer or batch it; remove the unload/cache-control cause blocking bf-cache. Append to docs/INTEGRATOR_REQUESTS.md."
+    }
+  ],
+  "crosslinksFile": "docs/crosslinks/algorithms/binary-search.md exists and is sensible: seven planned links with anchor text and location, plus boundary notes with BST, tries and sorting siblings. No penalty for missing body links."
+}

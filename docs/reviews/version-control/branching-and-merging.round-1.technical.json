@@ -1,0 +1,76 @@
+{
+  "score": 7.0,
+  "runCodePass": true,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging",
+    "https://www.datacamp.com/tutorial/git-merge",
+    "https://git-scm.com/docs/git-merge",
+    "https://www.atlassian.com/git/tutorials/using-branches/git-merge (fetched; only navigation came back, not counted as read)"
+  ],
+  "justification": "run-code: PASS (blocks=44 executed=22, exit 0) under Git 2.52.0.windows.1. Depth and accuracy are well above the ranking tutorials: DataCamp shows no real output and omits merge base, stages, diff3, strategies, --abort and revert -m; Pro Git 3.2 stops at basic conflicts. This article has a reproducible session, index stages, diff3 base reading, the adjacent-line experiment, a semantically broken clean merge, -X ours vs -s ours, octopus, and revert-of-merge. I verified against git-scm.com: fast-forward quote, early exit, --abort caveat, --no-commit quote, stage 1/2/3, MERGE_HEAD, --continue, all six strategy descriptions (recursive default until 2.33.0, synonym since 2.50.0), merge-base definition and exit codes, diff --ours/--theirs, diff --check, branch -d upstream rule and reflog deletion, ORIG_HEAD, revert-merge warning, Pro Git 3.2 'special' sentence. All sources are cited inline and support their sentences. Crosslinks file exists and is sensible. However one claim is demonstrably false: 'an empty combined diff means Git did all the work'. I reproduced a conflict, resolved it by hand with `git checkout --ours`, committed, and `git show` printed an empty combined diff, because --cc drops hunks that match any one parent. That is precisely the lossy resolution the article warns about, so the review advice is misleading. Per the brief a factual error caps the score at 7. Without it and with the caveats below fixed this would be roughly 8.8.",
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "Section 'Resolve, stage, commit', paragraph after the combined diff ('That filter is useful: what remains is what the person merging wrote by hand ... an empty combined diff means Git did all the work, and a non-empty one is somebody's judgment')",
+      "problem": "Factually wrong. git show uses --cc (dense combined), which omits any hunk whose result matches one of the parents. A conflict resolved by hand by taking one side whole therefore shows an EMPTY combined diff (reproduced in Git 2.52: conflict, `git checkout --ours m`, add, commit, `git show` prints only the subject). So empty does not mean Git did all the work; it hides exactly the 'pick one side and silently lose the other change' resolution the article warns about two sections earlier. The stated filter ('lists only files that differ from every parent') also does not explain why the earlier sunday merge shows nothing although menu.txt differs from both parents; the hunk-level --cc rule does.",
+      "fixLooksLike": "Describe both filters from git-diff 'combined diff format': files modified from all parents, and with --cc, hunks omitted when the result matches one parent. Restate the consequence correctly: a non-empty combined diff shows content found in no parent (hand-written or evil-merge content); an empty one means every region equals one parent, which covers clean auto-merges AND resolutions that took one side, -X ours/theirs. Point to `git show --remerge-diff` (Git 2.36+) as the way to see what a resolver changed relative to the automatic merge, ideally with a run block.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Section 'What to check when a merge surprises you', third bullet, and section 'The base version turns a guess into a decision'",
+      "problem": "`git checkout --conflict=diff3 <path>` is recommended as an inspection command with no warning that it recreates the conflicted file and discards any resolution already done in that file (verified: appended work vanished, 'Recreated 1 merge conflict'). The adjacent bullet is about being mid-resolution, so a reader will run it with partial work.",
+      "fixLooksLike": "One sentence at first use and in the bullet: it overwrites the working copy of that path with freshly generated markers, so use it before editing, or inspect non-destructively with `git show :1:path` / `git diff --base`.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Section 'The rule Git applies to every file, then to every region' (table row 'both, differently | merge by lines' and 'A conflict is the fourth row at the level of a region')",
+      "problem": "Over-generalised. The output says 'CONFLICT (content)' but the article never says other kinds exist. Both-changed-differently is not always merged by lines: binary files cannot be, and modify/delete, add/add and rename conflicts are path-level conflicts with no region. 'up to three versions' in the docs exists because some stages are absent in those cases. For an article titled 'Including Conflicts' a strong student will ask what '(content)' implies.",
+      "fixLooksLike": "Scope the table to text files present on all three sides, and add a short paragraph naming modify/delete, add/add and binary conflicts, what `git status` shows for them (DU/UD/AA), and that they are resolved with git add / git rm rather than by editing markers. A scripted modify/delete example would be ideal but a precise paragraph suffices.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Pitfall callout in 'Resolve, stage, commit' ('Run it ... before git add')",
+      "problem": "Does not say why before: after `git add`, plain `git diff --check` compares worktree to index and reports nothing (verified exit 0 with markers staged); only `git diff --cached --check` catches them then.",
+      "fixLooksLike": "Add the clause: once staged, use `git diff --cached --check`.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'When both branches have moved', merge-base definition ('a common ancestor that is not itself an ancestor of some other common ancestor')",
+      "problem": "'not ... of some other' is scope-ambiguous; read existentially it is wrong. The docs define best as having no better common ancestor.",
+      "fixLooksLike": "'a common ancestor that is not an ancestor of any other common ancestor'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "zdiff3 sentence in 'The base version turns a guess into a decision'",
+      "problem": "Says zdiff3 moves lines both sides changed identically out of the conflict region; the docs limit this to matching lines near the beginning or end of the region.",
+      "fixLooksLike": "Add 'at the start or end of the conflict region'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Fast-forwarding is the default whenever it is possible'",
+      "problem": "Pilot lesson on 'whenever': git-merge documents that --no-ff is assumed when merging an annotated tag outside refs/tags, and merge.ff config changes the default. A reader with merge.ff=false or merge.conflictStyle=diff3 set globally will also get different output from the session.",
+      "fixLooksLike": "Scope to 'when merging a branch with default configuration', and optionally note the two config keys that change the session's output.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Troubleshooting bullet 3 ('reformatting on one side and line-ending changes ... the -X ignore-space-change family handles the last two')",
+      "problem": "Only whitespace-only reformatting is handled; re-wrapping or reordering is not. Pro Git 7.8 supports only the whitespace case.",
+      "fixLooksLike": "Say 'whitespace-only reformatting'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Heading 'Backing out is always available' and intro 'commit IDs include your name and clock'",
+      "problem": "Heading contradicts the documented gap described beneath it; IDs are hashes of content that includes name and time, they do not 'include' them.",
+      "fixLooksLike": "Rename e.g. 'Backing out with --abort'; write 'commit IDs depend on your name and clock'.",
+      "owner": "writer"
+    }
+  ]
+}

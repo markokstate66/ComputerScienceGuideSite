@@ -1,0 +1,72 @@
+{
+  "article": "src/content/articles/version-control/how-git-works.md",
+  "route": "/version-control/how-git-works/",
+  "round": 2,
+  "role": "technical",
+  "score": 7.0,
+  "runCodePass": true,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+    "https://www.freecodecamp.org/news/git-internals-objects-branches-create-repo/",
+    "https://git-scm.com/book/en/v2/Git-Internals-Packfiles"
+  ],
+  "justification": "run-code is green: `node tools/run-code.mjs src/content/articles/version-control/how-git-works.md` from PowerShell printed `PASS version-control/how-git-works.md blocks=51 executed=26`, exit 0 (git 2.52.0.windows.1). Every round-1 blocker/major from all three critics is really fixed: `cd trail` appears once; the identity/clock block now sets state a reader can reproduce (repo-local config, exported dates, autocrlf explained); 'History plays no part' is replaced by a correctly scoped sentence plus depth 50 and an honest note that the experiment cannot separate recency from size; sources list and inline citations now agree (all 28 listed pages are cited inline); MERGE_HEAD is cited to git-merge; the .idx lookup has its cost (fan-out then binary search over ~n/256, O(log n), which I re-derived and agree with); the raw tree bytes are now a verified run block showing `40000`; Git 3.0 defaults are cited to git-init and BreakingChanges; the force-with-lease caveat is in. I re-opened git-init (2.54 page: 'currently master, but this will change to main when Git 3.0 is released'; no SHA-1/SHA-256 interop; files is the default), git-pack-objects (sort by type, size, optionally names; window 10; depth 50; 'efficient way to transfer a set of objects between two repositories'), git-gc (6700, prune 2 weeks, --cruft on by default, porcelain triggers auto gc), BreakingChanges (sha256, reftable, main), gitformat-pack (v2 idx fan-out, sorted names, offsets; .rev), gitrepository-layout (256 subdirectories) and Pro Git 10.2 (header, three blob modes): all support the sentences citing them. I re-derived 5,092/5,100 bytes and the 5/8/19 object counts by hand; they are right. Against the top results it is deeper and more carefully sourced than Pro Git 10.2-10.4 combined for this query and far beyond the freeCodeCamp guide (no packfiles, tree binary format, reflogs, packed-refs or SHA-256 there). On content alone this is about 8.9. It is capped at 7.0 by the brief because one sentence is factually false and I reproduced the counter-example: 'switching rewrote one line in HEAD and nothing else'. In a scratch repo with two branches on the same commit, `git switch -q detour` also appended 'checkout: moving from main to detour' to .git/logs/HEAD (1 line -> 2) and rewrote .git/index (mtime changed). This is exactly the unscoped only/nothing-else generalisation the pilot lessons name, in an article whose subject is what is inside .git and which relies on the HEAD reflog two paragraphs later. It is a one-clause fix; with it and the minors below this passes comfortably.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Section 'HEAD is usually a pointer to a pointer', paragraph after the first output: 'Because `detour` and `main` named the same commit, switching rewrote one line in `HEAD` and nothing else.'",
+      "problem": "False as written. Reproduced on git 2.52.0.windows.1: with two branches on one commit, `git switch -q detour` appends a line to .git/logs/HEAD ('checkout: moving from main to detour'; file went from 1 to 2 lines) and rewrites .git/index (mtime changes). The article itself depends on that HEAD reflog in the detached-HEAD paragraph ('HEAD has a reflog of its own'), so the claim contradicts its own later content. This is the 'generalisations get checked' lesson (only/nothing else).",
+      "fixLooksLike": "Scope it to what was meant and name the trace, e.g. 'switching wrote no objects and touched no working files: it rewrote the one line in `HEAD` and logged the move in `HEAD`'s reflog'. Optionally prove it with `tail -1 .git/logs/HEAD | cut -f2` in the run block, which also sets up the later reflog paragraph.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section '`git commit` does the same...', sentence 'a commit costs storage roughly in proportion to what changed'",
+      "problem": "Loose objects store each changed file whole, so a one-line edit to a large file costs the whole compressed file, not something proportional to the edit. The packfile section says exactly that ('every version of every file stored whole'), so the two passages are in tension.",
+      "fixLooksLike": "'...costs storage in proportion to the size of the files that changed, not the size of the project (plus one new tree per directory on the path)', with a forward pointer that packing later shrinks even that.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Paragraph after the first block: 'Commit IDs also hash a name, an email address and two timestamps, so they match only if you pin those four values'",
+      "problem": "Necessary but not sufficient. A reader with a global `commit.gpgSign=true` (or `tag.gpgSign`) gets a gpgsig header from `git commit`/`git tag -a`, so be3c37b, c55c497, e853fb0 and 3ac7913 will differ even with the four values pinned; the article itself mentions gpgsig later. `i18n.commitEncoding` has the same effect.",
+      "fixLooksLike": "Add `git config commit.gpgsign false` (and `tag.gpgsign false`) to the pinning block with a half-sentence, or soften to 'match if you pin those values and do not sign commits'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Annotated tag section: 'The rest of `.git` is not objects: refs and their reflogs, the index, configuration and hooks ..., and bookkeeping for an operation in progress'",
+      "problem": "Reads as an exhaustive inventory, but a default repository also has `info/exclude`, `description`, `objects/info`, and later `shallow`, `worktrees/`, `modules/` (all in the cited gitrepository-layout page).",
+      "fixLooksLike": "Mark the list as non-exhaustive ('chiefly', or 'among other things; the layout page has the full list').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Portability notes: macOS is mentioned only for `date` (commit section), but `sha1sum`, `od -w8`, `sed -i 's/...'` without a suffix and `date -d` are all GNU-only",
+      "problem": "A macOS reader is told how to adapt one command and then hits three others that fail (`shasum`, `od` without -w, `sed -i ''`). Inconsistent rather than wrong.",
+      "fixLooksLike": "One sentence where the toolchain is stated: the session uses GNU coreutils as shipped with Git Bash and Linux; on macOS use `shasum` for `sha1sum` and `sed -i ''`; drop the lone `date -r` aside or keep it with the others.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": ".idx paragraph: 'holds the pack's object IDs in sorted order, each with its byte offset' and 'one table lookup'",
+      "problem": "In the v2 index the names and offsets are separate parallel tables (gitformat-pack says the names are packed without offsets to keep the binary search cache-friendly), and the slice bounds come from two adjacent fan-out entries. Loose but not wrong.",
+      "fixLooksLike": "'a sorted table of IDs and a parallel table of offsets' and 'two adjacent fan-out entries bound the slice'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 4 solution: 'moving the remote ref would abandon commits rather than add to them. `git push` allows only such fast-forward updates'",
+      "problem": "'such' has no antecedent: the preceding sentence describes a non-fast-forward, and 'fast-forward' is never defined.",
+      "fixLooksLike": "Define it in place: 'By default `git push` accepts only a fast-forward, an update whose new tip has the old tip among its ancestors; this one is not, so it is rejected.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Blocks at 'Now the ordinary way' (`printf 'Day 2: Elk Lake to Marten Pass, 11 km\\n' >> route.txt`, 57 columns) and exercise 3 (`printf 'Day 3: rest day at Marten Pass\\n' > day3.txt`)",
+      "problem": "The operative `>> route.txt` / `> day3.txt` is clipped at 390 px, against the phone rule; the first block of the article already shows the right pattern with a backslash continuation.",
+      "fixLooksLike": "Break before the redirection as in the first `printf` block.",
+      "owner": "writer"
+    }
+  ]
+}

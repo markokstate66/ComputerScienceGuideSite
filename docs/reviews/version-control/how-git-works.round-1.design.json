@@ -1,0 +1,113 @@
+{
+  "article": "src/content/articles/version-control/how-git-works.md",
+  "route": "/version-control/how-git-works/",
+  "round": 1,
+  "role": "design",
+  "score": 8.1,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+    "https://www.freecodecamp.org/news/git-internals-objects-branches-create-repo/"
+  ],
+  "lighthouse": { "performance": 99, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": null,
+  "verify": {
+    "command": "node tools/verify-page.mjs --drafts /version-control/how-git-works/",
+    "runs": 1,
+    "words": 4014,
+    "codeBlocks": 46,
+    "figures": 4,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, not an issue)"],
+    "screenshotsOpened": "desktop-light fold+13/13, mobile-dark fold+19/19, desktop-dark fold+parts 03,06,10, mobile-light fold+parts 04,11"
+  },
+  "justification": "Real numbers from one verify run (no re-run needed): Lighthouse 99/100/100/100, 0 console errors, 0 console warnings, 0 broken links, 0 px page-level mobile overflow; the only failure is the expected NEEDS_MARKUS placeholder. On desktop, in both themes, this page is clearly better presented than Pro Git 10.2 (3 static bitmap figures, one callout, no exercises, objects only) and than the freeCodeCamp visual guide (40+ images but every command is a screenshot, so nothing is copyable, searchable or theme-aware): specific claim-style headings with a clean H2/H3 hierarchy, a steady command -> output -> short explanation rhythm, paired code/output panels with copy buttons and an 'Exits with an error' badge, four diagrams that carry structure rather than decoration (Figure 2's shared-subtree object graph and Figure 4's old-to-new delta arrow are the best in class for this query) with captions that say what to notice, three well-chosen callouts (note, pitfall, warning), four collapsed exercises of varied form, and a 19-entry sources list. Dark theme is correct everywhere I looked: diagram boxes, accent strokes, arrow markers and callouts all re-tint properly. It does not reach 8.5 because the phone rendering breaks the brief's binding phone rules in more than nit-sized ways: Figures 1 and 3 use a 400-unit viewBox (guide says at most 360), so at 390 px the right-hand node of each is cut off behind the fade ('compressed bytes'/'zlib deflate' in Figure 1; the commit-ID boxes c55c497 and be3c37b, which are the target of every arrow, in Figure 3), while Figures 2 and 4 at 360 units fit perfectly, which shows the fix is small. Several code/output lines also clip their operative part on a phone (the commit timestamps the prose then discusses, the od -c dump's content bytes, the verify-pack column legend, the perl one-liner), and two paragraphs run 15-19 lines on a phone with no break. None of this is visible on desktop, where I would score the page about 9.",
+  "issues": [
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "Figure 1 (loose object, viewBox 0 0 400 250) and Figure 3 (attached/detached HEAD, viewBox 0 0 400 330); seen in mobile-dark part04 and part11, mobile-light part04 and part11",
+      "problem": "Both drawings are 400 units wide, so at 390 px they render wider than the figure and the right edge scrolls out of view behind the fade. In Figure 1 the 'compressed bytes' box, the 'zlib deflate' label and the end of the content string are cut; in Figure 3 both commit boxes (c55c497, be3c37b), the things every arrow points at, are half hidden, and the dashed divider runs off-screen. WRITER_GUIDE says aim for a viewBox at most 360 wide and the brief says nothing essential off-screen. Figures 2 and 4 (360 wide) fit perfectly on the same phone.",
+      "fixLooksLike": "Redraw both at viewBox width <= 360 without shrinking text below 12 units. Figure 1: shorten the content box (e.g. 'Day 1: Pine Gap ... 14 km\\n' or wrap to two lines) and narrow the two result boxes to ~165 each; or stack hash and deflate results vertically. Figure 3: shorten the long arrows (HEAD->commit 188 units is mostly empty line) and bring the commit box in to x<=350. Also trim Figure 1's empty bottom 30 units (content ends at y=216 of 250). Re-run verify and confirm in mobile part04/part11 that the full drawing is visible with no fade."
+    },
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "Output panels under 'A commit is a tree plus parents plus who, when and why', under 'git commit does the same...', and the annotated-tag output (mobile-dark part06, part08, part12)",
+      "problem": "At 390 px the author/committer/tagger lines clip right where the timestamp starts ('...<ada@example.com> 1768'), and the following prose is specifically about that clipped part ('The times are seconds since 1970 plus a UTC offset'). The tree/parent/object lines also clip their 40-digit IDs. The brief's phone rule: break long lines so the operative part is not clipped; keep output to ~40 columns when the columns carry the point.",
+      "fixLooksLike": "Make the operative part visible without scrolling on a phone. Options: use a shorter pinned identity (e.g. 'Ada <a@example.com>' brings 'author Ada <a@example.com> 1768471200 +0000' to 43 columns, or drop to a shorter address to reach 40), or follow the full cat-file with a second short command that isolates the time fields (e.g. git cat-file -p 505fb51 | grep ^author | cut -d'>' -f2). Only needs doing once, at the first commit; later panels can stay as they are."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "'The file on disk is those same bytes, zlib-compressed': perl command and od -c output (mobile-dark part04)",
+      "problem": "On a phone the perl one-liner is cut after 'binmode STDIN;' and the od -c dump shows only the first ~8 of 16 byte columns, so the reader sees 'b l o b 3 5 \\0' (good, that is the point) but the content bytes that prove 'those same bytes' are off-screen; the redirect line is also clipped mid-hash.",
+      "fixLooksLike": "Break the perl program across lines (one statement per line inside the quotes) and use 'od -c -w8' (or 'od -An -c -w8') so each output row is ~40 columns and the whole dump is visible at 390 px."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "verify-pack block and its output under 'Where the object files go' (mobile-dark part13-14)",
+      "problem": "The legend line '-- id, type, size, size in pack, depth, base:' is clipped at 'depth,' on a phone, so the last column the prose relies on ('a depth of 1 and a base') has no visible label. The two data rows then show '[...]' wildcards exactly where the prose and Figure 4 quote 864, 12 and 23 bytes, so the panel never shows the numbers being discussed; a reader cannot connect '23 B' in the figure to anything in the output.",
+      "fixLooksLike": "Shorten the legend to fit 40 columns (e.g. '-- id type size packed depth base') or print it on two lines. For the wildcards, either say in one clause directly under the panel that '[...]' marks the two size-in-pack values that vary by Git/zlib version and were 864 and 23 here, or print the stable columns and the varying columns on separate lines so only one short line is wildcarded."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Paragraph beginning 'All 19 loose objects moved into one packfile' (mobile-dark part13: ~19 lines) and paragraph beginning 'A tree is a sorted list of entries' (mobile-dark part05: ~15 lines)",
+      "problem": "These are the two walls of text on the page. The first packs three separate ideas (.idx lookup, .rev, deltas + verify-pack lead-in) into one block; the second lists five file modes with meanings inline, which is tabular data written as a sentence.",
+      "fixLooksLike": "Split the packfile paragraph in two at 'Every ID still resolves exactly as before' so the delta idea and the lead-in to the verify-pack block get their own short paragraph. Turn the modes into a five-row list or a narrow two-column table (mode | meaning: 100644 regular file, 100755 executable, 120000 symlink, 040000 subtree, 160000 submodule commit); two short columns will fit 390 px without scrolling."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Several bash blocks on mobile: printf 'Day 1: ...' > route.txt; printf 'stove...' > notes/gear.txt; git update-index --add ...; echo ... | git commit-tree ce22f4d; seq 1 400 | sed ... > waypoints.txt; sed -i ... waypoints.txt; git tag -a ... main; git rev-parse HEAD:waypoints.txt HEAD~1:waypoints.txt",
+      "problem": "In each of these the clipped tail is the operative part on a phone: the redirect target file name, the tree ID passed to commit-tree, or the tag's target. The author already wraps some lines with backslashes (rev-parse > shortcut, sha1sum pipe), so treatment is inconsistent.",
+      "fixLooksLike": "Apply the same backslash/pipe line breaks to these lines so the redirect target or final argument lands on its own visible line (e.g. \"printf 'Day 1: ...\\n' \\\\\\n  > route.txt\"). Target ~40 columns per line."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Figure 2, left edge (all themes)",
+      "problem": "The row label 'blobs' (x=8,y=342) sits directly under the arrow label 'route.txt' (ends x=74,y=322) and reads as one stacked label 'route.txt / blobs'. The other row labels have clear space.",
+      "fixLooksLike": "Move the left 'route.txt' arrow label up to around y=290 (or the 'blobs' row label down to sit level with the blob boxes' top edge at y=348 is not possible without overlap, so raise the file label) so there are at least ~30 units between them."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "All four figures: class=\"diagram diagram-narrow\"",
+      "problem": "WRITER_GUIDE says diagram-narrow no longer does anything and must not be added to new figures. Harmless, but it is dead markup on a new article.",
+      "fixLooksLike": "Use class=\"diagram\" only."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Every bash block opens with 'cd trail' (17 times)",
+      "problem": "Visual noise: the first highlighted line of nearly every block is the same non-informative command, and the brief's pilot lesson says shell blocks are one session and to cd once as a reader would. The article explains the repetition in prose, which helps, but a reader copying blocks in one terminal hits 'No such file or directory' on every block after the first.",
+      "fixLooksLike": "If the harness really does carry the working directory between blocks, cd once and delete the rest plus the explanatory sentence. If it does not, keep as is and raise it with the integrator (see next issue)."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Shell: bash run harness / code block rendering",
+      "problem": "If each bash run block starts in the scratch root, session-style articles are forced to repeat a setup line in every block, which shows up to the reader as noise. There is no way to mark a line as harness-only.",
+      "fixLooksLike": "Either persist cwd across blocks within one article (as the editorial brief already claims), or support a hidden-prefix marker so a setup line runs but is not rendered."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Author box under Sources and site footer: 'Every program in this article was compiled and run...'",
+      "problem": "On an article that contains only shell sessions, 'compiled' is inaccurate boilerplate directly beside the byline; an attentive reviewer reads it as a stamped claim.",
+      "fixLooksLike": "Word it to cover both cases ('Every program and shell session in this article was run, and its output compared with the text, before publication') or vary the sentence by the fence types present in the article."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "'Keep reading' block at the end of the article",
+      "problem": "All four cards are generic site links (pillar, all topics, start here, glossary); there is no next-article link inside the pillar, so the page ends in a soft dead end. Expected while siblings are unpublished, but it should not ship this way.",
+      "fixLooksLike": "Once sibling articles exist, make the first card(s) the next article(s) in the pillar's reading order (this is order: 1, so 'Next: <order 2 title>') and keep at most two generic cards."
+    }
+  ]
+}

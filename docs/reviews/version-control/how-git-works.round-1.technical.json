@@ -1,0 +1,86 @@
+{
+  "article": "src/content/articles/version-control/how-git-works.md",
+  "route": "/version-control/how-git-works/",
+  "round": 1,
+  "role": "technical",
+  "score": 5.0,
+  "runCodePass": false,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+    "https://blog.algomaster.io/p/how-git-works-internally",
+    "https://git-scm.com/book/en/v2/Git-Internals-Packfiles"
+  ],
+  "justification": "Capped at 5.0 by the brief: `node tools/run-code.mjs src/content/articles/version-control/how-git-works.md` (PowerShell, git 2.52.0.windows.1) exits 1 with blocks=46 executed=2; 21 bash blocks fail with `cd: trail: No such file or directory`. Cause: the harness now runs bash blocks as one session (cwd carries over, run-code.mjs lines 215-218), while the article repeats `cd trail` in every block and even explains that choice in prose (line 114), contradicting the binding 'Shell blocks are one session' lesson. The failure is mechanical, not substantive: I stripped the repeated `cd trail` lines into a scratch copy and replayed all 23 run blocks as one session under the harness environment, and every output matched the article byte for byte, including all object IDs, the 5/8/19 object counts, the 41-byte ref, packed-refs content, delta sizes 12/23/864, the empty-tree ID and the dangling blob. I verified against primary sources: Pro Git 10.2 (header format, three valid blob modes), git-pack-objects (sort by type/size/name, window 10, depth), git-gc (6700, cruft default, 2 weeks, pack-refs), hash-function-transition (SHAttered 23 Feb 2017, hardened SHA-1 by default since 2.13, SHA-256 chosen), git-init (no SHA-1/SHA-256 interop; files is default ref format; master default until Git 3.0), gitrepository-layout (256 subdirectories), gitformat-pack (fanout, .rev). I found no factual error. Without the cap this would score about 8.8: it is deeper and more accurate than Pro Git 10.2-10.4 taken together for this query (adds index stages, submodule mode, reflog cost of a bare ref write, .idx/.rev, cruft packs, reftable, SHA-256, spec-vs-implementation section, four good exercises with verified solutions) and far better than the algomaster post, which shows no real output and cites nothing. Remaining issues are over-absolute sentences, citation hygiene and reader-reproducibility gaps.",
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "Every `bash run` block after the first (lines 116-753), plus the prose at line 114 ('Each block was run as its own script from the parent directory, so each begins with `cd trail`; skip that line if you stay in one terminal')",
+      "problem": "run-code fails: 21 blocks exit 1 with `cd: trail: No such file or directory` because the harness keeps the working directory between blocks. The article also violates the binding brief lesson 'Shell blocks are one session ... cd once, as a reader would', and spends a sentence explaining a harness artefact to the reader.",
+      "fixLooksLike": "Keep `cd trail` only in the first block, delete it from all later blocks (including the exercise solutions at lines 728 and 753), delete the 'Each block was run as its own script...' sentence, and re-run `node tools/run-code.mjs` until it reports pass. I confirmed that with only this change every block's output matches the article.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Lines 114-129, the identity/clock block (`git config user.name`, `echo \"$GIT_AUTHOR_DATE\"`)",
+      "problem": "The block prints harness state, not something a reader can reproduce: on a reader's machine it prints their own name and two blank lines. The article says commit IDs match 'unless you also copy the identity and clock' but never shows how, and a reader with no user.name configured will have `git commit-tree` fail outright. The harness also pins core.autocrlf=false, which the article never mentions (Git for Windows defaults to true and will print LF/CRLF warnings on `git add`).",
+      "fixLooksLike": "Replace the echo block with commands that set the state inside the repo, e.g. `git config user.name 'Ada Example'`, `git config user.email ada@example.com`, `export GIT_AUTHOR_DATE=... GIT_COMMITTER_DATE=...` (and optionally `git config core.autocrlf false`), so a reader who types along gets 505fb51 too; then line 295 can say so plainly.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Warning callout 'Deltas are not the diffs you see', line 662: 'History plays no part'",
+      "problem": "Over-absolute and in tension with the preceding paragraph, which explains that the old version is a delta of the new one because recent content is wanted most (Pro Git 10.4). The cited git-pack-objects page supports only 'sorted by type, size and optionally names ... within --window'; it does not say history is irrelevant, and in practice traversal (recency) order breaks ties and is part of why newer versions end up as bases. This is the 'generalisations get checked' lesson.",
+      "fixLooksLike": "Scope it: 'Parent/child relationships are not what selects a base: candidates are chosen by type, name and size within a window, so a base need not be the previous version or even the same file.' Reconcile with the Pro Git 10.4 sentence (here the newer blob is also the larger one, which is what the size sort favors). Also state --depth (default 50) since delta chains are mentioned via 'depth of 1'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Line 327: 'Git was never told that the plumbing was used, and has no way to tell.'",
+      "problem": "Absolute claim with a counter-example in the article's own repo: the reflog for main records the update-ref with an empty message, whereas `git commit` would have written 'commit (initial): Plan day 1'. `git reflog show main` exposes the difference.",
+      "fixLooksLike": "Scope to the object store and ref ('the objects and the ref are indistinguishable from ones porcelain would have written'), or mention the reflog message as the one trace; it would even be a nice demonstration.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Front matter `sources` vs inline citations",
+      "problem": "Six pages are cited inline but missing from the front-matter list (git-ls-files, git-fast-import, gitformat-signature, git-reflog, git-pack-objects, git-push); the brief requires every source listed with an access date. Conversely git-verify-pack is listed but never cited inline where `git verify-pack -v` is introduced (line 596).",
+      "fixLooksLike": "Add the six pages to `sources` with accessed dates and link git-verify-pack where the command is first used.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Line 564: '...bookkeeping for an operation in progress (such as `MERGE_HEAD` during a merge) ... ([gitrepository-layout])' and 'Of these, reflogs and the index hold information that exists nowhere else, and neither is ever pushed.'",
+      "problem": "gitrepository-layout does not mention MERGE_HEAD, so the citation does not support that clause (it is documented in git-merge). The 'Of these' sentence reads as exhaustive but config and hooks, listed in the same sentence, are equally local-only and unrecoverable from objects.",
+      "fixLooksLike": "Cite git-merge for MERGE_HEAD or use an example the layout page does list; reword to 'None of this is pushed; reflogs, the index, config and hooks hold information that exists nowhere else, while pack indexes can be regenerated.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Line 596, .idx lookup description ('a table lookup and a binary search over one slice of the list, however large the pack')",
+      "problem": "The brief requires every named algorithm to get its cost; 'however large the pack' hand-waves. The lookup is O(log n) comparisons in the objects sharing the first byte (about log2(n/256)), not constant.",
+      "fixLooksLike": "State it: 'one fanout lookup plus a binary search over roughly n/256 IDs, so O(log n) comparisons for a pack of n objects', and contrast with a loose object (one path lookup).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Note callout at line 269 (binary tree format) and line 266 (`040000`)",
+      "problem": "The stored mode for a subtree is `40000` with no leading zero; `ls-tree` pads it. A reader who runs the suggested `git cat-file tree ce22f4d | od -c` will see `4 0 0 0 0` and wonder. Also the 20 raw ID bytes are SHA-1 specific (32 for SHA-256).",
+      "fixLooksLike": "Add one clause: 'the mode is stored without the leading zero (`40000`), and the raw ID is 20 bytes for SHA-1'. Ideally make the od command a run block so the claim is verified.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'What is specified and what is an implementation detail', lines 692-693; also line 112",
+      "problem": "Accurate today but already dating: git-init (now documenting 2.54) says the default branch name changes to `main` in Git 3.0, and the project has announced SHA-256 and reftable as 3.0 defaults. The article ties 'master' to 'Git 2.52' and calls `files` 'the default' without that horizon. The git-init page also now says only compatible changes to SHA-256 repos are expected, which softens 'check that your hosting supports it' only slightly but is worth reflecting.",
+      "fixLooksLike": "Say 'Git 2.x' rather than 2.52, and add a sentence that Git 3.0 is planned to flip these defaults, citing the git-init note (and the BreakingChanges document if opened).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 4 solution, line 780, `--force-with-lease`",
+      "problem": "'only if the remote branch still holds the value you last fetched' omits the documented caveat that a background `git fetch` (IDE auto-fetch) updates the remote-tracking ref and silently defeats the lease (git-push documents this).",
+      "fixLooksLike": "One clause: 'the comparison is against your remote-tracking ref, so a tool that fetches in the background weakens the protection (git-push describes this)'.",
+      "owner": "writer"
+    }
+  ]
+}

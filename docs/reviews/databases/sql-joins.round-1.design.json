@@ -1,0 +1,95 @@
+{
+  "article": "src/content/articles/databases/sql-joins.md",
+  "route": "/databases/sql-joins/",
+  "round": 1,
+  "role": "design",
+  "score": 8.0,
+  "lighthouse": { "performance": 97, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "command": "node tools/verify-page.mjs --drafts /databases/sql-joins/",
+    "runs": 1,
+    "checkedAt": "2026-09-19T00:16:42Z",
+    "words": 3546,
+    "codeBlocks": 60,
+    "figures": 4,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, owner-supplied)"],
+    "lighthouseNotes": "FCP 2.1 s (0.81), unused CSS 14 KiB, bf-cache blocked; none article-level",
+    "screenshotsOpened": "desktop-light fold + parts 01-15 (all), mobile-dark fold + parts 01-21 (all), desktop-dark fold + parts 04, 09, mobile-light fold + parts 05, 13",
+    "note": "This file replaces an earlier round-1 design review that was written against an older build (490-unit figures, 33 min read, light-theme callout output contrast bug). Those three problems are no longer present in the current build: figures are 350 units wide and legible on a phone, the header says 22 min read, and output panels inside callouts render correctly in light theme."
+  },
+  "comparedAgainst": [
+    "https://blog.codinghorror.com/a-visual-explanation-of-sql-joins/",
+    "https://learn.microsoft.com/en-us/sql/relational-databases/performance/joins?view=sql-server-ver17",
+    "https://www.atlassian.com/data/sql/sql-join-types-explained-visually (fetched; the fetcher returned navigation only, not used for scoring)"
+  ],
+  "justification": "Real numbers from report.json / lighthouse.json: Lighthouse 97 / 100 / 100 / 100 on the first run (no re-run needed), 0 console errors, 0 console warnings, 0 broken links, 0 px mobile overflow; the only verify failure is the expected NEEDS_MARKUS placeholder. As a designed page this is clearly ahead of the ranking results I read. Coding Horror is a ~1,300-word post built on the very Venn diagrams this article argues against, with two four-row tables and no treatment of NULL keys, ON-vs-WHERE or row multiplication. Microsoft Learn's joins page is a 4,000-word reference with plain-text result listings, no row-level figure, and most of its length on physical operators. Ours has an excellent rhythm: the longest prose run is about seven desktop lines, nearly every query is followed at once by a terminal-style RESULT panel, and the hook (three attempts at one report) is shown, not told. The four figures (match lines, the 4x5 pair grid, the bracket figure for INNER/LEFT/RIGHT/FULL, the crossed loan/payment lines) are informative rather than decorative, sit on 350-unit canvases that are legible at 390 px, swap amber/green/red tokens correctly in dark theme, and have captions that say what to notice. Headings are specific and content-led, the single h3 nests correctly in the TOC, callouts are restrained (one pitfall, one .NET), and exercise solutions are collapsed. It does not reach 8.5 because several binding phone/exercise rules from the editorial brief are broken in ways a reader will see: Exercise 1 prints its own answer under a 'without running it' prompt; on a 390 px phone the operative half of roughly ten code lines and two result panels is clipped (both EXISTS correlations, the NOT IN subquery, the `owes` expression and both join conditions of the fix query, the C# `if` that implements ON, the `amount` column of the row-multiplication result, the `null_is_null` column); Figure 4 does not exist (numbering jumps 3 to 5) and Figure 5 has two column labels colliding into 'payment_idamount' in every viewport; the NOT IN expansion is a 50-character inline code run that wraps raggedly; and the page closes with the banned 'Exercises' heading + 'Predict the ...' first item. All of these are one-round writer fixes; with them done this is an 8.5-9 page.",
+  "issues": [
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "## Exercises > 'Predict the row count' (article lines 814-833; output block at 824-828). Seen at desktop-light part13, mobile-dark part19.",
+      "problem": "The prompt says 'Without running it, how many rows does this self join of loan return' and the RESULT panel showing n = 6 is rendered directly under the query, above 'Show solution'. The brief's pilot lessons are explicit: a predict-the-output exercise must not show the output panel under the question.",
+      "fixLooksLike": "Move the query's `text output` block (or the whole query/output pair, keeping them adjacent so run-code still verifies it) inside the :::solution. The prompt then shows only the query. Exercise 2 may keep its visible result because the wrong output is part of the question."
+    },
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "Mobile code and result panels, mobile-dark parts 07, 10, 11, 12, 13, 14, 16, 17, 19 (same in mobile-light part13). Article lines 319, 373, 458-467, 486, 501, 563/574, 609-624, 642, 711, 726, 742, 760-792, 839.",
+      "problem": "Blocks scroll inside their own box (no page overflow), but the part that is cut off at the fade is repeatedly the part the prose is about, which the brief's phone rule forbids. Worst cases: (a) both EXISTS queries show 'SELECT 1 FROM loan AS l WHERE l.member_' with the correlation hidden; (b) the NOT IN trap shows 'NOT IN (SELECT member_i'; (c) the fix query hides the entire `- COALESCE(paid.total, 0) AS owes` expression and the right-hand side of both `LEFT JOIN ... ON` lines; (d) the row-multiplication RESULT is 41 columns and its last column, `amount`, the one being double-summed, is the one clipped; (e) the NULL comparison RESULT is 43 columns and `null_is_null`, the contrast case, is clipped; (f) in the C# program the members/loans initializers, the LeftJoin signature, the explanatory comment and the key line `if (l.MemberId is int id && id == m.Id)` are all cut; (g) in the .NET callout (narrower still) the `left.Join(right, l => l, ...)` call and both WriteLine strings are cut; (h) minor: `AS referred_by`, `AS rows_per_key`, `AS late_loans`, the VALUES list of the rota CTE, ORDER BY of the FULL JOIN query.",
+      "fixLooksLike": "Re-break so the operative part sits inside ~40 columns: put the correlated `WHERE l.member_id = m.member_id` on its own indented line in both EXISTS subqueries and break the NOT IN subquery after `NOT IN (`; put `ON` on its own line under each LEFT JOIN in the fix query and split the `owes` expression over two lines; one SELECT item per line where the list is long. Shorten result headers so panels fit 40 columns (alias `p.payment_id AS pay_id`, or drop `m.name` since the WHERE fixes it to Ada; alias the NULL demo columns `eq_11, eq_1n, eq_nn, n_is_n` or stack them as two queries). In C#: one `new(...)` per line, break the LeftJoin signature after the return type, move the comment above a shorter `if`, break `left.Join(` before each argument. Re-run run-code and verify-page and check mobile parts 10-17."
+    },
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "Figure 5 (article lines 582-603): header text at line 589; caption at line 602. Seen at desktop-light part09, desktop-dark part09, mobile-dark part13, mobile-light part13.",
+      "problem": "Two defects in the same figure. (1) The `payment_id` header (x=224, left-aligned) and the right-aligned `amount` header (x=334) overlap and render as 'payment_idamount' in all four viewports. (2) The caption says 'Figure 5' but the previous figure is Figure 3; there is no Figure 4 on the page, so a reader looks for a missing figure.",
+      "fixLooksLike": "Rename the caption to 'Figure 4'. Separate the header labels: widen the payments boxes a little (there are ~78 free units between the two tables), or shorten the left header to `pay_id`/`id`, or use d-small non-mono text; confirm at 390 px that both words are readable with a visible gap."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Anti-joins, paragraph beginning 'It returns nothing, and Dalia has still borrowed nothing' (article line 734; mobile-dark part16, desktop-light part11-12).",
+      "problem": "The densest paragraph on the page (13 lines on a phone) carries two long inline-code expansions, `4 NOT IN (1, 1, 2, 3, NULL)` and the 50-character `4 <> 1 AND ... AND 4 <> NULL`, which wrap across three lines mid-expression on mobile and two on desktop. The brief says long expansions go in a block, not inline. This is also the most dangerous bug in the article and it is presented as ordinary body text while the milder forgotten-ON case gets the page's only pitfall callout.",
+      "fixLooksLike": "Lift the expansion into a short fenced `text` block (the NOT IN form, the AND chain one comparison per line, the NULL verdict) and split the paragraph in two around it (mechanism; then the PostgreSQL quote and the NOT EXISTS conclusion). Consider making the NOT IN explanation a :::pitfall; two pitfalls in a 22-minute page is still restrained."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Final section heading '## Exercises' and first item 'Predict the row count' (article lines 812-814); TOC last entry.",
+      "problem": "The brief's binding pilot lesson says not to end with a section titled 'Exercises' whose first item is 'Predict the ...', and to place exercises mid-article where they fit. Every other heading on this page is specific; this one is the generic template, and all three exercises are stacked at the end, 20 minutes after the material they test.",
+      "fixLooksLike": "Name the section for what it practises (for example 'Count the lines before you run it') and lead with a different form, or better, move the find-the-bug exercise to the end of 'A filter in WHERE quietly undoes a left join' and the row-count exercise to the end of 'When the key is not unique, rows multiply', leaving only the combined self-join/anti-join task at the end."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Section 'A table can join to itself' (article lines 496-517; mobile-dark part11).",
+      "problem": "The prose asks the reader to 'Picture two copies of the table side by side, draw a line from each row on the left to the row on the right', which is the page's signature figure, but no figure is given. It is the only join kind in the article without a row-matching picture, and the stretch from Figure 3 to Figure 5 is about eight phone screens of text and code with no visual.",
+      "fixLooksLike": "Add a small match-line figure in the style of Figure 1 on a 350-unit canvas: `member AS m` on the left showing name and referred_by, `member AS r` on the right showing member_id and name, three lines (Boris->Ada, Chen->Ada, Dalia->Chen), Ada's left row amber as the padded one. Caption: Ada is the target of two lines and the source of none. Renumber the following figure."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Sources list (front matter lines 45-64; desktop-light part14, mobile-dark part20) versus the body.",
+      "problem": "Five of the fourteen listed sources are never referred to in the body: both MySQL 8.4 pages (MySQL is not mentioned anywhere in the article), the T-SQL IS [NOT] DISTINCT FROM page, and the two PostgreSQL planner/operator-optimization pages (the join-algorithm section attributes only to SQLite and SQL Server). The brief treats a listed-but-uncited source as a finding. Separately, in-prose attributions ('the PostgreSQL manual', 'SQLite's manual') are plain text, and with five PostgreSQL and four SQLite entries in an unkeyed list a reader cannot tell which page backs which sentence.",
+      "fixLooksLike": "Either cite each of the five where it supports a claim (for example one sentence on MySQL's `<=>` and SQL Server 2022's IS NOT DISTINCT FROM next to the PostgreSQL/SQLite spellings; PostgreSQL's planner page beside the hash/merge bullets) or remove them from front matter. Make each in-prose attribution a Markdown link to the exact page, as WRITER_GUIDE section on links allows."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "NOT IN query result panel (article lines 729-732; desktop-light part11, mobile-dark part16).",
+      "problem": "The empty result renders as a header and a rule with nothing under it, which at a glance looks like a truncated or broken panel rather than 'zero rows'. The zero-row result is the whole point of the example.",
+      "fixLooksLike": "If the harness permits, have the runner print a '(0 rows)' line for empty results, or wrap the query as `SELECT COUNT(*) AS members_found ...` so the panel shows an explicit 0; otherwise start the following sentence with 'Zero rows:' so the emptiness is stated at the panel. (If a '(0 rows)' footer needs a tool change, route that part to the integrator.)"
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Article shell on mobile: setup CREATE TABLE / INSERT blocks (mobile-dark part01, part12) and all clipped code blocks generally.",
+      "problem": "The right-edge fade is the only cue that a code block scrolls, and on short clipped lines (for example 'REFERENCES member (') it is easy to read the line as complete. With 60 blocks on this page a phone reader meets the pattern constantly. Lighthouse also flags 14 KiB of unused CSS and an FCP of 2.1 s; both are shell-level and do not threaten the 90 threshold (performance 97).",
+      "fixLooksLike": "Consider a slightly stronger overflow cue on touch widths (a persistent thin scrollbar or a small chevron at the fade) for blocks whose scrollWidth exceeds clientWidth. Low priority; append to docs/INTEGRATOR_REQUESTS.md. The writer-side re-wrapping above is the real fix for this article."
+    }
+  ]
+}

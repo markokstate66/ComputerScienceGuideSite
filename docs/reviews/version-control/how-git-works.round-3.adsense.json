@@ -1,0 +1,53 @@
+{
+  "role": "adsense",
+  "article": "src/content/articles/version-control/how-git-works.md",
+  "route": "/version-control/how-git-works/",
+  "round": 3,
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+    "https://www.freecodecamp.org/news/git-internals-objects-branches-create-repo/",
+    "https://blog.algomaster.io/p/how-git-works-internally"
+  ],
+  "runCodePass": true,
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "justification": "Fresh read first, previous reviews second. Against the pages ranking for 'how git works internally': AlgoMaster (ranks first; about 4,500 words, 9 diagrams) explains the object model but executes no plumbing, shows no real output, cites nothing, has no exercises and wanders into merge/rebase; the freeCodeCamp visual guide (about 6,500 words) does build a commit with hash-object/update-index/write-tree/commit-tree but has no header+hash derivation, no zlib, no binary tree format, no packfiles, packed-refs, reflogs, annotated tags, SHA-256/reftable, no exercises and no inline primary citations; Pro Git 10.2 is the strongest and is the canonical source of the plumbing sequence, but covers objects only, with a test.txt 'version 1/version 2' example and a Ruby irb session, and spreads refs and packfiles across other pages. This article has clear original value over all three. It uses its own running example (hiking plan: route.txt, notes/gear.txt, waypoints.txt; no overlap with Pro Git's test.txt/new.txt or fCC's 'git is awesome'); opens with three checkable numbers (5 objects, +3, a 41-byte branch file) and pays each off in executed output; reproduces the blob ID with printf|sha1sum; inflates and dumps the loose object; shows the raw tree entry bytes and explains 40000 vs 040000; stages the 'commit exists but git log cannot find it' moment before update-ref; shows what a bare ref write costs (no reflog) by listing the logs directory; reads a delta back through cat-file with %(deltabase); shows packed-refs with the peeled line; honestly says its experiment cannot separate recency from size ordering; separates specified model from defaults with the Git 3.0 horizon; and has four exercises of different form (compute, predict a count with output hidden in the solution, rescue, explain), one now mid-article. Filler: none. The first sentence delivers a fact, there is no intro/outro boilerplate and no conclusion section; title and description read for humans; no keyword repetition. Template check against the only other articles (complexity/amortized-analysis.md, databases/sql-joins.md; there are no version-control siblings yet): headings are content-specific claims with no overlap, openings differ in kind (documentation paradox / librarian's report / three numbers), exercise titles and placement share no pattern, and the closing section is named for what it practises. Machine-text tells: no 'it's not X, it's Y' scaffolding, no empty signposting, paragraph lengths vary from one line to eight; the only aphoristic line left is 'The safe rule: read .git to learn, and use commands to act', which is useful. Copy check: six distinctive sentences searched in quotes ('A tree is what gives a blob its name', 'One byte string serves twice: hashed, it names the file', 'are both true, at different layers', 'the ID is a pure function of the bytes', 'A commit ID vouches for its whole history', 'read .git to learn, and use commands to act'): no verbatim hits. I fetched Pro Git 10.2 and compared the header, tree and commit-format passages with its verbatim text: independently worded. The step order (hash-object, update-index, write-tree, commit-tree) matches Pro Git because that is the only plumbing route and is the angle the content plan assigns; the one section whose experimental design follows Pro Git 10.4 says so inline. Sourcing: all 28 front-matter sources are cited inline at the claim, all primary (git-scm.com docs and Pro Git); measured sizes are labelled 'on this machine' with wildcards; toolchain stated once in the body; no invented experience, statistics or 'most people think' claims. Round-2 verification: technical major ('rewrote one line in HEAD and nothing else') is really fixed, not papered over: the sentence is now scoped ('wrote no objects and changed no working files ... rewrote the one line in HEAD and logged the move in HEAD's own reflog') and the run block proves it with tail -1 .git/logs/HEAD. Round-2 minors also fixed: gpgsign pinning added; 'proportional to what changed' corrected to size of changed files plus trees on the path with a forward link to packing; .git inventory marked 'Chiefly' and turned into a list with the layout page as the full list; macOS notes consolidated; .idx described as parallel tables with two fan-out entries; fast-forward defined in place; long printf lines wrapped; exercise 1 moved under the SHA-1 header section and the final section retitled 'Three more experiments in the packed repository'; the 'fatal' message quoted in prose; 'is common' replaced by the fact about gc; 'You rarely run git gc' replaced by the sourced mechanism; 'That completes the set' folded in; sources reordered with Pro Git and format documents first. Crosslinks file exists with eight sensible, precisely located links whose exercise numbers match the rendered page. My runs: run-code PASS blocks=51 executed=26; verify-page 4,755 words, 0 console errors, 0 broken links, 0 mobile overflow, only failure the known NEEDS_MARKUS placeholder. Why not higher than 9.0: two shell-level boilerplate sentences that are false for this page survive a third round, the end-of-page navigation is generic until siblings exist, and a few small wording nits remain. None is a low-value-content signal; the article is above the 8.5 bar on its merits.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Rendered page, author box under Sources ('Every program in this article was compiled and run, and its output compared with the text') and footer tagline ('Computer science fundamentals with C# examples. Every program on this site is compiled and run...')",
+      "problem": "Stamped site-wide boilerplate that is inaccurate on this page: the article contains no C# and nothing compiled, only shell sessions. Raised in rounds 1 and 2 and still present. A policy reviewer reading top to bottom sees a templated claim that does not describe the page it sits on.",
+      "fixLooksLike": "Integrator rewords both lines so they are true for every pillar, for example 'Every command and program in this article was run, and its output checked against the text, before publication', and changes the footer to 'mostly C# examples' or drops the language. Already belongs in docs/INTEGRATOR_REQUESTS.md; it should be closed before the AdSense submission.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "'Keep reading' block at the end of the rendered page",
+      "problem": "All four cards are generic site links (pillar, all topics, start here, glossary); there is no next-in-pillar article and the body has no article-to-article links yet. Not penalised in the score because docs/crosslinks/version-control/how-git-works.md exists and its eight entries are sensible, but the page should not ship in this state.",
+      "fixLooksLike": "In wave 3 the integrator wires the eight crosslinks and makes the first card the next article in the pillar's reading order (branching-and-merging) once it is published.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Opening paragraph: 'Change one line, commit again, and it adds three more, not five.'",
+      "problem": "The session that pays this number off does not change a line; it appends a second line to route.txt ('Day 2 ...'). The count is right, but the hook and the demonstration do not quite describe the same edit, and the opening's promise of checkable numbers is the article's main device.",
+      "fixLooksLike": "'Add one line to one of them, commit again, and it adds three more, not five.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 3 question: 'then find a command in the git-fsck documentation that proves it'",
+      "problem": "Slightly muddled instruction: the documentation page is for one command (git fsck itself), so 'find a command in' it is unclear; the reader is really being asked to work out which report or option of git fsck reveals the object.",
+      "fixLooksLike": "'...then use the git-fsck documentation to work out how to make Git show you the first draft.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'A new repository...': the three setup paragraphs (toolchain and macOS substitutions, ID reproducibility, explanation of each config line) before the first object is written",
+      "problem": "About 250 words of environment notes sit between the hook and the first payoff. Each sentence is justified by a pilot lesson and none is filler, but it is the one stretch where a reader who is not typing along gets nothing, and it grew again this round.",
+      "fixLooksLike": "Optional: move the macOS substitutions sentence into a short note callout so it can be skipped visually, leaving the reproducibility paragraph and the config block in the flow. No content needs cutting.",
+      "owner": "writer"
+    }
+  ]
+}

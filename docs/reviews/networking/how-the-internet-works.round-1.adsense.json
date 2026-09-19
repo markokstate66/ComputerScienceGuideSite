@@ -1,0 +1,59 @@
+{
+  "article": "src/content/articles/networking/how-the-internet-works.md",
+  "route": "/networking/how-the-internet-works/",
+  "round": 1,
+  "role": "adsense",
+  "score": 8.6,
+  "comparedAgainst": [
+    "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work",
+    "https://github.com/alex/what-happens-when",
+    "https://blog.bytebytego.com/p/what-happens-when-you-type-a-url"
+  ],
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "justification": "Read against three pages that rank for 'what happens when you type a url'. MDN 'How browsers work' spends ~1,400 words on the network part, has no code, no measurements, no RFC citations, and still says TLS 'requires five more round trips' and 'eight round trips' before the request, which is wrong for TLS 1.3. alex/what-happens-when has no code, timings, citations or diagrams and describes the pre-1.3 RSA exchange ('encrypts this with the server's public key'). ByteByteGo is ~350 words and one diagram. This article is clearly original over all of them: seven network programs that reproduce each step (hand-typed HTTP over TcpClient, the same bytes through SslStream with per-band timing, an SNI experiment that gets three different outcomes from one IP, a loopback capture of what HttpClient really sends, a TTL-based hop counter), byte-exact encapsulation arithmetic (56 -> 78 -> 118) derived from cited RFC sections, and an explicit correction of the outdated TLS story. I spot-checked the SNI claim myself: the server does send a HandshakeFailure alert for wrong-name.test, so 'ended the handshake' is accurate. Five distinctive sentences searched in quotes returned no matches; the running example, band metaphor and figures are the site's own. Citations I opened (RFC 9293 s3.4.1/3.5.2/3.7, Learn pages for Dns.GetHostAddresses remarks and TargetHost) support the clauses they are attached to; all 21 sources are cited inline. No filler: the first sentence delivers the thesis, there is no conclusion paragraph, the page ends on a diagnostic exercise. Not templated: compared with how-git-works, processes-and-threads, sql-joins and binary-search, the heading sets, openings and exercise forms (plan-from-URL, delete-a-header, measure-reuse, diagnose-the-band) are all different; only the 'On the machine used here' measurement phrase recurs site-wide, which the brief requires in substance. No keyword stuffing; title and description are written for a person. Rendered page: zero console errors, no broken links, no mobile overflow; only failure is the known NEEDS_MARKUS placeholder. What keeps it from a higher score: the article's own timing data does not fit the explanation it gives (major, below), a handful of behaviour claims about browsers and networks carry no source or a source that does not say that, and a searcher arriving from the 'type a URL' query gets no onward pointer for the browser-side half that every competing result covers. Crosslinks file exists and is sensible (9 links over all 5 planned siblings), so missing sibling links are not counted.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Section 'Where the time went', first paragraph and the three bullets; compare with the solution of exercise 'Measure what connection reuse saves'",
+      "problem": "The page's thesis is 'each band costs one round trip', with TCP (~20 ms) as the clean RTT measure. The reported numbers are DNS ~20, TCP ~20, TLS 50-55, HTTP first line 60-70 ms. The ~40 ms excess in band 4 is attributed to 'however long the server takes to produce the response', but the article's own reuse exercise reports 15-35 ms for a full request on a warm connection to the same server, so server think-time cannot be 40 ms. The TLS excess is attributed to 'real work at both ends' without any measurement. A careful reader sees ~150 ms where four round trips predict ~80 ms and an explanation the page itself contradicts; that is an unsupported claim sitting on top of the article's main original asset (its measurements).",
+      "fixLooksLike": "Either find and state the real cause (measure it: e.g. time a second request on the same SslStream to isolate band 4, time AuthenticateAsClientAsync with revocation checking off / with a pre-warmed chain, check whether the first read is waiting on post-handshake messages), or stop attributing: report the numbers, say plainly that TLS and the first HTTP exchange each took more than one measured RTT on this machine, say which part you could and could not account for, and reconcile the text with the 15-35 ms warm-request figure. Do not leave an explanation that the page's own data refutes.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Band 1 para 2 ('Some browsers send the same question inside an HTTPS request'); Band 1 'almost certainly did not walk the tree either, because the recursive server had the record cached from somebody else's request'; 'What the handshake exchanged' last para ('A browser offers h2 first'); 'What the 56 bytes were' ('the address is frequently shared by many sites'); 'Counting the hops' ('many networks filter ICMP')",
+      "problem": "Behaviour/prevalence claims with no source, or with a source that does not support the clause: RFC 8484 defines DoH but says nothing about browsers using it; no source shows browsers list h2 first in ALPN; 'almost certainly' and 'many'/'frequently' are asserted, not shown. The brief requires a primary source for every non-obvious claim and forbids citations attached to clauses the page does not support.",
+      "fixLooksLike": "Cite a primary source per claim (e.g. Firefox/Chrome DoH documentation; Chromium or Fetch/HTTP docs for ALPN ordering) or rescope to what the page demonstrates: 'this address serves at least two sites, as the certificate experiment below shows'; 'a router may stay silent (RFC 792 says may)'; 'the recursive server may have answered from its own cache; this program cannot tell'. Move the RFC 8484 citation onto 'DNS queries can also be carried over HTTPS'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'After the last byte of HTML' and the paragraph 'If you type a bare example.com' in the URL section",
+      "problem": "The target query is 'what happens when you type a url'; every competing result covers the browser side (cache checks before the network, parsing, rendering). The article scopes this out in one paragraph, which is a legitimate choice, but gives the searcher nowhere to go for it, and never mentions that a browser may answer from its HTTP cache or a pooled connection and skip some or all bands. For that reader the section is a dead end.",
+      "fixLooksLike": "Keep the scope, but add two sentences: one noting that a browser first checks its HTTP cache and open connections, so a repeat visit may pay for fewer bands (cite RFC 9111 or link the planned /networking/http-explained/ caching section via the crosslinks file), and one outbound pointer for rendering (e.g. MDN 'Populating the page: how browsers work' or the HTML Standard), so the scoped-out half has an exit.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Whole article: first use of DNS, TCP, TLS, round trip, port, packet; docs/INTEGRATOR_REQUESTS.md",
+      "problem": "Sibling pillars link first-use terms to the glossary (/glossary/#process, #commit). This beginner-level entry article links none, because src/content/glossary/ has no networking terms and none have been requested. The pillar's entry page therefore has no glossary ties and its 'Keep reading' block is entirely generic until wave 3.",
+      "fixLooksLike": "Writer requests 4-6 networking glossary terms (DNS, TCP, TLS, round-trip time, port, packet) in docs/INTEGRATOR_REQUESTS.md with own-words definitions; integrator adds them and links first uses. Add these wanted glossary links to docs/crosslinks/networking/how-the-internet-works.md.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Sections 'Band 1', 'What the handshake exchanged', 'Where the response ends' versus planned siblings dns, tls-and-https, http-explained (CONTENT_PLAN.md section 7, networking rows 3-5)",
+      "problem": "Near-duplicate risk for later articles, not a defect here: this page already uses the planned TLS sibling's stated differentiator (TLS 1.3 accuracy versus the RSA story, certificate inspection via SslStream) and the planned HTTP sibling's opening move (hand-written request). If those siblings repeat the same demos the pillar will read as overlapping coverage.",
+      "fixLooksLike": "Leave this article as is. Note in the crosslinks file (or to the planner) that the SNI/certificate-per-name experiment, the hand-typed GET and the first-vs-second lookup timing are taken, so sibling writers choose different examples and link back here instead of re-deriving them.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "'The layer model, after the fact' ('a summary and not a vocabulary list'); 'After the last byte of HTML' ('the browser's work and not the network's'); intro ('The rest of this page performs...'); 'Underneath' ('That is by design.')",
+      "problem": "A few mild machine-text tics: the repeated 'X and not Y' contrast closer, one 'the rest of this page' signpost, and a two-word dramatic sentence. Isolated, not a pattern that dominates, but these are the constructions a reviewer looks for.",
+      "fixLooksLike": "Rephrase two of the three 'and not' contrasts as plain statements, and fold 'That is by design.' into the following sentence.",
+      "owner": "writer"
+    }
+  ]
+}

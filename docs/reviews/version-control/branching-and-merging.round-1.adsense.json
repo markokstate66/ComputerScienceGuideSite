@@ -1,0 +1,61 @@
+{
+  "article": "src/content/articles/version-control/branching-and-merging.md",
+  "route": "/version-control/branching-and-merging/",
+  "round": 1,
+  "role": "adsense",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging (read in full)",
+    "https://www.datacamp.com/tutorial/git-merge (read in full)",
+    "https://beej.us/guide/bggit/html/split/merge.html (read in full)",
+    "https://git-scm.com/docs/git-merge (read; also used to check the article's quotes and strategy table)",
+    "https://www.atlassian.com/git/tutorials/using-branches/git-merge (top result; body did not load in the fetcher, only the search excerpt was read, so it is not counted as one of the two)"
+  ],
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "justification": "Original value is high. The top results for 'git merge explained' (Pro Git 3.2, DataCamp, Beej, Atlassian) stop at fast-forward, three-way merge and a basic conflict; none of those read covers the merge base as a computed thing, index stages 1/2/3, diff3 markers used to derive a resolution neither side contains, the combined diff of a merge commit, a clean merge that is semantically wrong (check.sh passing on both parents and failing on the merge), the adjacent-line experiment with git merge-file, or the -X ours vs -s ours hazard ending in 'Already up to date'. Only Pro Git 7.8 overlaps with the advanced half, and the article uses its own scenario (coffee kiosk, not hello.rb/iss53), its own diagrams and real, verified output. Five distinctive sentences searched in quotes returned no matches; the two verbatim quotations from git-merge are marked as quotes and attributed, and I confirmed both against the live page, along with the recursive/ort v2.50 claim, the --abort caveat, the stage numbering and the --no-commit wording. 12 primary sources, all cited inline where the claim is made; none are orphaned. No filler: the first sentence makes a claim, there is no conclusion boilerplate, and the closing section is a symptom-to-cause list that adds new diagnostic content rather than restating headings. Not templated: compared with how-git-works, sql-joins, test-doubles and amortized-analysis the openings, heading sets, exercise forms (run-and-explain, design-an-experiment, predict-two-commands) and endings all differ; exercises are placed mid-article and no outputs are given away outside solutions. No keyword stuffing; title and description are written for a human. Prose does not read as mass-produced: paragraph lengths vary, there are only a couple of 'X, not Y' constructions and no empty signposting. Rendered page: zero console errors, zero broken links, no mobile overflow; the only verify failure is the known NEEDS_MARKUS placeholder. Navigation is not a dead end (previous article, pillar index, topics, start-here, glossary), and docs/crosslinks lists five sensible links to planned siblings. What keeps it off 9.5+: a handful of unscoped generalisations of exactly the kind the pilot-round lessons warn about (opening 'three possible outcomes', the heading 'Backing out is always available' contradicted by its own paragraph), several unsourced frequency claims ('You rarely choose one', 'used more often', 'usually', 'Less often', 'the usual causes'), a strategy table whose cells track the git-merge wording closely, and the omission of --squash and of editor/mergetool resolution that a searcher for this query is likely to expect at least a pointer to. None of these is a policy risk; all are small edits.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Opening paragraph ('`git merge` has three possible outcomes ... Only when each side has commits the other lacks does Git build a new commit')",
+      "problem": "Unscoped generalisation that the article itself later contradicts: --no-ff builds a commit when a fast-forward was possible, --squash and --no-commit build none, and unrelated histories make git merge refuse outright (a fourth outcome). The pilot-round lessons make 'only/always' claims a finding.",
+      "fixLooksLike": "Scope it: 'With default options, `git merge` has three possible outcomes ...' and 'By default, only when each side has commits the other lacks ...'. Optionally one clause noting that histories with no common ancestor are refused.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Heading '### Backing out is always available'",
+      "problem": "The heading says 'always'; the paragraph under it documents the case where --abort cannot reconstruct the pre-merge state. A reviewer skimming headings sees an over-claim the body retracts.",
+      "fixLooksLike": "Rename to something the body supports, e.g. 'The exit: `git merge --abort`' or 'Backing out, and the one case where it is not clean'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Merge strategies...' ('You rarely choose one', 'The `-X` options for `ort` are used more often'); exercise 2 solution ('the resolution is usually \"keep both\"'); closing list ('You are probably on the wrong branch', 'Less often', 'are the usual causes')",
+      "problem": "Asserted usage frequencies with no source. The brief bans 'what most people do' claims and asserted experience unless sourced. The Pro Git 7.8 citation on the third bullet supports the whitespace option, not the claim that these are 'the usual causes'.",
+      "fixLooksLike": "Rephrase as facts about Git rather than about people: 'The default is chosen for you: `ort` for one branch, `octopus` for several'; 'Causes to check: adjacent edits, reformatting on one side, line-ending changes'; 'First check the branch you are on and the direction of the merge; then whether the branch was merged earlier and reverted, or merged with `-s ours`'; 'the resolution here is to keep both lines'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Strategy table (rows `octopus`, `ours`, `subtree`) and exercise 3 solution ('That is the strategy's documented purpose, superseding the history of a side branch')",
+      "problem": "These cells follow the git-merge wording closely ('refuses to do a complex merge that needs manual resolution' -> 'refuses if a conflict would need manual work'; 'effectively ignoring all changes from all other branches' -> 'ignoring the other branches' changes'; 'supersede old development history of side branches'). The table is attributed, so this is not copying, but it is the most derivative passage on the page, and the 'documented purpose' sentence has no inline citation.",
+      "fixLooksLike": "Rewrite each cell from the reader's point of view (when you would meet it, what you would see) rather than as a compressed doc sentence, e.g. octopus: 'What you get when you name two or more branches. All or nothing: any conflict aborts the whole merge.' Add the git-merge link to the 'documented purpose' sentence.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Resolve, stage, commit', paragraph after the combined diff ('it lists only files that differ from every parent ... an empty combined diff means Git did all the work')",
+      "problem": "The explanation is incomplete against the article's own first merge: there menu.txt differs from both parents, yet `git show` on that merge would print no diff, because the default --cc format also drops hunks whose result matches one parent. A careful reader who tries it finds the stated rule does not explain what they see.",
+      "fixLooksLike": "Add one sentence: the default (dense) combined format additionally omits any hunk where the result is identical to one of the parents, which is why a clean automerge of a file both sides touched still shows nothing; cite the git-diff 'combined diff format' section for that clause.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Fast-forward: the merge that creates nothing' option list, and 'Resolve, stage, commit'",
+      "problem": "Coverage gap relative to competing pages for this query: DataCamp treats squash merge as one of three merge types and Pro Git/Beej show `git mergetool`/IDE resolution. The article mentions neither --squash nor merge tools, so a reader arriving with those terms finds no anchor.",
+      "fixLooksLike": "One sentence each, no new section: `--squash` stages the combined change but records no merge (one parent, branch not marked as merged); and editors and `git mergetool` present the same three stages shown by `git ls-files -u`. Record a crosslink for --squash to /version-control/rebase-vs-merge/ or /version-control/git-workflows/ if the plan covers it there.",
+      "owner": "writer"
+    }
+  ]
+}

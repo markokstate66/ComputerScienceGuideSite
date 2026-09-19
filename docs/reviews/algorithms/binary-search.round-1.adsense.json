@@ -1,0 +1,68 @@
+{
+  "role": "adsense",
+  "article": "src/content/articles/algorithms/binary-search.md",
+  "route": "/algorithms/binary-search/",
+  "round": 1,
+  "score": 8.3,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/binary-search/",
+    "https://cp-algorithms.com/num_methods/binary_search.html",
+    "https://en.wikipedia.org/wiki/Binary_search",
+    "https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.array.binarysearch"
+  ],
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "justification": "Original value is high. The top results for 'binary search algorithm' are GeeksforGeeks (definition, iterative/recursive code in seven languages, no invariants, no bounds, no bugs), cp-algorithms (invariant, lower/upper bound, predicate search, one-line overflow note, no library conventions, no tests) and Wikipedia. This article opens with a plausibly wrong program that passes four spot checks and fails 4 of 11 lookups, derives the fix from a stated invariant, verifies the probe-count formula exactly rather than asserting it, explains why .NET returns ~index rather than -index (none of the compared pages do), shows the unsorted-input and duplicate behaviors against the documented wording, and gives an own-example answer-space search (thumbnail cache budget) with a linear-scan oracle. Running examples (bus departures, delays, thumbnails) are its own; none of GfG's arrays, cp-algorithms' max-average problem or Bloch's code is reused. Five distinctive sentences searched in quotes returned no matches. Quotes I checked against sources are accurate and attributed (Bloch: 1946/1962, 'nine years or so', both midpoint repairs, Bentley's version affected; Microsoft Learn: 'returns the index of only one of the occurrences, and not necessarily the first one'). No filler intro or outro: first sentence delivers the program, the closing paragraph gives actionable advice and explains why overflow survives exhaustive small tests. No keyword stuffing. Structure is not templated against siblings: I compared headings and openings with big-o-notation, amortized-analysis, arrays-and-dynamic-arrays and sql-joins; headings are content-specific, exercise forms vary (paper trace, find-the-hang, write-a-function, explain-the-overflow), exercises sit mid-article, there is no 'Exercises' end section. No invented experience or statistics; measured output is deterministic. Rendered page: 3950 words, 0 console errors, 0 broken links, related articles + pillar/topics/start-here/glossary at the end, so no dead end. docs/crosslinks/algorithms/binary-search.md exists, lists seven sensible links with exact placements and sibling boundaries. Why it is not at 8.5: the body contains zero hyperlinks to its sources (siblings have 11-17), so the binding 'cite where the claim is made' rule is met only by name-dropping, and three listed sources are never referenced in the body at all; and the headline promise of 'three bugs' is only two-thirds kept in the visible text, because bug two exists solely inside a collapsed exercise solution. Both are cheap to fix; with them fixed this is at or above the bar.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Whole body; most visibly 'The midpoint that overflows' (paras 1-3, the two repair bullets, the :::dotnet callout), 'What Array.BinarySearch tells you with a negative number' (paras 1, 3 and the duplicates quote), 'When binary search is the wrong tool' (bullets 2-3)",
+      "problem": "The body has 0 inline links to sources; sibling articles have 11-17. Claims are attributed by name only ('the documentation defines it as', 'Joshua Bloch reported', 'is documented as O(n)'), and three front-matter sources are never referenced in the body in any form: 'The checked and unchecked statements' (supports the unchecked-by-default / CheckForOverflowUnderflow sentence), 'Bitwise and shift operators' (supports the >>> and ~x == -x - 1 sentences) and 'List<T>.BinarySearch'. The brief's pilot lessons make an uncited listed source, and a claim without a citation where it is made, a finding. To a reviewer a quoted sentence with no link looks unsupported.",
+      "fixLooksLike": "Link each claim at the point it is made, as the sibling articles do: Bloch's post on 'In 2006 Joshua Bloch reported'; checked-and-unchecked on the 'unchecked unless the project turns on CheckForOverflowUnderflow' sentence; bitwise-and-shift on the >>> bullet and on '~x == -x - 1'; Array.MaxLength on its mention; the two GitHub files in the :::dotnet callout; Array.BinarySearch on 'the documentation defines it as' and on the duplicates quotation; List<T>.BinarySearch where it is first named; List<T>.Insert and Dictionary docs in the last section. Every source in front matter then has at least one inline anchor.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Title and intro paragraph after the second output block ('a search that never returns') versus exercise 'The loop that never returns' (solution collapsed)",
+      "problem": "The title and the intro promise three bugs the page 'works through'. Bug one and bug three get full sections; bug two appears only inside a collapsed exercise solution ('This is bug two.'). A reader who does not expand the solution, and any crawler or reviewer reading visible text, sees two bugs and a closing paragraph that refers to 'the endless loop on this page' they never met. It reads as a headline the body does not deliver.",
+      "fixLooksLike": "Keep the exercise, but put the rule in visible body text: two or three sentences near the termination argument or directly after the exercise stating that lo = mid with a round-down midpoint does not shrink a two-element interval, so the loop never ends, and that this is bug two (the exercise then asks the reader to find the input and repair it). Alternatively give it a short named subsection so all three bugs are reachable from the table of contents.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Front matter description",
+      "problem": "'...then cover midpoint overflow, lower bound, ~index, and answer search.' reads as a comma list of topic keywords, and 'answer search' is not a phrase a searcher or reader would recognize. Borderline against 'write the description for a human'.",
+      "fixLooksLike": "One human sentence, e.g. 'A binary search that passes its spot checks and still misses four of eleven values: find the bug with a loop invariant, then see midpoint overflow, lower bound, and why Array.BinarySearch returns ~index.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Searching a range of answers instead of an array', para 1: 'This is usually named binary search on the answer'; and 'Follow 500 through the loop', last para: 'the natural picks for a quick test'",
+      "problem": "Small unsourced 'what people usually do/say' assertions of the kind the pilot lessons warn about. Low risk, but they are the only ones on the page.",
+      "fixLooksLike": "'The technique is known as binary search on the answer' (no frequency claim), and 'the first, middle and last elements, which the spot check above picked, are not on a losing path'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'When binary search is the wrong tool', first bullet: 'A comparison sort costs O(n log n) (CLRS, chapter 2, for merge sort)'",
+      "problem": "The generalisation ('a comparison sort costs') is wider than the citation (merge sort's bound in ch. 2). Insertion sort is a comparison sort and costs O(n^2); the matching general statement is the Omega(n log n) lower bound in CLRS ch. 8. Citation attached to a sentence it only partly supports.",
+      "fixLooksLike": "'Sorting first costs O(n log n) with merge sort (CLRS, chapter 2), and no comparison sort can beat that in the worst case (chapter 8)', or scope it to 'a good comparison sort'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Searching a range of answers...', sentence 'Three things can go wrong with this technique, and none of them is inside the loop'",
+      "problem": "Site-level phrasing tic: 'Three things ...' / 'Three ways ...' list lead-ins also appear in amortized-analysis (twice) and arrays-and-dynamic-arrays. Here the list is substantive, but across the pillar set the repeated formula is the kind of pattern a reviewer reads as generated text. This article also already uses 'three bugs' as its frame.",
+      "fixLooksLike": "Drop the count: 'The failures of this technique are all outside the loop:' and let the bullets speak.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Searching a range of answers instead of an array'",
+      "problem": "The best competing page for this half of the topic (cp-algorithms) also covers real-valued answer search; this article is silent on it, so a reader cannot tell whether FirstTrue's integer termination argument carries over.",
+      "fixLooksLike": "One or two sentences: on doubles the interval never reaches length zero by lo = mid + 1, so stop after a fixed number of iterations or at a tolerance. No new program needed.",
+      "owner": "writer"
+    }
+  ]
+}

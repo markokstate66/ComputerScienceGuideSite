@@ -1,0 +1,52 @@
+{
+  "article": "src/content/articles/complexity/amortized-analysis.md",
+  "route": "/complexity/amortized-analysis/",
+  "round": 2,
+  "role": "adsense",
+  "score": 8.9,
+  "comparedAgainst": [
+    "https://yourbasic.org/algorithms/amortized-time-complexity-analysis/",
+    "https://en.wikipedia.org/wiki/Amortized_analysis",
+    "https://www.cs.cornell.edu/courses/cs3110/2013sp/lectures/lec21-amortized/lec21.html"
+  ],
+  "justification": "Target query 'amortized time complexity'. Pages read this round: YourBasic (ranks on page one; about 500 words, one pseudocode append, aggregate sum only, no banker/potential, no average-case contrast, no failure modes, no exercises), Wikipedia (about 1,800 words; dynamic array plus two-list queue; names the three methods but proves nothing in detail; nothing measured) and the Cornell CS 3110 lecture the article cites (three methods on a toy extensible array, 3-unit charge, Phi = 2n - m; nothing run, no growth-factor trade-off, no shrink/trim pitfalls). The Medium results that also rank returned 403 in round 1 and were not used. Fresh judgement before opening round 1: the page delivers from its first sentence (a concrete contradiction quoted from the List<T>.Add docs), has no intro/outro boilerplate, no conclusion, no keyword stuffing (title and description are human sentences; the query phrase is not repeated unnaturally), and its 4,641 words are worked material: a real List<T>.Capacity trace, the growth line quoted from dotnet/runtime and labelled an implementation detail, a per-call stopwatch showing the slow Add, a bank simulation run against the real list with charge 3 versus charge 2 (none of the compared pages has anything like it), the x2/x1.5/+k simulation with a log-log figure, the TrimExcess-in-a-loop and Capacity = n + 1 traps measured in allocated bytes, and a shrink-thrash find-the-bug exercise with hysteresis fix. That is clear original value over every ranking page I read. Templating check: headings are content-specific and share nothing with sql-joins or how-git-works (no Introduction/Conclusion/Exercises heading anywhere; git ends 'Four things to try in the trail repository', sql-joins ends on an engine section, this ends 'Two limits to test: shrinking and pre-sizing'); openings differ; the four exercises are four different forms (predict, prove, find-the-bug, measure) and two now sit mid-article where the material is introduced; outputs of predict/measure items are inside the collapsed solutions. Copy check: five distinctive sentences searched in quotes ('bound the total cost of a whole sequence of calls and share that total among them', 'An expensive operation pays for itself out of the saved coins', 'look for an expensive operation that can only happen after enough cheap ones have set it up', 'no adversary can pick a sequence of n appends that costs more than 3n', 'the debt doubles with every growth' / 'guarantees that the next Add doubles again') returned no matching page. Against the Cornell lecture the 3-coin split and 2n - m potential are the same standard argument, but the wording, numbers, figure and the simulation are the article's own and the debt is acknowledged inline twice, as the pilot lesson requires; multipop and the binary counter are attributed to CLRS ch. 16 inline. Sourcing: all nine sources are cited inline at the point of the claim; I re-fetched the TrimExcess page and it says exactly what the article says (does nothing above 90 percent; note that the threshold might change), and round 1's technical critic verified the rest against the live pages. Measured numbers are presented as runs on the author's machine with wildcarded output, toolchain stated once where measurement starts, and 'runtime 10.0.10' matches the runtime actually installed on this machine, so nothing reads as invented; there are no personal anecdotes or 'most people think' claims. Machine-text check: paragraph lengths vary from one line to long worked paragraphs, prose numbers agree with program output (1,020, 2,020, 524,283, 2n minus popcount), signposting is sparse; the only recurring tic is a handful of 'X, not Y' closers, each carrying content. Rendered page (verify-page --drafts --no-lighthouse): 0 broken links, 0 console errors, 0 mobile overflow, only failure the expected NEEDS_MARKUS placeholder; page ends with Sources, byline box, report-an-error/corrections line and a four-card 'Keep reading' block plus footer, so not a dead end. Round-1 follow-up: both of my majors are really fixed. (1) The '## Exercises' + 'Predict the ...' terminal template is gone: 'Predict the trace' moved under the List.cs callout, 'Prove it for a factor of 1.5' moved to the end of the doubling section, final section renamed for its content and led by the find-the-bug item. (2) docs/crosslinks/complexity/amortized-analysis.md now exists with six sensible anchor/target/location lines, all targets in the content plan, plus a useful boundaries section that guards against near-duplicate coverage with arrays-and-dynamic-arrays, best-average-worst-case and hash-tables; the two in-body sentences were reworded to read correctly with or without a link. Minors fixed: the 'everybody appends' sentence, 'that is the whole story', 'no coincidence', 'did real work', the average/expected mix-up in the Dictionary paragraph, the missing rounding caveat, the 'never pays more than 2' overstatement, the TrimExcess 'might change' note. The other critics' majors (both figures and the four-column table on phones) were addressed by redrawing at 360-unit viewBoxes with annotations under the drawing and replacing the table with a four-item list; I leave their verification to the design critic. Why 8.9 and not higher: the title still drops 'amortized' from a claim the body insists must carry it, the closing section opens with a signposting sentence, and the multipop/binary-counter section remains the least original part of the page. None of these would make a policy reviewer call the page low-value; it is above the MDN/Real Python bar for this query on originality and evidence.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Title: 'Amortized Analysis: Why List<T>.Add Is O(1)' (front matter; fixed in CONTENT_PLAN.md section 7)",
+      "problem": "Unchanged from round 1. The pitfall callout says quoting O(1) amortized outside its stated conditions 'is a claim nobody proved', yet the headline states the bound with no qualifier at all. The description does say 'O(1) amortized', so this is not misleading enough to be a policy problem, but it is the one place where the page is slightly click-shaped against its own argument.",
+      "fixLooksLike": "Plan owner's call: either accept as is (the leading words 'Amortized Analysis:' arguably supply the qualifier), or change to something like 'Amortized Analysis: Why List<T>.Add Is O(1) on Average per Call' / 'Why a Loop of List<T>.Add Calls Is O(n)'. If changed, update CONTENT_PLAN.md and the crosslinks of siblings together.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "'## Two limits to test: shrinking and pre-sizing', intro paragraph: 'The first exercise asks what happens when ...; the second measures what ...'",
+      "problem": "Pure signposting: the sentence restates the two exercise titles directly beneath it. It is the only empty connective sentence left on the page, and it sits in the closing section where a reviewer looks for filler.",
+      "fixLooksLike": "Keep the first sentence ('The proofs above covered a list that only grows, and said nothing about memory.') and cut the second, or replace it with one line of substance (for example that both exercises are about constants and conditions the 3n proof ignored).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'## The same argument elsewhere: multipop and a binary counter'",
+      "problem": "Carried over from round 1, unchanged. Both examples are CLRS chapter 16's own running examples. The plan mandates them, they are attributed inline, and the code, the empty-pop cost-model caveat, the Stack<T> backing-array remark and the '2n minus the number of 1 bits' observation are original, so this is not copying; it is simply the section with the least value over the textbooks and Wikipedia.",
+      "fixLooksLike": "No change required for pass. Optional: swap one of the two for a .NET-flavoured instance of the same pattern (a two-Stack<T> queue, or StringBuilder.Append growth) so the section carries something the compared pages do not.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Closers in several sections: 'That is a simplification, not a claim that it is free'; 'It is an optimization of the constant, not of the complexity class'; 'is not a theoretical nicety'; 'which sounds safe. It is not:'; and the two back-to-back parenthetical asides after the id=others output",
+      "problem": "A mild 'X, not Y' tic (five or six instances over 4,600 words) and one paragraph made of stacked parentheses. Each instance carries real content, so the page does not read as machine text, but it is the only pattern a reviewer scanning for formulaic phrasing would pick up.",
+      "fixLooksLike": "Rephrase two of them positively (for example 'Allocation is left out to keep the arithmetic short; it would only enlarge the constant: ...') and fold the two parentheticals after the stack/counter output into ordinary sentences.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Amortized is not average-case', line ending 'costs more than 3*n*. ' and the following blank-line split",
+      "problem": "Trailing space and a paragraph break that leaves 'An amortized bound is a worst-case statement about a sequence...' as a two-sentence orphan between the list and the quicksort paragraph; cosmetic only.",
+      "fixLooksLike": "Remove the trailing space; optionally join the orphan to the preceding list as its closing sentence.",
+      "owner": "writer"
+    }
+  ],
+  "brokenLinks": 0,
+  "consoleErrors": 0
+}

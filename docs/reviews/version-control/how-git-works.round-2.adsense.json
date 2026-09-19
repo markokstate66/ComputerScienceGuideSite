@@ -1,0 +1,49 @@
+{
+  "score": 8.9,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+    "https://blog.algomaster.io/p/how-git-works-internally",
+    "https://github.blog/open-source/git/commits-are-snapshots-not-diffs/"
+  ],
+  "justification": "Fresh read first, then round-1 reviews. Against the current SERP for 'how git works internally': AlgoMaster (ranks first) shows commands with no real output, cites nothing, ends in 'Key Takeaways' and has no exercises; the GitHub Blog 'Commits are snapshots, not diffs' is well written with real output but stops at objects/branches and skips header+hash computation, zlib, binary tree format, packfile mechanics, packed-refs, reftable and SHA-256; Pro Git 10.2 is the strongest, but covers objects only with a test.txt 'version 1/2' example and a Ruby irb session. This article has clear original value over all three: its own running example (hiking plan: route.txt, notes/gear.txt, waypoints.txt), an opening that makes three checkable claims (5 objects, +3, a 41-byte branch) and pays each off in executed output, the ID reproduced with printf|sha1sum, the loose object inflated and dumped, the raw tree entry bytes, the commit that exists but is unreachable before update-ref, the reflog cost of a bare ref write shown by ls, a delta read back through cat-file with %(deltabase), packed-refs with the peeled line, an honest note that the experiment cannot separate recency from size ordering, a spec-vs-default section with Git 3.0 horizon, and four exercises of different form (compute, predict a count with output hidden in the solution, rescue, explain). No filler: first sentence delivers a fact, no intro/outro boilerplate, no conclusion section; title and description read for humans; no keyword repetition. Template check against amortized-analysis.md and sql-joins.md (the only other articles): headings are content-specific claims with no overlap, openings differ in kind (documentation paradox / librarian's report / three numbers), exercise placement differs (mid-article in the other two, grouped at the end here under a repo-specific heading), exercise titles share no pattern. Machine-text tells are sparse: no 'it's not X, it's Y' scaffolding, paragraph lengths vary, no empty signposting; round 1's signpost sentences and the triplet are gone. Copy check: five distinctive sentences searched in quotes ('A commit identifies a complete snapshot through its tree', 'One byte string serves twice', 'A tree is what gives a blob its name', 'are both true, at different layers', plus the header sentence compared directly with Pro Git 10.2's verbatim text): no matches; header, tree-mode and commit-format passages are independently worded, and the one section whose design follows Pro Git 10.4 now says so inline. No invented experience or statistics; the three measured sizes are labelled 'on this machine' with wildcards, and the toolchain is stated once in the body. Round-1 verification: (adsense major) sources/inline mismatch fixed: I checked mechanically that all 28 front-matter URLs are cited inline and all 28 external links on the rendered page are in the list; crosslinks file now exists with eight sensible, precisely located links to planned siblings; packfile provenance acknowledged; the three unscoped absolutes are scoped ('Every SHA-1 repository', %(deltabase) now demonstrated, Perl claim narrowed to Git for Windows). (technical blocker) cd trail now appears once and run-code passes: blocks=51 executed=26; identity/date/autocrlf pinning is now a reader-runnable block; 'History plays no part' replaced by a sourced, scoped statement; 'has no way to tell' replaced by the reflog-message trace; MERGE_HEAD now cited to git-merge; .idx lookup has its O(log n) cost; 40000 vs 040000 and 20/32-byte IDs explained; force-with-lease background-fetch caveat added. Rendered page: 0 console errors, 0 broken links, 0 mobile overflow, only failure the known NEEDS_MARKUS placeholder; 'Keep reading' block plus footer means no dead end. Why not higher than 8.9: the end-of-page navigation is still generic until siblings exist, the site boilerplate around a shell-only article talks about C#/compiled programs, and a few small unsourced frequency words and one over-long source list remain. None is a low-value-content signal. This is at or a little above the 8.5 bar on its merits.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Rendered page: footer tagline ('Computer science fundamentals with C# examples. Every program on this site is compiled and run...') and the author-box verification sentence, next to an article with zero C# and only shell sessions",
+      "problem": "Stamped site-wide boilerplate that is inaccurate for this page. A policy reviewer reading the page top to bottom sees a claim about compiled C# programs on an article that has none, which reads as templated text. Flagged in round 1 (design) and still present; it is a shell issue, not the writer's.",
+      "fixLooksLike": "Integrator rewords the global line so it is true for every pillar (for example 'Every program and shell session on this site is run, and its output checked, before publication') and drops 'with C# examples' from the footer or makes it 'mostly C#'.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "'Keep reading' block at the end of the rendered page",
+      "problem": "All four cards are generic site links (pillar, all topics, start here, glossary); there is no next-in-pillar article and the body has no links to other articles. Not penalised in the score because docs/crosslinks/version-control/how-git-works.md exists and its eight entries are sensible and precisely located, but the page must not ship like this.",
+      "fixLooksLike": "In wave 3 the integrator wires the eight crosslinks and the layout shows a next-article card (branching-and-merging, order 2) once it is published.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Pitfall callout under 'The commit exists, and Git cannot find it': 'It also works when refs are not individual files, which, as shown below, is common.'; packfile section: 'You rarely run `git gc` yourself.'",
+      "problem": "Two small frequency assertions ('common', 'rarely') of the kind the pilot lessons warn about. The second is followed by a sourced mechanism (auto gc at about 6,700 loose objects), the first is not really demonstrated to be 'common', only shown to happen after gc.",
+      "fixLooksLike": "Replace 'is common' with the fact: 'which is the case for every ref after a `git gc`, as shown below'. Rephrase the gc sentence to lead with the mechanism ('Porcelain commands trigger it for you...').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Front matter `sources:` (28 entries) as rendered in the Sources block",
+      "problem": "Every entry is genuinely cited inline, so this is not padding, but a 28-item list in which 22 are man pages of the same manual looks heavier than it is and buries the five Pro Git chapters and three format documents that carry the conceptual claims.",
+      "fixLooksLike": "Keep all entries (the brief requires it) but order them so the Pro Git sections and gitformat-*/hash-function-transition/BreakingChanges come first and command man pages follow; or have the layout group by publisher. No content change needed.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Closing lines of two sections: 'That completes the set: blob, tree, commit, tag.' and 'The safe rule: read `.git` to learn, and use commands to act.'; second paragraph 'Those three numbers fall out of a storage model small enough to operate by hand.'",
+      "problem": "The only remaining sentences with a slightly aphoristic, summarising cadence. Three in 4,500 words does not read as machine text, and the 'safe rule' line is useful, but they are the most generic sentences left.",
+      "fixLooksLike": "Optional: fold 'That completes the set' into the following sentence ('With blob, tree, commit and tag accounted for, the rest of `.git` is not objects: ...'). Leave the other two.",
+      "owner": "writer"
+    }
+  ],
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": true
+}

@@ -1,0 +1,94 @@
+{
+  "article": "src/content/articles/databases/sql-joins.md",
+  "route": "/databases/sql-joins/",
+  "round": 1,
+  "role": "technical",
+  "score": 7.0,
+  "runCodePass": true,
+  "runCodeResult": "PASS databases/sql-joins.md  blocks=60 executed=31",
+  "comparedAgainst": [
+    "https://blog.codinghorror.com/a-visual-explanation-of-sql-joins/",
+    "https://blog.jooq.org/say-no-to-venn-diagrams-when-explaining-joins/",
+    "https://learn.microsoft.com/en-us/sql/relational-databases/performance/joins?view=sql-server-ver17"
+  ],
+  "justification": "run-code is green (60 blocks, 31 executed; node:sqlite reports 3.50.4, matching the article's '3.50'). I opened the sources that are cited inline and each supports its sentence: PostgreSQL 7.2 ('considerably more risky', CROSS JOIN == INNER JOIN ON TRUE, 'First, an inner join is performed...', the ON-before/WHERE-after sentence, USING output columns), SQLite lang_select ('All joins in SQLite are based on the cartesian product...', 'completely interchangeable'), SQLite lang_expr (compact IS is an SQLite extension), PostgreSQL 9.2 ('as though null were a normal data value'), PostgreSQL 9.24 ('will be null, not true'; EXISTS true/false only), Microsoft Learn Joins (nulls 'don't match each other', outer join only; nested loops/merge/hash/adaptive; optimizer chooses), SQLite optoverview (nested loops, inner-join reordering, automatic index 'almost the same thing as a hash join'), SQLite 3.39.0 release log (2022-06-25, RIGHT/FULL), and dotnet/runtime Lookup.CreateForJoin (`if (key is not null)`). I re-derived every result by hand (20 pairs/4 true, 6-row FULL JOIN, 2x2 fan-out 10/6 vs 5/3, self-join count 6, NOT IN emptiness in body and exercise 3, 20 ON evaluations) and all are right. The C# is idiomatic and correct. On semantics and real bugs this is deeper than Coding Horror (Venn diagrams, no NULL keys, no ON-vs-WHERE, no fan-out, no NOT IN), jOOQ's 'Say NO to Venn Diagrams' (same thesis but stops at cross/inner/outer) and the Microsoft Learn page (authoritative but not a teaching page). On content alone I would put it around 8.2. It is capped at 7 because of one false, unscoped generalisation that the editorial brief names verbatim as a pilot-round failure: 'SQL has no ANTI JOIN keyword'. Spark SQL documents `[LEFT] ANTI JOIN` and `[LEFT] SEMI JOIN` (spark.apache.org/docs/latest/sql-ref-syntax-qry-select-join.html); DuckDB and ClickHouse have them too. Beyond the cap, what keeps it from 8.5: the engine section names three algorithms and gives a cost for none of them nor the equi-join restriction (binding brief rule); five front-matter sources are never cited inline (both MySQL pages, T-SQL IS DISTINCT FROM, PostgreSQL planner-optimizer, xoper-optimization) and the portability caveats they were evidently fetched for (MySQL has no FULL JOIN; IS NOT DISTINCT FROM is not universal) are missing from the body; the first exercise shows its answer panel under the question and the last section is titled 'Exercises' with a 'Predict the...' first item, both explicitly banned; figure numbering skips from 3 to 5; and 'the syntax you choose is for the human reader' ignores that SQLite's CROSS JOIN, which the article uses, pins loop order. All are sentence-level fixes.",
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "Section 'Anti-joins: finding the rows with no match', first paragraph: 'SQL has no `ANTI JOIN` keyword'",
+      "problem": "False as written and listed verbatim in EDITORIAL_BRIEF 'Lessons from the pilot round' as a generalisation critics already disproved. Spark SQL/Databricks document `[LEFT] ANTI JOIN` and `[LEFT] SEMI JOIN`; DuckDB and ClickHouse also have them. This is the factual error that caps the score at 7.",
+      "fixLooksLike": "Scope it: 'Standard SQL has no ANTI JOIN keyword, and neither do SQLite, PostgreSQL, MySQL or SQL Server (a few analytics dialects such as Spark SQL add one)'. Apply the same scoping to the semi-join paragraph.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Section 'What the engine does instead of building every pair', the three bullets",
+      "problem": "Brief rule 'Every algorithm named gets its cost, and the conditions under which it applies' is not met. Only the naive loop has a cost. Index nested loops, hash join and merge join have none; the equality-only restriction of hash join (and equality/ordering for merge join) is missing, so the reader cannot tell why a range join from the earlier 'ON takes any Boolean expression' paragraph falls back to nested loops. 'If both inputs are already sorted' also omits that engines sort first when they are not (Microsoft Learn page says so).",
+      "fixLooksLike": "With n outer rows, m inner rows, k output rows: naive nested loops Theta(n*m) tests; index nested loops O(n log m + k) with a B-tree on the inner join column; hash join expected O(n + m + k), equality conditions only, build side ideally fits in memory; merge join O(n + m + k) on sorted inputs, plus O(n log n + m log m) if a sort is needed, equality conditions. Note that k itself can reach n*m when keys repeat (ties to the fan-out section). Cite the now-unused PostgreSQL planner-optimizer / xoper pages here or drop them.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Front matter `sources` vs body",
+      "problem": "Five listed sources are never cited inline: MySQL 8.4 JOIN Clause, MySQL 8.4 Comparison Functions and Operators, IS [NOT] DISTINCT FROM (Transact-SQL), PostgreSQL Planner/Optimizer, PostgreSQL Operator Optimization Information. The brief makes an uncited listed source a finding. The body never mentions MySQL at all.",
+      "fixLooksLike": "Use them where the caveats belong (see next issue and the algorithm-cost issue), or remove them from front matter.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "'Outer joins put the unmatched rows back' ('Support is also uneven: SQLite gained RIGHT and FULL joins only in 3.39.0') and 'NULL never equals anything' ('standard SQL spells it `a IS NOT DISTINCT FROM b`')",
+      "problem": "Missing portability caveats a beginner will hit immediately: MySQL has no FULL JOIN at all, and IS NOT DISTINCT FROM is not available everywhere (MySQL spells it `<=>`; SQL Server only from 2022). Naming only SQLite under 'support is uneven' implies the other engines are fine.",
+      "fixLooksLike": "One sourced clause each, citing the MySQL JOIN page, the MySQL comparison-operators page (`<=>`) and the T-SQL IS [NOT] DISTINCT FROM page already in front matter.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Section 'Exercises', first exercise 'Predict the row count'",
+      "problem": "The output panel showing `6` sits directly under the question, outside the solution; the brief's binding rule 'Do not give away exercises' forbids this. The section is also titled 'Exercises' with a first item named 'Predict the ...', which the brief's 'Vary the ending' rule bans by name.",
+      "fixLooksLike": "Move the runnable query and its output panel inside the :::solution block (leave a non-run code block in the question), rename the section for what it practises (e.g. 'Count the lines before you run it'), and/or move one exercise mid-article after the fan-out section.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Last paragraph of 'What the engine does...': 'The syntax you choose is for the human reader'",
+      "problem": "Over-general. The SQLite section quoted for 'completely interchangeable' continues that CROSS JOIN 'is handled differently by the query optimizer' (never reordered), and optoverview says the same; the article itself uses `CROSS JOIN ... WHERE` as a drop-in for INNER JOIN in SQLite. Outer joins are also not reordered.",
+      "fixLooksLike": "Scope to INNER JOIN / JOIN / comma, and add a clause where CROSS JOIN ... WHERE is shown: same rows, but in SQLite CROSS JOIN fixes the loop order, so it is not a routine substitute.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure captions: 'Figure 3' is followed by 'Figure 5'",
+      "problem": "There is no Figure 4; numbering skips (likely a removed figure).",
+      "fixLooksLike": "Renumber the fan-out figure to Figure 4.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'A filter in WHERE quietly undoes a left join', closing rule of thumb",
+      "problem": "States that left-table conditions go in WHERE but never shows the mirror bug: a left-table condition in ON of a LEFT JOIN removes no left rows, it only stops them matching.",
+      "fixLooksLike": "One sentence or a tiny run block (`ON ... AND m.member_id <= 2` still returns four members, two padded): ON can never remove a preserved-side row.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Anti-joins: 'The second says what it means, and is the form to prefer'",
+      "problem": "Preference asserted without a reason versus LEFT JOIN ... IS NULL (the NOT IN argument comes later and does not address it).",
+      "fixLooksLike": "Give the reason: states intent, cannot be broken by testing a nullable column, cannot multiply rows, and planners recognise it as an anti semi join (Microsoft Learn page already cited mentions these logical operators).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What the circles cannot show': 'An overlap can never be larger than either circle; a join result routinely is.'",
+      "problem": "The first evidence (4 join rows vs 3 INTERSECT rows) does not exceed either table (4 and 5 rows); only the Ada payment case (2 and 2 in, 4 out) shows the stated claim.",
+      "fixLooksLike": "Lead with the case that exceeds both inputs (2 x 2 = 4, or the loan self join: 5 in, 6 out) and present 4-vs-3 as 'already not the overlap'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Second paragraph after the setup block: 'These statements and every query below ran in order against a single in-memory SQLite 3.50 database; the result panels are pasted from those runs, not typed.'",
+      "problem": "Close to the provenance-sentence pattern the brief bans near the top of articles; the useful part is only that the blocks form one cumulative session on SQLite.",
+      "fixLooksLike": "Keep 'The queries below run in order against one SQLite 3.50 database' and drop the 'pasted, not typed' clause.",
+      "owner": "writer"
+    }
+  ]
+}

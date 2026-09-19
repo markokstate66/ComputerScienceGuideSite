@@ -1,0 +1,74 @@
+{
+  "article": "src/content/articles/oop-design/four-pillars-of-oop.md",
+  "route": "/oop-design/four-pillars-of-oop/",
+  "round": 1,
+  "role": "design",
+  "score": 8.2,
+  "lighthouse": { "performance": 97, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "Single run of `node tools/verify-page.mjs --drafts /oop-design/four-pillars-of-oop/` (no re-run needed, performance 97). Only failure: expected NEEDS_MARKUS placeholder. words=3852, codeBlocks=26, figures=2, h1=1, mobileOverflowPx=0, consoleWarnings=0, 13 external links all OK, 27 internal links all OK. Lighthouse sub-audits below 0.9: FCP 2.1 s, unused CSS ~13 KiB, bf-cache (shell-level, not blocking). Screenshots opened: all 15 desktop-light, all 22 mobile-dark, desktop-dark fold+part04+part06, mobile-light fold+part05+part09.",
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop",
+    "https://www.c-sharpcorner.com/UploadFile/e6a07d/pillars-of-oop/",
+    "https://backend.turing.edu/module1/lessons/four_pillars_of_oop"
+  ],
+  "justification": "Presentation is clearly ahead of what ranks for '4 pillars of oop'. Turing's lesson has no code at all (cooking metaphors); the C# Corner page has five unrun snippets, no output, no figures, no exercises, no sources; Microsoft Learn's OOP tutorial has long unwrapped code lines (80-120 columns), no output panels except one stack trace, no diagrams and no exercises. This page has one consistent billing domain, every program paired with a real output panel, two informative SVG figures that are theme-correct and legible at 390 px in both themes (checked light and dark on both viewports), a does-not-compile block and a throws block with clear red badges, five varied exercises (find-the-way-in, predict, redesign, extend, reason) placed where they fit with collapsed solutions, two callouts only (both earned), and a clean 13-item source list. Heading hierarchy is sound (one H1, six question H2s matching shape Q, specific H3s), prose paragraphs are short, there are no walls of text, and the four-decision numbered list after the Invoice listing is a good rhythm device. Lighthouse 97/100/100/100, zero console errors, zero broken links, zero mobile page overflow. It falls short of 8.5 for one reason that the brief makes binding: phone code clipping. About 20 code lines are 43-48 columns and clip at 390 px, and in three places the clipped token is the operative one (`: Plan` on PromoPlan, the `5` in the constructor-order demo whose output then shows `min 0` vs `min 5`, and `_paid` in `Balance => Total - _paid`). The opening summary table also loses its whole third column off-screen on phones. These are mechanical, one-pass fixes; with them done this is an 8.7-9 page on design. Secondary: the 40-column wrapping makes two listings very long uninterrupted code runs (Invoice ~88 lines, plans ~72 lines; 3+ phone screens each), and Figure 2 tells steps 2-3 in text rather than showing them.",
+  "issues": [
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "Code blocks throughout; operative clips at md lines 724 (`decimal price, decimal credit) : Plan`), 647 (`var plan = new PerSeatPlan(\"Team\", 12m, 5);`), 177 and 924 (`public decimal Balance => Total - _paid;`). Other lines >=43 columns: 108, 109, 144, 170, 185, 187, 188, 219, 287, 319, 321, 332, 333, 486, 710, 711, 824, 859, 865, 866, 923.",
+      "problem": "At 390 px roughly 41 columns are visible (mobile-dark parts 02, 03, 04, 06, 13, 14, 15, 17). Around 20 lines run 43-48 columns and are cut off. Three cut the token the surrounding prose depends on: the base class `: Plan` of PromoPlan is invisible in the Liskov example; the `5` argument is invisible in the constructor-order demo whose whole point is `min 0` vs `min 5`; `_paid` is invisible in the Balance definition that the invariant discussion rests on. Several string literals that appear in output panels (\"Lines are frozen once issued.\", \"gateway down, retry soon\") are also cut. This breaks the binding phone rule 'break long statements so the operative part is not clipped'.",
+      "fixLooksLike": "Every csharp line <= 40 columns including indentation (the writer already wraps most lines this way; these were missed because indentation was not counted). E.g. put `: Plan` on its own line as was done for FlatPlan; break `new PerSeatPlan(` after the paren; `public decimal Balance` / `=> Total - _paid;` on two lines as was done for Total; hoist long message strings into a local or shorten them; reduce nesting in Require (`if (rule) return;` then throw) so `throw new InvalidOperationException(` fits. Re-run run-code afterwards and re-check mobile screenshots show no faded right edge on any line."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "H2 'What problem does each pillar solve?', the three-column table (mobile-dark part01/part02)",
+      "problem": "On a phone the third column ('Main C# tools') is entirely off-screen and the second column is cut mid-word ('A new variant means editing eve...'). The table scrolls inside its own container and has a fade hint, so nothing is broken, but this is the first content element, the likeliest snippet for the target query, and a third of it is invisible to most mobile readers.",
+      "fixLooksLike": "Make it fit 390 px: either two columns (Pillar | Problem it solves, with the C# tool folded into the problem cell or dropped, since each section names its tools anyway), or shorten the cells ('Any code can corrupt it', 'New variant = edit every switch') so all three columns are visible without scrolling."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Listings `id=invoice` (md 135-223, ~88 lines) and `id=plans` (md 353-426, ~72 lines)",
+      "problem": "Because everything is wrapped to 40 columns, these two complete programs become 3+ consecutive phone screens (and more than one full desktop screen with half the code column empty) of uninterrupted code before the output panel and the explanation. The payoff (output + the 'four design decisions' list, or the 'one call, three bodies' paragraph) is far from the lines it refers to.",
+      "fixLooksLike": "Trim where it costs nothing: in `plans`, Describe overrides could be one-liners or dropped from MeteredPlan; in `invoice`, a one-line lead-in before the block telling the reader which three methods to read ('skip to AddLine, Issue and RecordPayment; the top is just the driver') or a short comment banner `// --- the class ---` separating driver from class so the eye can land. Not asking for the programs to be split: they must stay complete."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Figure 2 (method table dispatch), SVG md 449-476",
+      "problem": "The figure is informative and legible in both themes, but only step 1 is drawn. The 'load the pointer' arrow starts at the bottom edge of the pointer row, runs down through the fields row (reads as if it comes from `perSeat/minSeats`), and ends in empty space above the 'Method table of PerSeatPlan' label instead of touching the table. Steps 2 and 3 are text lines under the table with no mark connecting the highlighted PriceFor slot to 'code', so the motion the figure exists to show is mostly told, not shown.",
+      "fixLooksLike": "Start the arrow from the pointer row itself (e.g. exit its right end) and land the arrowhead on the top border of the PerSeatPlan table; add a small numbered badge '2' on the highlighted PriceFor row and a short accent arrow or badge '3' from that row to the words 'PerSeatPlan code'. Keep annotations under the drawing as now."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Figure 1 (invariant boundary), SVG md 242-272, `<desc>` and the 'Invoice' label",
+      "problem": "The accessible `<desc>` ends with 'A direct write to the private field is a compile error', but nothing in the drawing shows that (no blocked arrow); the description and the picture disagree. Also the 'Invoice' label sits at x=100 squeezed between two caller arrows on the same row as their arrowheads rather than labelling the boundary box clearly.",
+      "fixLooksLike": "Either draw the blocked path (a dashed arrow from a caller straight toward 'private state' stopped at the accent boundary with a small 'CS0122' label) which would also tie the figure to the does-not-compile block right below it, or remove that sentence from `<desc>`. Move 'Invoice' to the top-left inside corner of the accent box (x~20) clear of the arrows."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "H3 'An override can break a promise the base class made', the `throws=InvalidOperationException` block (md 698-729) and the paragraph after it",
+      "problem": "The prose says 'The exception comes from AddLine and talks about line amounts', but the reader never sees the exception text: the block shows only the red 'Throws InvalidOperationException' badge and no output panel, unlike every other program on the page.",
+      "fixLooksLike": "Show what the reader would see: catch and print the message in the program with a normal output panel (as the Invoice example does with Attempt), or quote the message inline in the following sentence ('...and says \"A line amount is above zero.\"')."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Shell: code block component on desktop (all articles), seen in desktop-light parts 02-12",
+      "problem": "With the site-wide 40-column phone rule, desktop code blocks use less than half of the 735 px code column, and long listings become very tall. Not an article defect; a consequence of having one source wrapped for the narrowest viewport.",
+      "fixLooksLike": "Nothing required for pass. If desired, consider a slightly larger code font-size on wide viewports, or a max-height with 'expand' on listings over ~60 lines. Append to docs/INTEGRATOR_REQUESTS.md as low priority."
+    }
+  ],
+  "crosslinksFile": "docs/crosslinks/oop-design/four-pillars-of-oop.md exists and is sensible: six anchor/target/location lines to planned siblings (composition-over-inheritance, solid-principles, interfaces-vs-abstract-classes, strategy-observer-decorator, dependency-injection) plus explicit scope boundaries. Missing body links are therefore not an issue.",
+  "notIssues": [
+    "NEEDS_MARKUS byline/bio/footer placeholders (expected)",
+    "draft: true",
+    "'Keep reading' shows only hub links because siblings are unpublished"
+  ]
+}

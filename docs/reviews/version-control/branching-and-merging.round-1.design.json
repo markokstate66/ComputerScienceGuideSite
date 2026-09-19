@@ -1,0 +1,82 @@
+{
+  "article": "src/content/articles/version-control/branching-and-merging.md",
+  "route": "/version-control/branching-and-merging/",
+  "round": 1,
+  "role": "design",
+  "score": 8.3,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging",
+    "https://www.datacamp.com/tutorial/git-merge",
+    "https://lukemerrett.com/different-merge-types-in-git/"
+  ],
+  "lighthouse": { "performance": 94, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "verify-page run 2026-09-18 (first run, no re-run needed): 3781 words, 44 code blocks, 3 figures, 1 h1, mobileOverflowPx 0, 0 console errors, 0 console warnings, 0 broken links, 29 internal links. Only failure is the expected NEEDS_MARKUS placeholder. Lighthouse sub-audits below 1: TBT 240 ms, max potential FID 320 ms, unused CSS 12 KiB, bf-cache. Another agent re-ran verify on the same page while I was reading screenshots; the screenshots were regenerated identically. Read all 14 desktop-light and all 21 mobile-dark images, plus desktop-dark fold/03/08 and mobile-light fold/08/15.",
+  "justification": "Desktop is at the bar in both themes: a delivering first paragraph, short prose runs alternating with paired BASH/OUTPUT panels, three diagrams that each carry structure prose cannot (ref move on fast-forward, three-snapshot merge with parent 1/parent 2, stage 1/2/3 -> stage 0 for the conflicting line), captions that say what to notice, theme-correct colours in dark (accent, bad and good boxes all re-tinted, no hard-coded fills), a clean h2/h3 hierarchy with content-specific headings, a single well-placed pitfall callout, three exercises of different forms placed mid-article with collapsed solutions that do not leak output, and a tidy 12-item source list. Against the pages read: Pro Git 3.2 has more figures (8) but no exercises, no tables, no dark theme and nothing on merge base, diff3, index stages, --abort or strategies; DataCamp shows six command-only blocks with no output and never produces a conflict; the Luke Merrett post is diagrams plus pro/con lists with no conflicts at all. On a desktop this page is visibly better presented than all three. What keeps it under 8.5 is the phone: the writer clearly worked to the 40-column rule (most long commands are split) but about eight lines were missed, and in two places the clipped part is the operative part (the && and || of the very first ancestor test; the CONFLICT and 'Automatic merge failed' lines that the conflict section is about). The six-row strategies table is prose in cells, so at 390 px every row is cut mid-sentence and must be read by scrolling sideways. The last 40 percent of the page (clean-but-wrong merge, strategies, octopus, cleanup) has no figure although a three-parent octopus commit is exactly the kind of structure the first three figures draw. All of this is fixable in one round; none of it is shell breakage.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Section 'Merge strategies, and the options that look like them', strategies table (mobile-dark-part15, mobile-light-part15)",
+      "problem": "At 390 px the 'What it does' column is clipped mid-sentence on every one of the six rows ('Three-way merge of two heads, wit…', 'Records a merge but keeps the cur…'). The cells are one- and two-sentence prose, so the shell gives the column its long-text min-width and the table scrolls sideways; a phone reader has to pan for each row. The smaller four-row table earlier fits perfectly, which shows the contrast.",
+      "fixLooksLike": "Either cut each description to a phrase of about 35 characters that fits without scrolling ('3-way merge, two heads, renames; default') and move the detail into the paragraph below, or replace the table with a definition-style bullet list (`ort`: ... ) which wraps naturally on a phone. Re-run verify and confirm in mobile part15 that no row is clipped.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Section 'A branch for the autumn menu', third bash block (git merge-base --is-ancestor ... && / ||) (mobile-dark-part03)",
+      "problem": "Both command lines are 43 characters, so at 390 px the trailing && and || are off-screen. Those two operators are the whole point of the block (exit status 0 vs 1 decides which echo runs); on a phone the block reads as four unrelated lines. This is the 'operative part clipped' case the brief's phone lesson names.",
+      "fixLooksLike": "Restructure so the operator is visible within 40 columns: break after '--is-ancestor \\' and put 'main autumn &&' on the continuation line, or use 'if git merge-base --is-ancestor \\' / '  main autumn; then echo ...; fi'. Confirm in mobile part03 that && and || are on screen.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Section 'A real conflict, start to finish': setup block and the output panel of 'git merge rename-latte' (mobile-dark-part09)",
+      "problem": "Three things clip at 390 px in the most important passage of the article: the target file names of two sed lines ('... /caffe latte/' menu.txt', '... hours.txt'), and in the output panel 'CONFLICT (content): Merge conflict in men…' and 'Automatic merge failed; fix conflicts and…'. The other sed commands on the page are already split with a backslash so the file name stays visible; these were missed. The output is Git's own text and cannot be shortened, but the prose never quotes the clipped half.",
+      "fixLooksLike": "Split the two sed lines the same way as elsewhere (backslash, file name on the next line). For the output, keep the panel as is and quote the instruction in the following paragraph ('Git's last line tells you what it expects: fix conflicts and then commit the result') so a phone reader gets the clipped part without scrolling.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'A clean merge can still be wrong', first and last bash blocks; section 'After the merge', bash block (mobile-dark-part14, part17)",
+      "problem": "Inconsistent line breaking: commit messages clip on phones ('Spell out hot chocol…', 'Hot choc is a specia…', 'Use the new name in…'), as do \"> loyalty.txt\" and the trailing pipe of 'git branch -d autumn sunday rename-latte |' (the pipe into sed is invisible, so the following indented sed line looks orphaned). Elsewhere the same article breaks 'git commit -q -a \\' / '-m ...' correctly.",
+      "fixLooksLike": "Apply the same two-line commit form used in the three-way and conflict sections to every commit over 40 columns, and break the branch -d line before the pipe so '| sed ...' starts the continuation line.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "From 'A clean merge can still be wrong' to the end (desktop parts 09-12, mobile parts 13-18)",
+      "problem": "All three figures sit in the first 60 percent of the page. The remaining five screens on desktop (eight on mobile) are prose, code and one table. The octopus merge ('One commit, three parents') is a structural fact of exactly the kind Figures 1-2 draw, and it is told only through 'wc -w' printing 3.",
+      "fixLooksLike": "Add one small DAG in the established style: three tips (main's 'Open earlier', wifi, allergens) with three accent parent arrows into one merge commit, labels under the drawing, caption pointing out parent order = order on the command line. Alternatively print 'git log --graph --format=%s%d -4' in that block so the three-way fan-in is at least visible as ASCII.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'What Git leaves behind when it stops', second paragraph ('The index holds more than the file shows...')",
+      "problem": "Densest paragraph on the page: nine inline code spans, three citations and four separate facts (stage numbers, git show :1:, git diff --ours/--theirs, MERGE_HEAD) in one block. On mobile it runs 14 lines with code pills on nearly every line and wraps awkwardly ('with `git show :1:menu.txt`, and / `git diff --ours` or').",
+      "fixLooksLike": "Split after the stage-number sentence. Present stages as a three-item list (1 base, 2 ours/HEAD, 3 theirs) or a tiny 2-column table, then a short paragraph for the inspection commands, then MERGE_HEAD as its own sentence/paragraph.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'When both branches have moved', parenthetical after the first output panel ('sed -i is the GNU form; on macOS write sed -i \\'\\'')",
+      "problem": "The page invites the reader to type along, and this is the one instruction that decides whether a macOS reader's session survives past this point, yet it is a parenthetical tucked after a sentence explaining sed, and it arrives after the block that needs it. Callouts are otherwise under-used (one pitfall in 3,800 words), so there is room.",
+      "fixLooksLike": "Move it before the first sed block as a short note callout ('On macOS, BSD sed needs an explicit empty suffix: sed -i \\'\\' ...; every sed -i below changes the same way'). Do not add further callouts beyond this; the restraint elsewhere is good.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Author box under Sources ('Every program in this article was compiled and run...')",
+      "problem": "On a pure shell/Git article nothing was compiled; the stamped sentence reads as boilerplate that does not match the page.",
+      "fixLooksLike": "Shell-level: vary the sentence by article language (for bash-only articles: 'Every command on this page was run and its output compared with the text before publication').",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "docs/crosslinks/version-control/branching-and-merging.md",
+      "problem": "File exists and the five links are sensible (git-workflows, rebase-vs-merge, undoing-things-in-git x3). Three of five point to the same target from passages within two paragraphs of each other; wiring all three would look like link stuffing in the final section.",
+      "fixLooksLike": "Integrator wires at most two links to /version-control/undoing-things-in-git/ (the ORIG_HEAD mention in the undo paragraph and the reflog mention), skipping the duplicate in the exercise solution.",
+      "owner": "integrator"
+    }
+  ]
+}

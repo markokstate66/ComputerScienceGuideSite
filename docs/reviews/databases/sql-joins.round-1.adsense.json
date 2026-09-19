@@ -1,0 +1,98 @@
+{
+  "article": "src/content/articles/databases/sql-joins.md",
+  "route": "/databases/sql-joins/",
+  "round": 1,
+  "role": "adsense",
+  "score": 8.2,
+  "comparedAgainst": [
+    "https://blog.codinghorror.com/a-visual-explanation-of-sql-joins/",
+    "https://www.geeksforgeeks.org/sql/sql-join-set-1-inner-left-right-and-full-joins/",
+    "https://blog.jooq.org/say-no-to-venn-diagrams-when-explaining-joins/",
+    "https://learn.microsoft.com/en-us/sql/relational-databases/performance/joins?view=sql-server-ver17",
+    "https://www.postgresql.org/docs/current/queries-table-expressions.html",
+    "https://www.atlassian.com/data/sql/sql-join-types-explained-visually (fetched; body not extractable, not used for scoring)"
+  ],
+  "justification": "Original value is real and well above the ranking pages. Coding Horror (~650 words, Venn diagrams, two 4-row name tables) and GeeksforGeeks (~1,300 words, student/student_course, keyword-by-keyword) never show multiplicity, NULL keys, ON-versus-WHERE or NOT IN. The closest prior art, jOOQ's 'Say NO to Venn Diagrams', makes the same thesis (join = cartesian product + filter; Venn is right for UNION/INTERSECT/EXCEPT) on author/book tables but stops at the argument: no COUNT(*) vs COUNT(col) puzzle, no fan-out double-SUM bug, no NOT IN/NULL trap, no self join, no algorithms, no exercises. This article uses its own member/loan/payment dataset, four purpose-built SVGs, ~25 executed queries, an INTERSECT-versus-JOIN row-count test I found in no competitor, and a LINQ null-key aside tied to dotnet/runtime. No filler: the first sentence poses the task, there is no intro/outro boilerplate and no conclusion paragraph; headings are content-specific and differ completely from the two sibling articles (amortized-analysis, how-git-works); paragraph lengths vary; contrast constructions ('not false but NULL', 'the definition, not the way it is computed') are substantive, not the machine tic. No keyword stuffing; title and description read as written for a human. Plagiarism spot-check: five distinctive sentences searched in quotes ('Circles have no rows in them', 'An overlap can never be larger than either circle', 'padding belongs to the join step' / 'One line is one result row' / 'a small cross product hidden inside an ordinary-looking join', 'One NULL anywhere in the subquery empties the entire result', 'The cross product is the definition of the result, not the way it is computed') returned no verbatim matches; the nearest hits (boringSQL, a DEV post on NOT IN) explain the same well-known fact in different words and with different data. I opened the PostgreSQL table-expressions page and the Microsoft Learn joins page: the quoted fragments ('considerably more risky', CROSS JOIN = INNER JOIN ON TRUE, 'First, an inner join is performed', 'it matters a lot with outer joins', null values 'don't match each other', nested loops/merge/hash/adaptive) are accurate and used as short attributed quotes, and the article's examples do not reuse either page's tables. No invented experience or statistics. Rendered page: verify-page reports 0 broken links, 0 console errors, 0 mobile overflow; its only failure is the known NEEDS_MARKUS placeholder. Why it is not at 8.5: the draft breaks several of the brief's own binding pilot lessons, each of which is exactly the kind of cross-site pattern or unsupported statement a low-value reviewer looks for. (1) The last section is titled 'Exercises' and its first item is 'Predict the row count', the same ending as amortized-analysis ('Exercises' / 'Predict the trace', then 'Find the bug ...'), which the brief explicitly forbids. (2) That predict exercise prints its answer (n = 6) directly under the question. (3) 'SQL has no ANTI JOIN keyword' is unscoped, and is literally one of the brief's examples of a generalisation critics falsified (Spark SQL, Databricks, ClickHouse and Impala have LEFT ANTI JOIN). (4) Five of the fourteen listed sources (both MySQL pages, the T-SQL IS DISTINCT FROM page, and both PostgreSQL planner/operator pages) are never cited or even alluded to in the body, which reads as source-list padding, and no in-body citation is a hyperlink, unlike how-git-works. (5) There is no docs/crosslinks/databases/sql-joins.md and the body has one internal link (a glossary anchor), so the article is a content dead end apart from breadcrumbs and footer. All are quick fixes; the underlying writing is around 9. With them fixed I would expect to score this 8.8-9.0.",
+  "runCodePass": null,
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Final section, '## Exercises' and first item '::::exercise[Predict the row count]' (lines 812-833)",
+      "problem": "Templated ending, forbidden by the brief's 'Vary the ending' lesson: the section is titled 'Exercises' and the first item is 'Predict the ...', identical in pattern to complexity/amortized-analysis ('## Exercises' -> 'Predict the trace' -> later 'Find the bug ...'). Two of three live articles now share heading, first-exercise name and the predict/find-the-bug sequence; this is the clearest mass-production signal on the page.",
+      "fixLooksLike": "Rename the section for what it practises (for example 'Count the lines before you run it' or 'Three queries on the library tables'), lead with a different form (the find-the-bug or write-the-query item), and consider moving the row-count prediction up to the end of 'When the key is not unique, rows multiply', where it fits the flow.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Exercise 'Predict the row count' (lines 817-828)",
+      "problem": "The exercise asks the reader to predict without running, then shows the output panel 'n = 6' directly under the question, outside the collapsed solution. The brief's binding lesson 'Do not give away exercises' prohibits exactly this.",
+      "fixLooksLike": "Show the query in the question as a non-run block (or otherwise without output), and move the `sql run` block with its output panel inside the :::solution.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "'Anti-joins: finding the rows with no match', sentence 'SQL has no `ANTI JOIN` keyword' (line 687)",
+      "problem": "Unscoped generalisation that the brief itself lists as one critics falsified in the pilot. Spark SQL/Databricks, ClickHouse and Impala all accept LEFT ANTI JOIN (and LEFT SEMI JOIN). The same applies by implication to the semi-join paragraph.",
+      "fixLooksLike": "Scope it: 'Standard SQL, and SQLite, PostgreSQL, MySQL and SQL Server, have no ANTI JOIN keyword (a few engines such as Spark SQL add LEFT ANTI JOIN)', citing a primary doc if the parenthesis is kept, or simply 'Standard SQL has no ANTI JOIN keyword'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Front matter sources (lines 45-64) versus body",
+      "problem": "Five of fourteen sources are never cited or alluded to in the body: MySQL 'JOIN Clause', MySQL 'Comparison Functions and Operators', T-SQL 'IS [NOT] DISTINCT FROM', PostgreSQL 'Planner/Optimizer' and PostgreSQL 'Operator Optimization Information'. The body never mentions MySQL, `<=>`, or SQL Server's IS DISTINCT FROM support, and the hash-join and merge-join bullets carry no attribution. The brief calls an uncited source a finding; to a reviewer it looks like a padded bibliography.",
+      "fixLooksLike": "Either use them where they belong (one sentence in the NULL section on portability: MySQL spells the null-safe comparison `<=>`, SQL Server added IS [NOT] DISTINCT FROM in 2022; one sentence on MySQL lacking FULL JOIN next to the SQLite 3.39 note; attribute the hash/merge descriptions to the PostgreSQL planner page) or delete them from the list.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Whole article body; docs/crosslinks/databases/ (missing)",
+      "problem": "Content dead end. The body's only internal link is /glossary/#primary-key, the rendered page has no next/related block after Sources, and no docs/crosslinks/databases/sql-joins.md exists, so the brief's exemption for missing sibling links does not apply. A reader who finishes has only breadcrumbs and the footer.",
+      "fixLooksLike": "Writer: create docs/crosslinks/databases/sql-joins.md with the obvious planned targets (indexes article from the 'first candidate for an index' sentence, normalization/keys from the primary/foreign key mentions, hash tables and merge sort from the algorithm bullets, NULL/three-valued logic if planned). Integrator: confirm ArticleLayout renders a next-in-pillar or related-articles block once siblings exist.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "All in-body citations (e.g. lines 239, 243, 342, 451, 470, 472, 734, 806, 810)",
+      "problem": "Sources are attributed in prose ('The PostgreSQL manual calls it ...') but none is hyperlinked at the point of the claim; the sibling how-git-works links each citation inline. A reader cannot tell which of five PostgreSQL entries backs which quote without guessing.",
+      "fixLooksLike": "Turn each attribution into a link to the exact source page (and section anchor where one exists), e.g. '[PostgreSQL manual](https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-JOIN)'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What the engine does instead of building every pair', hash join and merge join bullets (lines 807-808)",
+      "problem": "Brief: 'Every algorithm named gets its cost, and the conditions under which it applies.' Nested loops gets its (left x right) cost; hash join and merge join get neither cost nor conditions (hash needs an equality condition and memory for the build side; merge needs sorted inputs or pays for sorts). Reads as a list-for-completeness rather than explanation.",
+      "fixLooksLike": "Add one clause each: hash join about one pass over each input, expected O(n + m), equality conditions only; merge join O(n + m) once sorted, O(n log n + m log m) if it must sort; cite the PostgreSQL planner page already in the source list.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure captions: 'Figure 1', 'Figure 2', 'Figure 3', then 'Figure 5' (line 602)",
+      "problem": "There is no Figure 4. It looks like a figure was cut without renumbering; small, but it is the kind of seam that signals unreviewed generated content.",
+      "fixLooksLike": "Renumber the fan-out figure to Figure 4.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Outer joins put the unmatched rows back', RIGHT JOIN paragraph (lines 366, 407)",
+      "problem": "CONTENT_PLAN promises 'All joins with outputs', but RIGHT JOIN is described and never executed; the equivalence 'A RIGHT JOIN B returns the same rows as B LEFT JOIN A' is asserted, not shown.",
+      "fixLooksLike": "Add one short run block showing loan-preserving output (NULL / Beloved row) via RIGHT JOIN, or via the swapped LEFT JOIN, so the claim is demonstrated.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Second paragraph after the schema: 'These statements and every query below ran in order against a single in-memory SQLite 3.50 database; the result panels are pasted from those runs, not typed.' (line 102)",
+      "problem": "Close to the stamped provenance sentence the brief says not to use ('every block on this page was run with ...'), and how-git-works has the same move ('The session on this page is real output from Git 2.52 ...') in the same position. A recurring phrasing tic across siblings.",
+      "fixLooksLike": "Keep only what the reader needs to reproduce the results, in different words and placement, e.g. fold 'Run the statements in order in one SQLite session (3.39 or later for FULL JOIN)' into the sentence that introduces the two trouble rows.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Line 219 'by far the most common condition'; line 639 'Two habits catch this bug before it ships'; line 560 'which makes the bug easy to miss in testing'",
+      "problem": "Small unsourced frequency/experience assertions. Harmless individually, but the brief bans asserted experience and 'what most people do' claims.",
+      "fixLooksLike": "Rephrase neutrally: 'Equality between a foreign key and the key it references is the usual condition'; 'Two checks expose this bug'; 'Chen's figures are correct, so a test that only looks at Chen passes'.",
+      "owner": "writer"
+    }
+  ]
+}

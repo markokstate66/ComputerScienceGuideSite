@@ -1,0 +1,53 @@
+{
+  "article": "src/content/articles/oop-design/four-pillars-of-oop.md",
+  "route": "/oop-design/four-pillars-of-oop/",
+  "round": 1,
+  "role": "adsense",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop",
+    "https://backend.turing.edu/module1/lessons/four_pillars_of_oop",
+    "https://www.freecodecamp.org/news/four-pillars-of-object-oriented-programming/",
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/inheritance"
+  ],
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "justification": "Read against the pages that rank for '4 pillars of oop' (Turing School lesson, freeCodeCamp, Microsoft Learn's C# OOP tutorial; c-sharpcorner returned 403). All three give one-line definitions plus analogy examples (puff pastry, coffee machine, Animal/Dog, BankAccount); none covers invariants, the run-time mechanism, the cost of virtual calls, constructor-order hazards or exercises, and only Microsoft has any sourcing. This article adds real original value on each of those: encapsulation framed as invariant protection with a before/after program and an AsReadOnly leak exercise, a CoreCLR method-table picture backed by the Book of the Runtime plus a GetBaseDefinition reflection demo, two runnable inheritance failure modes, and an abstraction section that argues what an interface should admit (Unreachable). No filler intro or outro: the first sentence delivers, and the closing section synthesises rather than recapping headings. No keyword stuffing; title and description are written for a human. Own running example (subscription billing), distinct from Microsoft's BankAccount. Six distinctive sentences searched in quotes returned no matches; quoted source passages (four basic principles, three primary characteristics, only one direct base class, not inlined, DO NOT make members virtual, calling into a protected virtual member) were fetched and match verbatim with attribution. All 13 sources are cited inline. Structure is not templated against the test-doubles, sql-joins, value-types or arrays articles: headings, openings, exercise titles and exercise forms (find-the-way-in, predict, move-the-check, extend, reason) all differ; there is no sibling in oop-design yet. The docs/crosslinks file exists, lists six sensible targets and states coverage boundaries with planned siblings, so near-duplicate risk is managed. Rendered page: 0 console errors, 0 broken links, 0 mobile overflow; the article ends in next-step cards (pillar, all topics, start here, glossary), so no dead end. verify-page fails only on the known NEEDS_MARKUS placeholder. What keeps it from 9+: a recurring 'X, not Y' contrast construction (about a dozen instances, two in the first three paragraphs), the one machine-text tell on the page; a 'beginner / no prerequisites' label on a 25-minute article that uses primary constructors, records, reflection and JIT devirtualization without giving a plain one-sentence definition of inheritance or polymorphism or glossing virtual/override, which under-serves the actual searcher for this query; and a handful of small unsourced or over-general statements. These are nits and one moderate audience issue, not low-value-content signals. At the bar.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Front matter (level: beginner, prerequisites: []) versus the body, especially 'How does polymorphism work at run time?' and 'What does inheritance cost?'",
+      "problem": "The target query is a beginner/interview query and the page is labelled beginner with no prerequisites, yet it never states in one plain sentence what inheritance or polymorphism is, uses virtual/override/abstract/sealed, primary constructors, records, collection expressions and reflection without introduction, and goes down to JIT devirtualization. A true beginner arriving from search gets no foothold; a reviewer sees a label that does not match the content.",
+      "fixLooksLike": "Either set level to intermediate and list a prerequisite (classes and objects basics), or keep beginner and add a one-sentence plain definition at first use of each pillar (in the table or the first paragraph of each H2) plus a half-sentence gloss of virtual/override where the Plan program is introduced. Do not add a definitions section; fold it into existing sentences.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Throughout; e.g. para 2 'a teaching convention, not a definition', encapsulation opener '\"Hiding data\" is the mechanism, not the goal', list items 1, 2 and 4 under 'Four design decisions', 'private protects a field, not the object', 'The pricing loop knows Plan, not the three kinds of plan', 'a payment arrived, not add to a field'",
+      "problem": "The 'X, not Y' contrast construction appears about a dozen times (11 literal ', not ' plus variants), more than in any other article on the site. It is the classic machine-text tic and the only one this page has.",
+      "fixLooksLike": "Keep the three or four where the contrast carries the point (mechanism vs goal; field vs object; computed vs stored) and recast the rest as plain positive statements.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Is method overloading polymorphism too?' first sentence; Liskov sentence under 'An override can break a promise the base class made'; exercise solution 'the compiler warns (CS0108)'; last paragraph of 'What does a virtual call cost?'",
+      "problem": "Small unsupported statements: 'is sometimes called compile-time polymorphism' is a what-people-say claim with no source; the Liskov substitution principle is named with no citation; CS0108 is cited by number with no link; 'in billing code, where the time goes to database and network calls' is asserted.",
+      "fixLooksLike": "Cite or drop the 'sometimes called' clause; add Liskov and Wing 1994 (or rely on the planned SOLID crosslink and say so) for LSP; link the CS0108 compiler-message page and add it to sources; make the billing sentence conditional ('when a request also waits on a database or network call, the lookup is not what you will measure').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What does inheritance cost?' para 2: 'In C#, a class has exactly one direct base class [2]'; encapsulation section parenthesis 'An object shared between threads needs a lock around each method'",
+      "problem": "Over-general wording of the kind the pilot lessons warn about: the cited page says a derived class 'can have only one direct base class' (object has none), and a lock around each method is one way, not the required way, to keep an invariant across threads.",
+      "fixLooksLike": "'a class can have only one direct base class'; 'needs synchronization, for example a lock around each method'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Heading set: 10 of 16 H2/H3 headings are questions",
+      "problem": "The Q shape is assigned by the plan, so this is not templating, but a long run of question headings can read like FAQ-for-SEO. It is already partly broken up by statement headings.",
+      "fixLooksLike": "No change required this round; if the next Q-shaped oop-design sibling also uses near-all-question headings, vary them there.",
+      "owner": "writer"
+    }
+  ]
+}

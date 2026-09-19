@@ -1,0 +1,70 @@
+{
+  "score": 8.8,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+    "https://www.freecodecamp.org/news/git-internals-objects-branches-create-repo/"
+  ],
+  "justification": "verify-page (my run, 2026-09-19T00:29:09Z): Lighthouse 99/100/100/100 (perf/a11y/best-practices/seo) on the first run, so no re-run needed; consoleErrors 0; consoleWarnings 0; brokenLinks 0; mobileOverflowPx 0; 4554 words, 51 code blocks, 4 figures; only failure is the expected NEEDS_MARKUS placeholder. Another agent re-ran verify on the same route seconds later and overwrote report.json without a lighthouse field; lighthouse.json still shows 99/100/100/100. I opened every desktop-light part (fold + 14) and every mobile-dark part (fold + 21), plus desktop-dark fold/07/11 and mobile-light fold/10/16. Fresh judgement: the page reads as one continuous terminal session with a steady command -> output -> two-to-five-line explanation rhythm; H2s are claims specific to the content ('The commit exists, and Git cannot find it', 'A branch is a 41-byte file and a log line') and the two H3s nest correctly; the TOC is scannable. All four figures are 360 units wide, fit a 390 px screen with nothing off-canvas, keep annotations under the drawing, use theme tokens that render correctly in both dark and light (accent boxes, accent arrows, muted row labels all legible), and each is informative rather than decorative: Figure 2 (shared notes subtree) and Figure 4 (delta direction) show structure the prose cannot, and the captions say what to notice. The five-row mode table fits a phone without scrolling. Callouts are restrained (one pitfall, one warning) and both earn their place. Exercises are collapsed, varied in form (compute, predict, rescue, explain) and do not leak answers. Round-1 check: both design majors are really fixed, not papered over: Figures 1 and 3 were redrawn at 360 wide with captions under the art; the clipped author timestamp is now handled by a dedicated cut/date block so the phone reader sees exactly the fields the prose discusses. Round-1 minors also fixed: od output is -w8 and fits, verify-pack output reshaped by awk to under 40 columns, the modes sentence became a table, the packfile wall was split, 'cd trail' appears once, diagram-narrow removed, Figure 2 label collision gone. The technical blocker (cd per block) and the identity block major are visibly fixed in the rendered page (explicit git config + exported dates). Versus the comparison pages: Pro Git 10.2 has three plain diagrams, no dark/phone care, no exercises and spreads refs/packfiles over other pages; the freeCodeCamp guide presents most terminal output as screenshots (not copyable, unreadable on phones, not theme-aware) and omits packfiles, packed-refs and tags. On design this page is better than both. It is not higher than 8.8 because a binding pilot lesson (break long statements so the operative part is not clipped at 390 px) is still applied inconsistently in about seven command lines, all four exercises sit at the end, and the 28-item source list is an undifferentiated slab on a phone. These are nits, not majors.",
+  "runCodePass": null,
+  "lighthouse": { "performance": 99, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Bash blocks on mobile (mobile-dark part09, part14, part15): `printf 'Day 2: Elk Lake to Marten Pass, 11 km\\n' >> route.txt`; both `git count-objects -v | grep -E '^(count|in-pack):'` lines; `git commit -q -am 'Mark water at waypoint 200'`; the two `git rev-parse --short=7 HEAD:waypoints.txt` / `HEAD~1:waypoints.txt` lines; `git cat-file -p bdb47cf | sed -n '200p'`",
+      "problem": "These lines are left unbroken while their neighbours are wrapped with backslashes or pipes, so at 390 px the operative tail is clipped behind the fade: the `>> route.txt` redirect target, the grep pattern that explains why only two lines of count-objects output appear, and the `.txt` path suffix. The brief's phone lesson asks for long statements to be broken so the operative part stays visible; the article does this in most blocks but not these.",
+      "fixLooksLike": "Wrap each the same way as the Day 1 printf and the sed -i line (redirect or pipe tail on a continuation line, e.g. `git count-objects -v |` newline `  grep -E '^(count|in-pack):'`), re-run run-code, and confirm in mobile screenshots that no command in the article loses its last token.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Four things to try in the trail repository' (all four exercises at the end)",
+      "problem": "The brief asks for exercises to be placed mid-article where they fit the flow. All four are stacked at the bottom after a 20-minute read; exercise 1 (hash the empty tree by hand) belongs naturally right after the SHA-1 header section and needs none of the later state, so the long middle of the page has no interactive break.",
+      "fixLooksLike": "Move exercise 1 to the end of 'The ID is a SHA-1 of a short header plus the content' (it has no dependency on the packed state), keep the remaining three at the end, and retitle the final section to match ('Three things to try...').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Output panel under 'The commit exists, and Git cannot find it' (mobile-dark part08)",
+      "problem": "On a phone the single line of output clips at `fatal: your current branch 'main' does no`, so the point of the block (no commits yet) is off-screen, and the prose below does not quote it.",
+      "fixLooksLike": "Either quote the operative words in the following sentence (Git reports that the branch 'does not have any commits yet') or pipe through `fold -w 40`/`2>&1 | fold -s -w 40` so the message wraps inside the panel.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Paragraph after the annotated-tag output, beginning 'The ref points at a tag object' (mobile-dark part13, about 16 lines on a phone)",
+      "problem": "The densest paragraph on the page: it finishes tags, inventories the rest of .git, introduces MERGE_HEAD, states what push/fetch transfer, and forward-references pack indexes. On a phone it is a wall between two code-heavy sections.",
+      "fixLooksLike": "Split after 'That completes the set: blob, tree, commit, tag.' and give the non-object inventory its own paragraph (or a short list of what stays local versus what is rebuilt).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure 4, secondary lines 'new waypoints.txt, 864 B' / 'old waypoints.txt, 23 B' and '+ 17 more objects' (mobile-dark part16, mobile-light part16)",
+      "problem": "These d-small d-muted labels are the smallest text on the page at 390 px (roughly 10 css px, muted colour). Still readable, but they carry the measured numbers the caption refers to.",
+      "fixLooksLike": "Drop d-muted on the two size lines (keep d-small) or shorten to 'new file, 864 B' so the size can go up one step; verify at 390 px in both themes.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Sources list (28 entries; mobile-dark part19-20 is two full screens of near-identical 'git-xxx. Git documentation. Accessed 18 September 2026.' lines)",
+      "problem": "Long flat list in front-matter order rather than grouped or in citation order; on a phone every entry wraps to two or three lines because the access date is repeated 28 times. Functional, but it is the least polished block on the page.",
+      "fixLooksLike": "Shell-level: when all sources share one access date, print it once under the heading ('All accessed 18 September 2026') and render entries as title + publisher only; optionally group by publisher. Append to docs/INTEGRATOR_REQUESTS.md.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Author box under Sources: 'Every program in this article was compiled and run, and its output compared with the text' (unchanged from round 1)",
+      "problem": "On a shell-only article 'program ... compiled' is inaccurate boilerplate next to the byline. Raised in round 1 as an integrator item; still present.",
+      "fixLooksLike": "Neutral wording that covers shell sessions ('Every command and program in this article was run, and its output checked against the text'), or vary by article code language.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "'Keep reading' block at the end (unchanged from round 1)",
+      "problem": "Four generic site cards, no next-in-pillar link. Expected while siblings are unpublished, and docs/crosslinks/version-control/how-git-works.md now exists with eight sensible, well-located links, so body cross-links are not penalised; the end-of-page block is still a soft dead end until wave 3.",
+      "fixLooksLike": "When siblings publish, make the first card the next article in the pillar's reading order (branching-and-merging) and wire the crosslinks file.",
+      "owner": "integrator"
+    }
+  ]
+}

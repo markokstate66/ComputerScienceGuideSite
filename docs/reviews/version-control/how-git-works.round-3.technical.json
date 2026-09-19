@@ -1,0 +1,65 @@
+{
+  "article": "src/content/articles/version-control/how-git-works.md",
+  "route": "/version-control/how-git-works/",
+  "round": 3,
+  "role": "technical",
+  "score": 8.8,
+  "runCodePass": true,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+    "https://blog.algomaster.io/p/how-git-works-internally",
+    "https://git-scm.com/book/en/v2/Git-Internals-Packfiles"
+  ],
+  "justification": "run-code is green: `node tools/run-code.mjs src/content/articles/version-control/how-git-works.md` from PowerShell printed `PASS version-control/how-git-works.md  blocks=51 executed=26`, exit 0 (git 2.52.0.windows.1). Fresh read first. I opened and checked against the citing sentences: git-init (fallback 'currently master, but this will change to main when Git 3.0 is released'; no SHA-1/SHA-256 interoperability; files is the default ref format), git-pack-objects (sorted by type, size and optionally names; window 10; depth 50; packs as transfer format), git-gc (gc.auto 6700, pruneExpire 2.weeks.ago, cruft packs default true, porcelain triggers auto gc), BreakingChanges (sha256, reftable and main for Git 3.0), hash-function-transition (SHAttered 23 Feb 2017, hardened SHA-1 from v2.13.0, SHA-256 successor), gitformat-pack (256-entry fan-out where F[i] counts OIDs with first byte <= i, sorted names table, separate offset table, .rev = index positions sorted by pack offset), gitrepository-layout (256 subdirectories rationale), git-fast-import (all five modes), Pro Git 10.2 (header; three blob modes), Pro Git 7.1 (four characters, unambiguous), Pro Git 10.4 (newer version stored intact, reason given), Pro Git 10.7 and git-pack-refs (loose first, packed-refs as fallback; later updates create loose files; ^ peeled line), git-merge ('The MERGE_HEAD ref is set...'), git-ls-files (stages 1-3 for unmerged paths), git-update-ref (old-value verification, locking, reflog), git-push (fast-forward-only rule; force-with-lease background-fetch warning). All support the sentences that cite them. I re-derived the numbers: 5 objects (2 blobs, 2 trees, 1 commit), +3 for the second commit, 19 before gc (8 + 4 on detour + 1 tag + 3 + 3), 3 loose objects in the copy exercise with no new blob, 4 rewritten commits in the rebase exercise, 41 bytes for a ref, 20/32 raw ID bytes, and the .idx lookup cost (two fan-out reads then binary search over about n/256 sorted IDs = O(log n)); all correct. I reproduced in a scratch repo the one claim the harness does not check: after commit-tree + update-ref without -m, the first line of .git/logs/refs/heads/main ends after the timezone with no message. Round-2 check (all three critics): the technical major ('rewrote one line in HEAD and nothing else') is really fixed, not reworded around: the sentence is now scoped to 'wrote no objects and changed no working files', names the HEAD reflog entry, and proves it with `tail -1 .git/logs/HEAD | cut -f2` in the executed block. Every round-2 minor is also fixed: storage cost now says whole blob per changed file plus a tree per directory on the path, with a pointer to packing; gpgsign is switched off in the pinning block and the prose says why; the .git inventory is marked 'Chiefly' with a pointer to the full list; GNU/macOS differences are stated once; the .idx is described as parallel tables bounded by two adjacent fan-out entries; fast-forward is defined in place; long commands are wrapped; exercise 1 moved mid-article; the 'common'/'rarely' frequency words are replaced by the mechanism. The crosslinks file exists with eight sensible, located links, so missing sibling links are not penalised. Against the top results: AlgoMaster (ranks first) has no executed output, no sources, nothing on tree bytes, packed-refs, reflogs or SHA-256; Pro Git 10.2-10.4 is the real bar and this page matches its accuracy while adding the raw tree encoding, the unreachable-commit moment, reflog cost of a bare ref write, reading a delta back with %(deltabase), an honest statement that the experiment cannot separate recency from size ordering, the .idx lookup cost, the spec-versus-default section with the Git 3.0 horizon, and exercises with verified solutions. I found no factual error and no failing code, so neither cap applies. It is not higher than 8.8 because a handful of sentences are still slightly over-general or under-caveated (listed below); each is a one-clause fix and none would mislead a reader in practice.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Section 'Where the object files go', first paragraph: 'It is only the format in which objects are first written.'",
+      "problem": "Over-general. Objects that arrive by fetch or clone are normally kept as the received pack (index-pack), never written loose; only small transfers below the unpack limit are exploded. The article itself says later that packs are the wire format, so the two statements sit awkwardly together.",
+      "fixLooksLike": "Scope it: 'It is only the format in which the objects you create locally are first written' (optionally: 'objects that arrive by fetch usually stay in the pack they came in').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'A branch is a 41-byte file and a log line': 'Deleting a branch deletes the name and leaves the commits alone.'",
+      "problem": "Missing caveat that the article supplies only much later and in another context: deleting the branch also deletes its reflog, and commits no other ref reaches become unreachable and are pruned by gc after the grace period. A strong student will ask 'forever?'.",
+      "fixLooksLike": "Add a clause: '...leaves the commits alone, although commits that no other ref reaches are now unreachable and `git gc` will eventually prune them (see the rescue exercise)'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Pitfall callout: 'the state of every ref in this repository once `git gc` has run' and 'appends to the ref's reflog'",
+      "problem": "Two small unscoped statements. HEAD is a ref, is symbolic, and stays a file (packed-refs cannot hold symbolic refs); the demonstration shows every branch and tag packed. The reflog append is conditional on core.logAllRefUpdates (true by default in a non-bare repository, off in a bare one) per the cited git-update-ref page.",
+      "fixLooksLike": "'every branch and tag in this repository' and 'appends to the ref's reflog (on by default in a repository with a working tree)'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'What is specified...', bullets 1 and 2: 'Git 3.0 is planned to make SHA-256 the default' / 'the same plan for Git 3.0 switches new repositories to reftable'",
+      "problem": "The cited BreakingChanges page attaches an explicit prerequisite to both (the ecosystem, i.e. forges and libraries such as libgit2/JGit, must support the format first) and states that SHA-1 is not being deprecated. 'Planned' is accurate but drops the condition the source makes prominent.",
+      "fixLooksLike": "One clause: '...planned for Git 3.0, conditional on forges and Git libraries supporting it; SHA-1 repositories remain supported'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Paragraph before the pinning block: 'Commit and tag IDs also hash a name, an email address and two timestamps'",
+      "problem": "A tag object has a single tagger line with one timestamp (the article's own tag output shows this); only commits carry two.",
+      "fixLooksLike": "'Commit IDs also hash a name, an email address and two timestamps (an annotated tag, one)', or simply 'timestamps'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": ".idx paragraph: 'Git reads two adjacent fan-out entries'; and tree section: '`git update-index --add` (git-update-index), which also writes any blob that is missing'",
+      "problem": "Nits. For first byte 00 there is only one entry to read (the lower bound is 0). The update-index page supports the blob-writing claim only by contrast (--info-only 'without placing them in the object database'), not directly; the session itself proves it though, since bf6b004 resolves afterwards.",
+      "fixLooksLike": "'at most two adjacent fan-out entries'; optionally point at the evidence ('as the bf6b004 entry, never passed to hash-object, shows').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "docs/crosslinks/version-control/how-git-works.md, entries referring to 'exercise 3 solution' and 'exercise 4 question/solution'",
+      "problem": "Exercise 1 moved mid-article and the final section is now 'Three more experiments', so numeric references are ambiguous for the integrator.",
+      "fixLooksLike": "Refer to exercises by title ('Rescue content that was never committed', 'Explain the force-push').",
+      "owner": "writer"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "article": "src/content/articles/networking/how-the-internet-works.md",
+  "route": "/networking/how-the-internet-works/",
+  "round": 1,
+  "role": "design",
+  "score": 8.3,
+  "lighthouse": { "performance": 97, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "Single verify-page run (no re-run needed, performance 97). report.json: words 4549, codeBlocks 21, figures 2, h1 1, mobileOverflowPx 0, consoleErrors [], consoleWarnings [], broken []. Only failure: 'placeholder text: NEEDS_MARKUS' (expected). Screenshots read: all 15 desktop-light, all 23 mobile-dark, desktop-dark fold+3 parts, mobile-light fold+3 parts.",
+  "comparedAgainst": [
+    "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work",
+    "https://github.com/alex/what-happens-when",
+    "https://bytebytego.com/guides/what-happens-when-you-type-a-url-into-your-browser/"
+  ],
+  "justification": "Shell and page mechanics are clean: Lighthouse 97/100/100/100, zero console errors, zero broken links, 0 px mobile overflow, one h1, sensible h2/h3 hierarchy with content-specific headings that read well in the TOC. Both diagrams are informative rather than decorative (a four-band sequence diagram with RTT per band and encrypted flights in accent colour; an encapsulation stack with real byte counts), use a 360-wide viewBox, stay fully legible at 390 px, put annotations under the drawing, and are theme-correct in dark mode (accent arrows, box fills and muted text all switch properly). Captions say what to notice. Output panels are all under 40 columns and none is clipped on the phone. Callouts are restrained (one .NET note, one pitfall), four exercises sit mid-article where they belong with collapsed solutions and no leaked answers, and the 21-entry sources list renders cleanly on both widths. Against the competition this is visually better than alex/what-happens-when (7000 words of dense text, no figures) and ByteByteGo (one infographic, about 300 words), and at least level with MDN's 'How browsers work' (three figures, one code sample, no exercises or sources). It stops short of 8.5 because of phone-specific article-level defects that the brief treats as binding: the layer table's third column, which is the whole point of that section, is off-screen on a phone; several operative code tails sit under the fade (the ALPN protocol value, port 443, LocalEndPoint/RemoteEndPoint, the blank-line loop condition); and three programs of 65 to 82 lines produce two to three consecutive phone screens of nothing but code, much of it repeated try/catch and timeout boilerplate, with no figure between Figure 1 at the top and Figure 2 about 70 percent of the way down. All are small writer fixes; none is structural. The crosslinks file exists and lists nine sensible anchor/target/location lines, so absent sibling links are not penalised.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Section 'The layer model, after the fact', the three-column table (mobile-dark part18, mobile-light part18)",
+      "problem": "At 390 px the third column 'Seen here as' is cut off after 'Seen h' / 'Dns , r' / 'TcpCl' / 'the ho' / 'not visi'. That column is the evidence for the sentence 'You have now used each of them, so the table is a summary', so the part of the table that ties the model to the article is what phone readers do not see. WRITER_GUIDE section 7 says the column that carries the evidence must not be the one cut off.",
+      "fixLooksLike": "Make all three columns fit in about 40 characters total: shorten the middle column to the protocol only ('DNS, HTTP' / 'TCP' / 'IP' / 'Ethernet, Wi-Fi'), or move 'Seen here as' to the second position, or replace the table with a four-item list ('Transport: TCP, ports and ordering; you used it as TcpClient'). Verify in the mobile screenshot that no fade remains on the table.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Code blocks id=plain, id=secure, id=names, id=capture, id=hops (mobile-dark parts 06, 09, 10, 12, 14, 16)",
+      "problem": "Most clipped lines are boilerplate and acceptable, but several operative tails sit under or beyond the fade on a phone: '[SslApplicationProtocol.Http11]' (the prose discusses offering only http/1.1), the 443 in 'ConnectAsync(found[0], 443, stop)' and 'ConnectAsync(address, 443, stop)', 'socket.LocalEndPoint' / 'socket.RemoteEndPoint' (the prose explains the two port lines), the '\"\\r\\n\\r\\n\"' in the capture server's while condition (the prose points at it as the pitfall's fix), 'new PingOptions(ttl, true)', and 'tls.NegotiatedCipherSuite'. The code was wrapped at roughly 48 columns; the phone shows about 40 with the last 4 to 5 faded.",
+      "fixLooksLike": "Re-wrap just those statements so the operative token is inside the first 36 or so columns: put the port on its own argument line, hoist 'SslApplicationProtocol.Http11' and the '\\r\\n\\r\\n' terminator into short named locals, break before '.LocalEndPoint' / '.RemoteEndPoint', break PingOptions arguments one per line. Leave pure boilerplate tails (the 'no network' catch line) alone. Re-run run-code afterwards.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Programs id=plain (65 lines), id=secure (82 lines), id=names (53 lines): desktop-light parts 04, 06-07, 08-09; mobile-dark parts 06, 09-10, 12-13",
+      "problem": "Reading rhythm breaks into walls of code: the secure program fills more than one full desktop screen and about two and a half phone screens with no prose, and roughly a third of each program is the same CancellationTokenSource setup, the same four-line 'catch ... when' filter and the same formatting helpers repeated five times. A beginner-level reader has to find the six lines that matter inside 82.",
+      "fixLooksLike": "Keep programs complete, but cut what each one carries: in id=secure drop the issuer/cipher lines that only print wildcards or move the Show/Time helpers into one shorter local function; in id=plain print fewer derived values or move the body-preview logic out; add a one-sentence 'the lines to read are ...' pointer before each long block so the reader knows where to look. Target no program over about 50 lines.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Between Figure 1 (top of page) and Figure 2 (section 'Underneath'), especially 'Where the response ends' and 'One address, several certificates'",
+      "problem": "About 3000 words and six programs pass with no figure. Chunked framing ('22f', 559 bytes, terminating 0) and one IP address choosing among certificates by SNI are both structure-in-space ideas that prose plus an output panel convey less well than a small drawing; MDN-level pages illustrate at this density.",
+      "fixLooksLike": "Add one narrow (360 viewBox) figure in the middle third: either a byte-strip of a chunked body (size line, data, size line 0) or a single server box at one address with three ClientHello names fanning to two certificates and one refusal. Caption states what to notice.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 1 'Plan a request from its URL', inline code `http://shop.example:8080/cart items?id=7#total` (mobile-dark part03)",
+      "problem": "The 46-character inline URL breaks mid-host on a phone ('http://shop.' / 'example:8080/cart items?id=7#total'), and because it contains a literal space the reader cannot tell whether the space is part of the URL or a wrap artefact, which is exactly what the exercise turns on. WRITER_GUIDE section 7 says long inline code goes in a block.",
+      "fixLooksLike": "Put the URL in its own short `text` block under the first sentence of the exercise so it renders on one line (it fits in 34 columns only if shortened, e.g. 'http://shop.example:8080/my cart?id=7#sum' split is still long; consider host 'a.example').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Both figures at desktop width (desktop-light parts 01 and 10; same in dark)",
+      "problem": "A 360-unit viewBox renders at about 410 px inside a 735 px figure frame, leaving about 160 px of empty frame on each side and label text at roughly 11 to 12 px while body text is 17 px. Correct for phones, but on desktop the figures look undersized inside a large empty box.",
+      "fixLooksLike": "Shell CSS: let narrow-viewBox diagrams scale up to about 560 px on wide viewports (max-width on the svg rather than intrinsic 1:1), or shrink the figure frame to fit the drawing so the whitespace does not read as a layout bug. Append to docs/INTEGRATOR_REQUESTS.md.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'One address, several certificates', last paragraph ('It also shows the limit of what HTTPS hides...')",
+      "problem": "One of the most reusable facts on the page (what an on-path observer still sees under HTTPS) is an unmarked paragraph at the tail of a subsection, easy to skim past after a 53-line program. Callouts are otherwise under-used rather than over-used (two in 4500 words).",
+      "fixLooksLike": "Promote that paragraph to a note-style callout, or render it as a two-item list (visible on the path / inside the encrypted channel).",
+      "owner": "writer"
+    }
+  ]
+}

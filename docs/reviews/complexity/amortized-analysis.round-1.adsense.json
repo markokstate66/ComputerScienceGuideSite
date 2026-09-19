@@ -1,0 +1,59 @@
+{
+  "article": "src/content/articles/complexity/amortized-analysis.md",
+  "route": "/complexity/amortized-analysis/",
+  "round": 1,
+  "role": "adsense",
+  "score": 8.4,
+  "comparedAgainst": [
+    "https://yourbasic.org/algorithms/amortized-time-complexity-analysis/",
+    "https://en.wikipedia.org/wiki/Amortized_analysis",
+    "https://www.cs.cornell.edu/courses/cs3110/2013sp/lectures/lec21-amortized/lec21.html"
+  ],
+  "justification": "Target query 'amortized time complexity'. Ranking pages read: YourBasic (about 650 words, one pseudocode append, aggregate sum only, no pitfalls or exercises), Wikipedia (about 2,000 words, dynamic array plus two-list queue, no growth-factor, additive-growth or shrink-thrash discussion, nothing measured) and the Cornell CS 3110 lecture the article cites (rigorous three methods on a toy extensible array, no shrinking, no average-case contrast, nothing run). programming.guide and Baeldung could not be fetched (TLS error / 403). On substance the article is clearly better than all three: it traces the real List<T>.Capacity, quotes the actual growth line from dotnet/runtime and labels it an implementation detail, runs the banker's account against the real list with charge 3 and charge 2 (found in none of the compared pages), times the single slow Add, simulates x2/x1.5/+k, and the 'Three ways to lose the guarantee' section (TrimExcess 90 percent trap, Capacity = n + 1, Insert(0)) plus the worst/amortized/average/expected table are original value. No filler: the first sentence delivers a concrete contradiction from the docs, there is no conclusion boilerplate, the toolchain is stated once where measurements start, and 4,236 words come from worked material. Five distinctive sentences searched in quotes returned no matches; against the Cornell lecture the 3-coin split and potential 2n - m are the same standard argument but the wording, example numbers and diagrams are the article's own and the debt is acknowledged inline ('the same one the Cornell lecture uses', 'written 2n - m in the same Cornell lecture'). All nine sources are cited inline at the point of use; the quoted Microsoft wording I know or checked (O(n) on growth, 'remains unchanged', 90 percent) is accurate. It does not read as mass-produced: paragraph lengths vary, numbers in prose agree with program output, tics are few. verify-page: 0 broken links, 0 console errors, 0 mobile overflow, only failure the known NEEDS_MARKUS placeholder; the page ends with Sources, byline, corrections and a four-card 'Keep reading' block, so it is not a dead end. Why it is not at 8.5 yet: (1) it ends with a literal '## Exercises' H2 whose first item is 'Predict the trace', which is exactly the footprint the brief's binding pilot lesson forbids and is identical to sql-joins ('## Exercises' / 'Predict the row count'); how-git-works has already moved off it, so this is now the visible cross-pillar template; (2) the body points readers to two sibling articles in plain unlinked prose and there is no docs/crosslinks/complexity/amortized-analysis.md, so the brief's exemption for missing sibling links does not apply and every in-body internal link goes to the glossary. Both are ten-minute fixes that do not touch the substance; with them done this is an 8.8-9.0 page.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "'## Exercises' heading (line 569) and first exercise 'Predict the trace'",
+      "problem": "Violates the binding pilot lesson 'Vary the ending: do not title the last section \"Exercises\" with a first item called \"Predict the ...\"'. sql-joins ends with '## Exercises' + 'Predict the row count'; this article ends with '## Exercises' + 'Predict the trace'; the fixture has 'Predict the capacity'. All four exercises are also stacked at the very end rather than placed where they fit. The exercise forms themselves vary well (predict, prove, find-the-bug, measure), but the identical terminal heading and lead item is the one templated footprint a reviewer comparing pages across pillars will see.",
+      "fixLooksLike": "Rename the section for what it practises (for example 'Work the bound yourself: four checks'), and do not lead with the predict item: either move 'Predict the trace' up to the end of 'Watch the capacity move' (right after the List.cs callout, where the growth rule has just been quoted) and move 'Prove it for a factor of 1.5' to the end of the doubling section, or at least open the final section with the prove-it or find-the-bug exercise.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "'Watch the capacity move' para 1 ('belongs to the data-structures article on arrays and dynamic arrays'); 'Amortized is not average-case' ('The article on best, average and worst case in this pillar takes that distinction further'); missing file docs/crosslinks/complexity/amortized-analysis.md",
+      "problem": "The body tells the reader that two other articles exist and gives no way to reach them; every in-body internal link (Big-O, amortized analysis, dynamic array, space complexity, hash table) goes to a glossary anchor. The brief lets writers defer links to unpublished siblings only if they record them in docs/crosslinks/<pillar>/<slug>.md; no such file exists (docs/crosslinks/ is empty), so the integrator has nothing to wire and the exemption does not apply. It also leaves the boundary with the planned dynamic-array and best/average/worst articles undocumented, which is where near-duplicate coverage would creep in.",
+      "fixLooksLike": "Create docs/crosslinks/complexity/amortized-analysis.md with one line per wanted link: big-o-notation at first O(1); /data-structures/arrays-and-dynamic-arrays/ on the 'data-structures article' sentence; /complexity/best-average-worst-case/ on the quicksort sentence; /data-structures/hash-tables/ on the Dictionary paragraph; /data-structures/stacks-and-queues/ on MultiPop; /complexity/space-complexity/ on the growth-factor trade-off. Reword the two in-body sentences so they read naturally both before and after the link is wired (avoid 'the article on ... in this pillar' as bare text).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Intro, sentence 2: 'Yet everybody appends to lists inside loops and calls the loop O(n), not O(n^2).'",
+      "problem": "Unsourced 'everybody' claim about what people do and say; the brief bans 'what most people think' assertions and unscoped universals. It is harmless rhetorically but is the kind of sentence critics were told to flag.",
+      "fixLooksLike": "State it as a fact about the loop, not about people: 'Yet a loop that appends n items to a list runs in O(n) time, not O(n^2).'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Title: 'Amortized Analysis: Why List<T>.Add Is O(1)'",
+      "problem": "The article's own pitfall callout says quoting O(1) without the qualifier 'is a claim nobody proved', yet the title drops 'amortized' from the claim. A reviewer can read it as a slightly click-shaped headline that the body then contradicts. (The title is fixed in CONTENT_PLAN.md, so this may need the integrator's agreement.)",
+      "fixLooksLike": "'Amortized Analysis: Why List<T>.Add Is O(1) Amortized' is clumsy; prefer 'Amortized Analysis: Why Appending to List<T> Costs O(1) per Add, on Average over a Sequence' or simply keep the title and make the description's 'O(1) amortized' the first thing a reader sees. Acceptable to leave if the plan owner prefers the current title.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "'The slow Add is real...' closing line ('and that is the whole story'); potential-function subsection ('which is no coincidence'); 'Three things that statement does not say'",
+      "problem": "A few stock rhetorical flourishes. They are sparse and each is followed by real content, so they do not make the page read as machine text, but 'that is the whole story' is simply untrue of an article with seven more sections and adds nothing.",
+      "fixLooksLike": "Cut 'and that is the whole story' (end the sentence at 'how rarely it happens.'); leave the other two or tighten to taste.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The same argument elsewhere: multipop and a binary counter'",
+      "problem": "Multipop and the binary counter are CLRS chapter 16's own running examples; hard rule 4 says not to reuse a source's running example. The plan mandates them, the section attributes them to CLRS inline, the code, cost-model caveat (empty pop costs 0) and the '2n minus popcount' observation are original, so this is not copying, but the section adds the least original value on the page.",
+      "fixLooksLike": "No structural change required. Optionally replace one of the two with a .NET-flavoured instance of the same pattern (for example a two-stack queue built on Stack<T>, or StringBuilder.Append) so the section carries something the textbooks do not.",
+      "owner": "writer"
+    }
+  ],
+  "brokenLinks": 0,
+  "consoleErrors": 0
+}

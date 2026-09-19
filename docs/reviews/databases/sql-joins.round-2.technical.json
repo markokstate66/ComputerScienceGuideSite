@@ -1,0 +1,59 @@
+{
+  "article": "src/content/articles/databases/sql-joins.md",
+  "route": "/databases/sql-joins/",
+  "round": 2,
+  "role": "technical",
+  "score": 9.0,
+  "runCodePass": true,
+  "comparedAgainst": [
+    "https://blog.codinghorror.com/a-visual-explanation-of-sql-joins/",
+    "https://www.geeksforgeeks.org/sql/sql-join-set-1-inner-left-right-and-full-joins/",
+    "https://blog.jooq.org/say-no-to-venn-diagrams-when-explaining-joins/",
+    "https://learn.microsoft.com/en-us/sql/relational-databases/performance/joins?view=sql-server-ver17"
+  ],
+  "justification": "run-code: `node tools/run-code.mjs src/content/articles/databases/sql-joins.md` -> PASS, blocks=65 executed=33. The harness SQLite is 3.50.4 (checked via node:sqlite), matching the article's 'SQLite 3.50' statement. I found no factual error. Every quotation was checked against the live primary source by grepping the fetched page: SQLite lang_select ('based on the cartesian product of the left and right-hand datasets', 'completely interchangeable', anchors #fromclause and #crossjoin exist, CROSS JOIN pins order); PostgreSQL 7.2 ('considerably more risky', 'matters a lot with outer joins', CROSS JOIN = INNER JOIN ON TRUE, outer-join definition order); PostgreSQL 9.2 ('as though null were a normal data value'); PostgreSQL 9.24 ('will be null, not true'); xoper-optimization ('must represent equality', 'behave like equality'); SQLite lang_expr (compact IS is 'an SQLite extension', IS NOT DISTINCT FROM is an alternative spelling); SQLite 3.39.0 release log (2022-06-25, RIGHT and FULL OUTER JOIN); SQLite optoverview ('implements joins as nested loops', outer joins not reordered, automatic index O(N log N), 'almost the same thing as a hash join'); Microsoft Learn joins page (nulls 'don't match each other', semi/anti semi joins 'can't be directly expressed with Transact-SQL syntax', index nested loops fastest for small outer + large indexed inner, smaller input is the build input, adaptive join defers hash-vs-nested-loops, optimizer picks method and order); Spark SQL ([LEFT] SEMI / [LEFT] ANTI); dotnet/runtime Lookup.CreateForJoin (`if (key is not null)` skip, lines 113-126 on main). Complexity re-derived: naive nested loop evaluates ON exactly n*m times (program prints 20 = 4*5); index nested loops O(n log m + k) with a B-tree on the inner column; hash join expected O(n+m+k) with the stated assumptions (well-spread hash, build fits in memory); merge walk O(n+m+k) plus O(n log n + m log m) if unsorted; the k = n*m degenerate case is correctly called out, which is the caveat most treatments omit. SQL read line by line: GROUP BY is complete, COUNT(*) vs COUNT(pk) reasoning is right, the NOT IN expansion (1,1,2,3,NULL) is right, the fan-out arithmetic (10 and 6) is right, the self-join count 4+1+1+0=6 is right, the anti-join exercise answer (Boris, Dalia) is right and its NOT IN remark is right. C# is idiomatic .NET 10 (collection expressions, `is int id` pattern to model three-valued ON, records, nullable annotations). Round-1 findings all genuinely fixed, not papered over: 'SQL has no ANTI JOIN' is now scoped to four named engines with Spark as a cited counter-example; every algorithm has cost and conditions; all 15 sources are cited inline at the supported clause; MySQL/SQL Server portability added; exercises moved mid-article, renamed, no output giveaway on the predict exercise; Figure 4 now exists; CROSS JOIN/outer-join reordering caveat added; the mirror ON bug is shown with output; the NOT EXISTS preference has three reasons; 'smaller circle' wording corrected. docs/crosslinks/databases/sql-joins.md exists and its eight links are sensible. Against the ranking pages: Coding Horror (~650 words, Venn diagrams, no multiplicity/NULL/NOT IN), GeeksforGeeks (keyword-by-keyword, Venn, no ON-vs-WHERE, no NULL keys) and even jOOQ's anti-Venn post (same thesis but stops at the argument: no fan-out bug, no NOT IN trap, no algorithms, no exercises) are clearly weaker; Microsoft Learn is deeper on physical operators but does not teach the logical model. This is above the 8.5 anchor; it is not a 10 only because of the residual portability and notation nits below.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Section 'Draw a line for every matching pair', USING and NATURAL JOIN paragraphs",
+      "problem": "The article is careful about engine support for RIGHT/FULL and for null-safe equality, but presents USING (and NATURAL JOIN) as if universal. SQL Server/T-SQL supports neither, and the article cites SQL Server throughout, so a reader on that engine hits a syntax error on the second join query of the page.",
+      "fixLooksLike": "One clause, e.g. 'PostgreSQL, MySQL and SQLite accept USING; SQL Server does not, so there you write the ON equality', ideally backed by the T-SQL FROM clause grammar or dropped to an unsourced-but-scoped statement about the three engines whose manuals are already cited.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Outer joins put the unmatched rows back', sentence 'MySQL has no FULL JOIN at all'",
+      "problem": "The reader on MySQL is told the feature is missing and then left there. The page already has everything needed to build one (left join plus the anti-joined right side), and the omission is the one place where a top-ranking competitor (GeeksforGeeks mentions the MySQL gap) is not clearly beaten.",
+      "fixLooksLike": "One sentence or a short runnable block: LEFT JOIN result UNION ALL the right-side rows with no match (RIGHT JOIN ... WHERE m.member_id IS NULL, or NOT EXISTS), with a note that plain UNION would wrongly collapse legitimate duplicate rows.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'NULL never equals anything', bullet 'SQLite accepts that spelling and also the shorter a IS b'",
+      "problem": "IS NOT DISTINCT FROM arrived in SQLite only in 3.39.0 (same release log the article already cites: 'Add new binary comparison operators IS NOT DISTINCT FROM and IS DISTINCT FROM'). The bullet gives a version for SQL Server but not for SQLite, so it reads as always-available.",
+      "fixLooksLike": "'SQLite accepts that spelling from 3.39.0 and has always had the shorter a IS b ...', linking the existing 3.39.0 source.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'What the engine does instead of building every pair', sentence 'Θ(n · m) in big-O terms'",
+      "problem": "Notation mix: a Theta bound is described as 'big-O terms', and Θ is never defined on a beginner-level page whose glossary link is to big-O. The claim itself is correct (exactly n*m evaluations).",
+      "fixLooksLike": "Either 'O(n · m), and the bound is tight: exactly n × m evaluations' or keep Θ with a four-word gloss ('Θ, a tight bound').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "FULL JOIN query, 'ORDER BY m.name IS NULL, m.name, l.title'",
+      "problem": "The Boolean sort key is unexplained. A beginner will not know it exists to push the NULL-named row last (SQLite sorts NULLs first by default), and it is not portable (SQL Server rejects a bare predicate in ORDER BY; PostgreSQL would use NULLS LAST).",
+      "fixLooksLike": "One sentence after the output: what the first sort key does and that other engines spell it NULLS LAST or a CASE expression.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'A filter in WHERE quietly undoes a left join', sentence 'WHERE runs after the join has finished'",
+      "problem": "Stated as execution order; it is the logical order. The article makes the definition-versus-execution distinction carefully for the cross product but not here, where engines in fact notice the null-rejecting WHERE and run the query as an inner join.",
+      "fixLooksLike": "'Logically, WHERE is applied to the finished join, padding rows included' (one word), optionally noting that optimizers exploit exactly this to turn such a left join into an inner join.",
+      "owner": "writer"
+    }
+  ]
+}

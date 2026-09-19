@@ -1,0 +1,89 @@
+{
+  "article": "src/content/articles/oop-design/four-pillars-of-oop.md",
+  "route": "/oop-design/four-pillars-of-oop/",
+  "round": 1,
+  "role": "technical",
+  "date": "2026-09-18",
+  "score": 7.0,
+  "uncappedScore": 8.7,
+  "runCodePass": true,
+  "runCodeResult": "PASS oop-design/four-pillars-of-oop.md  blocks=26 executed=14 (exit 0)",
+  "comparedAgainst": [
+    "https://backend.turing.edu/module1/lessons/four_pillars_of_oop",
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop",
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/inheritance"
+  ],
+  "justification": "Capped at 7.0 by two verifiable factual errors; without the cap this is about 8.7. Against the ranking pages it is clearly deeper: the Turing School lesson (about 1,200 words, cooking metaphors, no code, no costs, no runtime detail) and Microsoft's OOP tutorial (BankAccount, one-line definitions, no dispatch or invariant discussion) are both outclassed by the invariant framing, the method-table walk-through backed by a GetBaseDefinition program, the constructor-virtual-call and unwritten-contract demos, and the IPaymentGateway 'what the interface admits' discussion. run-code passes (26 blocks, 14 executed). I opened every web source: the 'four basic principles' and 'three primary characteristics' quotes, 'A derived class can have only one direct base class', 'chain of 3 dependent loads', the devirtualization conditions, both Framework Design Guidelines quotes, CA2214 'Enabled by default in .NET 10: No', AsReadOnly O(1) and live-view remarks, GetBaseDefinition's new/newslot behaviour, the BOTR method-table / slot / VSD statements, the spec's static-binding sentence, abstract-method sentence and variable-initializer ordering all check out. Errors: (1) the invariant 'status is Paid exactly when nothing is owed', asserted in prose and in Figure 1 as 'true whenever a public method returns', is false for the article's own class: a new Invoice has Balance 0 and Status Draft. In an article whose thesis is invariants, a strong student will catch this. (2) The quotation attributed to the C# spec reads 'actual member implementation to invoke'; the spec (15.6.4) says 'In a virtual method invocation ... determines the actual method implementation to invoke'. The quoted string does not exist in the source. Remaining findings are caveats and nits. Crosslinks file exists and is sensible (composition, SOLID/LSP, interfaces vs abstract classes, DI, strategy), with useful sibling boundaries; no penalty for unlinked siblings.",
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "'What is encapsulation really protecting?' first paragraph ('It is marked paid exactly when nothing is owed'), Figure 1 text 'status is Paid exactly when nothing is owed', and the refund exercise which refers to 'the three invariants in Figure 1'",
+      "problem": "The stated invariant is false for the class as written. `new Invoice()` (and any draft with no lines) has Total 0, Balance 0, so nothing is owed, yet Status is Draft. The 'exactly when' (iff) fails in the Draft state, while the figure claims it is 'True whenever a public method returns'. This is a factual error in the article's central concept.",
+      "fixLooksLike": "Scope the invariant to what the code guarantees, in prose and in the SVG: e.g. 'once issued, status is Paid exactly when the balance is zero' or 'Paid implies balance 0; Issued implies balance > 0'. Re-check the refund solution wording against the corrected invariant (its reasoning still holds because Issue requires a line and every line is above zero, which is worth saying in one clause).",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "'How does polymorphism work at run time?', paragraph after the plans output, the quotation cited to [3]",
+      "problem": "Misquotation of a primary source. The article puts \"the run-time type of the instance for which that invocation takes place determines the actual member implementation to invoke\" in quotation marks. The C# specification (Classes, 15.6.4 Virtual methods) says 'In a virtual method invocation, the run-time type of the instance for which that invocation takes place determines the actual method implementation to invoke'. The word 'member' is not in the source (checked on the Learn page and in dotnet/csharpstandard classes.md). The lead-in 'when a virtual member is invoked' also rewrites the spec's 'virtual method invocation'.",
+      "fixLooksLike": "Quote verbatim: 'In a virtual method invocation, \"the run-time type of the instance for which that invocation takes place determines the actual method implementation to invoke\" [3]'. If the generalisation to properties/indexers is wanted, state it in the article's own words outside the quotation marks.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "'The base class runs your override before your constructor' and the :::note on field initializers",
+      "problem": "Missing caveat that the article's own earlier code exposes. Every other hierarchy on the page uses primary constructors; this demo silently switches to explicit constructors. I ran the same program with `sealed class PerSeatPlan(string name, decimal perSeat, int minSeats) : Plan(name)` on .NET 10: it prints 'Created: Team: 12/seat, min 5', i.e. the pitfall does not reproduce, because captured primary-constructor parameters are stored before the base constructor call, like field initializers. A reader who retries the demo in the style taught 300 lines earlier gets a different result with no explanation, and the note's 'Anything assigned in the constructor body is not' reads as the whole story.",
+      "fixLooksLike": "Add one or two sentences to the note: captured primary-constructor parameters behave like initializers (available when the base constructor runs), which is why this demo uses an explicit constructor body; the hazard remains for anything computed in a constructor body. Optionally say the base-constructor virtual call is still a design smell either way (CA2214).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What the runtime does with plan.PriceFor(usage)' third bullet and Figure 2 (steps 1-3) versus 'What does a virtual call cost?' first sentence",
+      "problem": "The bullets and figure describe two loads (object -> method table pointer, method table -> slot) and then the cost section quotes 'a chain of 3 dependent loads' without reconciling the count. The JIT document's third load comes from CoreCLR's two-level table (method table -> v-table chunk -> slot). A careful reader is left wondering where the third load went.",
+      "fixLooksLike": "Add a clause: 'three, not two, because CoreCLR stores the slots in chunks reached through one more pointer from the method table; Figure 2 draws the table as one block for clarity' (supported by source [8]).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What does inheritance cost?' second paragraph: 'In C#, a class has exactly one direct base class [2]'",
+      "problem": "Over-generalisation of the kind the pilot lessons warn about: System.Object has no base class, and the cited page says 'A derived class can have only one direct base class' (at most one), not 'exactly one'.",
+      "fixLooksLike": "'a class can have only one direct base class' or 'every class except object has exactly one direct base class'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'How can private state still leak?' first paragraph: 'a wrapper with no mutating methods'",
+      "problem": "Slightly too strong. ReadOnlyCollection<T> implements IList<T> and ICollection<T> explicitly; a cast to IList<Line> compiles and Add exists, it throws NotSupportedException at run time. The cited page's wording is 'does not expose methods that modify the collection'. Given the exercise directly below is about casting, a strong student will try exactly this cast.",
+      "fixLooksLike": "'a wrapper that exposes no mutating methods; cast to IList<Line>, its Add throws NotSupportedException' (one clause, or a sentence in the exercise solution next to the InvalidCastException remark).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'An override can break a promise the base class made', last paragraph: 'That requirement is known as the Liskov substitution principle'",
+      "problem": "Named principle with no source, and the description ('keep every promise the base makes') is loose: the principle is about preserving the supertype's provable properties (no stronger preconditions, no weaker postconditions, invariants kept). Brief rule 3 asks for a primary source for non-obvious claims.",
+      "fixLooksLike": "Cite Liskov and Wing, 'A Behavioral Notion of Subtyping' (ACM TOPLAS 1994) in sources and inline, and tighten to 'postconditions and invariants of the base must still hold'; here PromoPlan weakens a postcondition (price >= 0). Depth stays with the planned SOLID article.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'An invoice that cannot be put into a wrong state', parenthesis on threads: 'needs a lock around each method'",
+      "problem": "Hand-wave. The property getters (Total, Balance, Lines) also read shared state, and Lines hands out a live view over _lines that a caller enumerates outside any lock, so 'a lock around each method' does not restore the promise for readers of Lines.",
+      "fixLooksLike": "Either scope it ('every member that reads or writes the state, getters included; a live list view cannot be protected this way and would need a snapshot') or cut the parenthesis to 'Sharing an invoice between threads needs synchronization, which is out of scope here.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'How does polymorphism work at run time?' paragraph beginning 'The trade runs the other way'",
+      "problem": "This is the expression problem, stated without its name or any pointer; a strong student cannot look it up. Also 'a switch with pattern matching keeps each operation in one place' omits the caveat that C# has no closed hierarchies, so the compiler cannot check that such a switch over classes is exhaustive.",
+      "fixLooksLike": "Name it ('known as the expression problem') and add the clause that a switch over class types needs a discard/default arm because C# cannot prove exhaustiveness for open class hierarchies.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Invoice.Lines property: `=> _lines.AsReadOnly();`",
+      "problem": "Allocates a new ReadOnlyCollection wrapper on every property read. Harmless here, but in an article teaching idiom a reader will copy it; two reads of invoice.Lines are not reference-equal.",
+      "fixLooksLike": "Either cache the wrapper in a readonly field initialised once (it is a live view, so one instance suffices), or add a half-sentence acknowledging the per-call allocation.",
+      "owner": "writer"
+    }
+  ]
+}

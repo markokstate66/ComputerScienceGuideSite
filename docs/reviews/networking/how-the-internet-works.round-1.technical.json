@@ -1,0 +1,70 @@
+{
+  "article": "src/content/articles/networking/how-the-internet-works.md",
+  "route": "/networking/how-the-internet-works/",
+  "round": 1,
+  "role": "technical",
+  "score": 7.0,
+  "runCodePass": true,
+  "runCodeResult": "PASS networking/how-the-internet-works.md  blocks=21 executed=10 (exit 0), run from PowerShell on 2026-09-18",
+  "comparedAgainst": [
+    "https://github.com/alex/what-happens-when",
+    "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work"
+  ],
+  "justification": "Capped at 7.0 by one verified factual error in the interpretation of the article's own measurements; without it this would be about 8.7. Strengths: run-code is green (21 blocks, 10 executed). I opened and checked RFC 9293 (3.1, 3.4.1, 3.5, 3.5.2, 3.7), RFC 791 (1.4, 3.1, 3.2 and the #section anchors), RFC 9114, the Dns.GetHostAddresses remarks (getaddrinfo, hosts file, IPv6 filtering all supported verbatim), the HttpClient guidelines (own connection pool per instance: supported) and the IANA page (supported). Arithmetic re-derived: request is 16+19+19+2 = 56 bytes; 0x22f = 559; TLS record 5+56+1+16 = 78; +20+20 = 118; 10 x 1460 = 14,600. The TLS 1.3 description (3 flights, 1-RTT, everything after ServerHello encrypted, SNI in clear, ALPN without extra round trip) is correct, and is better than both competitors: MDN still claims TLS needs 'five more round trips' and alex/what-happens-when describes a version-less generic handshake with no sources, no code and no measurements. I also confirmed the 'wrong-name.test refused' explanation: the server really does send a HandshakeFailure alert (it is not a client-side name mismatch). The error: the article attributes first-call latency to the network. I measured on this machine that the first Dns.GetHostAddressesAsync call in a process costs 26-29 ms even for 'localhost' (no network), that example.com resolved after such a warm-up takes 1-2 ms in a fresh process when the OS cache holds it, and that a repeated four-band loop in one process gives TLS 59.6 ms cold vs 15-24 ms warm. So 'first lookup 17 to 39 ms over several runs ... the first one left the machine' and 'almost none of that was spent transmitting data. It was spent waiting for round trips' (with TLS's 50-55 ms explained as crypto work) are wrong attributions: a large share is one-time in-process start-up (assembly load, JIT, Winsock/SChannel initialisation). Secondary: an unscoped 'routers do not look further up' generalisation that the reader's own NAT router contradicts, and a few citation-precision and robustness nits. Crosslinks file exists and is sensible; no penalty for missing sibling links.",
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "Band 1, program id=lookup and the two paragraphs after its output ('On the machine used for this page...' and 'The gap is caching...')",
+      "problem": "Factual error in interpreting a measurement. The article says the first lookup took 17-39 ms 'over several runs', that 'the gap is caching', that 'the first one left the machine' and that 'the gap between the two lines should not [differ]'. Tested on this machine: the first Dns.GetHostAddressesAsync call in a fresh process costs 26-29 ms even when the name is 'localhost' (no network at all), and example.com resolved after that warm-up costs 1.1-1.9 ms in a fresh process because the Windows DNS cache still holds it (ipconfig /displaydns showed the record). On any re-run within the TTL, both calls are answered locally and the 17-39 ms is process start-up (assembly load, JIT, Winsock init), not a network round trip. The experiment as written cannot separate caching from warm-up, so it does not demonstrate what the prose claims. The 'should not differ' generalisation also fails on a Linux host without a local caching resolver, where both calls go to the network.",
+      "fixLooksLike": "Remove the confound and re-measure: make a throwaway warm-up call first (e.g. resolve 'localhost' or an IP literal), then time a name unlikely to be cached, then time it again; or time two different cold names plus a repeat. State plainly that the first call in a process carries one-time start-up cost, report the real post-warm-up numbers (here an uncached name was ~19 ms vs <1 ms repeated), scope the cache claim to 'on Windows, where the DNS Client service caches' and mention that re-running the program within the record's TTL makes both lines fast."
+    },
+    {
+      "severity": "major",
+      "location": "'Where the time went' (first paragraph and the three bullets) and the solution of 'Measure what connection reuse saves'",
+      "problem": "Same confound, stated as a conclusion: 'roughly 150 ms, and almost none of that was spent transmitting data. It was spent waiting for round trips', with TLS's 50-55 ms explained as 'one round trip plus real work at both ends'. Running the same four bands three times in one process gave: round 1 dns 18.5 / tcp 22.6 / tls 59.6 / http 81.5 ms; round 2 dns 0.6 / tcp 19.8 / tls 15.2 / http 27.5; round 3 dns 0.5 / tcp 10.8 / tls 24.1 / http 71.6. A warm TLS 1.3 handshake is about one RTT; the extra 35-45 ms in the cold figure is mostly first-use cost inside the process (SslStream/SChannel initialisation, JIT, first chain build), not steady-state cryptography. The DNS line's ~20 ms is warm-up as shown above. Likewise the reuse exercise credits the whole 150 ms -> 15-35 ms drop to skipped bands 1-3, when part of it is HttpClient/handler start-up.",
+      "fixLooksLike": "Either loop the four bands two or three times in the program (new connection each time) and discuss the second iteration, or add an explicit sentence that the first iteration includes one-time runtime start-up and quantify it from a real run. Reword the TLS bullet so crypto work is not given credit for start-up cost. In the reuse exercise, add a fourth measurement that separates the effects (e.g. a second HttpClient created after the first has warmed the process, which pays bands 1-3 but not JIT) or caveat the 150 ms figure."
+    },
+    {
+      "severity": "major",
+      "location": "Figure 2 annotation ('Routers ... do not look further up') and 'The layer model, after the fact' ('routers read the internet layer, the two end hosts read everything above it')",
+      "problem": "Unscoped generalisation of the kind the pilot lessons forbid. The body paragraph is correctly scoped ('In the architecture RFC 1122 describes'), but the figure text and the layer-model sentence are absolute. The first router on almost every reader's path is a NAT device that reads and rewrites TCP/UDP ports and keeps per-connection state; firewalls and load balancers do likewise. A strong student will object immediately, and it also contradicts the article's own remark that 'a firewall is discarding packets for that port'.",
+      "fixLooksLike": "Scope both statements ('a router, in the model, needs only the IP header') and add one or two sentences naming NAT and firewalls as the everyday exceptions that inspect the transport header and hold state, ideally tying it to the local port printed by the plain-TCP program (the server sees the NAT's port, not yours)."
+    },
+    {
+      "severity": "minor",
+      "location": "'The layer model, after the fact' last paragraph and 'Where the time went' third bullet: citations to RFC 9114 section 1",
+      "problem": "The cited section does not support the clause. RFC 9114 section 1 does not say QUIC is 'built on UDP' or that it 'saves a round trip'; section 1.2 says QUIC 'incorporates TLS 1.3 at the transport layer ... with the improved connection setup latency of TCP Fast Open'. UDP and the combined 1-RTT transport+crypto handshake are in RFC 9000/9001, which are not in the source list.",
+      "fixLooksLike": "Point the citation at RFC 9114 section 1.2 for 'TLS 1.3 built in', and add RFC 9000 (section 1 / section 7) to sources and cite it for 'runs over UDP' and the combined handshake."
+    },
+    {
+      "severity": "minor",
+      "location": "Program id=plain (lines using reply.IndexOf, reply[..blank], head.First(IsFraming), body[..24]) and its catch filter",
+      "problem": "The article itself quotes IANA's warning that the server's behaviour may change, yet the program throws uncaught exceptions if it does: IndexOf returns -1 if no blank line arrives, head.First throws InvalidOperationException for a close-delimited response with neither framing header, body[..24] throws ArgumentOutOfRangeException for a short or empty body (e.g. a 301 redirect to https). Also every handler prints 'no network: ...' even for OperationCanceledException (a timeout) or, in the TLS program, AuthenticationException, which is misleading in an article whose last exercise teaches readers to tell these failures apart.",
+      "fixLooksLike": "Use FirstOrDefault with a fallback string, clamp the slice (body[..Math.Min(24, body.Length)]), guard blank < 0, and print the exception type or a band-specific message instead of a blanket 'no network'."
+    },
+    {
+      "severity": "minor",
+      "location": "'What the 56 bytes were', last sentence ('CopyToAsync ... would wait for the 10-second limit')",
+      "problem": "Not quite what happens: the read ends when the server's idle keep-alive timeout closes the connection or when the 10-second token fires, whichever comes first; and if the token fires the program prints 'no network' and shows no response at all, which the text does not mention.",
+      "fixLooksLike": "Say 'would wait until the server gives up on the idle connection or the 10-second limit cancels the read, in which case the program prints nothing useful'."
+    },
+    {
+      "severity": "minor",
+      "location": "'Underneath' paragraph after Figure 2 ('the AES-GCM ciphers, one of which was negotiated above')",
+      "problem": "The output panel shows 'cipher   [...]', so the reader cannot see that an AES-GCM suite was negotiated; the claim refers to evidence the page hides.",
+      "fixLooksLike": "State the suite observed when the article was run (e.g. TLS_AES_256_GCM_SHA384) in the prose after the TLS program, and note that all three TLS 1.3 AEAD suites in common use carry a 16-byte tag so the 78-byte figure holds regardless."
+    },
+    {
+      "severity": "minor",
+      "location": "Opening paragraph and Figure 1 caption ('each costs one round trip')",
+      "problem": "The four round trips are not the same length: band 1 is a round trip to the recursive resolver (and more than one if the resolver's cache is cold), bands 2-4 are round trips to the web server. The text reads as four equal RTTs, and 'nothing in a later conversation can start until the earlier one has finished' is only later qualified by 0-RTT and QUIC.",
+      "fixLooksLike": "Add a clause in the opening: 'one round trip to a nearby resolver, then three to the web server', and 'on a fresh connection with no resumption' for the strict ordering."
+    },
+    {
+      "severity": "minor",
+      "location": "'Counting the hops' program and following paragraph",
+      "problem": "Platform caveat missing: the article states its toolchain is Windows, but readers on Linux/macOS may find Ping with a custom TTL needs raw-socket privileges or falls back to the system ping utility, with different behaviour. Also 'routers that kept quiet' counts every non-TtlExpired status (e.g. DestinationNetworkUnreachable), not only silence.",
+      "fixLooksLike": "One sentence noting the program was run on Windows and that unprivileged Ping on other systems may behave differently; rename the counter or count IPStatus.TimedOut specifically."
+    }
+  ]
+}

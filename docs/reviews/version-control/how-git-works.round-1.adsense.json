@@ -1,0 +1,52 @@
+{
+  "article": "src/content/articles/version-control/how-git-works.md",
+  "route": "/version-control/how-git-works/",
+  "round": 1,
+  "role": "adsense",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+    "https://www.freecodecamp.org/news/git-internals-objects-branches-create-repo/"
+  ],
+  "justification": "Read against Pro Git 10.2 (the de facto best result for 'how git works internally') and freeCodeCamp's 'A Visual Guide to Git Internals'; the rest of the SERP (AlgoMaster, Medium, dev.to, Ken Muse) is shallower than those two. The article has clear original value over both. Its running example is its own (a hiking plan: route.txt, notes/gear.txt, waypoints.txt; Pro Git uses test.txt 'version 1/2' plus Ruby irb, freeCodeCamp uses new_file.txt 'git is awesome'). It frames the piece around three checkable numbers (5 objects, +3, a 41-byte branch) and pays each off in executed output. It reproduces the object ID with printf|sha1sum and inflates the loose object with perl rather than borrowing Pro Git's Ruby session. It covers material neither comparison page has in one place: binary tree entry format, submodule mode, the orphaned-commit moment before update-ref, reflog bypass shown by a bare file write, packed-refs with the peeled ^ line, .idx/.rev lookup, reading a delta back through cat-file, a snapshot-vs-delta layering callout, SHA-256 and reftable as defaults-not-spec, and four differently shaped exercises (compute, predict-a-count with output hidden in the solution, rescue, explain) with executed solutions. freeCodeCamp covers none of packfiles, packed-refs, reflog, annotated tags, SHA-256 and has no exercises. No filler: the first sentence states a fact, there is no intro/outro boilerplate, no conclusion section, title and description read for humans, no keyword repetition. Headings are content-specific claims and share nothing with sql-joins.md or amortized-analysis.md; the openings of the three articles are structurally different (scenario / documentation paradox / three numbers) and this one's closing section is named for the repository, not 'Exercises'. Five distinctive sentences searched in quotes ('One byte string serves twice: hashed, it names the file; compressed, it fills it', 'A blob is file content and nothing else', 'Git was never told that the plumbing was used, and has no way to tell', 'are both true, at different layers', 'the branch is a name for a commit that already exists, and that commit already leads to all of its history'): no exact matches; the blob sentence has a near-twin on a dev.to post ('A blob is file content, nothing else') but that is a generic formulation of a fact, not a lifted passage. Header-format, tree-mode and commit-format sentences compared with Pro Git 10.2's verbatim text: independently worded. No invented experience or statistics; measured sizes are labelled 'on this machine' with wildcards in the output check. Rendered page (verify-page --drafts): 0 console errors, 0 broken links, 0 mobile overflow, only failure is the known NEEDS_MARKUS placeholder; a 'Keep reading' block (pillar, all topics, start here, glossary) follows Sources, so the page is not a dead end. Why not higher: the front-matter Sources list and the inline citations disagree (six pages cited inline are not in the list, one listed page is never cited), which is an explicit brief finding and a visible trust-signal flaw on the rendered page; there is no docs/crosslinks file and the body links to no other article; the packfile experiment follows Pro Git 10.4's design closely; a few absolutes and a handful of signpost sentences remain. None of these is a low-value-content signal; the page sits just above the 8.5 bar.",
+  "runCodePass": null,
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Front matter `sources:` vs inline citations (rendered 'Sources' list of 19)",
+      "problem": "The list and the body disagree. Cited inline but absent from the list: git-ls-files, git-fast-import, gitformat-signature, git-reflog, git-pack-objects (twice, carrying the delta-window and wire-format claims) and git-push. Listed but never cited inline: git-verify-pack (the command is used, the page is never linked). The brief requires every source in front matter and treats an uncited listed source as a finding; on the rendered page the Sources block under-reports what the article relies on.",
+      "fixLooksLike": "Add the six pages to front matter with accessed dates; link git-verify-pack where `git verify-pack -v` is introduced (or drop it from the list). Inline citations and the Sources list then match one to one.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "docs/crosslinks/version-control/how-git-works.md (missing); body mentions of amend/rebase, merge parents, detached-HEAD recovery, reflog, force-push",
+      "problem": "The body links to no other article (only two glossary anchors), and the crosslinks file the brief asks for does not exist, so nothing tells the integrator where sibling links belong. The rendered page is rescued by the layout's 'Keep reading' block, but contextual in-body links are what a reviewer looks for.",
+      "fixLooksLike": "Create docs/crosslinks/version-control/how-git-works.md with one line per wanted link (anchor text, planned route from CONTENT_PLAN section 7, location), e.g. rebase/amend paragraph, 'a merge has two or more', detached HEAD/reflog paragraph, exercise 3 and exercise 4 solutions.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Where the object files go: packfiles and packed-refs', first two blocks",
+      "problem": "The experiment design mirrors Pro Git 10.4 (add a larger file, change a little, git gc, verify-pack -v, newer version is the base). Data, wording, the .idx/.rev explanation and the cat-file read-back are original and the source is cited, so this is not copying, but it is the section with the least distance from the top result.",
+      "fixLooksLike": "One sentence acknowledging the experiment follows Pro Git 10.4's, per the brief's 'say so inline' rule, or one observation Pro Git does not make (for example a delta whose base is a different path, or `git cat-file --batch-check='%(objectname) %(deltabase)'`).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Packfile section: 'no command above the storage layer can tell that it did'; exercise 1: 'Every Git user's repositories share one well-known tree ID'; zlib section: 'Perl ships with Git for Windows and with most Unix systems'",
+      "problem": "Three unscoped or unsourced absolutes of the kind the pilot lessons warn about. The empty-tree ID differs in a SHA-256 repository, which the article itself introduces a section earlier; `cat-file --batch-check` with %(deltabase) does expose deltas; the Perl claim has no source.",
+      "fixLooksLike": "Scope each: 'every SHA-1 repository', 'porcelain cannot tell' (or name the plumbing that can), and 'the Perl bundled with Git for Windows, used here' instead of a claim about most systems.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Nothing is broken.'; 'Look at what is missing'; 'the direction is the interesting part'; 'The last two lines are the other half of the story'; 'every name, every mode, every byte of every file'; 'would have worked here, and it is still the wrong tool'",
+      "problem": "A small number of signpost sentences and one rhetorical triplet. Sparse enough that the page does not read as mass-produced, but they are the most generic sentences in an otherwise concrete text.",
+      "fixLooksLike": "Delete the signposts and let the following sentence carry the point, e.g. open the packfile paragraph with 'The old version is derived from the new one' directly.",
+      "owner": "writer"
+    }
+  ]
+}

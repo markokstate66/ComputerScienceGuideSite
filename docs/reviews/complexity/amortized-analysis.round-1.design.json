@@ -1,0 +1,113 @@
+{
+  "article": "src/content/articles/complexity/amortized-analysis.md",
+  "route": "/complexity/amortized-analysis/",
+  "round": 1,
+  "role": "design",
+  "score": 7.8,
+  "comparedAgainst": [
+    "https://yourbasic.org/algorithms/amortized-time-complexity-analysis/",
+    "https://cs3110.github.io/textbook/chapters/ds/amortized.html",
+    "https://medium.com/@satorusasozaki/amortized-time-in-the-time-complexity-of-an-algorithm-6dd9a5d38045 (ranks first for the query; returned HTTP 403 to the fetcher, so not read and not used in the comparison)"
+  ],
+  "lighthouse": { "performance": 97, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-19T00:16:40Z",
+    "runs": 1,
+    "words": 4236,
+    "codeBlocks": 19,
+    "figures": 2,
+    "h1": 1,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, not an issue)"],
+    "lighthouseFailingAudits": ["first-contentful-paint 2.2 s (0.79)", "unused-css-rules 12 KiB", "bf-cache", "document-latency-insight", "forced-reflow-insight", "network-dependency-tree-insight"]
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold + parts 01-12 (all)",
+    "mobile-dark": "fold + parts 01-18 (all)",
+    "desktop-dark": "fold, 02, 04, 07",
+    "mobile-light": "fold, 03, 06, 11"
+  },
+  "justification": "Single verify run (no re-run needed): Lighthouse 97/100/100/100, 0 console errors, 0 console warnings, 0 broken links, mobileOverflowPx 0; the only failure is the expected NEEDS_MARKUS placeholder. This file replaces a stale review of an earlier draft (3851 words, 4 figures) that was already at this path. On desktop the page is at or above the 8.5 bar in both themes: specific headings with one correctly nested h3, a prose/program/output/figure rhythm that rarely runs more than three paragraphs without a break, no wrapped or overflowing code at the 736 px column, clearly distinct output panels with honest [...] wildcards, theme-correct SVGs (red dots, green coins, accent cells and the shaded free-slot area all read well in dark), captions that say what to notice, restrained callouts (one dotnet, one warning, one pitfall), four collapsed-solution exercises of four different forms, and a clean nine-item sources list. It is far better illustrated than the ranking pages I read: yourbasic.org is roughly 500 words with one pseudocode block and an array sketch, and the Cornell CS 3110 chapter is about 3,500 words of text and formulas with no figures, tables or runnable code. What holds it under 8.5 is the phone, which the brief says is the majority reader, and where the article breaks three written WRITER_GUIDE rules. Both figures are 720-unit viewBoxes that scroll: Figure 2 puts its explanation in a column to the right of the drawing (the guide says 'never beside it'), so a phone shows unexplained boxes and coins, half of slot 5 onward is hidden and the green bottom line is cut mid-sentence; Figure 1 hides the largest step, the 'Count (dashed)' legend, the 'free slots = cheap Adds' label and the x-axis title. The amortized-vs-average table has four columns of sentence-like cells (guide: at most three, phrases), so a phone shows only 'Kind of bound' and 'What is averaged' with tall blank rows, and the two columns that carry the distinction are off-screen. In addition the closing section is titled 'Exercises' with first item 'Predict the trace', which the binding pilot lessons forbid by name, and all four exercises are stacked at the end. Those are more than nits, but every one is a contained redraw or restructure; the underlying design is strong and I would expect this to clear 8.5 in round 2.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Figure 2 (banker's coins SVG, viewBox 720x300) at 390 px; mobile-dark-part06, mobile-light-part06",
+      "problem": "The two annotation blocks sit at x=515, to the right of the array, which WRITER_GUIDE section on phone diagrams forbids ('under or over the thing they describe, never beside it'). On a phone the visible window ends inside slot 5: the reader sees cells 0-4 and some coins with no statement of who paid what, the 'full' row shows only 5.5 of 8 cells, and the closing line 'Add #9 must copy 8 elements, and there are exactly 8 coins waiting...' is cut off mid-sentence. The part that makes the figure informative is the part that is hidden.",
+      "fixLooksLike": "Redraw at viewBox width <= 360: eight cells of about 40 units (single-digit labels stay legible), coins under them, and each annotation block moved under its own row as one or two d-small lines; split the green conclusion line in two. Whole figure visible at 390 px with no horizontal scroll, labels still >= 11 px.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Table under 'Amortized is not average-case' at 390 px; mobile-dark-part10/11, mobile-light-part11",
+      "problem": "Four columns with sentence-length cells. A phone shows only 'Kind of bound' and 'What is averaged'; 'What is assumed' and 'What can go wrong', which carry the whole amortized/average/expected distinction, are off-screen, and the rows have unexplained blank height from the hidden wrapped cells. WRITER_GUIDE section 7 says at most three columns and phrases, not sentences.",
+      "fixLooksLike": "Either cut to three short-phrase columns (e.g. Kind / Averages over / Can still be slow when) with cells under about 25 characters, or replace the table with four short definition entries (bold term plus two lines each). All of the content readable at 390 px without sideways scrolling.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Figure 1 (capacity staircase SVG, viewBox 720x330) at 390 px; mobile-dark-part02/03, mobile-light-part03",
+      "problem": "Only about the left 360 units are visible: the 32-to-64 step (the most dramatic one), the 64 ticks, 'full again: copy 64', 'free slots = cheap Adds', the 'Count (dashed)' legend and the x-axis title are all behind the fade, so the dashed line is unlabelled on a phone. The y-axis also has no title at any width, and the first red dot (Count 4) has no 'copy 4' label while every other dot has one.",
+      "fixLooksLike": "Redraw at viewBox width <= 360 and use height instead: either stop at 32 or keep 64 on a compressed x scale, put 'Capacity' and 'Count (dashed)' labels inside the left 340 units next to their lines, add a y-axis title ('Capacity') and the missing 'copy 4' label. The caption's claim ('each flat run is twice as long as the last') must be verifiable from what a phone shows without scrolling.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Final section heading '## Exercises' and first item 'Predict the trace'; desktop-light-part10, mobile-dark-part15/16",
+      "problem": "The binding pilot lesson says: do not title the last section 'Exercises' with a first item called 'Predict the ...', name the section for what it practises, and place exercises mid-article where they fit. This article does exactly the forbidden pattern and stacks all four exercise boxes at the bottom, so on a phone the last three screens before Sources are four green boxes in a row and a 4,200-word page has no self-check until the very end.",
+      "fixLooksLike": "Move 'Predict the trace' to the end of 'Watch the capacity move' (right after the dotnet callout that quotes the growth rule) and 'Prove it for a factor of 1.5' to the end of the 'Why the array doubles' section; keep the shrink-rule and pre-sizing exercises at the end under a content-specific heading (for example 'Break it, then measure it'), led by the find-the-bug item.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "First program ('trace'), line `if (readings.Capacity == capacity) continue;` at 390 px; mobile-dark-part02",
+      "problem": "The operative keyword `continue` is clipped behind the fade (the line is 47 columns at its indent), so on a phone the guard reads as an if with no body. The same guard pattern in 'ex-predict' fits only because that variable is shorter.",
+      "fixLooksLike": "Rename `readings` to `list`/`items` or put `continue;` on its own line so the statement ends inside 40 columns. Re-run run-code.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The same proof as a potential function' (two long paragraphs) and the cost-model paragraph in 'Add up the whole sequence'; mobile-dark-part05 and part08",
+      "problem": "These are the densest stretches on the page: at phone width the potential-method section is about 1.3 screens of unbroken prose with inline algebra ('real cost c + 1, while Phi drops from c to 2(c + 1) - 2c = 2: amortized c + 1 + 2 - c = 3'), and the cost-model paragraph is 13 lines. Everything else on the page is broken up by a list, program or figure; these are not, and inline arithmetic wraps mid-expression.",
+      "fixLooksLike": "Set the two potential-method cases as a two-item list or a small three-row text block (operation / real cost / change in Phi / amortized), and split the cost-model paragraph after 'Allocation is left out.' No new content needed.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Output panel of the 'breakit' program; desktop-light-part08, mobile-dark-part12",
+      "problem": "With the width specifiers replaced by wildcards the panel reads '[...] MB[...] ms' with the two columns fused, which looks like a formatting bug in both themes.",
+      "fixLooksLike": "Add a separator in the format string (for example `{mb,7:F1} MB  {ms,7:F1} ms` or a header row 'MB' / 'ms') so the wildcarded panel shows two visibly separate columns; keep it within 40 columns.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Output panel of the 'policies' program at 390 px; mobile-dark-part10",
+      "problem": "The panel is 45 columns wide, so the 'copies' column is clipped to fragments ('1,048', header 'co'). The prose only relies on the 'per Add' column, which is fully visible, so the point survives, but the panel looks broken and 'copies' is later cited by an exercise ('stay below 3 copies per Add').",
+      "fixLooksLike": "Tighten the column widths (e.g. 6/10/11/16 to 6/10/12 plus copies in millions, or drop the raw copies column) so the panel is at most 40 columns. Re-run run-code and update the output block.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Second half of the article, from 'Why the array doubles' to the end (desktop-light parts 06-10)",
+      "problem": "Both figures are in the first 40 percent of the page; the remaining 2,500 words are illustrated only by code and one table. The +k versus x2 result, which is the most visual fact in the article (flat versus linear growth of cost per Add), is shown only as a 16-row number panel.",
+      "fixLooksLike": "Optional, not required for pass: a small 360-wide figure of copies-per-Add against n for x2 and +1000 (flat line versus rising line, log x axis), built from the numbers the program already prints. If added, follow the dataviz/phone rules and caption what to notice.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Repeated preamble `using System.Globalization; CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;` in five programs; every mobile code screenshot",
+      "problem": "The 61-column culture line is the first statement the reader sees in five of the code blocks and is clipped on every phone screenshot; it is boilerplate that pushes the interesting code down by four lines each time.",
+      "fixLooksLike": "Keep it where the output really depends on it (N0/F2 formatting) but explain it once in a sentence at first use; drop it from programs that print no culture-sensitive values, or wrap it after the `=`.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Shell: article pages on phones, 23-minute article; mobile-dark fold",
+      "problem": "On mobile the 'On this page' box is only at the top; in an 18-screen article with four exercises and a sources list at the bottom there is no way back to the contents or to a section without scrolling the full length. Not specific to this article, but this is one of the longest pages on the site.",
+      "fixLooksLike": "Append to docs/INTEGRATOR_REQUESTS.md: consider a small 'back to top / contents' affordance on mobile article pages (for example a link after the Sources list or a sticky button), in both themes.",
+      "owner": "integrator"
+    }
+  ]
+}

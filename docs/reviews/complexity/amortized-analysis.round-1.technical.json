@@ -1,0 +1,73 @@
+{
+  "article": "src/content/articles/complexity/amortized-analysis.md",
+  "route": "/complexity/amortized-analysis/",
+  "round": 1,
+  "role": "technical",
+  "score": 9.0,
+  "runCodePass": true,
+  "runCodeResult": "PASS complexity/amortized-analysis.md  blocks=19 executed=9",
+  "comparedAgainst": [
+    "https://yourbasic.org/algorithms/amortized-time-complexity-analysis/",
+    "https://www.cs.cornell.edu/courses/cs3110/2013sp/lectures/lec21-amortized/lec21.html",
+    "https://cs3110.github.io/textbook/chapters/ds/amortized.html"
+  ],
+  "justification": "run-code is green (19 blocks, 9 executed). I opened every online source and the current List.cs on main. List<T>.Add remarks say O(1) when Count < Capacity and 'becomes an O(n) operation'; the Capacity remarks contain the quoted 'is increased by automatically reallocating the internal array' and say setting is O(n) in the new capacity; TrimExcess remarks give the 90 percent rule; Dictionary.Add says 'approaches an O(1) operation' / 'becomes an O(n) operation'; List.cs has DefaultCapacity = 4, the quoted GetNewCapacity line verbatim, the Array.MaxLength clamp, the raise-to-minimum, EnsureCapacity -> Grow -> GetNewCapacity, the setter doing new T[value] + Array.Copy(_size), TrimExcess with 0.9, and no removal path that shrinks. Cornell lec21 has the 3-unit charge with the same split and Phi = 2n - m; the CS 3110 textbook uses the banker/physicist names; CLRS 4th ed. chapter 16 is amortized analysis with multipop and the binary counter. I re-derived everything: trace sum 1020; aggregate n + 2n; bank balances for charge 3 (2,6,6,...; lowest 2) and charge 2 (1,1,-3,-11,-27,-59; minimum 524289 - 1048572 = -524283; total cost at n = 2^k + 1 is about 3n - 6, so 2 really is invalid); Phi = max(0, 2 Count - Capacity) gives amortized <= 3 for cheap and exactly 3 for growing Adds, and differs from the bank by the constant 4 as stated; additive n^2/(2k) (124,500 for +4 at n = 1000 checks); geometric bound n g/(g-1); unused fraction (g-1)/g; breakit arithmetic (4 n^2/2 = 3.2 GB, 12 n^2/2 = 9.6 GB, trim fires after every doubling since n+1 < 1.8n); 2n - popcount(n) with popcount(10^6) = 7, worst increment 20; exercise answers (10/20/40, 30 copies; 1 + g/(g-1) = 4; 2048 copies per thrash round = 20,480,000; 2,097,148 slots = 8.4 MB, 4.9 percent slack). All correct. Figure 1 coordinates are to scale; Figure 2 matches the coin argument. Programs are idiomatic modern C# (collection expressions, tuples, primary constructor, Stopwatch.GetElapsedTime, wildcarded timing output, invariant culture). Against the ranking pages: yourbasic gives only the aggregate argument on a toy array with no caveats; the Cornell lecture and textbook have the same proofs at equal rigor but no measurement, no implementation detail, no growth-factor trade-off, no amortized-vs-average-vs-expected taxonomy and no failure modes. This article matches the best on rigor and clearly beats them on evidence and on spec-vs-implementation discipline (real List<T>, measured latency spike, policy table, TrimExcess/Capacity anti-patterns, hysteresis exercise). I found no factual error that triggers the cap; what remains is a handful of loosely worded sentences and one missing rounding caveat that I could make fail by 0.002 percent.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "'Why the array doubles': 'the total is below n * g / (g - 1): 2n for doubling, 3n for a factor of 1.5', followed by the simulation whose x1.5 policy is c + c / 2 with integer division; and exercise 2 solution 'The x1.5 rows of the simulation stay below 3 copies per Add, as predicted'",
+      "problem": "The bound is derived for an exact factor g, but the simulated policy floors, so its effective factor is below 1.5 on odd capacities. I ran the same policy over all growth points: copies/n peaks at 3.00002 (n = 92,171), i.e. the stated '< 3n' is marginally violated by the very policy the page simulates. The four printed rows are fine, so this is a missing caveat, not a wrong number. The exercise says 'ignore rounding'; the main text does not.",
+      "fixLooksLike": "Add 'ignoring rounding' (or 'up to rounding of the capacity') to the n g/(g-1) sentence, and soften the exercise remark to 'stay around or below 3'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 'Find the bug in the shrink rule', solution: 'After any resize the array is then half full, and at least c / 2 cheap operations must happen before the next resize in either direction.'",
+      "problem": "c was defined earlier in the solution via Capacity = 2c. With that c, after a shrink (2c -> c at Count c/2) the next shrink needs only c/4 removals, so 'at least c/2' is off by a factor of two in that case. If c is meant as the new capacity, the bound is c/4 in one direction and c/2 in the other. The Theta(capacity) conclusion is right; the constant is not. Also no argument (even a one-line potential) is given that this gap actually yields O(1) amortized.",
+      "fixLooksLike": "Say 'a number of cheap operations proportional to the capacity (at least a quarter of the new capacity)', and optionally add one sentence: each cheap operation banks a constant number of coins, which covers the Count copies of the next resize.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Amortized is not average-case', last paragraph: 'a probabilistic, average-case style of claim ... Strictly, a hash table insert is \"O(1) expected, amortized\"'",
+      "problem": "The table directly above separates average-case (distribution over inputs) from expected (algorithm's own randomness), then this paragraph uses the two interchangeably. Dictionary<TKey,TValue> makes no random choices for most key types, so by the page's own taxonomy the first qualifier is average-case (under a uniform-hashing assumption), and 'expected' only applies with a randomized hash (as .NET does for strings). Also Dictionary resizes to a prime at least twice the size rather than exactly doubling; 'the same resize pattern' is fine but could say 'a geometric resize'.",
+      "fixLooksLike": "Pick one: 'O(1) on average under the assumption that the hash function spreads keys uniformly (expected, if the hash is randomized), and amortized over resizes'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Final section heading '## Exercises' with first exercise 'Predict the trace'",
+      "problem": "The brief's binding lessons say not to title the last section 'Exercises' with a first item called 'Predict the ...'; name the section for what it practises and vary the first exercise's form. The exercises themselves are good and varied (predict, prove, find-the-bug, measure) and correctly hide the output in the solution.",
+      "fixLooksLike": "Rename the section (e.g. 'Check the bounds yourself') and lead with the prove-it or find-the-bug exercise; consider moving the factor-1.5 exercise to the end of the doubling section.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "After the id=others output: 'The stack never pays more than 2 per operation no matter how greedy the MultiPop calls are'",
+      "problem": "Read literally it contradicts the line above it (one call popped 198). The bound is on the total, i.e. the average over the sequence. The run is also one pseudo-random script, so it illustrates the bound rather than showing 'no matter how greedy'. Separately, Stack<T>.Push is itself an amortized dynamic-array append, which the cost model silently ignores.",
+      "fixLooksLike": "'Averaged over the sequence the stack pays 1.94 per operation, under the proven ceiling of 2, even though one call popped 198.' Optionally a clause that the model counts stack operations, not the backing array's resizes.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Watch the capacity move', sentence after the trace output: 'Nine of the thousand calls did real work'",
+      "problem": "Every call does a write (cost 1 in the article's own later cost model), and one of the nine (Add #1) copied nothing, so 'real work' is loose on both counts.",
+      "fixLooksLike": "'Nine of the thousand calls changed the capacity, eight of them copying elements, and the amount copied doubles each time'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Opening paragraph: 'Yet everybody appends to lists inside loops and calls the loop O(n)'",
+      "problem": "An unsourced 'what everybody does' claim, which the brief asks writers to avoid. Harmless rhetorically but unnecessary.",
+      "fixLooksLike": "'Yet a loop that appends n items is routinely analysed as O(n), not O(n^2)' or simply 'Yet a loop of n appends is O(n)'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Three ways to lose the guarantee', item 2 (TrimExcess)",
+      "problem": "The documentation note that the 90 percent threshold 'might change in future releases' is not mentioned, although the article is otherwise careful to separate promise from implementation detail. The latency paragraph also attributes the slow Add to allocate-and-copy only; for a 128 MB array, first-touch page faults on the fresh allocation are a significant part of that time.",
+      "fixLooksLike": "Add 'currently' and a clause that the docs flag the threshold as subject to change; in the latency paragraph say 'allocates (and the OS must map) one twice as large and copies the lot'.",
+      "owner": "writer"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "article": "src/content/articles/algorithms/binary-search.md",
+  "route": "/algorithms/binary-search/",
+  "round": 1,
+  "role": "technical",
+  "score": 8.3,
+  "runCodePass": true,
+  "runCodeResult": "PASS algorithms/binary-search.md  blocks=29 executed=14 (exit 0)",
+  "comparedAgainst": [
+    "https://cp-algorithms.com/num_methods/binary_search.html",
+    "https://www.geeksforgeeks.org/dsa/binary-search/",
+    "https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/"
+  ],
+  "justification": "No factual error found and run-code is green (29 blocks, 14 executed). I re-derived every complexity claim: the split floor(s/2) vs ceil(s/2)-1 and the worst case floor(log2 n)+1 are right; the 'full count or one fewer' claim for lower/upper bound holds (range floor(log2(n+1)) .. floor(log2 n)+1); a billion -> 30 is right; 11 predicate calls for R=1920 is right; O(P log R) is right; x > n/x is equivalent to x*x > n for positive integers; isqrt(long.MaxValue)=3037000499 is right. The buggy program, the mixed-convention IndexOutOfRange claim, the rounding-down hang and the round-up repair are all correct. Opened and checked: Bloch's post (nine years, 1946/1962 remark, Bentley's version affected, >>> 1; the article's 'more than 2^30' is if anything more exact than Bloch's '2^30 or greater'), Array.BinarySearch docs (exact duplicate quote, O(log n), must be sorted, complement definition), checked/unchecked reference (default unchecked for non-constant expressions, truncation, CheckForOverflowUnderflow), ArraySortHelper.cs (lo + ((hi - lo) >> 1), lo <= hi, return ~lo) and SpanHelpers.BinarySearch.cs ((int)(((uint)hi + (uint)lo) >> 1) with the PERF comment about saving a subtraction, return ~lo). All support the sentences that rely on them. Against the competition: far deeper than GeeksforGeeks (no invariants, no bounds, no overflow explanation, no answer search) and, for a C# reader, better than cp-algorithms, which covers the same invariant/predicate ideas tersely but has no debugging narrative, no oracle testing, no library convention, and no failure-mode analysis; cp-algorithms does cover continuous/real-valued search, which this page omits. Technical substance is at roughly 9. It does not pass this round because of a binding pilot-round rule: the article contains zero inline links to any of its twelve sources (every sibling article has 9 to 31), and several listed sources are attached to no sentence at all. That is a fast mechanical fix; with it and the smaller caveats below this is a clear pass.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Whole body; front matter sources list",
+      "problem": "Zero inline citations. The body has no external Markdown link at all, while the brief requires citing where the claim is made and WRITER_GUIDE says external links are plain Markdown links. Sources are at best named in prose ('Joshua Bloch reported', 'the documentation defines it', 'is documented as O(n)'). Three listed sources are attached to no sentence: 'The checked and unchecked statements' (the unchecked-by-default / truncation / CheckForOverflowUnderflow sentence has no attribution), 'Bitwise and shift operators' (the >>> and ~x == -x - 1 sentences), and 'List<T>.BinarySearch Method'. Array.MaxLength, List<T>.Insert, Dictionary, ArraySortHelper.cs and SpanHelpers.BinarySearch.cs are named but not linked.",
+      "fixLooksLike": "Link each source at the clause it supports: Bloch's post on 'In 2006 Joshua Bloch reported'; checked-and-unchecked on 'unchecked unless the project turns on CheckForOverflowUnderflow'; bitwise-and-shift on the >>> bullet and on the ~ sentence; Array.MaxLength docs on its first mention; the two dotnet/runtime files in the :::dotnet callout; Array.BinarySearch docs on 'documented as O(log n)', on 'the documentation defines it as the bitwise complement' and on the duplicates quote; List<T>.BinarySearch docs where timetable.BinarySearch is introduced; List<T>.Insert and Dictionary docs in the last section. Drop any source that ends up uncited.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The midpoint that overflows', bullet on (lo + hi) >>> 1 and the code block using >>>",
+      "problem": "The unsigned right shift operator exists only from C# 11. A reader on an older language version (or reading older .NET code) gets a compile error, and the article never says so, although the runtime snippet it quotes uses the pre-C# 11 spelling (cast to uint, then >>).",
+      "fixLooksLike": "One clause: '>>> (C# 11 and later; older code casts to uint and uses >>, as the runtime's span version below does)', cited to the bitwise-and-shift page.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Why a million elements need twenty probes', last paragraph ('sorted by the same ordering the search compares with'); 'What Array.BinarySearch tells you' section",
+      "problem": "The ordering precondition is stated abstractly and never shown, yet it is the form of the unsorted-input bug that C# programmers actually meet: an array sorted with one comparer (for example StringComparer.OrdinalIgnoreCase or a culture-sensitive default string sort) and searched with another. The BCL section only demonstrates a visibly shuffled int array. The article also never mentions the IComparer<T> overloads, and every hand-written function is int[]-only, so a reader cannot apply LowerBound to strings, records or spans without redesigning it.",
+      "fixLooksLike": "Add a short runnable example where Array.Sort with one comparer followed by Array.BinarySearch with another misses a present string, plus one sentence pointing at the comparer overloads. Optionally give LowerBound once in generic form (ReadOnlySpan<T>, IComparer<T> or a Comparison<T>) and note that .NET ships no lower/upper bound of its own, which is why you write it.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The midpoint that overflows', sentence 'Integer arithmetic on non-constant values is unchecked unless the project turns on CheckForOverflowUnderflow'",
+      "problem": "Slight over-generalisation of the kind the pilot lessons warn about: the context is also checked inside an explicit checked statement or operator, which the very next program uses. As written, 'unless the project turns on' reads as the only way.",
+      "fixLooksLike": "'...is unchecked by default: unless the code is inside a checked block or expression, or the project sets CheckForOverflowUnderflow, the result is truncated to 32 bits'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Searching a range of answers instead of an array'",
+      "problem": "Search over a real-valued range (fixed iteration count or epsilon termination, and why lo < hi never terminates cleanly with doubles) is not mentioned, although the best competing page (cp-algorithms) covers it and the section title invites the question. Also the midpoint fix lo + (hi - lo) / 2 is said to be safe when 'the difference fits in the type', but this section, where bounds are values and may be negative, does not repeat that hi - lo can itself overflow for a range such as [long.MinValue, long.MaxValue).",
+      "fixLooksLike": "Two or three sentences in the 'three things can go wrong' list: the difference-overflow caveat for signed value ranges, and a pointer that continuous ranges need a fixed number of iterations instead of lo < hi. No need for a full section.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Solution code blocks: 'The loop that never returns' solution (throw new InvalidOperationException line), 'Count a time window' solution (Console.WriteLine(CountBetween(departures, 440, 710)); and the CountBetween signature), isqrt solution (FirstTrue(1, long.MaxValue, x => x * x > n) - 1;)",
+      "problem": "Lines run 48 to 56 characters, past the roughly 40 visible at 390 px, and in the isqrt case the clipped part is the operative predicate. The main-body programs are carefully wrapped; the solutions are not.",
+      "fixLooksLike": "Break these statements the same way the body programs are broken so the predicate and arguments stay on screen.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "docs/crosslinks/algorithms/binary-search.md, first and last lines of the list",
+      "problem": "The file is sensible and complete, but it says /complexity/big-o-notation/ was unpublished; src/content/articles/complexity/big-o-notation.md now exists in the repo, so that glossary link can probably become the article link now (it is also the listed prerequisite).",
+      "fixLooksLike": "Integrator checks whether the route builds and, if so, switches the O(log n) link in wave 3 as the file already requests.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "id=bounds output panel",
+      "problem": "'bound of 10: 11' breaks the column alignment of the five lines above it.",
+      "fixLooksLike": "Pad the labels to a common width (or rename to 'bound 5' / 'bound 10').",
+      "owner": "writer"
+    }
+  ]
+}

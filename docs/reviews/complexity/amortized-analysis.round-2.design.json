@@ -1,0 +1,78 @@
+{
+  "article": "src/content/articles/complexity/amortized-analysis.md",
+  "route": "/complexity/amortized-analysis/",
+  "round": 2,
+  "role": "design",
+  "score": 8.6,
+  "comparedAgainst": [
+    "https://yourbasic.org/algorithms/amortized-time-complexity-analysis/",
+    "https://cs3110.github.io/textbook/chapters/ds/amortized.html",
+    "https://en.wikipedia.org/wiki/Amortized_analysis"
+  ],
+  "lighthouse": { "performance": 97, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-19T00:27:56Z",
+    "runs": 1,
+    "words": 4641,
+    "codeBlocks": 19,
+    "figures": 3,
+    "h1": 1,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, not an issue)"]
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold + parts 01-13 (all)",
+    "mobile-dark": "fold + parts 01-20 (all)",
+    "desktop-dark": "fold, 02, 05, 07",
+    "mobile-light": "fold, 03, 07, 11"
+  },
+  "round1FollowUp": "All four round-1 design majors are really fixed, not papered over: Figure 1 and Figure 2 are redrawn at viewBox width 360 and are fully visible at 390 px with annotations under the drawing, a y-axis title and the missing 'copy 4' label; the four-column table is replaced by a four-item definition list that reads cleanly on a phone; the closing section is no longer 'Exercises' (now 'Two limits to test: shrinking and pre-sizing') and two exercises moved mid-article where they fit. Round-1 minors also fixed: `continue;` on its own line, potential-method cases set as a list, cost-model paragraph split, 'breakit' output columns separated, 'policies' panel now within 40 columns, a third figure added for the +k vs x2 result, culture preamble wrapped and explained once. The adsense major about dead-end mentions of sibling articles is handled by docs/crosslinks/complexity/amortized-analysis.md, which exists and lists six sensible links with placement plus boundary notes. The round-1 integrator request (mobile way back to contents) does not appear in docs/INTEGRATOR_REQUESTS.md and is re-raised.",
+  "justification": "Single verify run, no re-run needed: Lighthouse 97/100/100/100, 0 console errors, 0 warnings, 0 broken links, mobileOverflowPx 0; only the expected NEEDS_MARKUS failure. Judged fresh, the page is at the 8.5 bar and a little over. Hierarchy: eight specific h2s and one correctly nested h3, long headings balance on two lines. Rhythm: prose, program, output panel, figure and callout alternate throughout; the longest unbroken prose is about one and a half phone screens. All three SVGs fit 390 px without scrolling, labels are legible, and they are theme-correct in dark (red dots, green coins, accent cells, shaded free-slot area, green/red series in Figure 3 all keep contrast). Each figure is informative rather than decorative and each caption says what to notice; Figure 3's caption even explains the missing zero point on the log axis. Output panels are visually distinct, all fit 40 columns on a phone, and the wildcarded ones now read as separate columns. Callouts are restrained (one dotnet, one warning, one pitfall), four exercises of four different forms with collapsed solutions are spread through the page, and the nine-item sources list is tidy in both themes. Against the ranking pages it is clearly better designed: yourbasic.org is about 450 words with one pseudocode block and two pictures; the Cornell CS 3110 chapter is about 3,300 words with no figures, code or exercises on the page; Wikipedia has one figure, one Python snippet and no measured data. What keeps it from scoring higher is phone code: around fifteen lines across five programs still run past the roughly 40 visible characters, and several of those are the operative line of the program (the carry loop in Increment, the MultiPop loop, the tick subtraction, the firstDebt guard, the x1.5 lambda whose '/ 2' rounding the prose later discusses). The blocks scroll and fade correctly, so nothing is broken, and MDN/Real Python have the same behaviour, but the brief's phone lesson asks for these to be wrapped. The remaining items are nits.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Code blocks at 390 px: 'latency' (long ticks = ... - before; the tuple assignment; TimeSpan whole = ...; worstMs; all four Console.WriteLine lines), 'bank' (bool grew = ...; if (grew && afterGrowth.Count < 6); if (balance < 0 && firstDebt == 0) firstDebt = n;), 'policies' (the x1.5 lambda ends at '/ 2' off-screen; policies declaration; sizes array; CountCopies signature and for header), 'breakit' (Measure(\"Add only\", ... list.Add(x)); GC.GetAllocatedBytesForCurrentThread lines), 'others' (while (removed < k && stack.TryPop(out _)) removed++; and while (i < bits.Length && bits[i]) bits[i++] = false;). See mobile-dark parts 04, 08, 10, 14, 16, 17.",
+      "problem": "The binding phone lesson says to break long statements so the operative part is not clipped. In these lines the part hidden behind the fade is the point of the line: the bit flip in Increment, the removed++ in MultiPop, the '- before' of the timing, 'firstDebt = n', and the '/ 2' whose rounding the exercise solution later discusses. In 'latency' 8 of 22 code lines are clipped. The blocks do scroll, so this is friction rather than breakage.",
+      "fixLooksLike": "Wrap after the operator or condition as already done elsewhere on the page (loop body on its own indented line; interpolated strings split with '+' or moved to a local first; lambda bodies on the next line; shorter locals such as 'now'/'start'). Target: no line whose clipped part contains an assignment, increment or the distinguishing operand. Re-run tools/run-code.mjs; outputs must not change.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure 3 (copies per Add, log-log), both themes; desktop-light-part07, mobile-dark-part11",
+      "problem": "The y axis starts at exactly 1, so the green x2 series (1.02 to 1.64) lies on top of the x-axis line and the 1k and 1M markers sit on the axis corners. The key series reads as part of the frame, especially on a phone.",
+      "fixLooksLike": "Start the y axis half a decade lower (for example at 0.3, with the '1' tick raised off the baseline) or lift the plot floor so the flat green line has clear space under it. No other change needed.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Amortized is not average-case' after the four-item list (three paragraphs, the Dictionary one is 14 phone lines) and the MultiPop paragraph in 'The same argument elsewhere' (17 phone lines with a 3-line parenthesis in the middle); mobile-dark parts 12-13 and 15-16",
+      "problem": "These are the densest prose stretches left on the page: about one and a half phone screens each without a visual break, and the MultiPop paragraph mixes the cost model, a caveat in parentheses, the naive bound and the banker's argument in one block. Parenthetical asides are frequent across the article and slow the reading line.",
+      "fixLooksLike": "Split the MultiPop paragraph in two (cost model and caveat; then the naive bound and the coin argument) and move the '3n if every call is charged' aside to its own sentence. In the Dictionary paragraph, break before 'Stated in full' so the summary sentence stands alone. No new content.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure 1 at 390 px, lower-left corner; mobile-dark-part03, mobile-light-part03",
+      "problem": "Legible, but the 4 and 8 ticks on both axes and the 'copy 4' / 'copy 8' labels are crowded into about 40 px, and the rotated y-axis title is small and muted. It does not hide information (the caption and larger steps carry the point).",
+      "fixLooksLike": "Optional: drop the '4' tick labels on both axes (keep the dot and 'copy 4'), or nudge 'copy 4' right by a few units; use the normal text class rather than d-muted for the rotated axis title.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Shell: mobile article pages; 20 phone screens for this article; mobile-dark fold and part 18-19",
+      "problem": "The collapsed 'On this page' box exists only at the top. On a 26-minute page with exercises spread through it there is no way back to the contents from the middle or the end. Raised in round 1; not present in docs/INTEGRATOR_REQUESTS.md.",
+      "fixLooksLike": "Append to docs/INTEGRATOR_REQUESTS.md: a 'back to contents' link after Sources or a small sticky button on mobile article pages, styled for both themes.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "dotnet callout, the List.cs excerpt labelled 'TEXT'; desktop-light-part02",
+      "problem": "A C# expression is shown in a block labelled TEXT with no highlighting, next to highlighted C# everywhere else. It is understandable (the fence is not a runnable program) but looks slightly inconsistent.",
+      "fixLooksLike": "If the pipeline allows a non-run `csharp` fence, use it so the excerpt gets the C# label and highlighting; otherwise leave as is.",
+      "owner": "writer"
+    }
+  ]
+}

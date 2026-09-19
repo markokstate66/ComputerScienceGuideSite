@@ -1,0 +1,67 @@
+{
+  "article": "src/content/articles/version-control/how-git-works.md",
+  "route": "/version-control/how-git-works/",
+  "round": 3,
+  "role": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+    "https://blog.algomaster.io/p/how-git-works-internally"
+  ],
+  "justification": "verify-page (my run, checkedAt 2026-09-19T00:36:51Z): Lighthouse 98/100/100/100 (perf/a11y/best-practices/seo) on the first run, so no re-run; consoleErrors 0; consoleWarnings 0; brokenLinks 0; mobileOverflowPx 0; 4755 words, 51 code blocks, 4 figures, one h1; the only failure is the expected NEEDS_MARKUS placeholder. Another agent re-ran verify on the same route about a minute later (screenshots rewritten 6:38 PM, same content). I opened every desktop-light part (fold + 14), every mobile-dark part (fold + 22), plus desktop-dark fold/07/12 and mobile-light fold/10/17. Fresh judgement: the page reads as one continuous terminal session with a steady command -> output -> short explanation rhythm; no paragraph on a phone runs past about 16 lines and each is fenced by code or a figure. H2s are content-specific claims ('The commit exists, and Git cannot find it', 'A branch is a 41-byte file and a log line'), the two H3s nest correctly, and the desktop TOC is scannable. Code blocks: every command is pre-wrapped with backslash or pipe continuations so the operative token stays on screen at 390 px; outputs are trimmed with --abbrev=7, awk and sed to fit 40 columns where columns carry the point; the failing `git log` block is clearly badged 'Exits with an error'; output panels are visually distinct from input in both themes. All four figures use a 360-unit viewBox, fit the phone with nothing off-canvas, keep annotations below the art, use theme tokens that render correctly in dark and light (accent boxes and arrows, muted row labels all legible), and are informative rather than decorative: Figure 2 (shared notes subtree, file names on arrows) and Figure 4 (delta points old -> new, measured sizes) show structure the prose cannot; captions say what to notice. The five-row mode table fits a phone without scrolling. Callouts are restrained (one pitfall, one warning), both earned. Exercises: one placed mid-article after the hashing section, three at the end under a repo-specific heading, varied in form (compute / predict-a-count / rescue / explain), solutions collapsed and nothing leaked. Round-2 check: the technical major ('rewrote one line in HEAD and nothing else') is really fixed, not papered over: the sentence is now scoped (no objects, no working files) and the run block proves the HEAD reflog entry with `tail -1 .git/logs/HEAD | cut -f2`, which also sets up the detached-HEAD paragraph. My round-2 design minors are fixed: the count-objects/grep, rev-parse, commit -a -m and cat-file|sed lines are now wrapped; exercise 1 moved to the SHA-1 section and the final heading retitled 'Three more experiments'; the clipped `fatal:` output is now quoted in the following sentence; the dense post-tag paragraph became a four-item list plus a short paragraph; Figure 4 size lines lost d-muted and read clearly on mobile in both themes; sources reordered with Pro Git and format documents first. Technical/adsense minors visibly addressed too (gpgsign lines in the pinning block, macOS tool note, 'chiefly' + layout-page pointer, parallel-tables wording, fast-forward defined, 'is common'/'rarely' removed, 'That completes the set' folded). Versus the comparison pages: Pro Git 10.2 has three plain diagrams, prompt-prefixed uncopyable-as-is listings, a Ruby irb detour, no exercises, and spreads refs/packfiles across other pages; AlgoMaster (ranks first) has more pictures but they are conceptual stock-style illustrations, its eight code blocks show little real output, and it has no exercises, sources, packed-refs, reflog or tag object. On reading experience, code rendering, phone care and figure usefulness this page is clearly better than the second and somewhat better than the first. It is 9.0 rather than higher because a handful of lines still clip at 390 px (listed below), the packfile H2 is a long undivided stretch on a phone, and the shell around the article (28x repeated access date, 'compiled' boilerplate, generic Keep reading) is the least polished part of the page. All remaining items are nits; none blocks a pass.",
+  "runCodePass": null,
+  "lighthouse": { "performance": 98, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Section 'Where the object files go: packfiles and packed-refs' (mobile-dark part14 to part18: about five phone screens, five run blocks, one figure, one callout under a single H2)",
+      "problem": "Longest undivided stretch on the page. It contains three distinct steps (pack the repo, read a delta back, packed-refs) but the TOC offers only the H2, so a phone reader has no landmark inside it and cannot jump to the packed-refs part named in the heading.",
+      "fixLooksLike": "Add two H3s, e.g. 'A delta, seen from the reading side' before the verify-pack block and 'Refs get packed too' before 'gc also swept up the refs', so the TOC shows them; no prose change needed.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Mobile 390 px, three remaining clipped lines: `printf 'Day 1: ... 14 km\\n' \\` and `printf 'Day 2: ... 11 km\\n' \\` (the closing quote and the continuation backslash sit behind the fade; mobile-dark part03, part09); output line `be3c37b detour@{0}: branch: Created from main` clips at 'from' (part11); `sed -E 's/([0-9a-f]{7})[0-9a-f]{33}/\\1/' \\` loses its trailing backslash (part18)",
+      "problem": "A reader typing along from a phone cannot see that the printf/sed lines continue, and the reflog line loses its last word, which the prose does not repeat. Everything else on the page now obeys the 40-column lesson, so these stand out.",
+      "fixLooksLike": "Shorten the strings by a few characters or break earlier (e.g. put the format string on its own continuation line; store the sed expression in a variable as already done with fmt=); for the reflog line either mention 'Created from main' in the following sentence or print it with `git reflog show detour | cut -c9-`. Re-run run-code and recheck mobile screenshots.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "verify-pack block under 'Here are the two versions of waypoints.txt' (12 input lines, of which 7 are grep/awk formatting)",
+      "problem": "The formatting machinery outweighs the command being taught; visually it is the noisiest block on the page and the reader has to parse awk to trust three lines of output. It is the price of a 40-column output panel, and the prose does say what verify-pack prints, so this is only a nit.",
+      "fixLooksLike": "One sentence before or after the block saying the awk only picks columns 1-4 and 6-7 and shortens IDs (as is already done for the packed-refs sed), or simplify to `cut -d' ' -f1-4` style trimming if the output still fits.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Sources list (28 entries; mobile-dark part20-21 is two full phone screens where every entry repeats 'Accessed 18 September 2026')",
+      "problem": "Order is now sensible (writer fixed), but the layout still prints the same access date 28 times, so every entry wraps to two or three lines on a phone. Raised in round 2; still present.",
+      "fixLooksLike": "Shell-level: when all sources share one access date print it once under the heading and render entries as title + publisher; append to docs/INTEGRATOR_REQUESTS.md.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Author box under Sources ('Every program in this article was compiled and run...') and footer tagline ('...with C# examples. Every program on this site is compiled and run')",
+      "problem": "Inaccurate boilerplate beside a shell-only article. Raised in rounds 1 and 2; unchanged.",
+      "fixLooksLike": "Neutral wording that covers shell sessions ('Every command and program in this article was run and its output checked against the text').",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "'Keep reading' block at the end",
+      "problem": "Four generic site cards, no next-in-pillar card. Not penalised: docs/crosslinks/version-control/how-git-works.md exists with eight sensible, precisely located links to planned siblings. Still a soft dead end until wave 3.",
+      "fixLooksLike": "In wave 3 wire the crosslinks file and make the first card the next article in the pillar (branching-and-merging).",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Figures on desktop (desktop-light part03, part07, part09, part11): each SVG renders about 410 px wide inside a 735 px figure frame",
+      "problem": "The phone-first 360-unit drawings sit small with wide empty margins on desktop, and d-small labels are around 11 px there. Legible, but the figures look undersized next to the full-width code blocks.",
+      "fixLooksLike": "Shell-level: let .diagram svg grow to roughly 520-560 px max-width on wide viewports (the viewBox scales cleanly); check all articles' figures after the change.",
+      "owner": "integrator"
+    }
+  ]
+}
