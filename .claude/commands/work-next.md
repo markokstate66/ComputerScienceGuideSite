@@ -52,4 +52,33 @@ Requested issue (optional): **$ARGUMENTS**
 
 5b. **Hand back owner-only work:** comment the exact step-by-step the owner must perform (or the exact facts needed), then `gh issue edit <N> --add-label blocked-on-human --add-label todo --remove-label in-progress`. Report to the user that it needs them.
 
-6. **Report:** which issue, what you did, real scores/numbers, the PR link (or the hand-back), current label state, and roughly how many subagents you used. If nothing is in `todo`, say the queue is empty and suggest `/triage`.
+## PR body format (every PR, draft or not)
+
+The owner playtests every PR from `pr-playtest.html` before anything merges, and that page is generated from PR bodies. Use exactly this shape (write it to a temp file and pass `--body-file`):
+
+```text
+Closes #<N>
+
+## Summary
+<what changed and why, 2–5 lines>
+
+## 🧪 Playtest instructions
+1. Open /<route>/ … <what to look at, and what "right" looks like>
+2. <phone width / dark mode / a specific figure, table or interaction>
+3. <for an article: the one explanation or example most worth a human read>
+
+## Verification
+<commands you really ran and their real results: build, run-code, verify-page Lighthouse numbers, console errors, broken links. Anything you could NOT verify here, said plainly.>
+
+## Gauntlet            (article PRs only)
+Round <n>: technical <x.x> / AdSense <x.x> / design <x.x> — passed | not passed
+<top open issues if not passed>
+```
+- The heading must contain the 🧪 emoji and the steps must be a numbered list: the page parses them into a checklist. Start from the issue's "Playtest" section if it has one.
+- Write routes as bare paths with both slashes (`/databases/sql-joins/`); the page turns them into links to the local preview.
+- Steps are things a human can judge in a browser in a few minutes, not things the tools already proved.
+- Never merge your own PR. Merging is `/ship <PR#>`, which the owner runs after playtesting.
+
+After opening or updating a PR run `node tools/refresh-playtest.mjs` (a hook normally does this for you).
+
+6. **Report:** which issue, what you did, real scores/numbers, the PR link (or the hand-back), current label state, and roughly how many subagents you used. Point the user at `pr-playtest.html` for the playtest, and `/ship <PR#>` when it looks right. If nothing is in `todo`, say the queue is empty and suggest `/triage`.

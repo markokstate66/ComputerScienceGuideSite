@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
+    "dev:drafts": "node tools/dev-drafts.mjs",
+    "playtest": "node tools/refresh-playtest.mjs",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

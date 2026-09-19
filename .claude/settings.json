@@ -1,0 +1,31 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node tools/refresh-playtest.mjs --hook",
+            "async": true,
+            "timeout": 60,
+            "statusMessage": "Refreshing pr-playtest.html"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node tools/refresh-playtest.mjs",
+            "async": true,
+            "timeout": 60,
+            "statusMessage": "Syncing pr-playtest.html"
+          }
+        ]
+      }
+    ]
+  }
+}

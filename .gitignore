@@ -26,3 +26,7 @@ npm-debug.log*
 
 # Verification artifacts
 .verify/
+
+# Generated PR playtest page (node tools/refresh-playtest.mjs)
+pr-playtest.html
+pr-playtest.demo.html

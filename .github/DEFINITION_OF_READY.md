@@ -61,5 +61,5 @@ For an `article` issue the acceptance criteria are always the gauntlet pass bar 
 
 ## State machine
 
-`needs-grooming` → (`/groom`) → `todo` → (`/work-next` claims) → `in-progress` → PR opened → `review` → PR merged closes the issue.
+`/new-issue` or `/triage` → `todo` (raw intake: `needs-grooming` → `/groom` → `todo`) → (`/work-next` claims) → `in-progress` → PR opened → `review` → owner playtests from `pr-playtest.html` → `/ship <PR#>` merges and closes the issue.
 An article that does not pass a round goes `in-progress` → `todo` with the round's scores in a comment and a draft PR; after a failed round 4 it is cut and closed as not planned. Owner-only work goes to `blocked-on-human`.

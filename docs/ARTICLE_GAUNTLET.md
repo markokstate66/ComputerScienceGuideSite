@@ -32,7 +32,8 @@ Writer and critics are separate subagents (Agent tool) so that critics judge wit
    - **Passed:** set `draft: false` and `published`/`updated` to today's date, commit, open the PR (`Closes #<n>`) into the integration branch, move the issue to `review`.
    - **Not passed, N < 4:** open or update a **draft PR** so the work is visible, then move the issue back to `todo` (remove `in-progress`). The next `/work-next` run picks up round N+1.
    - **Not passed, N = 4: cut.** Delete the article file on the branch, keep the reviews, open a PR titled "Cut: <slug> (failed 4 rounds)", and close the issue as not planned with the final scores. The brief is explicit: articles that fail four rounds are cut, not published.
-8. Article PRs do **not** touch `docs/STATUS.json`, `WORKLOG.md` or `CHANGELOG.md` (parallel PRs would conflict). Issue labels and `docs/reviews/` are the source of truth for in-flight work; `/triage` reconciles `STATUS.json`.
+8. **PR body** follows the format in `.claude/commands/work-next.md`, including the `## 🧪 Playtest instructions` numbered list (routes to open, the figure or explanation most worth a human look, phone width, dark mode) and a `## Gauntlet` section with the round's real scores. `pr-playtest.html` is generated from it. The consumer never merges; the owner runs `/ship <PR#>` after playtesting.
+9. Article PRs do **not** touch `docs/STATUS.json`, `WORKLOG.md` or `CHANGELOG.md` (parallel PRs would conflict). Issue labels and `docs/reviews/` are the source of truth for in-flight work; `/triage` reconciles `STATUS.json`.
 
 ## Shell-level findings
 
