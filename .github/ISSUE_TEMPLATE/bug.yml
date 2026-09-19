@@ -1,0 +1,26 @@
+name: 🐞 Bug / error on the site
+description: Something is wrong: a factual error in an article, broken code sample, broken link, layout problem.
+title: "[Bug]: "
+labels: ["needs-grooming", "bug"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where?
+      description: Page URL or file path.
+      placeholder: "/databases/sql-joins/ — section 'Anti-joins'"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong, and what should it be?
+      description: For factual corrections, a primary source helps. Confirmed article errors are also recorded on the public corrections page.
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Device / browser / theme (for layout problems)
+    validations:
+      required: false

@@ -1,0 +1,19 @@
+name: 🧰 Task / Plan
+description: Maintenance, a chore, or a planned initiative (non-bug, non-article).
+title: "[Task]: "
+labels: ["needs-grooming", "chore"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs doing?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / why now
+      description: Deadlines, dependencies, links. Grooming will score urgency and risk.
+      placeholder: "Needed before applying to AdSense…"
+    validations:
+      required: false

@@ -1,0 +1,3 @@
+# Blank issues stay allowed (a raw dump is fine — /groom will refine it),
+# but the forms below give grooming a structured starting point.
+blank_issues_enabled: true

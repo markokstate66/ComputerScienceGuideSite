@@ -1,0 +1,43 @@
+name: 📝 Article idea
+description: Propose a new article (or a rewrite). Grooming turns it into a full plan row and checks it against the content plan.
+title: "[Article]: "
+labels: ["needs-grooming", "article"]
+body:
+  - type: input
+    id: query
+    attributes:
+      label: What would someone search for?
+      placeholder: "how does a hash table work"
+    validations:
+      required: true
+  - type: textarea
+    id: angle
+    attributes:
+      label: What would ours add that the top results don't?
+      description: The unique angle. If there isn't one, it probably shouldn't be written.
+    validations:
+      required: true
+  - type: dropdown
+    id: pillar
+    attributes:
+      label: Pillar
+      options:
+        - complexity
+        - data-structures
+        - algorithms
+        - oop-design
+        - csharp-dotnet
+        - databases
+        - networking
+        - operating-systems
+        - version-control
+        - testing
+        - not sure
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes, sources, examples you want covered
+    validations:
+      required: false
