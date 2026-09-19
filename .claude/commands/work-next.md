@@ -24,7 +24,7 @@ Requested issue (optional): **$ARGUMENTS**
      - **Unlabeled fallback:** an issue with no `P#` label predates scoring; rank it as `P2` and say in your announcement that it was unscored so the user knows to run `/triage`.
    - Announce which you picked and why.
 
-2. **Read it fully:** `gh issue view <N> --comments`. Understand the acceptance criteria, checklist, earlier round results in the comments, and any `depends on #M`. If it depends on an unfinished issue, say so and stop (don't work blocked items).
+2. **Read it fully:** `gh issue view <N> --comments`. Understand the acceptance criteria, checklist, earlier round results in the comments, and any `depends on #M`. If it depends on unfinished work (an open `#M`, or a stated condition such as "at least ~40 article issues merged"), don't work it: say so in one line and pick the next item in priority order. Stop only when nothing unblocked remains.
    - **Readiness check:** you pull only `todo` items and trust they meet `.github/DEFINITION_OF_READY.md`. If the picked issue clearly doesn't, either groom it inline to the DoR first, or hand it back: `gh issue edit <N> --add-label needs-grooming --remove-label todo` with a comment on what's missing, then pick the next item.
    - **Risk gate:** if the issue carries `risk:high`, do **not** silently start. Surface the risk and confirm before claiming it (`AskUserQuestion`: proceed / pick a lower-risk item instead / skip). Auto-proceed only for `risk:low`/`risk:med` (and unlabeled).
 
