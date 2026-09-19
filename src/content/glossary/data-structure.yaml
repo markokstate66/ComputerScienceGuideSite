@@ -1,0 +1,4 @@
+term: "Data structure"
+definition: "A way of organising data in memory together with the operations that are efficient on it. Choosing a data structure is choosing which operations are cheap: an array gives constant-time indexing, a hash table gives fast lookup by key, a heap gives fast access to the smallest element."
+aliases: []
+seeAlso: ["data-structures/arrays-and-dynamic-arrays"]

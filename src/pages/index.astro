@@ -1,140 +1,92 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import GuideCard from '../components/GuideCard.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { SITE } from '../lib/site';
+import { getArticles, getLivePillars, pillarUrl } from '../lib/content';
 
-
-const guides = [
-  {
-    title: 'Programming Fundamentals',
-    description: 'Learn the core concepts of programming: variables, loops, functions, and more.',
-    href: '/guides/programming-fundamentals',
-    icon: '💻',
-    level: 'beginner' as const
-  },
-  {
-    title: 'Data Structures',
-    description: 'Master arrays, linked lists, trees, graphs, and other essential data structures.',
-    href: '/guides/data-structures',
-    icon: '🗃️',
-    level: 'intermediate' as const
-  },
-  {
-    title: 'Algorithms',
-    description: 'Understand sorting, searching, dynamic programming, and algorithm analysis.',
-    href: '/guides/algorithms',
-    icon: '⚡',
-    level: 'intermediate' as const
-  },
-  {
-    title: 'Web Development',
-    description: 'Build modern websites with HTML, CSS, JavaScript, and popular frameworks.',
-    href: '/guides/web-development',
-    icon: '🌐',
-    level: 'beginner' as const
-  },
-  {
-    title: 'Databases',
-    description: 'Learn SQL, NoSQL, database design, and data modeling fundamentals.',
-    href: '/guides/databases',
-    icon: '🗄️',
-    level: 'intermediate' as const
-  },
-  {
-    title: 'System Design',
-    description: 'Design scalable systems and prepare for technical interviews.',
-    href: '/guides/system-design',
-    icon: '🏗️',
-    level: 'advanced' as const
-  }
-];
+const live = await getLivePillars();
+const articles = await getArticles();
+const latest = [...articles].sort((a, b) => b.data.published.getTime() - a.data.published.getTime()).slice(0, 6);
+const sampleCode = "<span style=\"--shiki-light:#cf222e;--shiki-dark:#ff7b72\">int</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">[] numbers </span><span style=\"--shiki-light:#cf222e;--shiki-dark:#ff7b72\">=</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\"> [</span><span style=\"--shiki-light:#0550ae;--shiki-dark:#79c0ff\">5</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">, </span><span style=\"--shiki-light:#0550ae;--shiki-dark:#79c0ff\">3</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">, </span><span style=\"--shiki-light:#0550ae;--shiki-dark:#79c0ff\">8</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">, </span><span style=\"--shiki-light:#0550ae;--shiki-dark:#79c0ff\">1</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">];</span>\n<span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">Array.</span><span style=\"--shiki-light:#8250df;--shiki-dark:#d2a8ff\">Sort</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">(numbers);</span>\n<span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">Console.</span><span style=\"--shiki-light:#8250df;--shiki-dark:#d2a8ff\">WriteLine</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">(</span><span style=\"--shiki-light:#cf222e;--shiki-dark:#ff7b72\">string</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">.</span><span style=\"--shiki-light:#8250df;--shiki-dark:#d2a8ff\">Join</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">(</span><span style=\"--shiki-light:#0a3069;--shiki-dark:#a5d6ff\">\", \"</span><span style=\"--shiki-light:#1f2328;--shiki-dark:#e6edf3\">, numbers));</span>";
+const scope = (p: (typeof live)[number]['pillar']) => `--accent-light:${p.data.accent.light};--accent-dark:${p.data.accent.dark}`;
 ---
-
-<BaseLayout
-  title="Computer Science Guide"
-  description="Free comprehensive guides to learn computer science, programming, and software development. Master data structures, algorithms, web development, and more."
->
+<BaseLayout title="CS fundamentals with C# you can run" description={SITE.description}>
   <section class="hero">
-    <div class="container">
-      <h1>Learn Computer Science</h1>
-      <p>
-        Free, comprehensive guides to help you master programming, data structures,
-        algorithms, and software development. Start your journey today.
-      </p>
-      <a href="/roadmap" class="btn">View Learning Roadmap</a>
+    <div class="container hero-grid">
+      <div>
+      <h1>Computer science fundamentals, with C# you can run</h1>
+      <p class="lede">Data structures, algorithms, complexity, databases, networking and operating systems, explained from primary sources. Every program shown is compiled and executed, and its printed output is checked against the article, before anything is published.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/start-here/">Start here</a>
+        {live.length > 0 && <a class="btn" href="/topics/">Browse topics</a>}
+        <a class="btn" href="/editorial-policy/">How articles are made</a>
+      </div>
+      </div>
+      <!-- Same program as the smoke test on /start-here/, where tools/run-code.mjs verifies it. Hand-coloured with the Shiki theme variables. -->
+      <div class="hero-sample code-group" role="group" aria-label="Example of a program and its verified output">
+        <div class="code-block" data-lang="csharp"><div class="code-head"><span class="code-lang">C#</span><button type="button" class="copy-btn" aria-label="Copy code to clipboard">Copy</button></div><pre class="shiki" tabindex="0"><code set:html={sampleCode}></code></pre></div>
+        <div class="code-block code-output" data-lang="text"><div class="code-head"><span class="code-lang">Output</span></div><pre class="shiki" tabindex="0"><code>1, 3, 5, 8</code></pre></div>
+      </div>
     </div>
   </section>
 
-  
+  <section class="section container" aria-labelledby="approach">
+    <div class="section-head">
+      <h2 id="approach">What to expect from an article</h2>
+    </div>
+    <div class="feature-grid">
+      <div class="feature">
+        <h3>Code that really runs</h3>
+        <p>Each example is a complete program. A verification tool compiles it with the .NET SDK, runs it, and fails the article if the output differs from what the page shows. Examples that are meant to fail are checked for the exact compiler error.</p>
+      </div>
+      <div class="feature">
+        <h3>C# and .NET first</h3>
+        <p>Most fundamentals material uses Python, Java or pseudocode. Here the ideas are tied to the runtime you work in: how <code>List&lt;T&gt;</code> grows, how <code>Dictionary&lt;TKey,TValue&gt;</code> stores its entries, what <code>await</code> compiles to.</p>
+      </div>
+      <div class="feature">
+        <h3>Sources you can check</h3>
+        <p>Articles cite specifications, official documentation and textbooks, listed at the end of every page with the date they were consulted. Explanations, examples and diagrams are original.</p>
+      </div>
+      <div class="feature">
+        <h3>Corrections in the open</h3>
+        <p>Every article has a link for reporting errors. Confirmed mistakes are fixed and recorded on a public <a href="/corrections/">corrections page</a>, and an article's updated date changes only for substantive edits.</p>
+      </div>
+    </div>
+  </section>
 
-  <section class="section">
-    <div class="container">
-      <h2 class="section-title">Popular Guides</h2>
-      <div class="card-grid">
-        {guides.map(guide => (
-          <GuideCard {...guide} />
+  {live.length > 0 && (
+    <section class="section container" aria-labelledby="topics">
+      <div class="section-head">
+        <h2 id="topics">Topics</h2>
+        <p>Listed in the order we suggest reading them. Each topic page gives its articles in reading order.</p>
+      </div>
+      <ul class="card-grid">
+        {live.map(({ pillar, articles: list }) => (
+          <li class="card pillar-card pillar-scope" style={scope(pillar)}>
+            <h3 class="card-title"><a href={pillarUrl(pillar)}>{pillar.data.title}</a></h3>
+            <p>{pillar.data.blurb}</p>
+            <span class="card-meta">{list.length === 1 ? '1 article' : `${list.length} articles`}</span>
+          </li>
         ))}
+      </ul>
+    </section>
+  )}
+
+  {latest.length > 0 && (
+    <section class="section container" aria-labelledby="latest">
+      <div class="section-head">
+        <h2 id="latest">Recently published</h2>
       </div>
+      <ul class="card-grid">
+        {latest.map((a) => <ArticleCard article={a} />)}
+      </ul>
+    </section>
+  )}
+
+  <section class="section container" aria-labelledby="run-it">
+    <div class="section-head">
+      <h2 id="run-it">Run the examples yourself</h2>
+      <p>You need the .NET 10 SDK and nothing else: no project file, no IDE. Copy a program from an article into a file such as <code>example.cs</code> and run <code>dotnet run example.cs</code>. The <a href="/start-here/">start here</a> page walks through it and explains how code blocks are labelled.</p>
     </div>
   </section>
-
-  <section class="section section-alt">
-    <div class="container">
-      <h2 class="section-title">Why Learn Computer Science?</h2>
-      <div class="card-grid">
-        <div class="card">
-          <h3>High Demand Careers</h3>
-          <p>Software engineering consistently ranks among the highest-paying and most in-demand careers globally.</p>
-        </div>
-        <div class="card">
-          <h3>Problem-Solving Skills</h3>
-          <p>Develop logical thinking and analytical abilities that transfer to any field or challenge.</p>
-        </div>
-        <div class="card">
-          <h3>Build Anything</h3>
-          <p>From mobile apps to AI systems, programming skills let you create solutions to real-world problems.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  
-
-  <section class="section">
-    <div class="container">
-      <h2 class="section-title">Start Your Learning Path</h2>
-      <div class="learning-paths">
-        <div class="card">
-          <h3>Complete Beginner</h3>
-          <p>Never written code before? Start here with our beginner-friendly introduction to programming concepts.</p>
-          <a href="/guides/programming-fundamentals" class="btn">Start Learning</a>
-        </div>
-        <div class="card">
-          <h3>Career Changer</h3>
-          <p>Looking to transition into tech? Follow our structured roadmap to become job-ready.</p>
-          <a href="/roadmap" class="btn">View Roadmap</a>
-        </div>
-        <div class="card">
-          <h3>Interview Prep</h3>
-          <p>Preparing for technical interviews? Master data structures, algorithms, and system design.</p>
-          <a href="/guides/interview-prep" class="btn">Prepare Now</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <style>
-    .learning-paths {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .learning-paths .card {
-      text-align: center;
-    }
-
-    .learning-paths .btn {
-      margin-top: 1rem;
-    }
-  </style>
 </BaseLayout>

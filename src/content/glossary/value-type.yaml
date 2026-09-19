@@ -1,0 +1,4 @@
+term: "Value type"
+definition: "In .NET, a type whose variables hold the data itself, so assignment copies the whole value. Structs, enums and the built-in numeric types are value types. Where a value is stored (stack, register, or inside a heap object) is an implementation detail of the runtime."
+aliases: ["struct"]
+seeAlso: ["csharp-dotnet/value-types-vs-reference-types"]

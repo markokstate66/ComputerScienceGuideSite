@@ -1,0 +1,4 @@
+term: "Race condition"
+definition: "A bug in which the result depends on the unpredictable timing of concurrent operations. The classic case is two threads performing a read-modify-write on the same variable without synchronisation, so that one update is lost."
+aliases: []
+seeAlso: ["operating-systems/concurrency-race-conditions-locks"]

@@ -1,0 +1,4 @@
+term: "Graph"
+definition: "A set of vertices connected by edges. Edges can be directed or undirected and can carry weights. Graphs model networks, dependencies, maps and state spaces, and are usually stored as adjacency lists or an adjacency matrix."
+aliases: []
+seeAlso: ["data-structures/graphs-representation","algorithms/breadth-first-and-depth-first-search"]

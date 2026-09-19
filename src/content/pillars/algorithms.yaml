@@ -1,0 +1,8 @@
+title: "Algorithms"
+navTitle: "Algorithms"
+order: 3
+accent:
+  light: "#b45309"
+  dark: "#fcd34d"
+blurb: >-
+  Searching, sorting, recursion, graph traversal, shortest paths, dynamic programming, greedy methods and backtracking. The articles focus on why each algorithm is correct and where implementations usually go wrong, with runnable C# that counts comparisons and visited nodes so the complexity claims can be checked rather than taken on trust.

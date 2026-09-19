@@ -1,0 +1,16 @@
+---
+import type { Article } from '../lib/content';
+import { articleUrl, readingTime, LEVEL_LABEL } from '../lib/content';
+import { getEntry } from 'astro:content';
+
+interface Props { article: Article; showPillar?: boolean; headingLevel?: 'h2' | 'h3' }
+const { article, showPillar = true, headingLevel: H = 'h3' } = Astro.props;
+const pillar = await getEntry('pillars', article.data.pillar);
+const { minutes } = readingTime(article.body);
+---
+<li class="card pillar-scope" style={`--accent-light:${pillar!.data.accent.light};--accent-dark:${pillar!.data.accent.dark}`}>
+  {showPillar && <span class="card-kicker">{pillar!.data.navTitle}</span>}
+  <H class="card-title"><a href={articleUrl(article)}>{article.data.title}</a></H>
+  <p>{article.data.description}</p>
+  <span class="card-meta"><span>{LEVEL_LABEL[article.data.level]}</span><span>{minutes} min read</span></span>
+</li>

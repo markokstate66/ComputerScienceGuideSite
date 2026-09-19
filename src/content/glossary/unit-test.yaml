@@ -1,0 +1,4 @@
+term: "Unit test"
+definition: "An automated test that exercises a small piece of code in isolation from slow or non-deterministic dependencies such as databases, networks and clocks."
+aliases: []
+seeAlso: ["testing/unit-testing-fundamentals"]

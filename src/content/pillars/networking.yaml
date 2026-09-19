@@ -1,0 +1,8 @@
+title: "Computer Networking"
+navTitle: "Networking"
+order: 7
+accent:
+  light: "#047857"
+  dark: "#6ee7b7"
+blurb: >-
+  What happens between typing a URL and seeing a page: DNS, IP addressing and subnets, TCP and UDP, HTTP, and TLS. Each protocol is explained from its specification and then exercised from C# with sockets, TcpClient and SslStream, so you can watch the bytes instead of memorising a layer diagram.

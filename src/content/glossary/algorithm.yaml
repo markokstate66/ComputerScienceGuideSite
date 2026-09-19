@@ -1,0 +1,4 @@
+term: "Algorithm"
+definition: "A finite, unambiguous sequence of steps that takes an input and produces an output. An algorithm is independent of any programming language: the same algorithm can be written in C#, in pseudocode, or carried out by hand."
+aliases: []
+seeAlso: ["algorithms/binary-search"]

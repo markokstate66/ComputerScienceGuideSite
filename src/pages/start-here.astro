@@ -1,0 +1,28 @@
+---
+// Wave 1 version: how the site works and how to run the examples. The three learning paths from
+// CONTENT_PLAN.md are added in wave 3, once the articles they link to exist.
+import PageLayout from '../layouts/PageLayout.astro';
+import { Content } from '../page-content/start-here.md';
+import { getLivePillars, pillarUrl } from '../lib/content';
+const live = await getLivePillars();
+---
+<PageLayout
+  title="Start here"
+  path="/start-here/"
+  description="How Computer Science Guide is organised, what you need to run the C# examples yourself, and how to read the labels on code blocks and exercises."
+  lede="How the site is organised, how to run the examples on your own machine, and what the labels on the code blocks mean."
+  showUpdated={false}
+>
+  <Content />
+  {live.length > 0 && (
+    <>
+      <h2 id="suggested-order">Suggested order through the topics</h2>
+      <p>Topics build on each other roughly in this order. Inside each topic, the articles are listed in reading order.</p>
+      <ol>
+        {live.map(({ pillar, articles }) => (
+          <li><a href={pillarUrl(pillar)}>{pillar.data.title}</a> ({articles.length === 1 ? '1 article' : `${articles.length} articles`})</li>
+        ))}
+      </ol>
+    </>
+  )}
+</PageLayout>

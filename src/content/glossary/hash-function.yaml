@@ -1,0 +1,4 @@
+term: "Hash function"
+definition: "A function that maps a value of any size to a fixed-size integer. For hash tables the requirements are that equal values always produce the same hash and that different values are spread evenly. In .NET this is the contract between GetHashCode and Equals."
+aliases: []
+seeAlso: ["data-structures/hash-tables"]

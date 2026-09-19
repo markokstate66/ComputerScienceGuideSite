@@ -1,353 +1,106 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+// The form posts JSON to /api/contact (Azure Function in api/contact), which emails the message to
+// the site owner through Azure Communication Services. Nothing is stored by the site itself.
+// "Report an error" links on articles arrive as /contact/?topic=correction&page=/pillar/slug/.
+import PageLayout from '../layouts/PageLayout.astro';
+import NeedsMarkus from '../components/NeedsMarkus.astro';
 ---
-
-<BaseLayout
-  title="Contact Us"
-  description="Get in touch with Computer Science Guide. We'd love to hear your feedback, questions, or suggestions."
+<PageLayout
+  title="Contact"
+  path="/contact/"
+  schemaType="ContactPage"
+  searchable={false}
+  showUpdated={false}
+  description="Report an error in an article, suggest a topic, or ask a question about Computer Science Guide using the contact form. Messages go straight to the author."
+  lede="Report an error, suggest a topic or ask a question. Messages are emailed directly to the author."
 >
-  <article class="article">
-    <div class="container">
-      <div class="content">
-        <h1>Contact Us</h1>
-        <p class="intro">
-          Have a question, suggestion, or feedback? Fill out the form below and we'll get back to you
-          as soon as possible.
-        </p>
-
-        <div class="contact-layout">
-          <div class="form-section">
-            <form id="contact-form" class="contact-form">
-              <div class="form-group">
-                <label for="name">Full Name <span class="required">*</span></label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  placeholder="Your name"
-                  autocomplete="name"
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="email">Email Address <span class="required">*</span></label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  placeholder="you@example.com"
-                  autocomplete="email"
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="topic">Topic <span class="required">*</span></label>
-                <select id="topic" name="topic" required>
-                  <option value="">Select a topic...</option>
-                  <option value="General Question">General Question</option>
-                  <option value="Content Suggestion">Content Suggestion</option>
-                  <option value="Bug Report">Bug Report / Technical Issue</option>
-                  <option value="Feedback">Feedback / Suggestions</option>
-                  <option value="Partnership">Partnership Opportunity</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="message">Your Message <span class="required">*</span></label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows="6"
-                  required
-                  placeholder="How can we help you?"
-                ></textarea>
-              </div>
-
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary" id="submit-btn">
-                  <span class="btn-text">Send Message</span>
-                  <span class="btn-loading" style="display: none;">Sending...</span>
-                </button>
-              </div>
-
-              <div id="form-status" class="form-status" style="display: none;"></div>
-
-              <p class="privacy-note">
-                By submitting this form, you agree to our <a href="/privacy">Privacy Policy</a>.
-                We'll only use your information to respond to your inquiry.
-              </p>
-            </form>
-          </div>
-
-          <div class="info-section">
-            <div class="info-card">
-              <div class="info-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-              </div>
-              <h3>Response Time</h3>
-              <p>We'll get back to you as soon as we can.</p>
-            </div>
-
-            <div class="info-card">
-              <div class="info-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                  <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-              </div>
-              <h3>Direct Email</h3>
-              <p>Prefer email? Use the contact form and we'll get back to you promptly.</p>
-            </div>
-
-            <div class="info-card">
-              <div class="info-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-              </div>
-              <h3>Common Topics</h3>
-              <ul>
-                <li>Content suggestions</li>
-                <li>Technical questions</li>
-                <li>Bug reports</li>
-                <li>Partnership inquiries</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+  <form id="contact-form" class="form" novalidate>
+    <div class="field">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required autocomplete="name" maxlength="120" />
     </div>
-  </article>
+    <div class="field">
+      <label for="email">Email address <span class="hint">(used only to reply to you)</span></label>
+      <input type="email" id="email" name="email" required autocomplete="email" maxlength="200" />
+    </div>
+    <div class="field">
+      <label for="topic">What is this about?</label>
+      <select id="topic" name="topic" required>
+        <option value="">Choose one</option>
+        <option value="Correction" data-key="correction">An error in an article</option>
+        <option value="Content Suggestion" data-key="suggestion">A topic suggestion</option>
+        <option value="General Question" data-key="question">A question</option>
+        <option value="Bug Report" data-key="bug">A problem with the website</option>
+        <option value="Privacy" data-key="privacy">A privacy or data request</option>
+        <option value="Other" data-key="other">Something else</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="message">Message <span class="hint" id="message-hint">(for corrections, say which article and what is wrong)</span></label>
+      <textarea id="message" name="message" rows="7" required maxlength="5000" aria-describedby="message-hint"></textarea>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary" id="submit-btn">Send message</button>
+    </div>
+    <div id="form-status" class="form-status" role="status" aria-live="polite" hidden></div>
+  </form>
 
-  <style>
-    .intro {
-      font-size: 1.125rem;
-      color: var(--color-text-muted);
-      margin-bottom: 2rem;
+  <h2 id="what-happens">What happens to your message</h2>
+  <p>The form sends your name, email address, chosen subject and message to a small server function, which emails them to the author through Azure Communication Services. The site has no database and keeps no copy. Details, including how long messages are kept, are in the <a href="/privacy/#contact-form">privacy policy</a>.</p>
+  <p>Error reports are checked against the sources. If the report is right, the article is fixed and the change is listed on the <a href="/corrections/">corrections page</a>.</p>
+
+  <h2 id="other-channels">Other ways to reach the author</h2>
+  <p><NeedsMarkus n={5} what="public contact email, or confirm the form is the only channel" /></p>
+</PageLayout>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const status = document.getElementById('form-status') as HTMLElement;
+  const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement;
+
+  // Prefill from "Report an error" links.
+  const params = new URLSearchParams(location.search);
+  const key = params.get('topic');
+  const page = params.get('page');
+  if (key) {
+    const option = form.querySelector<HTMLOptionElement>(`option[data-key="${CSS.escape(key)}"]`);
+    if (option) field('topic').value = option.value;
+  }
+  if (page && /^\/[a-z0-9\-\/]*$/.test(page)) field('message').value = `Article: ${location.origin}${page}\n\nWhat is wrong:\n`;
+
+  const show = (kind: 'success' | 'error', text: string) => {
+    status.className = `form-status ${kind}`;
+    status.textContent = text;
+    status.hidden = false;
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    status.hidden = true;
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: field('name').value.trim(),
+          email: field('email').value.trim(),
+          topic: field('topic').value,
+          message: field('message').value.trim(),
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.success) throw new Error(result.message || 'The message could not be sent.');
+      show('success', 'Thank you. Your message has been sent.');
+      form.reset();
+    } catch (err) {
+      show('error', `${(err as Error).message} Nothing was sent; please try again in a few minutes.`);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send message';
     }
-
-    .contact-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    @media (min-width: 768px) {
-      .contact-layout {
-        grid-template-columns: 1.5fr 1fr;
-      }
-    }
-
-    .contact-form {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      padding: 2rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--color-text);
-    }
-
-    .required {
-      color: #ef4444;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
-      font-size: 1rem;
-      font-family: inherit;
-      background: var(--color-bg);
-      color: var(--color-text);
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    .form-actions {
-      margin-top: 1.5rem;
-    }
-
-    .btn-primary {
-      background: var(--color-primary);
-      color: white;
-      border: none;
-      padding: 0.875rem 2rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      width: 100%;
-    }
-
-    .btn-primary:hover {
-      background: #4f46e5;
-    }
-
-    .btn-primary:active {
-      transform: scale(0.98);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    .form-status {
-      margin-top: 1rem;
-      padding: 1rem;
-      border-radius: 8px;
-      font-weight: 500;
-    }
-
-    .form-status.success {
-      background: #d1fae5;
-      color: #065f46;
-      border: 1px solid #a7f3d0;
-    }
-
-    .form-status.error {
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fecaca;
-    }
-
-    .privacy-note {
-      margin-top: 1rem;
-      font-size: 0.875rem;
-      color: var(--color-text-muted);
-    }
-
-    .privacy-note a {
-      color: var(--color-primary);
-    }
-
-    .info-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .info-card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      padding: 1.5rem;
-    }
-
-    .info-icon {
-      color: var(--color-primary);
-      margin-bottom: 0.75rem;
-    }
-
-    .info-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .info-card p {
-      color: var(--color-text-muted);
-      font-size: 0.9rem;
-      margin: 0;
-    }
-
-    .info-card ul {
-      color: var(--color-text-muted);
-      font-size: 0.9rem;
-      margin: 0;
-      padding-left: 1.25rem;
-    }
-
-    .info-card a {
-      color: var(--color-primary);
-    }
-  </style>
-
-  <script>
-    const form = document.getElementById('contact-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const btnText = submitBtn.querySelector('.btn-text');
-    const btnLoading = submitBtn.querySelector('.btn-loading');
-    const formStatus = document.getElementById('form-status');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      // Show loading state
-      submitBtn.disabled = true;
-      btnText.style.display = 'none';
-      btnLoading.style.display = 'inline';
-      formStatus.style.display = 'none';
-
-      // Gather form data
-      const formData = {
-        name: form.name.value.trim(),
-        email: form.email.value.trim(),
-        topic: form.topic.value,
-        message: form.message.value.trim()
-      };
-
-      try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          formStatus.className = 'form-status success';
-          formStatus.textContent = result.message;
-          formStatus.style.display = 'block';
-          form.reset();
-        } else {
-          throw new Error(result.message || 'Something went wrong');
-        }
-      } catch (error) {
-        formStatus.className = 'form-status error';
-        formStatus.textContent = error.message || 'Failed to send message. Please try again.';
-        formStatus.style.display = 'block';
-      } finally {
-        // Reset button state
-        submitBtn.disabled = false;
-        btnText.style.display = 'inline';
-        btnLoading.style.display = 'none';
-      }
-    });
-  </script>
-</BaseLayout>
+  });
+</script>

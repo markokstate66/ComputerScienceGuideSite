@@ -1,0 +1,89 @@
+---
+// Search runs entirely in the browser against the static Pagefind index that the build writes to
+// /pagefind/ (see src/plugins/build-integration.mjs). /search/?q=term runs the query on load, which
+// is what the WebSite SearchAction in BaseLayout advertises.
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Search" description="Search every article, topic page and glossary entry on Computer Science Guide. The search runs in your browser; queries are not sent to a server.">
+  <header class="page-head">
+    <div class="container">
+      <h1>Search</h1>
+      <p class="lede">Searches articles, topic pages and the glossary. The index is downloaded to your browser, so what you type stays on your device.</p>
+    </div>
+  </header>
+  <div class="container">
+    <form class="search-box" role="search" id="search-form" action="/search/" method="get">
+      <label class="visually-hidden" for="q">Search the site</label>
+      <input class="input" type="search" id="q" name="q" placeholder="e.g. hash table, deadlock, left join" autocomplete="off" spellcheck="false" />
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+    <p class="search-status" id="search-status" role="status" aria-live="polite"></p>
+    <ol class="search-results" id="search-results"></ol>
+    <noscript><p>Search needs JavaScript. Without it, the <a href="/glossary/">glossary</a> and the site menu list everything on the site.</p></noscript>
+  </div>
+
+  <script is:inline type="module">
+    const input = document.getElementById('q');
+    const status = document.getElementById('search-status');
+    const list = document.getElementById('search-results');
+    let pagefind = null;
+    let run = 0;
+
+    async function load() {
+      if (!pagefind) {
+        pagefind = await import('/pagefind/pagefind.js');
+        await pagefind.options({ excerptLength: 28 });
+      }
+      return pagefind;
+    }
+
+    function el(tag, cls, html) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (html !== undefined) n.innerHTML = html;
+      return n;
+    }
+
+    async function search(term) {
+      const mine = ++run;
+      const q = term.trim();
+      const url = new URL(location.href);
+      if (q) url.searchParams.set('q', q); else url.searchParams.delete('q');
+      history.replaceState(null, '', url);
+      if (!q) { list.replaceChildren(); status.textContent = ''; return; }
+      status.textContent = 'Searching…';
+      let results;
+      try {
+        const pf = await load();
+        results = await pf.debouncedSearch(q, {}, 200);
+      } catch (err) {
+        status.textContent = 'The search index could not be loaded. Please reload the page and try again.';
+        return;
+      }
+      if (results === null || mine !== run) return; // superseded by a newer keystroke
+      const top = await Promise.all(results.results.slice(0, 20).map((r) => r.data()));
+      if (mine !== run) return;
+      list.replaceChildren(...top.map((r) => {
+        const li = el('li');
+        const title = el('p', 'result-title');
+        const a = el('a');
+        a.href = r.url;
+        a.textContent = r.meta.title || r.url;
+        title.append(a);
+        const path = el('p', 'result-url');
+        path.textContent = r.url;
+        li.append(title, path, el('p', '', r.excerpt)); // excerpt is HTML-escaped by Pagefind; only <mark> is added
+        return li;
+      }));
+      const n = results.results.length;
+      status.textContent = n === 0 ? `No results for "${q}". Try a shorter or more general term.` : `${n} result${n === 1 ? '' : 's'} for "${q}"${n > 20 ? ', showing the first 20' : ''}.`;
+    }
+
+    document.getElementById('search-form').addEventListener('submit', (e) => { e.preventDefault(); search(input.value); });
+    input.addEventListener('input', () => search(input.value));
+    input.addEventListener('focus', () => { load().catch(() => {}); }, { once: true });
+
+    const initial = new URLSearchParams(location.search).get('q');
+    if (initial) { input.value = initial; search(initial); }
+  </script>
+</BaseLayout>

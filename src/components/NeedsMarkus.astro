@@ -1,0 +1,8 @@
+---
+// Visible marker for something only the site owner can supply. `n` is the item number in
+// docs/NEEDS_MARKUS.md. tools/verify-page.mjs fails any page whose <main> contains one,
+// so a page with open items cannot pass verification by accident.
+interface Props { n: number; what: string }
+const { n, what } = Astro.props;
+---
+<mark class="needs-markus">NEEDS_MARKUS(#{n}: {what})</mark>

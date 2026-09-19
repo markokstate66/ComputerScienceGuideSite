@@ -1,0 +1,4 @@
+term: "Process"
+definition: "A running instance of a program, with its own virtual address space, handles and at least one thread. The operating system isolates processes from each other, so one process cannot read another's memory by accident."
+aliases: []
+seeAlso: ["operating-systems/processes-and-threads"]

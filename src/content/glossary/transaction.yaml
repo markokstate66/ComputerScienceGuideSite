@@ -1,0 +1,4 @@
+term: "Transaction"
+definition: "A group of database operations that is committed or rolled back as a single unit. The guarantees usually expected of transactions are summarised as ACID: atomicity, consistency, isolation and durability."
+aliases: ["ACID"]
+seeAlso: ["databases/transactions-and-acid"]

@@ -1,0 +1,4 @@
+term: "Recursion"
+definition: "Defining a function in terms of itself on smaller inputs. A recursive function needs a base case that is solved directly and a recursive case that moves towards it; each active call occupies a frame on the call stack."
+aliases: []
+seeAlso: ["algorithms/recursion"]

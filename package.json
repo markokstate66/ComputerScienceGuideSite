@@ -5,12 +5,24 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build && node -e \"const fs=require('fs'); fs.renameSync('dist/sitemap-0.xml','dist/sitemap.xml'); fs.unlinkSync('dist/sitemap-index.xml');\"",
+    "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "verify": "node tools/verify-page.mjs",
+    "run-code": "node tools/run-code.mjs",
+    "images": "node tools/make-images.mjs"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.2.0",
-    "astro": "^4.16.0"
+    "astro": "^4.16.0",
+    "remark-directive": "^3.0.1",
+    "shiki": "^1.29.2",
+    "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "chrome-launcher": "^1.2.1",
+    "lighthouse": "^13.5.0",
+    "pagefind": "^1.5.2",
+    "puppeteer-core": "^25.11.0",
+    "sirv": "^3.0.2"
   }
 }

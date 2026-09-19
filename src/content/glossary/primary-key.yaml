@@ -1,0 +1,4 @@
+term: "Primary key"
+definition: "The column, or set of columns, chosen to identify each row of a table uniquely. A primary key cannot contain NULL and no two rows may share the same value."
+aliases: []
+seeAlso: ["databases/relational-model-and-keys"]

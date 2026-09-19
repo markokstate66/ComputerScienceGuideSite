@@ -1,0 +1,4 @@
+term: "Array"
+definition: "A fixed-size block of contiguous memory holding elements of one type. Because the address of element i can be computed directly from the start address, reading or writing by index takes constant time."
+aliases: []
+seeAlso: ["data-structures/arrays-and-dynamic-arrays"]

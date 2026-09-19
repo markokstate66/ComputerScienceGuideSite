@@ -1,0 +1,181 @@
+---
+import type { MarkdownHeading } from 'astro';
+import { getEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Toc from '../components/Toc.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { SITE, fmtDate, isoDate } from '../lib/site';
+import { type Article, articleUrl, pillarUrl, getArticles, getAuthor, readingTime, relatedArticles, isFixture, LEVEL_LABEL } from '../lib/content';
+
+interface Props { article: Article; headings: MarkdownHeading[] }
+const { article, headings } = Astro.props;
+const { data } = article;
+
+const pillar = (await getEntry('pillars', data.pillar))!;
+const author = await getAuthor(article);
+const all = await getArticles();
+const inPillar = all.filter((a) => a.data.pillar === data.pillar && (isFixture(article) || !isFixture(a)));
+const idx = inPillar.findIndex((a) => a.slug === article.slug);
+const prev = idx > 0 ? inPillar[idx - 1] : undefined;
+const next = idx < inPillar.length - 1 ? inPillar[idx + 1] : undefined;
+const related = relatedArticles(article, all, 3, [prev?.slug, next?.slug].filter((s): s is string => !!s));
+const prerequisites = data.prerequisites.map((slug) => all.find((a) => a.slug === slug)).filter((a): a is Article => !!a);
+
+// The hub and /topics/ exist whenever at least one article is publishable, which this page proves; the
+// checks keep the block honest if that rule ever changes.
+const hubArticles = inPillar.length;
+const keepReading = [
+  hubArticles > 0 && { href: pillarUrl(pillar), title: `All of ${pillar.data.title}`, desc: hubArticles === 1 ? 'The pillar page and its reading order' : `${hubArticles} articles in reading order` },
+  all.length > 0 && { href: '/topics/', title: 'All topics', desc: 'Every subject the site covers' },
+  { href: '/start-here/', title: 'Start here', desc: 'How the site works and how to run the examples' },
+  { href: '/glossary/', title: 'Glossary', desc: 'Short definitions of the terms used in articles' },
+].filter((l): l is { href: string; title: string; desc: string } => !!l);
+
+const { minutes, words } = readingTime(article.body);
+const url = articleUrl(article);
+const abs = (p: string) => new URL(p, SITE.url).href;
+const wasUpdated = isoDate(data.updated) !== isoDate(data.published);
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const authorPending = author.data.name.startsWith('NEEDS_MARKUS');
+
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: data.title,
+    description: data.description,
+    datePublished: data.published.toISOString(),
+    dateModified: data.updated.toISOString(),
+    inLanguage: 'en',
+    wordCount: words,
+    articleSection: pillar.data.title,
+    keywords: data.tags.join(', '),
+    image: abs(`/og/${data.pillar}.png`),
+    mainEntityOfPage: { '@type': 'WebPage', '@id': abs(url) },
+    author: { '@type': 'Person', name: author.data.name, url: abs('/about/') },
+    publisher: { '@id': `${SITE.url}/#organization` },
+    citation: data.sources.map((s) => ({ '@type': 'CreativeWork', name: s.title, url: s.url })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: abs('/') },
+      { '@type': 'ListItem', position: 2, name: pillar.data.title, item: abs(pillarUrl(pillar)) },
+      { '@type': 'ListItem', position: 3, name: data.title, item: abs(url) },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  ogType="article"
+  ogImage={`/og/${data.pillar}.png`}
+  publishedTime={data.published}
+  modifiedTime={data.updated}
+  structuredData={structuredData}
+>
+  <article class="pillar-scope" style={`--accent-light:${pillar.data.accent.light};--accent-dark:${pillar.data.accent.dark}`} data-pagefind-body>
+    <header class="article-head">
+      <div class="container">
+        <div class="article-head-inner">
+          <Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: pillar.data.title, href: pillarUrl(pillar) }]} />
+          <h1>{data.title}</h1>
+          <p class="lede">{data.description}</p>
+          <div class="article-meta" data-pagefind-ignore>
+            <span>By&nbsp;<a href="/about/" rel="author" class:list={{ 'needs-markus': authorPending }}>{author.data.name}</a></span>
+            <span>Published <time datetime={isoDate(data.published)}>{fmtDate(data.published)}</time></span>
+            {wasUpdated && <span>Updated <time datetime={isoDate(data.updated)}>{fmtDate(data.updated)}</time></span>}
+            <span>{minutes} min read</span>
+            <span><span class="badge">{LEVEL_LABEL[data.level]}</span></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container article-body">
+      <div class="article-main">
+        {tocHeadings.length > 1 && (
+          <details class="toc-inline" data-pagefind-ignore>
+            <summary>On this page</summary>
+            <nav aria-label="On this page"><Toc headings={tocHeadings} /></nav>
+          </details>
+        )}
+
+        {prerequisites.length > 0 && (
+          <div class="prereqs" role="group" aria-labelledby="prereqs-title" data-pagefind-ignore>
+            <p class="prereqs-title" id="prereqs-title">Before you read</p>
+            <ul>
+              {prerequisites.map((p) => <li><a href={articleUrl(p)}>{p.data.title}</a></li>)}
+            </ul>
+          </div>
+        )}
+
+        <div class="prose">
+          <slot />
+        </div>
+
+        <footer class="article-end" data-pagefind-ignore>
+          <section class="sources" aria-labelledby="sources-title">
+            <h2 id="sources-title">Sources</h2>
+            <ol>
+              {data.sources.map((s) => (
+                <li>
+                  <a href={s.url} rel="noopener">{s.title}</a>{s.publisher && <span class="source-meta">. {s.publisher}</span>}<span class="source-meta">. Accessed {fmtDate(s.accessed)}.</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section class="author-box" aria-label="About the author">
+            <p class="author-name">Written by <a href="/about/" class:list={{ 'needs-markus': authorPending }}>{author.data.name}</a></p>
+            <p><span class:list={{ 'needs-markus': author.data.bio.startsWith('NEEDS_MARKUS') }}>{author.data.bio}</span></p>
+            <p>Every program in this article was compiled and run, and its output compared with the text, before publication. See the <a href="/editorial-policy/">editorial policy</a>.</p>
+          </section>
+
+          <p class="feedback">
+            Found a mistake or something unclear? <a href={`/contact/?topic=correction&page=${encodeURIComponent(url)}`}>Report an error</a>. Confirmed corrections are listed on the <a href="/corrections/">corrections page</a>.
+          </p>
+
+          {(prev || next) && (
+            <nav class="prev-next" aria-label={`More in ${pillar.data.title}`}>
+              {prev && <a class="prev" href={articleUrl(prev)}><span class="dir">Previous in {pillar.data.navTitle}</span><span class="ttl">{prev.data.title}</span></a>}
+              {next && <a class="next" href={articleUrl(next)}><span class="dir">Next in {pillar.data.navTitle}</span><span class="ttl">{next.data.title}</span></a>}
+            </nav>
+          )}
+
+          {related.length > 0 && (
+            <section aria-labelledby="related-title">
+              <h2 id="related-title">Related articles</h2>
+              <ul class="card-grid">
+                {related.map((a) => <ArticleCard article={a} />)}
+              </ul>
+            </section>
+          )}
+
+          {/* Always present, so an article is never a dead end even when it is alone in its pillar. */}
+          <nav class="keep-reading" aria-labelledby="keep-reading-title">
+            <h2 id="keep-reading-title">Keep reading</h2>
+            <ul>
+              {keepReading.map((l) => (
+                <li><a href={l.href}><span class="ttl">{l.title}</span><span class="desc">{l.desc}</span></a></li>
+              ))}
+            </ul>
+          </nav>
+        </footer>
+      </div>
+
+      {tocHeadings.length > 1 && (
+        <div class="toc-side" data-pagefind-ignore>
+          <nav aria-label="On this page">
+            <p class="toc-title">On this page</p>
+            <Toc headings={tocHeadings} />
+          </nav>
+        </div>
+      )}
+    </div>
+  </article>
+</BaseLayout>

@@ -1,161 +1,32 @@
 ---
+// Served with a real 404 status by Azure Static Web Apps (responseOverrides in
+// staticwebapp.config.json). The direct URL /404.html is served with X-Robots-Tag: noindex.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getLivePillars } from '../lib/content';
+const hasTopics = (await getLivePillars()).length > 0;
 ---
-
-<BaseLayout
-  title="404 - Page Not Found"
-  description="The page you're looking for doesn't exist."
-  noindex={true}
->
-  <section class="error-page">
-    <div class="container">
-      <div class="error-art">
-        <pre class="ascii-art">{`
-   _____ _____ _____
-  |  |  |     |  |  |
-  |__|__|  |  |__|__|
-     |__|_____|__|
-        `}</pre>
-      </div>
-      <h1>404</h1>
-      <p class="tagline">Segmentation fault: page not found</p>
-      <div class="terminal">
-        <code>
-          <span class="prompt">$</span> find / -name "your-page" 2>/dev/null<br/>
-          <span class="output">Error: No such file or directory</span><br/>
-          <span class="prompt">$</span> <span class="cursor">_</span>
-        </code>
-      </div>
-      <p class="message">
-        Looks like this page got garbage collected, or maybe it never existed in the first place.
-        Either way, it's not in our memory.
-      </p>
-      <div class="actions">
-        <a href="/" class="btn">cd ~</a>
-        <a href="/guides" class="btn btn-secondary">Browse Guides</a>
-      </div>
-      <p class="hint">Pro tip: Check the URL for typos. Even senior devs make them.</p>
+<BaseLayout title="Page not found" description="The page you asked for does not exist on Computer Science Guide. Use search, the topic list or the glossary to find what you were looking for.">
+  <header class="page-head">
+    <div class="container narrow">
+      <p class="eyebrow">Error 404</p>
+      <h1>Page not found</h1>
+      <p class="lede">There is nothing at this address. The site was reorganised in 2026 and some older guide pages were retired, so an old bookmark or link may have brought you here.</p>
     </div>
-  </section>
-
-  <style>
-    .error-page {
-      text-align: center;
-      padding: 4rem 0 6rem;
-      min-height: 60vh;
-      display: flex;
-      align-items: center;
-    }
-
-    .container {
-      width: 100%;
-    }
-
-    .error-art {
-      margin-bottom: 1rem;
-    }
-
-    .ascii-art {
-      font-family: var(--font-mono);
-      font-size: 1rem;
-      color: var(--color-primary);
-      background: transparent;
-      display: inline-block;
-      line-height: 1.2;
-    }
-
-    h1 {
-      font-size: 6rem;
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin: 0;
-      line-height: 1;
-    }
-
-    .tagline {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      color: var(--color-text-muted);
-      margin: 0.5rem 0 1.5rem;
-    }
-
-    .terminal {
-      background: var(--color-code-bg);
-      color: var(--color-code-text);
-      padding: 1.5rem 2rem;
-      border-radius: 8px;
-      display: inline-block;
-      text-align: left;
-      margin: 1.5rem 0;
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-    }
-
-    .prompt {
-      color: var(--color-secondary);
-    }
-
-    .output {
-      color: #ef4444;
-    }
-
-    .cursor {
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
-    }
-
-    .message {
-      font-size: 1.1rem;
-      color: var(--color-text-muted);
-      max-width: 500px;
-      margin: 1.5rem auto;
-    }
-
-    .actions {
-      margin-top: 2rem;
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn-secondary {
-      background: transparent;
-      border: 2px solid var(--color-primary);
-      color: var(--color-primary);
-    }
-
-    .btn-secondary:hover {
-      background: var(--color-primary);
-      color: white;
-    }
-
-    .hint {
-      font-size: 0.875rem;
-      color: var(--color-text-muted);
-      margin-top: 3rem;
-      opacity: 0.7;
-    }
-
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 4rem;
-      }
-
-      .ascii-art {
-        font-size: 0.7rem;
-      }
-
-      .terminal {
-        padding: 1rem;
-        font-size: 0.8rem;
-      }
-    }
-  </style>
+  </header>
+  <div class="container narrow">
+    <div class="prose">
+      <form class="search-box" role="search" action="/search/" method="get">
+        <label class="visually-hidden" for="q404">Search the site</label>
+        <input class="input" type="search" id="q404" name="q" placeholder="Search the site" autocomplete="off" />
+        <button class="btn btn-primary" type="submit">Search</button>
+      </form>
+      <p>Other ways to find it:</p>
+      <ul>
+        {hasTopics && <li><a href="/topics/">Browse all topics</a></li>}
+        <li><a href="/start-here/">Start here</a>, for how the site is organised</li>
+        <li><a href="/glossary/">Look up a term in the glossary</a></li>
+        <li><a href="/contact/">Tell us about a broken link</a></li>
+      </ul>
+    </div>
+  </div>
 </BaseLayout>

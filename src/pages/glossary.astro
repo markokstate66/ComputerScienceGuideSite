@@ -1,0 +1,79 @@
+---
+// One definition per term (src/content/glossary/<id>.yaml). The <dt> id is the file name, so
+// articles link to a term as /glossary/#<id>. "Explained in" links appear only for published articles.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE } from '../lib/site';
+import { getArticles, articleUrl } from '../lib/content';
+
+const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.localeCompare(b.data.term, 'en', { sensitivity: 'base' }));
+const articles = await getArticles();
+const bySlug = new Map(articles.map((a) => [a.slug, a]));
+
+const groups = new Map<string, typeof terms>();
+for (const t of terms) {
+  const letter = t.data.term[0].toUpperCase();
+  groups.set(letter, [...(groups.get(letter) ?? []), t]);
+}
+const abs = (p: string) => new URL(p, SITE.url).href;
+const description = 'Short, precise definitions of the computer science and .NET terms used across Computer Science Guide, each linked to the article that explains it.';
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'DefinedTermSet',
+    '@id': abs('/glossary/'),
+    name: `${SITE.name} glossary`,
+    description,
+    hasDefinedTerm: terms.map((t) => ({ '@type': 'DefinedTerm', name: t.data.term, description: t.data.definition, url: abs(`/glossary/#${t.id}`) })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: abs('/') },
+      { '@type': 'ListItem', position: 2, name: 'Glossary', item: abs('/glossary/') },
+    ],
+  },
+];
+---
+<BaseLayout title="Glossary" description={description} structuredData={structuredData}>
+  <div data-pagefind-body>
+    <header class="page-head">
+      <div class="container narrow">
+        <Breadcrumbs items={[{ name: 'Home', href: '/' }]} />
+        <h1>Glossary</h1>
+        <p class="lede">{terms.length} terms, each defined once. Where an article explains a term in depth, the definition links to it.</p>
+      </div>
+    </header>
+    <div class="container narrow">
+      <nav aria-label="Jump to letter" data-pagefind-ignore>
+        <ul class="az-nav">
+          {[...groups.keys()].map((letter) => <li><a href={`#letter-${letter.toLowerCase()}`} aria-label={`Terms starting with ${letter}`}>{letter}</a></li>)}
+        </ul>
+      </nav>
+      {[...groups.entries()].map(([letter, list]) => (
+        <section class="glossary-group" aria-labelledby={`letter-${letter.toLowerCase()}`}>
+          <h2 id={`letter-${letter.toLowerCase()}`}>{letter}</h2>
+          <dl class="glossary-list">
+            {list.map((t) => {
+              const taught = t.data.seeAlso.map((s) => bySlug.get(s)).filter((a) => !!a);
+              return (
+                <>
+                  <dt id={t.id}>{t.data.term}</dt>
+                  <dd>
+                    {t.data.definition}
+                    {t.data.aliases.length > 0 && <span class="also">Also called: {t.data.aliases.join(', ')}.</span>}
+                    {taught.length > 0 && (
+                      <span class="also">Explained in: {taught.map((a, i) => <>{i > 0 && ', '}<a href={articleUrl(a!)}>{a!.data.title}</a></>)}</span>
+                    )}
+                  </dd>
+                </>
+              );
+            })}
+          </dl>
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

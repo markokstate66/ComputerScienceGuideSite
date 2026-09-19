@@ -1,31 +1,252 @@
 {
-  "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/images/*.{png,jpg,gif,svg}", "/css/*", "/_assets/*", "/*.{xml,txt,ico}"]
-  },
+  "trailingSlash": "always",
   "routes": [
     {
-      "route": "/robots.txt",
+      "route": "/guides/data-structures",
+      "redirect": "/data-structures/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/data-structures/",
+      "redirect": "/data-structures/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/algorithms",
+      "redirect": "/algorithms/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/algorithms/",
+      "redirect": "/algorithms/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/oop",
+      "redirect": "/oop-design/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/oop/",
+      "redirect": "/oop-design/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/databases",
+      "redirect": "/databases/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/databases/",
+      "redirect": "/databases/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/git-version-control",
+      "redirect": "/version-control/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/git-version-control/",
+      "redirect": "/version-control/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/cs-basics",
+      "redirect": "/start-here/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/cs-basics/",
+      "redirect": "/start-here/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/programming-fundamentals",
+      "redirect": "/start-here/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/programming-fundamentals/",
+      "redirect": "/start-here/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/system-design",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/system-design/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/api-design",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/api-design/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/web-development",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/web-development/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/html-css",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/html-css/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/javascript",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/javascript/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/react",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/react/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/nodejs",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/nodejs/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/portfolio",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/portfolio/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/interview-prep",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/interview-prep/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/resources",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/resources/",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/roadmap",
+      "redirect": "/start-here/",
+      "statusCode": 301
+    },
+    {
+      "route": "/roadmap/",
+      "redirect": "/start-here/",
+      "statusCode": 301
+    },
+    {
+      "route": "/500.html",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/guides/*",
+      "redirect": "/topics/",
+      "statusCode": 301
+    },
+    {
+      "route": "/styleguide/*",
       "headers": {
-        "content-type": "text/plain"
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/search/*",
+      "headers": {
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/404.html",
+      "headers": {
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/pagefind/*",
+      "headers": {
+        "X-Robots-Tag": "noindex"
+      }
+    },
+    {
+      "route": "/_assets/*",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
     {
       "route": "/sitemap.xml",
       "headers": {
-        "content-type": "application/xml"
+        "content-type": "application/xml; charset=utf-8"
       }
     }
   ],
   "responseOverrides": {
     "404": {
-      "rewrite": "/404.html"
+      "rewrite": "/404.html",
+      "statusCode": 404
     }
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
-    "X-XSS-Protection": "1; mode=block",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
     "Cache-Control": "public, max-age=3600"
@@ -33,6 +254,10 @@
   "mimeTypes": {
     ".json": "application/json",
     ".xml": "application/xml",
-    ".svg": "image/svg+xml"
+    ".svg": "image/svg+xml",
+    ".pf_meta": "application/octet-stream",
+    ".pf_index": "application/octet-stream",
+    ".pf_fragment": "application/octet-stream",
+    ".pagefind": "application/octet-stream"
   }
 }

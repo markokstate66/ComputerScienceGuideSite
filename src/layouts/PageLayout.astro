@@ -1,0 +1,58 @@
+---
+// Layout for hand-written text pages (trust pages, start-here). The "Last updated" date comes from
+// src/data/site-pages.ts, which also feeds the sitemap.
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE, fmtDate, isoDate } from '../lib/site';
+import { pageUpdated, type StaticPath } from '../data/site-pages';
+
+interface Props {
+  title: string;
+  description: string;
+  lede?: string;
+  path: StaticPath;
+  showUpdated?: boolean;
+  /** Include this page in the on-site search index. */
+  searchable?: boolean;
+  schemaType?: 'WebPage' | 'AboutPage' | 'ContactPage';
+}
+const { title, description, lede, path, showUpdated = true, searchable = true, schemaType = 'WebPage' } = Astro.props;
+const updated = pageUpdated(path);
+const abs = (p: string) => new URL(p, SITE.url).href;
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: abs('/') },
+      { '@type': 'ListItem', position: 2, name: title, item: abs(path) },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': schemaType,
+    name: title,
+    description,
+    url: abs(path),
+    dateModified: updated.toISOString(),
+    isPartOf: { '@id': `${SITE.url}/#website` },
+  },
+];
+---
+<BaseLayout title={title} description={description} structuredData={structuredData}>
+  <div data-pagefind-body={searchable ? '' : undefined}>
+    <header class="page-head">
+      <div class="container narrow">
+        <Breadcrumbs items={[{ name: 'Home', href: '/' }]} />
+        <h1>{title}</h1>
+        {lede && <p class="lede">{lede}</p>}
+        {showUpdated && <p class="page-meta" data-pagefind-ignore>Last updated <time datetime={isoDate(updated)}>{fmtDate(updated)}</time></p>}
+      </div>
+    </header>
+    <div class="container narrow">
+      <div class="prose">
+        <slot />
+      </div>
+    </div>
+  </div>
+</BaseLayout>

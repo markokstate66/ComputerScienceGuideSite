@@ -1,0 +1,4 @@
+term: "Dynamic programming"
+definition: "A technique for problems whose solution is built from overlapping subproblems: each subproblem is solved once and its answer stored, either top-down with memoization or bottom-up in a table."
+aliases: ["memoization","DP"]
+seeAlso: ["algorithms/dynamic-programming"]

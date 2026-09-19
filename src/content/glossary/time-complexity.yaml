@@ -1,0 +1,4 @@
+term: "Time complexity"
+definition: "The number of basic operations an algorithm performs, expressed as a function of its input size, usually in Big-O notation. It predicts how running time scales, not how many milliseconds a particular run takes."
+aliases: []
+seeAlso: ["complexity/big-o-notation","complexity/analyzing-loops-and-recursion"]

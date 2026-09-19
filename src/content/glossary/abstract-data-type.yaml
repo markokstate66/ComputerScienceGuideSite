@@ -1,0 +1,4 @@
+term: "Abstract data type"
+definition: "A description of a collection by its operations and their behaviour, without saying how it is implemented. Stack, queue and priority queue are abstract data types; an array-backed stack and a binary heap are concrete data structures that implement them."
+aliases: ["ADT"]
+seeAlso: ["data-structures/stacks-and-queues"]

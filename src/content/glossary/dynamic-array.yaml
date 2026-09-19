@@ -1,0 +1,4 @@
+term: "Dynamic array"
+definition: "An array-backed list that grows by allocating a larger array and copying the elements across when it runs out of room. List<T> in .NET is a dynamic array. Appending is O(1) amortized because the capacity grows geometrically."
+aliases: ["resizable array","List<T>"]
+seeAlso: ["data-structures/arrays-and-dynamic-arrays","complexity/amortized-analysis"]

@@ -1,0 +1,8 @@
+title: "Operating Systems"
+navTitle: "Operating Systems"
+order: 8
+accent:
+  light: "#b91c1c"
+  dark: "#fca5a5"
+blurb: >-
+  The operating-system concepts that application developers meet every day: processes and threads, race conditions and locks, virtual memory, CPU scheduling, file systems and durability, and CPU caches. The behaviour is observed from .NET code, including reproducible concurrency bugs and cache-effect measurements.

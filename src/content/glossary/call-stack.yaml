@@ -1,0 +1,4 @@
+term: "Call stack"
+definition: "The region of memory that records the chain of active method calls. Each call pushes a frame holding its return address, arguments and local variables, and the frame is popped when the method returns. Unbounded recursion exhausts it and the process ends with a stack overflow."
+aliases: ["stack frame"]
+seeAlso: ["algorithms/recursion"]

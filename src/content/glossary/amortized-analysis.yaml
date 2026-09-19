@@ -1,0 +1,4 @@
+term: "Amortized analysis"
+definition: "A way of costing a sequence of operations as a whole, so that an occasional expensive operation is averaged over the many cheap ones around it. It is a worst-case guarantee for the sequence, which makes it different from average-case analysis over random inputs."
+aliases: ["amortized time"]
+seeAlso: ["complexity/amortized-analysis"]

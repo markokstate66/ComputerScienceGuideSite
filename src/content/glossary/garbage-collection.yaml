@@ -1,0 +1,4 @@
+term: "Garbage collection"
+definition: "Automatic reclamation of memory that the program can no longer reach. The .NET garbage collector starts from roots such as local variables and static fields, marks every object reachable from them, and reclaims the rest."
+aliases: ["GC"]
+seeAlso: ["csharp-dotnet/garbage-collection"]

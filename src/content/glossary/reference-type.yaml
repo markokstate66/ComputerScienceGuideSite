@@ -1,0 +1,4 @@
+term: "Reference type"
+definition: "In .NET, a type whose variables hold a reference to an object on the managed heap, so assignment copies the reference and both variables see the same object. Classes, arrays, delegates and strings are reference types."
+aliases: ["class"]
+seeAlso: ["csharp-dotnet/value-types-vs-reference-types"]

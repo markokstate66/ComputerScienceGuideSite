@@ -1,0 +1,74 @@
+---
+// This page describes the real pipeline in this repository: CONTENT_PLAN.md (content model and
+// review gate), tools/run-code.mjs (code verification) and tools/verify-page.mjs (page checks).
+// Keep it in step with those files. The owner must confirm it (docs/NEEDS_MARKUS.md item 12).
+import PageLayout from '../layouts/PageLayout.astro';
+import NeedsMarkus from '../components/NeedsMarkus.astro';
+---
+<PageLayout
+  title="Editorial policy"
+  path="/editorial-policy/"
+  description="How Computer Science Guide articles are researched, how AI assistance is used and reviewed, how every code sample is machine-verified, and how errors are fixed."
+  lede="How articles are researched and written, where AI is used and where it is not, how code is verified, and what happens when something is wrong."
+>
+  <p><NeedsMarkus n={12} what="owner sign-off: confirm this page describes what you actually do, especially the AI-assistance and review sections" /></p>
+
+  <h2 id="standards">What an article has to be</h2>
+  <p>An article is published only if it is accurate, original and useful to someone who wants to understand the subject properly. In practice that means:</p>
+  <ul>
+    <li><strong>It teaches one subject in depth</strong> rather than surveying many. Length comes from worked examples, edge cases and exercises. Articles are not padded to reach a word count, and there are no filler introductions.</li>
+    <li><strong>Its claims can be checked.</strong> Non-obvious facts, such as how a .NET type is implemented, what a specification requires or what a database engine does by default, are traced to a primary source listed at the end of the article.</li>
+    <li><strong>Its code works.</strong> Every example has been compiled and executed by a tool, as described below.</li>
+    <li><strong>It is original.</strong> Explanations, examples and diagrams are written for this site. Text is not copied or closely paraphrased from documentation, books or other websites. Short quotations are marked as quotations and attributed.</li>
+  </ul>
+
+  <h2 id="sources">Research and sources</h2>
+  <p>Articles are researched from primary sources wherever they exist: language and protocol specifications (for example the C# language specification and IETF RFCs), official documentation (Microsoft Learn, the SQLite, PostgreSQL and Git documentation), the published source code of the .NET runtime, and standard textbooks. Blog posts and question-and-answer sites may prompt a topic, but they are not cited as evidence for a fact.</p>
+  <p>Every article ends with a numbered list of its sources, each with the date it was consulted. Where sources disagree, or where behaviour differs between versions or products, the article says so instead of choosing one silently.</p>
+  <p>Performance numbers are measured, not quoted from memory. When an article shows a timing or an allocation count, it came from running the program shown, and the article makes clear that the figures are from one machine and will differ on yours.</p>
+
+  <h2 id="ai">How AI assistance is used</h2>
+  <p>AI language models are used as writing and research assistants on this site, and readers are entitled to know how.</p>
+  <ul>
+    <li><strong>What AI does.</strong> AI tools help to outline articles, draft explanations and examples, draw diagrams as SVG, and review drafts for technical errors, unclear passages and padding. Each draft goes through several rounds of automated critique against a written standard before a person reads it.</li>
+    <li><strong>What AI is not trusted to do.</strong> AI-generated statements are not treated as facts. Claims are checked against the cited primary sources, and code is never accepted because it looks right: it is executed, and its real output is what appears in the article.</li>
+    <li><strong>Who is responsible.</strong> The named author reviews every article before publication, decides what is published, and is accountable for its accuracy. Articles that do not meet the standard after repeated revision are discarded, not published.</li>
+    <li><strong>What is never generated.</strong> Facts about the author, testimonials, statistics, quotations and benchmark results are never invented. If something is not known, it is left out.</li>
+  </ul>
+
+  <h2 id="code">How code is verified</h2>
+  <p>Every code block in an article's source file is labelled, and a verification tool acts on the label before the article can be published:</p>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="How each kind of code block is verified">
+    <table>
+      <thead><tr><th>Kind of block</th><th>What the tool does</th></tr></thead>
+      <tbody>
+        <tr><td>Complete C# program</td><td>Compiles and runs it with the .NET SDK. Compiler warnings count as failures. The program's standard output must match the output block shown beneath it in the article, line for line. Only values that legitimately vary, such as timings, may be wildcarded.</td></tr>
+        <tr><td>C# excerpt</td><td>Checks that every line of the excerpt appears, in order, in a complete program in the same article, so an excerpt cannot drift away from code that was tested.</td></tr>
+        <tr><td>Example that is meant to fail</td><td>Confirms that it fails in the way the article says: the named compiler error, or the named unhandled exception.</td></tr>
+        <tr><td>SQL</td><td>Runs the statements in order against an in-memory SQLite database and compares the result set with the one printed in the article.</td></tr>
+        <tr><td>Shell and Git commands</td><td>Runs them in a fresh temporary directory with a fixed identity and date, and compares the output.</td></tr>
+        <tr><td>Unlabelled C#, SQL or shell code</td><td>Rejected. Code that has not been verified cannot be published.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Illustrative blocks such as JSON documents, HTTP messages and diffs are not executed, and transcripts of interactive tools are produced by really running the tool. The reference toolchain is the .NET 10 SDK and SQLite; where SQL Server or PostgreSQL behave differently, the article says so and cites the vendor's documentation.</p>
+  <p>Each page is also checked automatically for broken links, browser console errors, accessibility problems, layout overflow on phones, and leftover placeholder text.</p>
+
+  <h2 id="dates">Dates and updates</h2>
+  <p>Each article shows the date it was first published and, if it has changed in substance since, the date it was last updated. The updated date changes only for edits that affect meaning: a corrected fact, new or rewritten sections, or code updated for a new version of .NET. Fixing a typo does not change it. Dates are never refreshed to make an article look newer.</p>
+  <p>Estimated reading times are calculated from the article's length (prose at 220 words per minute, plus two seconds for each non-blank line of code, to a maximum of 40 seconds per code block; output panels are not counted). They are not written by hand.</p>
+
+  <h2 id="corrections">Corrections</h2>
+  <p>Every article has a "Report an error" link. When a report arrives, the claim is checked against the sources and, for code, by running it.</p>
+  <ul>
+    <li>If the article is wrong, it is fixed, its updated date changes, and the correction is recorded on the <a href="/corrections/">corrections page</a> with the date, the article and what changed.</li>
+    <li>If the article is right but unclear enough to be misread, it is reworded. Clarifications that do not change the meaning are not logged.</li>
+    <li>Articles are not silently deleted to hide an error. If an article is withdrawn, the corrections page says so and why.</li>
+  </ul>
+
+  <h2 id="independence">Independence</h2>
+  <p>Nobody pays for coverage, links or recommendations, and sponsored or guest articles are not accepted. The site contains no affiliate links. It does not currently show advertising; if it does in future, advertisers will have no influence over what is written, and adverts will be clearly distinguishable from content.</p>
+
+  <h2 id="contact">Questions about this policy</h2>
+  <p>Use the <a href="/contact/">contact form</a>.</p>
+</PageLayout>

@@ -1,0 +1,4 @@
+term: "Big-O notation"
+definition: "A way of stating an upper bound on how a function grows. Saying f(n) is O(g(n)) means that beyond some input size n0, f(n) never exceeds a constant multiple of g(n). In practice it describes how running time or memory scales with input size, ignoring constant factors and lower-order terms."
+aliases: ["Big O","asymptotic notation"]
+seeAlso: ["complexity/big-o-notation"]

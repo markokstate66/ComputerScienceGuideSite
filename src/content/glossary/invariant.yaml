@@ -1,0 +1,4 @@
+term: "Invariant"
+definition: "A condition that is true at a defined point every time execution reaches it, such as at the start of each loop iteration or whenever an object's public method returns. Invariants are the main tool for arguing that an algorithm or a class is correct."
+aliases: ["loop invariant","class invariant"]
+seeAlso: ["algorithms/binary-search","oop-design/four-pillars-of-oop"]

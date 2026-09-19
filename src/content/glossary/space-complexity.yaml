@@ -1,0 +1,4 @@
+term: "Space complexity"
+definition: "The amount of memory an algorithm needs as a function of its input size. Auxiliary space counts only the extra memory beyond the input itself, including the call stack used by recursion."
+aliases: []
+seeAlso: ["complexity/space-complexity"]

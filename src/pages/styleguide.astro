@@ -1,0 +1,97 @@
+---
+// Living style guide. Not linked from anywhere, not in the sitemap, not in the search index, and
+// served with X-Robots-Tag: noindex (staticwebapp.config.json). The Markdown section renders the
+// draft fixture article through the real pipeline, so what you see here is what writers get.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Content, frontmatter } from '../content/articles/complexity/zz-layout-fixture.md';
+import { fmtDate } from '../lib/site';
+
+const sources = (frontmatter.sources ?? []) as { title: string; url: string; publisher?: string; accessed: string | Date }[];
+const accents = [
+  ['complexity', '#4338ca', '#a5b4fc'], ['data-structures', '#0f766e', '#5eead4'], ['algorithms', '#b45309', '#fcd34d'],
+  ['oop-design', '#be185d', '#f9a8d4'], ['csharp-dotnet', '#7e22ce', '#d8b4fe'], ['databases', '#0369a1', '#7dd3fc'],
+  ['networking', '#047857', '#6ee7b7'], ['operating-systems', '#b91c1c', '#fca5a5'], ['version-control', '#c2410c', '#fdba74'],
+  ['testing', '#4d7c0f', '#bef264'],
+];
+---
+<BaseLayout title="Style guide" description="Internal reference page that renders every typographic element and component of the Computer Science Guide design system in one place.">
+  <div class="pillar-scope" style="--accent-light:#4338ca;--accent-dark:#a5b4fc">
+    <header class="page-head">
+      <div class="container">
+        <p class="eyebrow">Internal</p>
+        <h1>Style guide: heading level 1</h1>
+        <p class="lede">Every component of the design system on one page, for visual review in both themes and at phone width. This is the lede style.</p>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="prose">
+        <h2 id="sg-type">Heading level 2</h2>
+        <p>Body text is set in the system UI font at 18 px on desktop and 17 px on phones, with a line height of 1.7 and a measure of roughly 70 characters. This paragraph is long enough to show several lines at that measure so the rhythm can be judged properly.</p>
+        <h3 id="sg-h3">Heading level 3</h3>
+        <p>Text under a third-level heading, with a <a href="/styleguide/">link</a>, <strong>strong</strong>, <em>emphasis</em>, <code>inline code</code>, <mark>highlight</mark> and <kbd>Ctrl</kbd>+<kbd>K</kbd>.</p>
+        <h4>Heading level 4</h4>
+        <p>Text under a fourth-level heading.</p>
+
+        <h2 id="sg-ui">Interface components</h2>
+        <div class="actions">
+          <a class="btn btn-primary" href="/styleguide/">Primary button</a>
+          <a class="btn" href="/styleguide/">Secondary button</a>
+          <span class="badge">Intermediate</span>
+        </div>
+      </div>
+
+      <section class="section" aria-labelledby="sg-cards">
+        <div class="section-head"><h2 id="sg-cards">Cards and pillar accents</h2><p>One accent hue per pillar, with a light-theme and a dark-theme value.</p></div>
+        <ul class="card-grid">
+          {accents.map(([name, light, dark]) => (
+            <li class="card pillar-card pillar-scope" style={`--accent-light:${light};--accent-dark:${dark}`}>
+              <span class="card-kicker">{name}</span>
+              <h3 class="card-title"><a href="/styleguide/">Card title in the {name} pillar</a></h3>
+              <p>Card description text, two lines or so, in the muted colour.</p>
+              <span class="card-meta"><span>Beginner</span><span>12 min read</span></span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="section" aria-labelledby="sg-list">
+        <div class="section-head"><h2 id="sg-list">Hub reading list and previous/next</h2></div>
+        <ol class="reading-list">
+          <li><h3><a href="/styleguide/">First article in the pillar</a></h3><p>Its description, as written in the front matter.</p><span class="card-meta"><span>Beginner</span><span>14 min read</span></span></li>
+          <li><h3><a href="/styleguide/">Second article in the pillar</a></h3><p>Its description, as written in the front matter.</p><span class="card-meta"><span>Intermediate</span><span>21 min read</span></span></li>
+        </ol>
+        <nav class="prev-next" aria-label="Example previous and next links" style="margin-top:2rem;max-width:46rem">
+          <a class="prev" href="/styleguide/"><span class="dir">Previous in Complexity</span><span class="ttl">Big-O Notation: What It Measures and What It Hides</span></a>
+          <a class="next" href="/styleguide/"><span class="dir">Next in Complexity</span><span class="ttl">Amortized Analysis</span></a>
+        </nav>
+      </section>
+
+      <div class="prose">
+        <h2 id="sg-form">Form controls</h2>
+        <form class="form" onsubmit="return false">
+          <div class="field"><label for="sg-input">Text input</label><input id="sg-input" type="text" value="Some text" /></div>
+          <div class="field"><label for="sg-select">Select</label><select id="sg-select"><option>Option one</option></select></div>
+          <div class="form-status success">Success message</div>
+          <div class="form-status error">Error message</div>
+        </form>
+
+        <h2 id="sg-markdown">Markdown components (the draft fixture article)</h2>
+        <p>Everything below this line is <code>src/content/articles/complexity/zz-layout-fixture.md</code> rendered through the site's Markdown pipeline.</p>
+        <hr />
+        <Content />
+
+        <div class="article-end">
+          <section class="sources" aria-labelledby="sg-sources">
+            <h2 id="sg-sources">Sources</h2>
+            <ol>
+              {sources.map((s) => (
+                <li><a href={s.url} rel="noopener">{s.title}</a>{s.publisher && <span class="source-meta">. {s.publisher}</span>}<span class="source-meta">. Accessed {fmtDate(new Date(s.accessed))}.</span></li>
+              ))}
+            </ol>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

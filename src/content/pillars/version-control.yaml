@@ -1,0 +1,8 @@
+title: "Version Control with Git"
+navTitle: "Version Control"
+order: 9
+accent:
+  light: "#c2410c"
+  dark: "#fdba74"
+blurb: >-
+  Git explained from its object model outwards: blobs, trees, commits and refs, then branching, merging and conflicts, rebase, undoing mistakes, and team workflows. Every command sequence shown is executed in a scratch repository by the verification tool before publication, so the output you see is the output Git really produced.

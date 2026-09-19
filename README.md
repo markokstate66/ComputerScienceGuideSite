@@ -1,125 +1,66 @@
 # Computer Science Guide
 
-A static website for learning computer science, built with Astro and hosted on Azure Static Web Apps.
+Source for computerscienceguide.com: a static Astro 4 site deployed to Azure Static Web Apps. Articles are Markdown files in a schema-validated content collection; every code sample in them is compiled and run by `tools/run-code.mjs`.
 
-## Quick Start
+Read first: `CONTENT_PLAN.md` (the contract), `docs/WRITER_GUIDE.md` (how to write an article), `docs/SHELL_NOTES.md` (decisions behind the site shell), `docs/NEEDS_MARKUS.md` (open owner inputs).
 
-```bash
-# Install dependencies
+## Commands
+
+```text
 npm install
+npm run dev          local dev server
+npm run build        astro build -> dist/, then Pagefind index and staticwebapp.config.json are written into dist/
+npm run preview      serve dist/
+npm run images       regenerate OG cards, apple-touch-icon.png and logo.png (tools/make-images.mjs)
 
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+node tools/run-code.mjs <article.md> | --pillar <name> | --all
+node tools/verify-page.mjs [--drafts] [--no-lighthouse] [--external] /route/ ...   (use PowerShell, not Git Bash)
 ```
 
-## Deployment to Azure Static Web Apps
+Requirements: Node 20+ to build; Node 22.5+ (for `node:sqlite`), the .NET 10 SDK, Git Bash and Chrome or Edge to run the two tools.
 
-### Option 1: GitHub Integration (Recommended)
+`INCLUDE_DRAFTS=1` (or `verify-page --drafts`) builds `draft: true` articles, including the layout fixture `complexity/zz-layout-fixture`.
 
-1. Push this repository to GitHub
-2. Go to Azure Portal > Create a resource > Static Web App
-3. Connect your GitHub repository
-4. Configure:
-   - Build preset: `Astro`
-   - App location: `/`
-   - Output location: `dist`
-5. Azure will add the deployment token to your repo secrets automatically
+## Structure
 
-### Option 2: Azure CLI
-
-```bash
-# Login to Azure
-az login
-
-# Create resource group
-az group create --name rg-csguide --location eastus2
-
-# Create Static Web App
-az staticwebapp create \
-  --name computerscienceguide \
-  --resource-group rg-csguide \
-  --source https://github.com/YOUR_USERNAME/ComputerScienceGuideSite \
-  --branch main \
-  --app-location "/" \
-  --output-location "dist"
+```text
+src/
+  content/
+    config.ts                 collection schemas (articles, authors, pillars, glossary)
+    articles/<pillar>/*.md    one file per article -> /<pillar>/<slug>/
+    pillars/*.yaml            the ten pillars: titles, blurbs, accent colours
+    authors/markus.yaml       the single author (NEEDS_MARKUS placeholders)
+    glossary/*.yaml           one term per file -> /glossary/#<file-name>
+  page-content/               Markdown bodies for hand-written pages (start-here)
+  data/site-pages.ts          static pages + last-changed dates (sitemap lastmod, "Last updated")
+  data/corrections.ts         public corrections log
+  lib/                        site constants, content queries, reading time, related articles
+  plugins/                    remark/rehype plugins (code blocks, callouts, tables, anchors) + build integration
+  layouts/                    BaseLayout (head, header, footer), ArticleLayout, PageLayout
+  components/                 ArticleCard, Breadcrumbs, Toc, NeedsMarkus
+  scripts/site.ts             all client JS: theme, menu, copy buttons, TOC highlight, GA4 loader
+  styles/global.css           the design system
+  pages/                      routes; [pillar]/index.astro = hubs + /topics/, [pillar]/[slug].astro = articles
+public/                       ads.txt, robots.txt, favicon, generated PNGs
+api/contact/                  Azure Function behind the contact form (Azure Communication Services email)
+staticwebapp.config.json      redirects, headers, 404 override (copied into dist/ at build; see docs/REDIRECTS.md)
+tools/                        run-code.mjs, verify-page.mjs, make-images.mjs
 ```
 
-## Configuration
+A pillar hub, and every link to it, exists only when the pillar has at least one non-draft article. `/topics/` exists only when at least one hub does.
 
-### Google AdSense
+## Analytics and advertising
 
-Replace the placeholder values in `src/layouts/BaseLayout.astro`:
+- Google Analytics 4 (`G-08FYJQ54RN`) is loaded by `src/scripts/site.ts` only on the production hostname, never when the browser sends Global Privacy Control or Do Not Track, and with Consent Mode defaulted to "denied" (no cookies). `src/pages/privacy.astro` describes exactly this; change both together.
+- There is no ad code. `public/ads.txt` is kept. The AdSense site-verification snippet goes at the `ADSENSE-VERIFICATION-SNIPPET` comment in `src/layouts/BaseLayout.astro` and nowhere else.
 
-1. Find `ca-pub-XXXXXXXXXX` and replace with your AdSense publisher ID
-2. In `src/components/AdUnit.astro`, replace `data-ad-slot="XXXXXXXXXX"` with your ad unit IDs
+## Deployment
 
-### Google Analytics
+Pushing to `master` runs `.github/workflows/azure-static-web-apps.yml`: `npm ci`, `npm run build`, then uploads `dist/` (app) and `api/` (functions) with `skip_app_build: true`. The workflow needs the repository secret `AZURE_STATIC_WEB_APPS_API_TOKEN` (Azure Portal > Static Web App > Manage deployment token).
 
-In `src/layouts/BaseLayout.astro`, replace `G-XXXXXXXXXX` with your GA4 measurement ID.
+The contact function needs these application settings on the Static Web App: `ACS_CONNECTION_STRING`, and optionally `ACS_SENDER_EMAIL` and `CONTACT_EMAIL`.
 
-### Custom Domain
-
-1. In Azure Portal, go to your Static Web App > Custom domains
-2. Add your domain (computerscienceguide.com)
-3. Configure DNS:
-   - For apex domain: Add A record pointing to Azure IP
-   - For www: Add CNAME pointing to your Azure domain
-
-## Project Structure
-
-```
-├── src/
-│   ├── components/     # Reusable components
-│   ├── layouts/        # Page layouts
-│   ├── pages/          # All routes (file-based routing)
-│   │   ├── guides/     # CS guide content
-│   │   └── ...
-│   └── styles/         # Global CSS
-├── public/             # Static assets
-├── astro.config.mjs    # Astro configuration
-├── staticwebapp.config.json  # Azure SWA config
-└── package.json
-```
-
-## Adding New Guides
-
-1. Create a new `.astro` file in `src/pages/guides/`
-2. Use the `GuideLayout` component for consistent styling:
-
-```astro
----
-import GuideLayout from '../../layouts/GuideLayout.astro';
-
-const toc = [
-  { title: 'Section 1', href: '#section-1' },
-  // ...
-];
----
-
-<GuideLayout
-  title="Your Guide Title"
-  description="SEO description"
-  level="beginner"
-  readTime="15 min read"
-  toc={toc}
->
-  <!-- Content here -->
-</GuideLayout>
-```
-
-## SEO Features
-
-- Automatic sitemap generation via `@astrojs/sitemap`
-- Open Graph and Twitter Card meta tags
-- Structured data (JSON-LD) for articles
-- Canonical URLs
-- robots.txt
+Custom domain: Azure Portal > Static Web App > Custom domains. The canonical host is `www.computerscienceguide.com` (`site` in `astro.config.mjs`).
 
 ## License
 

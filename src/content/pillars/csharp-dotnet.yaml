@@ -1,0 +1,8 @@
+title: "C# and .NET Fundamentals"
+navTitle: "C# and .NET"
+order: 5
+accent:
+  light: "#7e22ce"
+  dark: "#d8b4fe"
+blurb: >-
+  What the C# compiler and the .NET runtime do with your code: value and reference types, the garbage collector, the state machine behind async and await, deferred execution in LINQ, generics and variance, strings and Unicode, exceptions, and Span<T>. The articles rely on experiments you can run yourself, including allocation measurements and deliberate compile errors.

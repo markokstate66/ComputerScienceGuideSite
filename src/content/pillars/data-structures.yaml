@@ -1,0 +1,8 @@
+title: "Data Structures"
+navTitle: "Data Structures"
+order: 2
+accent:
+  light: "#0f766e"
+  dark: "#5eead4"
+blurb: >-
+  Arrays, linked lists, stacks, queues, hash tables, trees, heaps, graphs and tries: how each one is laid out in memory, what its operations cost, and when it is the wrong choice. Every structure is built from scratch in C# and then compared with the .NET type you would use in production, such as List<T>, Dictionary<TKey,TValue> and PriorityQueue<TElement,TPriority>.

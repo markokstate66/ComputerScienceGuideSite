@@ -1,0 +1,4 @@
+term: "Binary search tree"
+definition: "A binary tree in which every node's key is greater than all keys in its left subtree and smaller than all keys in its right subtree. Search, insert and delete take time proportional to the tree's height, which is O(log n) only if the tree is kept balanced."
+aliases: ["BST"]
+seeAlso: ["data-structures/binary-search-trees"]

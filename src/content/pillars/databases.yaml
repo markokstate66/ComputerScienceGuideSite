@@ -1,0 +1,8 @@
+title: "Databases and SQL"
+navTitle: "Databases"
+order: 6
+accent:
+  light: "#0369a1"
+  dark: "#7dd3fc"
+blurb: >-
+  Relational databases from the model up: keys and relationships, joins, indexes and query plans, normalization, transactions and isolation levels, window functions, and SQL injection. Every query is executed against SQLite and shown with its real result, with notes where SQL Server or PostgreSQL behave differently.

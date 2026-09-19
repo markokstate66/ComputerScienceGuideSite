@@ -1,0 +1,25 @@
+---
+// "On this page" list built from the h2/h3 headings Astro collected while rendering the Markdown.
+import type { MarkdownHeading } from 'astro';
+interface Props { headings: MarkdownHeading[] }
+const { headings } = Astro.props;
+
+type Node = MarkdownHeading & { children: MarkdownHeading[] };
+const tree: Node[] = [];
+for (const h of headings) {
+  if (h.depth === 2) tree.push({ ...h, children: [] });
+  else if (h.depth === 3 && tree.length) tree[tree.length - 1].children.push(h);
+}
+---
+<ul class="toc-list">
+  {tree.map((h2) => (
+    <li>
+      <a href={`#${h2.slug}`}>{h2.text}</a>
+      {h2.children.length > 0 && (
+        <ul>
+          {h2.children.map((h3) => <li><a href={`#${h3.slug}`}>{h3.text}</a></li>)}
+        </ul>
+      )}
+    </li>
+  ))}
+</ul>

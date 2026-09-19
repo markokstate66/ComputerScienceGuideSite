@@ -1,0 +1,4 @@
+term: "Commit (Git)"
+definition: "A Git object that records a snapshot of the whole project tree, the commit or commits it was based on, an author, a committer and a message. A commit is identified by the hash of its contents, so it can never be changed, only replaced."
+aliases: []
+seeAlso: ["version-control/how-git-works"]

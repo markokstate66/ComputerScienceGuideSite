@@ -1,0 +1,8 @@
+title: "Complexity and Big-O"
+navTitle: "Complexity"
+order: 1
+accent:
+  light: "#4338ca"
+  dark: "#a5b4fc"
+blurb: >-
+  How to reason about the cost of code before you run it: what Big-O notation measures and what it leaves out, how to derive the running time of loops and recursive functions, amortized and space analysis, and what it means in practice for a problem to be NP-hard. Each claim is checked against operation counts and measurements from real C# programs.

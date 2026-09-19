@@ -1,0 +1,4 @@
+term: "Hash table"
+definition: "A structure that stores key-value pairs in an array, using a hash function to turn each key into an array position. Lookups, inserts and deletes take expected constant time as long as the hash function spreads keys evenly and the table is resized as it fills. Dictionary<TKey,TValue> is .NET's general-purpose hash table."
+aliases: ["hash map","dictionary"]
+seeAlso: ["data-structures/hash-tables"]

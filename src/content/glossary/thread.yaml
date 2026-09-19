@@ -1,0 +1,4 @@
+term: "Thread"
+definition: "An independent sequence of execution inside a process. Threads of the same process share its memory and handles but each has its own call stack and register state, which is what makes both shared-memory concurrency and race conditions possible."
+aliases: []
+seeAlso: ["operating-systems/processes-and-threads"]

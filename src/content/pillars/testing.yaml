@@ -1,0 +1,8 @@
+title: "Software Testing"
+navTitle: "Testing"
+order: 10
+accent:
+  light: "#4d7c0f"
+  dark: "#bef264"
+blurb: >-
+  How to test code so that the tests are worth having: unit-test structure with xUnit, test doubles, a complete test-driven development example, integration tests, property-based testing, and what a code-coverage number does and does not tell you.

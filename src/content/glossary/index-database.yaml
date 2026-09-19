@@ -1,0 +1,4 @@
+term: "Index (database)"
+definition: "An auxiliary structure, usually a B-tree, that keeps selected column values in sorted order with pointers to their rows, so the engine can find matching rows without scanning the whole table. Indexes speed up reads and make writes more expensive."
+aliases: ["B-tree index"]
+seeAlso: ["databases/indexes"]

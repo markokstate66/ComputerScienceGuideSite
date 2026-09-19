@@ -1,0 +1,8 @@
+title: "Object-Oriented Design and Patterns"
+navTitle: "OOP and Design"
+order: 4
+accent:
+  light: "#be185d"
+  dark: "#f9a8d4"
+blurb: >-
+  Object-oriented programming explained through the problems it solves: protecting invariants, virtual dispatch, the costs of inheritance, SOLID and where it is over-applied, and the design patterns that already appear in the .NET base class library. Examples use small business domains and full before-and-after refactorings instead of animal hierarchies.

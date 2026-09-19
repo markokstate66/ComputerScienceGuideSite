@@ -1,0 +1,43 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { CORRECTIONS } from '../data/corrections';
+import { fmtDate, isoDate } from '../lib/site';
+import { getArticles, articleUrl } from '../lib/content';
+
+const articles = await getArticles();
+const bySlug = new Map(articles.map((a) => [a.slug, a]));
+const entries = [...CORRECTIONS].sort((a, b) => b.date.localeCompare(a.date)).map((c) => ({ ...c, when: new Date(c.date + 'T00:00:00Z'), target: bySlug.get(c.article) }));
+---
+<PageLayout
+  title="Corrections"
+  path="/corrections/"
+  description="The public log of factual corrections made to Computer Science Guide articles, with what was wrong, what changed and when, plus how to report an error."
+  lede="When a published article turns out to be wrong, it is fixed and the fix is recorded here."
+>
+  <h2 id="log">Corrections log</h2>
+  {entries.length === 0 ? (
+    <p>No corrections have been recorded. This log covers the articles published since the site was rebuilt in 2026; when the first correction is made it will appear here with its date, the article concerned and a description of what changed.</p>
+  ) : (
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Corrections log">
+      <table>
+        <thead><tr><th>Date</th><th>Article</th><th>What changed</th></tr></thead>
+        <tbody>
+          {entries.map((c) => (
+            <tr>
+              <td><time datetime={isoDate(c.when)}>{fmtDate(c.when)}</time></td>
+              <td>{c.target ? <a href={articleUrl(c.target)}>{c.target.data.title}</a> : c.article}</td>
+              <td>{c.summary}{c.reportedBy === 'reader' && ' (Reported by a reader.)'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+
+  <h2 id="what-counts">What is logged</h2>
+  <p>A correction is logged when a change alters what an article says: a wrong fact, a wrong complexity claim, code that did not behave as described, a misattributed source. The article's "Updated" date changes at the same time.</p>
+  <p>Typos, formatting fixes and rewording that does not change the meaning are not logged. New sections added to an article are reflected in its updated date but are not corrections.</p>
+
+  <h2 id="report">How to report an error</h2>
+  <p>Use the "Report an error" link at the end of the article, or the <a href="/contact/?topic=correction">contact form</a>. Say which article and which statement or code sample, and, if you can, point to a source. Reports are checked against the primary sources and, for code, by running it. The full process is described in the <a href="/editorial-policy/#corrections">editorial policy</a>.</p>
+</PageLayout>

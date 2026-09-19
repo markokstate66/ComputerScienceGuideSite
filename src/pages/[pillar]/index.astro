@@ -1,0 +1,100 @@
+---
+// Generates one hub per pillar that has at least one publishable article, plus /topics/ when any
+// hub exists. A pillar with no articles gets no page and no link anywhere on the site.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { SITE } from '../../lib/site';
+import { getLivePillars, articleUrl, pillarUrl, readingTime, LEVEL_LABEL, type Article, type Pillar } from '../../lib/content';
+
+type Live = { pillar: Pillar; articles: Article[] };
+
+export async function getStaticPaths() {
+  const live = await getLivePillars();
+  if (live.length === 0) return [];
+  return [
+    { params: { pillar: 'topics' }, props: { live } },
+    ...live.map((entry) => ({ params: { pillar: entry.pillar.id }, props: { live, hub: entry } })),
+  ];
+}
+
+interface Props { live: Live[]; hub?: Live }
+const { live, hub } = Astro.props;
+const abs = (p: string) => new URL(p, SITE.url).href;
+const totalArticles = live.reduce((n, p) => n + p.articles.length, 0);
+
+const title = hub ? hub.pillar.data.title : 'Topics';
+const description = hub
+  ? hub.pillar.data.blurb.length > 160 ? hub.pillar.data.blurb.slice(0, 157).replace(/\s+\S*$/, '') + '...' : hub.pillar.data.blurb
+  : 'Every topic covered on Computer Science Guide, in a suggested reading order, with the articles published so far in each one.';
+
+const crumbs = hub
+  ? [{ name: 'Home', href: '/' }, { name: 'Topics', href: '/topics/' }]
+  : [{ name: 'Home', href: '/' }];
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [...crumbs, { name: title, href: hub ? pillarUrl(hub.pillar) : '/topics/' }].map((c, i) => ({
+      '@type': 'ListItem', position: i + 1, name: c.name, item: abs(c.href),
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    description,
+    url: abs(hub ? pillarUrl(hub.pillar) : '/topics/'),
+    isPartOf: { '@id': `${SITE.url}/#website` },
+  },
+];
+const scope = (p: Pillar) => `--accent-light:${p.data.accent.light};--accent-dark:${p.data.accent.dark}`;
+---
+<BaseLayout title={title} description={description} ogImage={hub ? `/og/${hub.pillar.id}.png` : undefined} structuredData={structuredData}>
+  {hub ? (
+    <div class="pillar-scope" style={scope(hub.pillar)} data-pagefind-body>
+      <header class="hub-head page-head">
+        <div class="container">
+          <Breadcrumbs items={crumbs} />
+          <h1>{hub.pillar.data.title}</h1>
+          <p class="lede">{hub.pillar.data.hubIntro ?? hub.pillar.data.blurb}</p>
+        </div>
+      </header>
+      <section class="section container" aria-labelledby="reading-order">
+        <div class="section-head">
+          <h2 id="reading-order">Articles, in reading order</h2>
+          <p>Each article stands on its own, but later ones assume the ideas introduced in earlier ones.</p>
+        </div>
+        <ol class="reading-list">
+          {hub.articles.map((a) => (
+            <li>
+              <h3><a href={articleUrl(a)}>{a.data.title}</a></h3>
+              <p>{a.data.description}</p>
+              <span class="card-meta"><span>{LEVEL_LABEL[a.data.level]}</span><span>{readingTime(a.body).minutes} min read</span></span>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
+  ) : (
+    <div data-pagefind-body>
+      <header class="page-head">
+        <div class="container">
+          <Breadcrumbs items={crumbs} />
+          <h1>Topics</h1>
+          <p class="lede">{totalArticles === 1 ? 'One article' : `${totalArticles} articles`} across {live.length === 1 ? 'one topic' : `${live.length} topics`}, listed in the order we suggest reading them. New to the site? <a href="/start-here/">Start here</a>.</p>
+        </div>
+      </header>
+      <div class="container">
+        <ul class="card-grid">
+          {live.map(({ pillar, articles }) => (
+            <li class="card pillar-card pillar-scope" style={scope(pillar)}>
+              <h2 class="card-title"><a href={pillarUrl(pillar)}>{pillar.data.title}</a></h2>
+              <p>{pillar.data.blurb}</p>
+              <span class="card-meta">{articles.length === 1 ? '1 article' : `${articles.length} articles`}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )}
+</BaseLayout>
