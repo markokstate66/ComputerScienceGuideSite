@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-21 — `/ship 16`: algorithms/binary-search merged
+
+- PR #16 squash-merged into `adsense-rebuild`, branch deleted, issue #1 closed. Round 2 gauntlet result: technical 8.7 / AdSense 8.6 / design 8.7, all ≥ the 8.5 bar.
+- Verified before merge: `npm run build` green (21 pages), `node tools/run-code.mjs src/content/articles/algorithms/binary-search.md` PASS (blocks=31, executed=15).
+- Serial `verify-page` Lighthouse (owner-facing, run earlier by the consumer with nothing else running): 94/100/100/100. Only failure was the expected `NEEDS_MARKUS` byline placeholder.
+- `docs/STATUS.json` totals: passed 3 → 4, inReview 4 → 3.
+
 ## 2026-09-18 (continued) — batch 1 stopped, work moved to a GitHub issue queue
 
 - The owner asked to stop before hitting the usage limit again. Batch 1 was stopped mid-run. State at the stop, all verified by the orchestrator afterwards with no agents running:

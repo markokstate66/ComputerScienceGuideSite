@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-18",
+  "updated": "2026-09-21",
   "passBar": {
     "criticMin": 8.5,
     "lighthouseMin": 90,
@@ -41,8 +41,8 @@
   },
   "totals": {
     "planned": 67,
-    "passed": 3,
-    "inReview": 4,
+    "passed": 4,
+    "inReview": 3,
     "drafted": 6,
     "notStarted": 54,
     "cut": 0
@@ -303,18 +303,24 @@
       "order": 1,
       "wave": "A",
       "shape": "D",
-      "title": "Binary Search and the Bugs Everyone Writes",
-      "state": "in-review",
-      "round": 1,
+      "title": "Binary Search and the Three Bugs It Invites",
+      "state": "passed",
+      "round": 2,
       "scores": {
-        "technical": 8.3,
-        "adsense": 8.3,
-        "design": 8.5
+        "technical": 8.7,
+        "adsense": 8.6,
+        "design": 8.7
       },
       "codePass": true,
-      "lighthouse": null,
+      "lighthouse": [
+        94,
+        100,
+        100,
+        100
+      ],
       "openIssues": [
-        "round-1 issues in docs/reviews/algorithms/binary-search.round-1.*.json"
+        "byline NEEDS_MARKUS placeholder (owner input)",
+        "wave-3 cross-links in docs/crosslinks/"
       ],
       "history": [
         {
@@ -325,9 +331,19 @@
           "design": 8.5,
           "pass": false,
           "note": "reviews in docs/reviews/"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-21",
+          "technical": 8.7,
+          "adsense": 8.6,
+          "design": 8.7,
+          "pass": true
         }
       ],
-      "batch": 1
+      "batch": 1,
+      "lighthouseNote": "serial run by orchestrator, 2026-09-21",
+      "published": "2026-09-21"
     },
     {
       "pillar": "algorithms",
