@@ -5,7 +5,7 @@ pillar: version-control
 order: 2
 author: markus
 published: 2026-09-18
-updated: 2026-09-18
+updated: 2026-09-21
 level: beginner
 tags: [git, merging, branching, merge-conflicts]
 prerequisites: ["version-control/how-git-works"]
@@ -70,7 +70,7 @@ sources:
     url: "https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging"
     publisher: "git-scm.com"
     accessed: 2026-09-18
-draft: true
+draft: false
 ---
 
 Run with default options on two branches of one project, `git merge` has three possible outcomes, and the shape of the history picks one before any file is compared. If the other branch is already contained in yours, nothing happens. If yours is contained in the other, Git moves a pointer and creates nothing. When each side has commits the other lacks, Git builds a new commit, and that is the case in which a conflict can occur. (Two histories with no commit in common are a fourth case, which `git merge` refuses unless you pass `--allow-unrelated-histories`, according to the [git-merge documentation](https://git-scm.com/docs/git-merge); it does not come up in this walk-through.)
@@ -179,7 +179,7 @@ Fast-forward
 * Open the kiosk
 ```
 
-Three commits before, three after. Because `main` was an ancestor of `autumn`, there were no changes on `main` to combine with anything, and the correct result was exactly the snapshot `autumn` already had. Git updated the `main` ref, the index and the working files to that commit and wrote no new object. The [git-merge documentation](https://git-scm.com/docs/git-merge) calls this a *fast-forward* and says "a new commit is not needed to store the combined history".
+Three commits before, three after. Because `main` was an ancestor of `autumn`, there were no changes on `main` to combine with anything, and the correct result was exactly the snapshot `autumn` already had. Git updated the `main` ref, the index and the working files to that commit and wrote no new commit. The [git-merge documentation](https://git-scm.com/docs/git-merge) calls this a *fast-forward* and says "a new commit is not needed to store the combined history".
 
 <figure class="diagram">
 <svg viewBox="0 0 360 330" role="img" aria-labelledby="ff-title ff-desc">
@@ -251,7 +251,7 @@ When you merge a branch under Git's default configuration, a fast-forward happen
 
 Which of the two a team prefers is policy, not correctness: the resulting files are identical either way.
 
-A third option is often listed as a kind of merge and, going by what it records, is not one. `--squash` leaves the index and working files as a merge would have, but makes no commit and records nothing that would give your next commit a second parent. The commit you then create has one parent, so the history does not show that the branch was merged, and `git branch -d` will still call it unmerged.
+A third option, `--squash`, resembles a merge and, going by what it records, is not one. It leaves the index and working files as a merge would have, but makes no commit and does not record `MERGE_HEAD` ([git-merge](https://git-scm.com/docs/git-merge)), so nothing gives your next commit a second parent. The commit you then create has one parent, so the history does not show that the branch was merged, and `git branch -d` will still call the branch unmerged (checked in Git 2.52: "not fully merged").
 
 ## When both branches have moved: the three-way merge
 
@@ -627,10 +627,22 @@ git show --remerge-diff --format='%s' |
 ```
 
 ```text output
-PLACEHOLDER
+--- a/menu.txt
++++ b/menu.txt
+@@ -1,9 +1,5 @@
+ espresso       3.00
+-<<<<<<< [...]
+-latte          4.10
+-=======
+-caffe latte    3.90
+->>>>>>> [...]
++caffe latte    4.10
+ flat white     3.70
+ mocha          4.20
+ hot choc       3.50
 ```
 
-The removed lines are the conflict block as Git would have written it, labeled with commit IDs and subjects because no branch names are recorded in a commit, and the added line is the resolution. A take-one-side resolution shows up here as plainly as this one does, and a merge that Git completed unaided prints no diff.
+The removed lines are the conflict block as Git would have written it, with each side labeled by an abbreviated commit ID and that commit's subject (the two `[...]` lines) because a commit records no branch names. The added line is the resolution. A take-one-side resolution shows up here as plainly as this one does, and a merge that Git completed unaided prints no diff.
 
 ::::exercise[How close can two edits get?]
 The kiosk conflict had both edits on the *same* line. Do edits to two *neighboring* lines conflict? `git merge-file -p ours base theirs` runs the file-level merge on three plain files and prints the result, with no repository needed. Its exit status is the number of conflicts ([git-merge-file](https://git-scm.com/docs/git-merge-file)).
@@ -639,7 +651,8 @@ Create a five-line base (`mon` to `fri`). In `ours`, change line 2. Merge it aga
 
 :::solution
 ```bash run
-printf 'mon\ntue\nwed\nthu\nfri\n' > base
+printf 'mon\ntue\nwed\nthu\nfri\n' \
+  > base
 sed 's/tue/TUE/' base > ours
 sed 's/wed/WED/' base > line3
 sed 's/thu/THU/' base > line4
@@ -670,9 +683,106 @@ fri
 -- conflicts: 0
 ```
 
-In Git 2.52, edits to adjacent lines conflict even though no line was changed twice, and a single unchanged line between them is enough for a clean merge. The conflict region covers both lines, because without an unchanged line separating the two changes Git treats them as one region claimed by both sides. The practical consequence: two people appending to the end of the same list, or adding neighboring entries to the same block of imports, will conflict, and the resolution is usually "keep both".
+In Git 2.52, edits to adjacent lines conflict even though no line was changed twice, and a single unchanged line between them is enough for a clean merge. The conflict region covers both lines, because without an unchanged line separating the two changes Git treats them as one region claimed by both sides. The practical consequence: two branches that each append a line to the end of the same file conflict (tried in Git 2.52: a two-line file with a different line appended on each side), and so do neighboring entries in the same block of imports. The resolution in both cases is to keep both lines.
 :::
 ::::
+
+## Conflicts with no lines to edit
+
+The table earlier covered a text file present in base, ours and theirs. When a path is missing from one of the three, or is not text, there is no region to bracket, and Git reports a conflict of another kind. Three of them fit in one merge. A `left` branch adds a logo (a binary file, here just a few bytes with a NUL in them) and then edits `check.sh`, `tips.txt` and the logo. A `right` branch, made from the commit that added the logo, deletes `check.sh`, creates its own `tips.txt` and also edits the logo.
+
+```bash run
+git switch -q -c left
+printf 'logo v1\0' > logo.bin
+git add logo.bin
+git commit -q -m 'Add the logo'
+git switch -q -c right
+git rm -q check.sh
+echo 'count the till float' > tips.txt
+printf 'logo v2\0' > logo.bin
+git add tips.txt
+git commit -q -a -m 'Right side'
+git switch -q left
+echo '# specials must be on the menu' \
+  >> check.sh
+echo 'wipe the steam wand' > tips.txt
+printf 'logo v3\0' > logo.bin
+git add tips.txt
+git commit -q -a -m 'Left side'
+```
+
+```bash run fails
+git merge right
+```
+
+```text output
+CONFLICT (modify/delete): check.sh [...]
+warning: Cannot merge binary files: [...]
+Auto-merging logo.bin
+CONFLICT (content): Merge conflict in [...]
+Auto-merging tips.txt
+CONFLICT (add/add): Merge conflict in [...]
+Automatic merge failed; [...]
+```
+
+The first line is cut short on a phone: it reads "check.sh deleted in right and modified in HEAD. Version HEAD of check.sh left in tree." The warning about binary files is Git declining to merge `logo.bin` line by line. The type in parentheses names the kind of conflict, and `git status` names it again in two letters, the first for our side and the second for theirs ([git-status](https://git-scm.com/docs/git-status)):
+
+```bash run
+git status --short
+git ls-files -u --abbrev=7
+```
+
+```text output
+UD check.sh
+UU logo.bin
+AA tips.txt
+100644 [...] 1	check.sh
+100644 [...] 2	check.sh
+100644 [...] 1	logo.bin
+100644 [...] 2	logo.bin
+100644 [...] 3	logo.bin
+100644 [...] 2	tips.txt
+100644 [...] 3	tips.txt
+```
+
+Read the stage numbers against the letters:
+
+- **`UD` (modify/delete).** The path has stages 1 and 2 and no stage 3: we changed it, they deleted it. Git leaves our version in the working tree, with no markers. The decision is whether the file should exist, so the resolution is `git add check.sh` to keep it or `git rm check.sh` to accept the deletion.
+- **`AA` (add/add).** Both sides created the path independently. There is no base, so stage 1 is missing (`git show :1:tips.txt` fails with "not at stage 1"). For text files Git still writes markers, as in the earlier conflict, with the two whole files in place of the changed regions. Edit them into shape and `git add`.
+- **`UU` on a file Git cannot merge by lines.** All three stages exist, but Git will not put markers into a binary file. It warns and leaves our version in the working tree. Choose a side with `git checkout --ours logo.bin` or `--theirs`, which copy stage 2 or 3 over the working file for an unmerged path ([git-checkout](https://git-scm.com/docs/git-checkout)), or produce the merged file some other way, then `git add` it.
+
+The three resolutions, then the commit:
+
+```bash run
+git rm -q check.sh
+echo 'wipe the steam wand' > tips.txt
+echo 'count the till float' >> tips.txt
+git add tips.txt
+git checkout --ours logo.bin
+git add logo.bin
+git status --short
+git commit -q --no-edit
+```
+
+```text output
+D  check.sh
+M  tips.txt
+```
+
+`git status` shows the resolved state against `HEAD`: `check.sh` is deleted and `tips.txt` has a new line, while the logo is unchanged because ours was kept. The scratch branches have done their job; delete them so that later listings stay short.
+
+```bash run
+git switch -q main
+git branch -q -D left right
+git branch
+```
+
+```text output
+  autumn
+* main
+  rename-latte
+  sunday
+```
 
 ## A clean merge can still be wrong
 
@@ -680,14 +790,17 @@ Git merges text. Whether the merged text still means something sensible is outsi
 
 ```bash run
 git switch -q -c full-names
-sed -i 's/^hot choc     /hot chocolate/' \
+sed -i \
+  's/^hot choc     /hot chocolate/' \
   menu.txt
-git commit -q -a -m 'Spell out hot chocolate'
+git commit -q -a \
+  -m 'Spell out hot chocolate'
 echo "-- check on full-names:"
 bash check.sh
 git switch -q main
 echo 'hot choc' >> specials.txt
-git commit -q -a -m 'Hot choc is a special'
+git commit -q -a \
+  -m 'Hot choc is a special'
 echo "-- check on main:"
 bash check.sh
 git merge --no-edit full-names
@@ -712,7 +825,8 @@ Two habits follow. Run the build and tests on the merge result, not only on the 
 ```bash run
 sed -i 's/^hot choc$/hot chocolate/' \
   specials.txt
-git commit -q -a -m 'Use the new name in specials'
+git commit -q -a \
+  -m 'Use the new name in specials'
 bash check.sh
 echo "exit status: $?"
 ```
@@ -725,16 +839,12 @@ exit status: 0
 
 "Merge made by the 'ort' strategy" has appeared twice. A *strategy* is the program that turns the tips and their base into a merged tree, selected with `-s`. A *strategy option*, passed with `-X`, adjusts the behavior of the chosen strategy. The [git-merge documentation](https://git-scm.com/docs/git-merge) lists these strategies:
 
-| Strategy | What it does |
-|---|---|
-| `ort` | Three-way merge of two heads, with rename detection. Default for one branch. |
-| `octopus` | Merges more than two heads; refuses if a conflict would need manual work. Default for several branches. |
-| `ours` | Records a merge but keeps the current branch's tree exactly, ignoring the other branches' changes. |
-| `resolve` | An older two-head three-way merge without rename handling. |
-| `subtree` | `ort`, adjusted for the case where one tree is a subdirectory of the other. |
-| `recursive` | The default before Git 2.34; since Git 2.50 the name is a synonym for `ort`. |
+- **`ort`** is what you have been running. It is chosen for you when you merge one branch, and it merges two tips against their base, following renamed files. Before Git 2.34 the default was `recursive`, and since Git 2.50 that name is accepted as a synonym for `ort`.
+- **`octopus`** is chosen for you when you name two or more branches. It is all or nothing: a conflict that needs a person aborts the whole merge.
+- **`ours`** merges nothing. It records a merge commit whose tree is exactly the current branch's tree, so every change on the other branches is discarded while their history becomes part of yours.
+- **`resolve`** is an older two-tip strategy that does not follow renames, and **`subtree`** is `ort` adjusted for merging a project that lives in a subdirectory of the other one.
 
-You rarely choose one. `ort` deals with a case the single-base description above skips: histories with criss-cross merges can have more than one best common ancestor ([git-merge-base](https://git-scm.com/docs/git-merge-base)), and `ort` then first merges those ancestors with each other and uses the result as the base. The `-X` options for `ort` are used more often: `-X ignore-space-change` and its relatives for branches that differ in whitespace, and `-X ours` or `-X theirs`, which settle each conflicting region in favor of one side while still merging everything that does not conflict.
+`ort` also covers a case the single-base description above skips: histories with criss-cross merges can have more than one best common ancestor ([git-merge-base](https://git-scm.com/docs/git-merge-base)), and `ort` then first merges those ancestors with each other and uses the result as the base. The `-X` options adjust it. `-X ignore-space-change` and its relatives treat whitespace-only changes to a line as no change. `-X ours` and `-X theirs` settle each conflicting region in favor of one side while still merging everything that does not conflict.
 
 Octopus is what you get by naming several branches at once. Two small branches and one more commit on `main` give it three tips to join:
 
@@ -757,7 +867,9 @@ git commit -q -a \
 git merge --no-edit wifi allergens |
   grep -v '^ '
 echo "-- parents of the merge:"
-git log -1 --format='%p' | wc -w
+for n in 1 2 3
+do git log -1 --format="$n: %s" HEAD^$n
+done
 ```
 
 ```text output
@@ -765,10 +877,41 @@ Trying simple merge with wifi
 Trying simple merge with allergens
 Merge made by the 'octopus' strategy.
 -- parents of the merge:
-3
+1: Open earlier on weekdays
+2: Post the wifi name
+3: List allergens
 ```
 
-One commit, three parents. Octopus is meant for bundling branches that do not interfere; had any of them conflicted, it would have refused and left you to merge them one at a time.
+One commit, three parents, in the order the branches were named after the one you were on. Octopus is meant for bundling topic branches that do not interfere ([git-merge](https://git-scm.com/docs/git-merge)); had any of them conflicted, it would have refused and left you to merge them one at a time.
+
+<figure class="diagram">
+<svg viewBox="0 0 360 250" role="img" aria-labelledby="oct-title oct-desc">
+<title id="oct-title">An octopus merge commit with three parents</title>
+<desc id="oct-desc">Three commits sit side by side: Open earlier on main, Post the wifi name on wifi, and List allergens on allergens. One merge commit below them has three arrows pointing up, labeled parent 1, parent 2 and parent 3, one to each.</desc>
+<defs>
+<marker id="oct-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="d-fill-accent"/></marker>
+</defs>
+<rect x="10" y="10" width="104" height="52" rx="6" class="d-box"/>
+<text x="62" y="32" text-anchor="middle" class="d-small">Open earlier</text>
+<text x="62" y="50" text-anchor="middle" class="d-mono d-small">main</text>
+<rect x="128" y="10" width="104" height="52" rx="6" class="d-box"/>
+<text x="180" y="32" text-anchor="middle" class="d-small">Post the wifi</text>
+<text x="180" y="50" text-anchor="middle" class="d-mono d-small">wifi</text>
+<rect x="246" y="10" width="104" height="52" rx="6" class="d-box"/>
+<text x="298" y="32" text-anchor="middle" class="d-small">List allergens</text>
+<text x="298" y="50" text-anchor="middle" class="d-mono d-small">allergens</text>
+<path d="M140 150 L70 64" class="d-accent" marker-end="url(#oct-arrow)"/>
+<path d="M180 150 V64" class="d-accent" marker-end="url(#oct-arrow)"/>
+<path d="M220 150 L290 64" class="d-accent" marker-end="url(#oct-arrow)"/>
+<text x="98" y="112" text-anchor="end" class="d-small d-text-accent">parent 1</text>
+<text x="188" y="112" class="d-small d-text-accent">parent 2</text>
+<text x="266" y="112" class="d-small d-text-accent">parent 3</text>
+<rect x="90" y="152" width="180" height="44" rx="6" class="d-box-accent"/>
+<text x="180" y="179" text-anchor="middle" class="d-bold">The merge commit</text>
+<text x="10" y="226" class="d-small d-muted">One commit, three parent links, in command-line order.</text>
+</svg>
+<figcaption>Figure 4. An octopus merge is an ordinary commit with more than two parent links. Parent 1 is the branch you were on; the others follow in the order you named them.</figcaption>
+</figure>
 
 ::::exercise[-X ours versus -s ours]
 A `promo` branch cuts the caffe latte to 3.50 and adds a cortado. `main` raises the caffe latte to 4.30. Two commands differ by one letter:
@@ -778,7 +921,7 @@ git merge -X ours promo
 git merge -s ours promo
 ```
 
-For each, what price does the caffe latte end up with, and is the cortado on the menu? Work it out from the table and the paragraph under it, then check.
+For each, what price does the caffe latte end up with, and is the cortado on the menu? Work it out from the strategy descriptions above, then check.
 
 :::solution
 `-X ours` is an option to `ort`: the merge runs normally, and only the conflicting region (the latte line) is settled in favor of `main`. The cortado line does not conflict, so it comes in. `-s ours` is a different strategy that does not look at `promo`'s content at all: the merged tree is `main`'s tree, so the cortado is dropped as well.
@@ -787,10 +930,12 @@ For each, what price does the caffe latte end up with, and is the cortado on the
 git switch -q -c promo
 sed -i '/^caffe /s/4.10/3.50/' menu.txt
 echo 'cortado        3.20' >> menu.txt
-git commit -q -a -m 'Promo prices'
+git commit -q -a \
+  -m 'Promo prices'
 git switch -q main
 sed -i '/^caffe /s/4.10/4.30/' menu.txt
-git commit -q -a -m 'Caffe latte to 4.30'
+git commit -q -a \
+  -m 'Caffe latte to 4.30'
 git merge -q --no-edit -X ours promo \
   > /dev/null
 echo "-- with -X ours:"
@@ -815,7 +960,7 @@ caffe latte    4.30
 
 Between the two attempts, `git reset --hard ORIG_HEAD` undid the first merge: `git merge` saves the pre-merge tip in `ORIG_HEAD` ([gitrevisions](https://git-scm.com/docs/gitrevisions)), and resetting to it is safe for a merge that has not been pushed.
 
-The last line is the hazard. After `-s ours`, Git considers `promo` fully merged although none of its changes are present, and merging `promo` again will say "Already up to date". That is the strategy's documented purpose, superseding the history of a side branch, and it is almost never what someone reaching for "keep my version of the conflicts" wants. Note also that both commands resolve silently, so nobody reviews the choice. There is a `-X theirs` but no `-s theirs`.
+The last line is the hazard. After `-s ours`, Git considers `promo` fully merged although none of its changes are present, and merging `promo` again will say "Already up to date". The [git-merge documentation](https://git-scm.com/docs/git-merge) gives the strategy's purpose as superseding the old history of a side branch, which is a different job from "keep my version of the conflicts"; for that job use `-X ours`. Note also that both commands resolve silently, so nobody reviews the choice. There is a `-X theirs` but no `-s theirs`.
 :::
 ::::
 
@@ -825,12 +970,14 @@ A merged branch has done its job. Its commits are reachable from `main` through 
 
 ```bash run
 git switch -q -c draft-loyalty-card
-echo 'ten stamps, one free' > loyalty.txt
+echo 'ten stamps, one free' \
+  > loyalty.txt
 git add loyalty.txt
 git commit -q -m 'Sketch a loyalty card'
 git switch -q main
 git branch --no-merged
-git branch -d autumn sunday rename-latte |
+git branch -d autumn sunday \
+  rename-latte |
   sed 's/ (was.*//'
 git branch -d draft-loyalty-card ||
   echo "refused, exit status $?"
@@ -850,8 +997,8 @@ Undoing a merge depends on whether anyone else has it. If not, move the branch b
 
 ## What to check when a merge surprises you
 
-- **"Already up to date" but the changes are missing.** You are probably on the wrong branch, merging in the wrong direction. Less often, the branch was merged earlier and then reverted, or merged with `-s ours`.
+- **"Already up to date" but the changes are missing.** Check the branch you are on and the direction of the merge first. Then check whether the branch was merged earlier and reverted, or merged with `-s ours`.
 - **A merge commit you did not expect.** Your branch had a commit of its own, so a fast-forward was impossible. `git log --graph --format='%s%d' --all` shows where the histories split.
-- **More conflicts than the edits seem to justify.** Look at the base with `git checkout --conflict=diff3 <path>`. Adjacent edits, reformatting on one side and line-ending changes are the usual causes; the `-X ignore-space-change` family handles the last two ([Pro Git 7.8](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging)).
-- **Lost in the middle of a resolution.** `git status` names the unmerged paths, `git diff` shows the remaining conflict regions, and `git merge --abort` returns to the start.
+- **More conflicts than the edits seem to justify.** Look at the base, with `git checkout --conflict=diff3 <path>` before you edit that file (it regenerates the markers and discards edits) or `git show :1:<path>` at any time. Causes to rule out are edits on adjacent lines, whitespace-only reformatting on one side and line-ending changes. The `-X ignore-space-change` family covers the whitespace kinds, but "whitespace changes mixed with other changes to a line are not ignored" ([git-merge](https://git-scm.com/docs/git-merge), [Pro Git 7.8](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging)).
+- **Lost in the middle of a resolution.** `git status` names the unmerged paths, `git diff` shows the remaining conflict regions, and `git merge --abort` returns to the start, discarding the resolution work so far.
 - **The merge was clean and the build broke.** That is the hot chocolate problem. The fix is a normal commit, and the prevention is running the tests on the merge result before it is pushed.

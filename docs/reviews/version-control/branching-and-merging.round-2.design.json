@@ -1,0 +1,83 @@
+{
+  "article": "src/content/articles/version-control/branching-and-merging.md",
+  "route": "/version-control/branching-and-merging/",
+  "round": 2,
+  "role": "design",
+  "score": 8.5,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging",
+    "https://www.git-tower.com/learn/git/ebook/en/command-line/advanced-topics/merge-conflicts",
+    "https://www.atlassian.com/git/tutorials/using-branches/merge-conflicts (fetch returned only site navigation, so nothing was compared from it)"
+  ],
+  "lighthouse": { "performance": 98, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "verifyNotes": "node tools/verify-page.mjs --drafts /version-control/branching-and-merging/ run 2026-09-21: 4980 words, 55 code blocks, 4 figures, 1 h1, 29 internal links, 0 broken, 0 console errors, 0 console warnings, mobileOverflowPx 0. Only failure is the expected NEEDS_MARKUS placeholder. Lighthouse 98/100/100/100. I could not tell whether other jobs were loading the machine, so the performance figure (98) may be off by a few points in either direction; the orchestrator re-measures serially. Screenshots read: all 17 desktop-light, all 25 mobile-dark, desktop-dark fold + parts 04 and 07, mobile-light fold + parts 04 and 10. Collapsed exercise solutions are not expanded by verify-page, so the solution code blocks (notably the 12-line merge-file block in exercise 2 and the promo block in exercise 3) were NOT visually checked at 390 px.",
+  "justification": "Fresh judgement first, then round 1. On a phone and on a desktop, in both themes, this page is visibly better presented than Pro Git 3.2 and the Git Tower conflict chapter. Pro Git has eight figures but no exercises, no tables, no dark theme and nothing on index stages, diff3, --abort, delete/binary conflicts or strategies; Git Tower has one command block, one marker diagram and a Kaleidoscope screenshot, and no depth on stages, diff3, binary or delete conflicts. Here: a delivering first paragraph, short prose runs alternating with paired BASH/OUTPUT panels, a clear h2/h3 hierarchy with content-specific headings, four figures that each show structure prose cannot (ref move, three-snapshot merge with parent 1/2, stage 1/2/3 to stage 0, three-parent octopus commit), captions that say what to notice, theme-correct colours in dark (accent/bad/good boxes re-tinted; I found nothing wrong in dark or light), a 4-row table that fits at 390 px, one well-placed pitfall and one note callout, three exercises of different forms mid-article, and a 15-item source list in which every entry is cited inline. Collapsed on-this-page on mobile, sticky TOC on desktop, fade-out edge on scrollable code, and 'Exits with an error' badges on the two intentional failures are all good. Round-1 check: every design major is fixed. The strategies table is now a bullet list (no clipping); the --is-ancestor block is split so && and || are on screen (mobile part03); the sed lines in the conflict setup are split with backslashes; commit messages and the branch -d pipe are split; the octopus figure (Figure 4) exists; the index paragraph is split into a list plus separate paragraphs; the macOS sed note is now a callout before the first sed block. Round-1 minor on the author box boilerplate is still open (shell-level). What holds it at 8.5 rather than higher: three output panels still clip at 390 px (Git's own text, so partly unavoidable, and each is clipped on the non-operative half), the Resolve/stage/commit subsection is about four desktop screens and ends in three consecutive dense paragraphs about combined diffs, and the article talks about the phone in its own prose. None of this is shell breakage; nothing is a blocker or major.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Output panels at 390 px: 'git merge rename-latte' (mobile-dark-part10: 'CONFLICT (content): Merge conflict in men…', 'Automatic merge failed; fix conflicts and…'); three-way merge output (part07: '2 files changed, 2 insertions(+), 2 dele…'); clean-but-wrong merge output (part18: '1 file changed, 1 insertion(+), 1 deleti…')",
+      "problem": "Git's own lines are wider than about 40 columns and are cut, so a phone reader has to scroll sideways to see the file name in the CONFLICT line and the 'insertions/deletions' summary. The conflict case is softened because the next paragraph quotes 'fix conflicts and then commit the result' and names menu.txt, and the panel fades at the edge to signal scroll, so this is a nit, not a defect. The diffstat summary lines carry no information the reader needs.",
+      "fixLooksLike": "Drop the noisy summary lines from the outputs (pipe through 'grep -v files\\ changed' or 'sed $d', as the article already does for --stat elsewhere), and for the CONFLICT lines either pipe through 'fold -s -w 40' so the full text wraps inside the panel, or keep as is and leave the following paragraph quoting the clipped words. Re-run verify and check mobile part10 and part18.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Conflicts with no lines to edit', paragraph after the 'git merge right' output ('The first line is cut short on a phone: it reads ...') and the [...] wildcards in that output",
+      "problem": "The output panel hides the informative half of every CONFLICT line behind [...] (on desktop too, where there is room), and the prose then mentions that the line is 'cut short on a phone'. That is a workaround shown to the reader: the article comments on its own layout, and a desktop reader sees a panel that omits text for no visible reason. The 'delete/binary/add-add' explanation is the payoff of this section, and the exact Git messages are what a reader will search for when they hit them.",
+      "fixLooksLike": "Show the real messages wrapped to 40 columns (for example 'git merge right 2>&1 | fold -s -w 40' with the run harness wildcarding only the volatile parts), and delete the sentence about phones. If the text must stay abbreviated, say why in terms of Git ('Git also prints the file names; they are elided here') rather than in terms of the screen.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Resolve, stage, commit' from the 'git show' output to the 'Exercise 2' block (desktop-light part10 to part11, mobile-dark part14 to part16)",
+      "problem": "This one h3 covers scripted resolution, the pitfall, git add/commit, the combined diff, two filters, what an empty combined diff proves, and --remerge-diff. On mobile the three paragraphs starting 'Two filters decide...', 'So read the combined diff...' and 'To see what the resolver did...' run about 26 wrapped lines with 8 to 10 inline code spans and no code, figure or list to break them. Desktop is fine; on a phone it is the only real wall of text on the page.",
+      "fixLooksLike": "Give the post-merge inspection its own h3 ('Reading the merge commit afterwards') so the TOC exposes it, and either turn the two filters into a two-item list or trim the 'Only files that differ from every parent are listed' explanation to the one sentence a reader needs. Keep --remerge-diff with its output.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Headings 'The merge commit has two parents' and 'What Git leaves behind when it stops' (desktop-light part06 and part07)",
+      "problem": "Each h3 is followed directly by a code block with no lead-in sentence, unlike every other section which introduces its block. The h3 then reads as a caption for the block rather than the start of an explanation, and the block's purpose is only clear after the output.",
+      "fixLooksLike": "Add one sentence before each block saying what to look for ('The graph now has two lines joining at the top; then ask Git for each parent separately.').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Opening paragraph (mobile-dark-part01)",
+      "problem": "The first paragraph packs three outcomes, a fourth case, a doc link and a long inline flag ('--allow-unrelated-histories') that wraps mid-token at 390 px ('--allow-' / 'unrelated-histories'). It is 15 lines on a phone. The content is good and the first sentence delivers; the length and the wrapped flag are what hurt.",
+      "fixLooksLike": "Move the parenthetical about unrelated histories to its own short sentence after the three outcomes, or into a note callout; keep the paragraph to the three outcomes.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise solutions (collapsed) for Exercise 2 (merge-file, 12 lines) and Exercise 3 (promo, 20 lines)",
+      "problem": "verify-page does not expand <details>, so I could not check those code and output blocks at 390 px inside the extra solution padding. Several lines in the Exercise 3 block look close to 40 columns ('git merge -q --no-edit -X ours promo \\'). This is an unverified area, not a found defect.",
+      "fixLooksLike": "Orchestrator or writer opens both solutions at 390 px (or the verify tool adds an 'open all details' pass) and confirms no operative text is clipped.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Author box under Sources ('Every program in this article was compiled and run, and its output compared with the text, before publication.')",
+      "problem": "Still open from round 1. This is a shell and Git article; nothing is a compiled program. The stamped sentence reads as boilerplate that does not match the page. (The NEEDS_MARKUS byline and bio placeholders are known and not counted.)",
+      "fixLooksLike": "Shell-level: choose the sentence by article language, for example 'Every command on this page was run and its output compared with the text before publication' for shell articles. Append to docs/INTEGRATOR_REQUESTS.md.",
+      "owner": "integrator"
+    }
+  ],
+  "round1Check": {
+    "design": [
+      "major strategies table clipped on phone: FIXED (now a bullet list)",
+      "major --is-ancestor && and || clipped: FIXED (mobile part03 shows both operators)",
+      "major conflict setup sed lines and CONFLICT output clipped: PARTLY FIXED (sed lines and commit messages split; the Git output lines still clip, and the prose now quotes the message; see minor issue 1)",
+      "minor inconsistent line breaking of commit messages and branch -d pipe: FIXED",
+      "minor no figure in last 40 percent: FIXED (Figure 4, octopus)",
+      "minor dense index paragraph: FIXED (list plus separate paragraphs)",
+      "minor macOS sed note buried: FIXED (note callout before the first sed block)",
+      "minor author box boilerplate: STILL OPEN (integrator)",
+      "minor crosslinks file: exists, five sensible lines, at most two undoing-things links noted"
+    ],
+    "technicalAndAdsense": "Read after forming my own judgement; checked against the current article text (not re-run or re-sourced, that is their role). Technical blocker (empty combined diff means Git did all the work): text now says an empty combined diff only means every region equals some parent, explains both filters, and adds a --remerge-diff run block. Technical majors: the checkout --conflict=diff3 destructiveness warning is now in the section and in the troubleshooting bullet; the table is scoped to text files present on all three sides and a new section 'Conflicts with no lines to edit' covers modify/delete, add/add and binary. Technical minors (git diff --cached --check, best common ancestor wording, zdiff3 scope, 'default configuration' scoping, heading 'Backing out with git merge --abort', 'depend on' for IDs) all appear fixed. AdSense minors: opening is scoped ('Run with default options'), --squash and git mergetool are now covered, frequency claims ('rarely', 'usual causes') are gone, the strategy table is now a list."
+  }
+}
