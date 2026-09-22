@@ -4,8 +4,8 @@ description: "See how C# arrays and List<T> sit in memory, measure row- against 
 pillar: data-structures
 order: 1
 author: markus
-published: 2026-09-18
-updated: 2026-09-21
+published: 2026-09-22
+updated: 2026-09-22
 level: intermediate
 tags: [arrays, list-t, dynamic-array, cache-locality, span]
 prerequisites: ["complexity/big-o-notation"]
@@ -58,7 +58,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.array.getlowerbound"
     publisher: "Microsoft Learn"
     accessed: 2026-09-21
-draft: true
+draft: false
 ---
 
 Two loops add up the same 16 million integers. They execute the same number of additions, and any [Big-O](/complexity/big-o-notation/) analysis calls them identical: Θ(*n*) for *n* elements. On the machine used for this page one of them takes six times as long as the other, and with an unlucky grid size, eighteen times. The only difference is the order in which they visit the elements. Explaining that gap takes in everything that matters about an [array](/glossary/#array): how it is laid out in memory, how an index becomes an address, and why a `List<T>`, which is an array with a counter on top, inherits both the speed and the costs.
@@ -289,7 +289,9 @@ static void Show<T>(string type, T[] a)
 {
     long one = Gap(ref a[0], ref a[1]);
     long three = Gap(ref a[0], ref a[3]);
-    Console.WriteLine($"{type,-20}{one,4}{three,5}");
+    Console.WriteLine(
+        $"{type,-20}{one,4}" +
+        $"{three,5}");
 }
 
 record struct Sample(
@@ -400,7 +402,7 @@ Neither mechanism was measured in isolation here, so treat this as the more defe
 <text x="20" y="226" class="d-muted d-small">Back near the top only after n rows:</text>
 <text x="20" y="242" class="d-muted d-small">that gap is the reuse distance.</text>
 </svg>
-<figcaption>Figure 4. Row-first moves to the very next cache line each read. Column-first moves to a line a full row away, and does not return near its starting point until it has read a whole column, about <em>n</em> lines later.</figcaption>
+<figcaption>Figure 2. Row-first moves to the very next cache line each read. Column-first moves to a line a full row away, and does not return near its starting point until it has read a whole column, about <em>n</em> lines later.</figcaption>
 </figure>
 
 #### The 4096 row
@@ -743,12 +745,12 @@ Contiguity has a price. There are no gaps, so putting a new element anywhere but
 <rect x="300" y="242" width="40" height="40" class="d-box-2 d-dashed"/>
 <text x="20" y="304" class="d-small d-muted">RemoveAt(1) is the same picture read upward</text>
 </svg>
-<figcaption>Figure 2. An insert copies every element from the insertion point to the end one slot to the right (amber), then writes the new value into the opening. The work is proportional to the number of elements after the index, not to the size of the new element.</figcaption>
+<figcaption>Figure 3. An insert copies every element from the insertion point to the end one slot to the right (amber), then writes the new value into the opening. The work is proportional to the number of elements after the index, not to the size of the new element.</figcaption>
 </figure>
 
 The documentation states the costs. [`Insert`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.insert) is "an O(*n*) operation, where *n* is Count". [`RemoveAt`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.removeat) is more precise: O(*n*) "where *n* is (Count − index)". That bound covers both methods, but it is not the same element count for each, and the difference matters if you want the exact number, not just the order of growth.
 
-`Insert(index, x)` makes room first, so it shifts every element from `index` to the old last slot: exactly `Count - index` elements, which is what Figure 2 shows moving. `RemoveAt(index)` closes a hole instead: the element that was at `index` is gone, and everything *after* it slides down one slot, so it moves `Count - index - 1` elements, one fewer than `Insert` at the same index. At `index = Count - 1`, that formula gives `Count - (Count - 1) - 1 = 0`, not 1: removing the last element moves nothing, which the first bullet below depends on. In `List.cs` each is a bounds check followed by one `Array.Copy` of the tail, sized accordingly.
+`Insert(index, x)` makes room first, so it shifts every element from `index` to the old last slot: exactly `Count - index` elements, which is what Figure 3 shows moving. `RemoveAt(index)` closes a hole instead: the element that was at `index` is gone, and everything *after* it slides down one slot, so it moves `Count - index - 1` elements, one fewer than `Insert` at the same index. At `index = Count - 1`, that formula gives `Count - (Count - 1) - 1 = 0`, not 1: removing the last element moves nothing, which the first bullet below depends on. In `List.cs` each is a bounds check followed by one `Array.Copy` of the tail, sized accordingly.
 
 - At the end of the list, both are cheap: `Insert(Count, x)` shifts nothing (it is `Add`, amortized O(1)), and `RemoveAt(Count - 1)` shifts nothing. A list makes a good stack.
 - At the front, both move everything: `Insert(0, x)` shifts all `Count` elements, `RemoveAt(0)` shifts all `Count - 1` remaining ones. Either one in a loop is Θ(*n*²) in total.
@@ -1086,7 +1088,7 @@ C# gives you two ways to write a two-dimensional table, and after the sections a
 <text x="20" y="342" class="d-small">put it, and rows may differ in length.</text>
 <text x="20" y="362" class="d-small">[r][c] is two reads: find the row, then the slot</text>
 </svg>
-<figcaption>Figure 3. The rectangular array is Figure 1 with a wider index formula. The jagged array is an array of references like the <code>string[]</code> measured earlier: the rows are separate objects with their own headers and lengths, which is what lets them be ragged.</figcaption>
+<figcaption>Figure 4. The rectangular array is Figure 1 with a wider index formula. The jagged array is an array of references like the <code>string[]</code> measured earlier: the rows are separate objects with their own headers and lengths, which is what lets them be ragged.</figcaption>
 </figure>
 
 Which is faster is not something to guess. The next program sums a 4000 × 4000 grid stored three ways (rectangular, jagged, and a plain `int[]` indexed as `r * N + c`) in both loop orders.
