@@ -126,7 +126,7 @@ Requesting `https://example.com/` is four separate conversations, held one after
 <figure class="diagram">
 <svg viewBox="0 0 360 480" role="img" aria-labelledby="seq-title seq-desc">
 <title id="seq-title">The four exchanges behind one HTTPS request</title>
-<desc id="seq-desc">A sequence diagram with your machine on the left and the remote end on the right. Four bands follow each other downwards: a DNS query and answer, the three TCP handshake segments, the three TLS 1.3 handshake flights, and the HTTP request and response. Each band is marked as one round trip. TLS messages after ServerHello and both HTTP messages are drawn in the accent colour because they are encrypted.</desc>
+<desc id="seq-desc">A sequence diagram with your machine on the left and the remote end on the right. Four bands follow each other downwards: a DNS query and answer, the three TCP handshake segments, the three TLS 1.3 handshake flights, and the HTTP request and response. Each band is marked as one round trip. TLS messages after ServerHello and both HTTP messages are drawn in the accent color because they are encrypted.</desc>
 <defs>
 <marker id="seq-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="d-fill-stroke"/></marker>
 <marker id="seq-arrow-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="d-fill-accent"/></marker>
@@ -167,13 +167,13 @@ Requesting `https://example.com/` is four separate conversations, held one after
 <path d="M54 400 H306" class="d-accent" marker-end="url(#seq-arrow-acc)"/>
 <text x="180" y="420" text-anchor="middle" class="d-small d-mono d-text-accent">{HTTP/1.1 200 OK ...}</text>
 <path d="M306 426 H54" class="d-accent" marker-end="url(#seq-arrow-acc)"/>
-<text x="10" y="458" class="d-small d-muted">{ } and accent colour: encrypted on the wire.</text>
+<text x="10" y="458" class="d-small d-muted">{ } and accent color: encrypted on the wire.</text>
 <text x="10" y="474" class="d-small d-muted">The last arrow of a band leaves with the first of the next.</text>
 </svg>
 <figcaption>Figure 1. One request, four exchanges. On a fresh connection each band has to finish before the next can begin, so the page cannot start arriving until about four round trips have passed: one to the resolver and three to the web server.</figcaption>
 </figure>
 
-Each band gets its own C# program below, run against the real `example.com`, followed by a look at the packets that carried all of it. IANA keeps `example.com` online for documentation and says it may be used in examples without asking, though it warns against building anything that depends on its web server ([IANA, Example Domains](https://www.iana.org/help/example-domains)). That warning shapes the output panels: `[...]` stands wherever a value depends on your network, the date, or how that server is configured this month.
+The core path is the URL section and bands 1 to 4; the packets, hop counting and layer sections that follow are extensions. Each band gets its own C# program, run against the real `example.com`. IANA keeps `example.com` online for documentation and says it may be used in examples without asking, though it warns against building anything that depends on its web server ([IANA, Example Domains](https://www.iana.org/help/example-domains)). That warning shapes the output panels: `[...]` stands wherever a value depends on your network, the date, or how that server is configured this month.
 
 ## The URL already says which conversations are needed
 
@@ -211,7 +211,7 @@ Each part is consumed by a different step:
 - **The path and query** travel inside the HTTP request and nowhere else.
 - **The fragment** goes nowhere. The target of an HTTP request excludes the fragment, which is kept for the client to use after the response arrives, for example to scroll to a heading ([RFC 9110, section 7.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-7.1)). You will see it missing from a captured request [further down](#the-request-a-real-client-writes).
 
-If you type a bare `example.com`, the browser has to pick a scheme before any of this. One rule for that is written down: when a site has previously sent a `Strict-Transport-Security` header over HTTPS, the browser must rewrite `http` to `https` for that host before making the request, without asking the network first ([RFC 6797, section 8.3](https://www.rfc-editor.org/rfc/rfc6797.html#section-8.3)).
+If you type a bare `example.com`, the browser applies its own policy to choose a scheme. Once it holds an `http` URL, one written rule can still change it: when a site has previously sent a `Strict-Transport-Security` header over HTTPS, the browser must rewrite `http` to `https` for that host before making the request, without asking the network first ([RFC 6797, section 8.3](https://www.rfc-editor.org/rfc/rfc6797.html#section-8.3)).
 
 ::::exercise[Plan a request from its URL]
 A program is given this URL, with a real space in the path:
@@ -267,7 +267,8 @@ try
     IPAddress[] found = await Lookup(host);
     await Lookup(host);
     Console.WriteLine(
-        $"{found.Length} found, first {found[0]}");
+        $"{found.Length} found, " +
+        $"first {found[0]}");
 }
 catch (SocketException e)
 {
@@ -278,10 +279,13 @@ catch (SocketException e)
 static async Task<IPAddress[]> Lookup(string name)
 {
     var clock = Stopwatch.StartNew();
-    IPAddress[] found =
-        await Dns.GetHostAddressesAsync(name);
+    IPAddress[] found = await
+        Dns.GetHostAddressesAsync(
+            name);
     double ms = clock.Elapsed.TotalMilliseconds;
-    Console.WriteLine($"{name,-12} {ms,6:F1} ms");
+    Console.WriteLine(
+        $"{name,-12} " +
+        $"{ms,6:F1} ms");
     return found;
 }
 ```
@@ -295,17 +299,17 @@ example.com  [...] ms
 
 Measurements from here on were taken on Windows 11, x64, with the .NET 10 SDK (10.0.401, runtime 10.0.12). The operating system's `ping example.com` reported round trips of 12 to 20 ms, and every timing on this page is specific to that machine and network on 2026-09-21; expect different numbers, and the same shape.
 
-The `localhost` line took 18 to 24 ms over three runs even though no packet left the machine. That is the price of the first name lookup in a process: loading the networking code and initialising the resolver, paid once. Without a throwaway lookup in front, that cost would land on whichever measurement came first and be mistaken for network time.
+The `localhost` line took 18 to 24 ms over three runs even though no packet left the machine. The extra time is start-up work in the first name lookup of a process (loading the networking code, initializing the resolver), paid once. Without a throwaway lookup in front, that cost would land on whichever measurement came first and be mistaken for network time.
 
-After that, `example.com` took 1 to 3 ms on its first lookup and 0.5 ms on the second in the same three runs. The first was fast because something on this machine had asked for the same name within the last few minutes and the answer was still stored. A run that follows a long enough pause finds no stored answer, and then the first lookup has to leave the machine and costs roughly a round trip to the recursive server. The stored answer is what the lifetime in Figure 1 is for: every DNS record carries a time to live, the number of seconds it may be reused before it has to be fetched again ([RFC 1034, section 3.6](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.6)), and resolvers at every level keep answers for that long.
+After that, `example.com` took 1 to 3 ms on its first lookup and 0.5 ms on the second in the same three runs. The first was fast because something on this machine had asked for the same name within the last few minutes and the answer was still stored. A run that follows a long enough pause finds no stored answer, and then the first lookup has to leave the machine and costs at least a round trip to the recursive server, and more if that server does not have the record either. The stored answer is what the lifetime in Figure 1 is for: every DNS record carries a time to live, the number of seconds it may be reused before it has to be fetched again ([RFC 1034, section 3.6](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.6)), and resolvers at every level keep answers for that long.
 
 :::dotnet
-`Dns.GetHostAddressesAsync` is not a DNS client. It calls the operating system's name resolution API (`getaddrinfo` on Windows), so an entry in the `hosts` file wins without any DNS query (one reason `localhost` needs no network), and IPv6 addresses are filtered out if the machine has no IPv6 installed ([Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.net.dns.gethostaddresses#remarks)). Which layer answered a fast lookup, the operating system or a cache further along the path, is something this program cannot tell you. Systems differ in whether they keep a cache at all.
+`Dns.GetHostAddressesAsync` is not a DNS client. It calls the operating system's name resolution API (`getaddrinfo` on Windows), so an entry in the `hosts` file wins without any DNS query (one reason `localhost` needs no network), and IPv6 addresses are filtered out if the machine has no IPv6 installed ([Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.net.dns.gethostaddresses#remarks)). Which layer answered a fast lookup, the operating system or a cache further along the path, is something this program cannot tell you.
 :::
 
 A name can map to several addresses, as it did here. The client picks one and moves on; the others are alternatives if the connection fails.
 
-## Bands 2 and 4 first: TCP and HTTP with the encryption left out
+## TCP and HTTP first, without TLS
 
 TLS exists to make the conversation unreadable to anyone watching, which makes it a poor place to start reading. `example.com` also answers unencrypted HTTP on port 80, so this program skips band 3, opens a TCP connection, and types the request by hand.
 
@@ -347,7 +351,9 @@ try
 
     string reply = Encoding.UTF8.GetString(
         all.ToArray());
-    int blank = reply.IndexOf("\r\n\r\n");
+    int blank = reply.IndexOf(
+        "\r\n\r\n",
+        StringComparison.Ordinal);
     if (blank < 0)
         throw new IOException("no blank line");
     string[] head =
@@ -379,8 +385,10 @@ catch (Exception e) when (e is
 }
 
 static bool IsFraming(string line) =>
-    line.StartsWith("Content-Length:") ||
-    line.StartsWith("Transfer-Encoding:");
+    line.StartsWith("Content-Length:",
+        StringComparison.OrdinalIgnoreCase) ||
+    line.StartsWith("Transfer-Encoding:",
+        StringComparison.OrdinalIgnoreCase);
 ```
 
 ```text output
@@ -421,7 +429,7 @@ Those 56 bytes are a complete HTTP/1.1 request. The format is a start line, then
 
 ### Where the response ends
 
-TCP delivers a stream of bytes. It promises the bytes arrive complete and in order, and explicitly promises nothing about how they are grouped: what one side sends in a single write may arrive as several reads, or merged with the next write ([RFC 9293, section 3.7](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7)). So HTTP has to mark the end of a message itself, and the `22f` at the start of the body is how this server did it. With `Transfer-Encoding: chunked`, the body is sent as pieces, each preceded by its length in hexadecimal on a line of its own, and finished by a piece of length zero ([RFC 9112, section 7.1](https://www.rfc-editor.org/rfc/rfc9112.html#section-7.1)). A server that knows the size in advance sends `Content-Length` instead, and a client has to handle both ([RFC 9112, section 6.3](https://www.rfc-editor.org/rfc/rfc9112.html#section-6.3)).
+TCP delivers a stream of bytes. It promises the bytes arrive complete and in order, and explicitly promises nothing about how they are grouped: what one side sends in a single write may arrive as several reads, or merged with the next write ([RFC 9293, section 3.7](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7)). So HTTP has to mark the end of a message itself, and the `22f` at the start of the body is how this server did it. With `Transfer-Encoding: chunked`, the body is sent as pieces, each preceded by its length in hexadecimal on a line of its own, and finished by a piece of length zero ([RFC 9112, section 7.1](https://www.rfc-editor.org/rfc/rfc9112.html#section-7.1)). A server that knows the size in advance sends `Content-Length` instead, and a client has to handle both ([RFC 9112, section 6.3](https://www.rfc-editor.org/rfc/rfc9112.html#section-6.3)). Header names are case-insensitive ([RFC 9110, section 5.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-5.1)), which is why `IsFraming` ignores case. Header names are case-insensitive ([RFC 9110, section 5.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-5.1)), which is why `IsFraming` ignores case.
 
 <figure class="diagram">
 <svg viewBox="0 0 360 250" role="img" aria-labelledby="chunk-title chunk-desc">
@@ -504,7 +512,8 @@ using System.Security.Authentication;
 using System.Text;
 
 const string host = "example.com";
-var options = new SslClientAuthenticationOptions
+var options =
+    new SslClientAuthenticationOptions
 {
     TargetHost = host,
     ApplicationProtocols =
@@ -523,7 +532,8 @@ try
     {
         clock.Restart();
         IPAddress[] found = await
-            Dns.GetHostAddressesAsync(host);
+            Dns.GetHostAddressesAsync(
+                host);
         double dns = Lap();
 
         using var tcp = new TcpClient();
@@ -545,9 +555,13 @@ try
         double reply = Lap();
 
         Console.WriteLine(
-            $"{round,5}{dns,6:F1}{connect,6:F1}" +
-            $"{handshake,6:F1}{reply,6:F1}");
-        info = $"{tls.SslProtocol} {status}\n" +
+            $"{round,5}" +
+            $"{dns,6:F1}" +
+            $"{connect,6:F1}" +
+            $"{handshake,6:F1}" +
+            $"{reply,6:F1}");
+        info = $"{tls.SslProtocol} " +
+            $"{status}\n" +
             $"{tls.NegotiatedCipherSuite}";
     }
     Console.WriteLine(info);
@@ -576,7 +590,7 @@ Tls13 HTTP/1.1 200 OK
 [...]
 ```
 
-Both messages went through `tls` instead of straight into the TCP stream, and the status line that came back is the same. The `Tls13` in the panel is a literal because this server and this operating system both support TLS 1.3; an older client would negotiate 1.2 and print `Tls12`. The suite negotiated on this machine was `TLS_AES_256_GCM_SHA384`. `NoDelay = true` is not decoration: the exercise in "Where the time went" takes it out and shows what it costs.
+Both messages went through `tls` instead of straight into the TCP stream, and the status line that came back is the same. The `Tls13` in the panel is a literal because this server and this operating system both support TLS 1.3; an older client would negotiate 1.2 and print `Tls12`. The suite negotiated on this machine was `TLS_AES_256_GCM_SHA384`. The exercise in "Where the time went" takes `NoDelay = true` out and shows what it costs.
 
 ### What the handshake exchanged
 
@@ -588,7 +602,7 @@ The TLS 1.3 handshake is three flights ([RFC 8446, section 2](https://www.rfc-ed
 
 That is one round trip before the request can go, and it is why band 3 in Figure 1 is no taller than band 2. If you have read a description with a longer exchange in which the client encrypts a secret with the server's public key, it describes an older TLS version, not the one negotiated here.
 
-`TargetHost` did two jobs. It was checked against the certificate: the `https` scheme requires the client to verify that the certificate is valid for the host in the URL ([RFC 9110, section 4.3.4](https://www.rfc-editor.org/rfc/rfc9110.html#section-4.3.4)), and `SslStream` uses `TargetHost` for that validation ([Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.net.security.sslclientauthenticationoptions#properties)). This matters more than it may seem, because the program connected to `found[0]`, a bare IP address that came from an unauthenticated DNS answer. The certificate check is what ties the machine that answered back to the name you typed. `TargetHost` was also the name sent in the ClientHello, which the next program shows by changing it.
+`TargetHost` did two jobs. It was checked against the certificate: the `https` scheme requires the client to verify that the certificate is valid for the host in the URL ([RFC 9110, section 4.3.4](https://www.rfc-editor.org/rfc/rfc9110.html#section-4.3.4)), and `SslStream` uses `TargetHost` for that validation ([Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.net.security.sslclientauthenticationoptions#properties)). The program connected to `found[0]`, a bare IP address that came from an unauthenticated DNS answer, so the certificate check is what ties the machine that answered back to the name you typed. `TargetHost` was also the name sent in the ClientHello, which the next program shows by changing it.
 
 The program offered only `http/1.1` in ALPN because that is the only protocol it can speak. A client that also speaks HTTP/2 lists `h2`, and a server that selects it switches the connection to HTTP/2 ([RFC 9113, section 3.2](https://www.rfc-editor.org/rfc/rfc9113.html#section-3.2)). The negotiation rides inside the two Hello messages and costs no extra round trip ([RFC 7301, section 1](https://www.rfc-editor.org/rfc/rfc7301.html#section-1)).
 
@@ -603,15 +617,23 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 
 string[] names =
-    ["example.com", "example.org", "wrong-name.test"];
+[
+    "example.com",
+    "example.org",
+    "wrong-name.test",
+];
 try
 {
     IPAddress[] found = await
-        Dns.GetHostAddressesAsync("example.com");
+        Dns.GetHostAddressesAsync(
+            "example.com");
     foreach (string name in names)
     {
-        string outcome = await Ask(found[0], name);
-        Console.WriteLine($"{name,-16} {outcome}");
+        string outcome = await Ask(
+            found[0],
+            name);
+        Console.WriteLine(
+            $"{name,-16} {outcome}");
     }
 }
 catch (Exception e) when (e is
@@ -629,7 +651,8 @@ static async Task<string> Ask(
         new SslStream(tcp.GetStream());
     try
     {
-        await tls.AuthenticateAsClientAsync(name);
+        await tls.AuthenticateAsClientAsync(
+            name);
         return tls.RemoteCertificate!.Subject;
     }
     catch (AuthenticationException)
@@ -645,7 +668,7 @@ example.org      CN=example.org
 wrong-name.test  refused
 ```
 
-The same address and port presented a different certificate for each name it serves, and ended the handshake for a name it does not. The only thing that differed between the three attempts was the host name passed to `AuthenticateAsClientAsync`, so that is what reached the server in the ClientHello.
+The same address and port presented a different certificate for each name it serves, and the handshake failed for a name it does not serve (another server might instead present a default certificate that the client then rejects). The only thing that differed between the three attempts was the host name passed to `AuthenticateAsClientAsync`, so that is what reached the server in the ClientHello.
 
 :::note[What an observer on the path still sees]
 The ClientHello that carries the host name is sent before encryption starts, so anyone on the path can see:
@@ -676,18 +699,20 @@ Task server = Task.Run(async () =>
         await listener.AcceptTcpClientAsync();
     NetworkStream stream = peer.GetStream();
 
-    var seen = new StringBuilder();
+    string seen = "";
     var buffer = new byte[1024];
-    while (!$"{seen}".EndsWith(blankLine))
+    while (!seen.EndsWith(
+        blankLine, StringComparison.Ordinal))
     {
-        int n = await stream.ReadAsync(buffer);
+        int n = await stream.ReadAsync(
+            buffer);
         if (n == 0) break;
-        seen.Append(
-            Encoding.ASCII.GetString(buffer, 0, n));
+        seen += Encoding.ASCII.GetString(
+            buffer, 0, n);
     }
     Console.WriteLine("server read:");
     Console.Write(
-        $"{seen}".Replace("\r\n", "\\r\\n\n"));
+        seen.Replace("\r\n", "\\r\\n\n"));
 
     string body = "hello over loopback";
     byte[] reply = Encoding.ASCII.GetBytes(
@@ -770,7 +795,7 @@ The numbers in Figure 3 come from the specifications. A TLS 1.3 record has a 5-b
 
 IP is where the network stops making promises. It moves each packet, independently, one hop closer to the destination address, with no acknowledgments and no retransmission ([RFC 791, section 1.4](https://www.rfc-editor.org/rfc/rfc791.html#section-1.4)). In the architecture RFC 1122 describes, routers keep no connection state and forward each packet independently; everything needed for reliability lives in the two end hosts ([RFC 1122, section 1.1.2](https://www.rfc-editor.org/rfc/rfc1122.html#section-1.1.2)). The ordering and completeness that the HTTP code relied on were built by TCP at the two ends, from the sequence numbers set up in band 2, by resending whatever was not acknowledged.
 
-That is the model, and real paths bend it. On a typical home network the first device your packets meet is a router doing network address port translation: it rewrites the source address and TCP or UDP port of each outgoing packet so that many private machines can share one public address, and it remembers the mapping to route the replies back ([RFC 3022, section 2.2](https://www.rfc-editor.org/rfc/rfc3022.html#section-2.2)). So the local port printed by the plain-TCP program is your machine's view; the server may see a different port, and a different address, on the same connection. Firewalls that filter by port also read above the IP header. The rule "routers read only IP" describes what forwarding requires, not what every box on the path does.
+That is the model, and real paths bend it. Where a network address port translator sits on the path, as it commonly does between a home network and the internet, it rewrites the source address and TCP or UDP port of each outgoing packet so that many private machines can share one public address, and it remembers the mapping to route the replies back ([RFC 3022, section 2.2](https://www.rfc-editor.org/rfc/rfc3022.html#section-2.2)). So the local port printed by the plain-TCP program is your machine's view; the server may see a different port, and a different address, on the same connection. A box that reads and rewrites TCP ports is not a router that reads only IP. The rule "routers read only IP" describes what forwarding requires, not what every box on the path does.
 
 ### Counting the hops
 
@@ -784,7 +809,8 @@ using System.Net.Sockets;
 try
 {
     IPAddress[] found = await
-        Dns.GetHostAddressesAsync("example.com");
+        Dns.GetHostAddressesAsync(
+            "example.com");
     using var ping = new Ping();
     var wait = TimeSpan.FromSeconds(2);
     int answered = 0, silent = 0, ttl = 0;
@@ -793,11 +819,16 @@ try
     while (ttl < 30)
     {
         ttl++;
-        var options = new PingOptions(
-            ttl: ttl,
-            dontFragment: true);
-        PingReply reply = await ping.SendPingAsync(
-            found[0], wait, new byte[32], options);
+        var options = new PingOptions
+        {
+            Ttl = ttl,
+        };
+        PingReply reply = await
+            ping.SendPingAsync(
+                found[0],
+                wait,
+                new byte[32],
+                options);
         status = reply.Status;
 
         if (status == IPStatus.TtlExpired)
@@ -811,9 +842,11 @@ try
     Console.WriteLine(
         $"stopped at hop {ttl}: {status}");
     Console.WriteLine(
-        $"routers that answered  {answered}");
+        "routers that answered  " +
+        answered);
     Console.WriteLine(
-        $"routers with no answer {silent}");
+        "routers with no answer " +
+        silent);
 }
 catch (Exception e) when (
     e is SocketException or PingException)
@@ -847,7 +880,9 @@ Each layer can be swapped without the others noticing. The same HTTP request ran
 
 ## Where the time went
 
-Here is what the timing rows from the TLS program looked like over six runs on this machine, with `ping` reporting 12 to 20 ms. Each cell is the range of the six values:
+Here is what the timing rows from the TLS program looked like over six runs on this machine, with `ping` reporting 12 to 20 ms.
+
+**Time per band, minimum to maximum over six runs**
 
 | Band | Round 1 | Rounds 2 and 3 |
 |---|---:|---:|
@@ -856,9 +891,9 @@ Here is what the timing rows from the TLS program looked like over six runs on t
 | 3 TLS | 49 to 54 ms | 21 to 31 ms |
 | 4 HTTP | 23 to 28 ms | 19 to 36 ms |
 
-Round 1 is slower than the rest, most of all in DNS and TLS, although every round opens a new connection to the same server. The only difference is that the process has never done any of this before, so the extra is one-time start-up cost inside the program; the `localhost` line above measured part of it. I did not profile which part of the runtime is responsible. The last column is the fair one.
+Round 1 is slower than the rest, most of all in DNS and TLS, although every round opens a new connection to the same server. The only difference is that the process has never done any of this before, so the extra is one-time start-up cost inside the program; the `localhost` line above measured part of it. This program does not show which part of the runtime is responsible. The last column is the fair one.
 
-In that column, TCP, TLS and HTTP each cost roughly one round trip, which is what Figure 1 says: TCP is the cleanest measurement, since `ConnectAsync` does nothing else. TLS runs a little above TCP, which fits one round trip plus the certificate and key work at both ends, although this program does not separate the two. DNS is nearly free only because the answer was stored on this machine; a cold lookup would add a round trip to the resolver.
+In that column, TCP is the cleanest measurement of one round trip, since `ConnectAsync` does nothing else. TLS and HTTP each took between one and two of those round trips here. Figure 1 draws one round trip each, and this program does not separate the surplus: for TLS it fits the certificate and key work at both ends, and for HTTP the server's own processing time. DNS is nearly free only because the answer was stored on this machine; a cold lookup would add at least a round trip to the resolver.
 
 Round-trip time is set by distance and the networks in between, and buying more bandwidth does not reduce it. What helps is doing fewer round trips:
 
@@ -882,7 +917,8 @@ using System.Net.Sockets;
 using System.Text;
 
 IPAddress ip = (await
-    Dns.GetHostAddressesAsync("example.com"))[0];
+    Dns.GetHostAddressesAsync(
+        "example.com"))[0];
 byte[] request = Encoding.ASCII.GetBytes(
     "GET / HTTP/1.1\r\nHost: example.com\r\n" +
     "Connection: close\r\n\r\n");
@@ -905,9 +941,11 @@ try
         await tls.WriteAsync(request);
         using var reader = new StreamReader(tls);
         await reader.ReadLineAsync();
+        double ms =
+            clock.Elapsed.TotalMilliseconds;
         Console.WriteLine(
             $"NoDelay {noDelay,-5} " +
-            $"{clock.Elapsed.TotalMilliseconds,6:F1} ms");
+            $"{ms,6:F1} ms");
     }
 }
 catch (Exception e) when (e is
@@ -926,7 +964,7 @@ NoDelay False [...] ms
 NoDelay True  [...] ms
 ```
 
-The usual explanation is Nagle's algorithm. With it on, a TCP sender that has unacknowledged data buffers further small writes until the acknowledgment arrives ([RFC 9293, section 3.7.4](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7.4)), and .NET's documentation says that with `NoDelay` false a `TcpClient` holds back small amounts of outgoing data ([Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcpclient.nodelay#remarks)). Here the client's TLS Finished message is small and still unacknowledged when the small request is written, so the request waits. A receiver is allowed to hold an acknowledgment back, for less than half a second, in the hope of sending it along with data ([RFC 9293, section 3.8.6.3](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.8.6.3)); if the server does that after the Finished message, the request waits for it. That would produce a delay of this size, but I did not capture packets: the timing effect is measured, and the mechanism is the standard explanation, not something this program observed.
+The usual explanation is Nagle's algorithm. With it on, a TCP sender that has unacknowledged data buffers further small writes until the acknowledgment arrives ([RFC 9293, section 3.7.4](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7.4)), and .NET's documentation says that with `NoDelay` false a `TcpClient` holds back small amounts of outgoing data ([Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcpclient.nodelay#remarks)). If the client's small TLS Finished message is still unacknowledged when the small request is written, Nagle's algorithm holds the request back. A receiver is allowed to hold an acknowledgment back, for less than half a second, in the hope of sending it along with data ([RFC 9293, section 3.8.6.3](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.8.6.3)); if the server does that after the Finished message, the request waits for it. That would produce a delay of this size, but no packets were captured: the timing effect is measured, and the mechanism is the standard explanation, not something this program observed.
 
 It is also why `SocketsHttpHandler`, the handler behind `HttpClient`, creates its sockets with `NoDelay = true` (in the current [dotnet/runtime source](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Net.Http/src/System/Net/Http/SocketsHttpHandler/ConnectionPool/HttpConnectionPool.cs)), and why a hand-written client that leaves the default on can meet this delay whenever a small write follows another write that has not been acknowledged yet.
 :::
@@ -945,10 +983,14 @@ try
 {
     using var shared = NewClient();
     for (int i = 1; i <= 3; i++)
-        Console.WriteLine($"shared {i}: {await Time(shared)}");
+        Console.WriteLine(
+            $"shared {i}: " +
+            $"{await Time(shared)}");
 
     using var fresh = NewClient();
-    Console.WriteLine($"new client: {await Time(fresh)}");
+    Console.WriteLine(
+        $"new client: " +
+        $"{await Time(fresh)}");
 }
 catch (Exception e) when (e is
     HttpRequestException
@@ -958,16 +1000,21 @@ catch (Exception e) when (e is
 }
 
 static HttpClient NewClient() =>
-    new() { Timeout = TimeSpan.FromSeconds(10) };
+    new()
+    {
+        Timeout = TimeSpan.FromSeconds(10),
+    };
 
 static async Task<string> Time(HttpClient http)
 {
     var clock = Stopwatch.StartNew();
     using HttpResponseMessage reply =
-        await http.GetAsync("https://example.com/");
+        await http.GetAsync(
+            "https://example.com/");
     await reply.Content.ReadAsByteArrayAsync();
     double ms = clock.Elapsed.TotalMilliseconds;
-    return $"{(int)reply.StatusCode}, {ms,6:F1} ms";
+    int code = (int)reply.StatusCode;
+    return $"{code}, {ms,6:F1} ms";
 }
 ```
 
@@ -978,13 +1025,13 @@ shared 3: 200, [...] ms
 new client: 200, [...] ms
 ```
 
-Over three runs on this machine the first request took 154 to 225 ms, the second and third 23 to 34 ms (about one round trip, band 4 alone), and the new client 61 to 68 ms, about what the sum of the bands in the last column of the table predicts. This is one reason Microsoft's guidance is to share a long-lived `HttpClient` and not create one per request: every instance has its own connection pool ([HttpClient guidelines](https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines)), so a new client pays for bands 1 to 3 again.
+Over three runs on this machine the first request took 154 to 225 ms, the second and third 23 to 34 ms (one to two round trips, band 4 alone), and the new client 61 to 68 ms, about what the sum of the bands in the last column of the table predicts. This is one reason Microsoft's guidance is to share a long-lived `HttpClient` and not create one per request: every instance has its own connection pool ([HttpClient guidelines](https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines)), so a new client pays for bands 1 to 3 again.
 :::
 ::::
 
 ## After the last byte of HTML
 
-For a browser, the response that took four round trips to fetch is a list of further things to fetch. The HTML names stylesheets, scripts, images and fonts, and each one is a URL that goes through the steps on this page. Those on the same host skip to band 4 on the connection that is already open; each new host name starts again at band 1.
+For a browser, the response that took four round trips to fetch is a list of further things to fetch. The HTML names stylesheets, scripts, images and fonts, and each one is a URL that goes through the steps on this page. A host with an idle open connection can skip to band 4 on it (browsers also open several connections to one host in parallel, and each extra one pays bands 2 and 3). A new host name normally needs its own lookup and its own connection, though an HTTP/2 client may reuse one connection for another name that the server's certificate covers ([RFC 9113, section 9.1.1](https://www.rfc-editor.org/rfc/rfc9113.html#section-9.1.1)).
 
 A browser also asks itself whether it needs the network at all. An HTTP cache stores responses so that future equivalent requests cost less time and bandwidth, and a browser keeps a private one ([RFC 9111, section 1](https://www.rfc-editor.org/rfc/rfc9111.html#section-1)). A repeat visit can therefore skip every band for a stored response, or reuse an open connection and pay for band 4 only. Parsing the HTML, applying the CSS, running scripts and painting the result comes after all of that; MDN's [Populating the page: how browsers work](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work) covers that half.
 
