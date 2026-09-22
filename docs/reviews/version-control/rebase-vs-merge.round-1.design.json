@@ -1,0 +1,50 @@
+{
+  "article": "src/content/articles/version-control/rebase-vs-merge.md",
+  "route": "/version-control/rebase-vs-merge/",
+  "round": 1,
+  "role": "design",
+  "score": 8.9,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Branching-Rebasing (Pro Git 3.6; fetched in full)",
+    "https://www.atlassian.com/git/tutorials/merging-vs-rebasing (fetch returned only site navigation/chrome, no tutorial body, so nothing specific was compared from it; general familiarity with its static before/after diagrams and illustrative, non-runnable snippets is noted but not weighted)"
+  ],
+  "lighthouse": { "performance": 98, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "verify": {
+    "command": "node tools/verify-page.mjs --drafts /version-control/rebase-vs-merge/",
+    "runs": 1,
+    "words": 2733,
+    "codeBlocks": 22,
+    "figures": 3,
+    "h1": 1,
+    "internalLinks": 30,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, not an issue)"],
+    "screenshotsOpened": "desktop-light fold+01-08 (all 8), mobile-dark fold+01-13 (all 13), desktop-dark fold+part03+part04, mobile-light fold+part03+part04+part06 (figures and dense output panels spot-checked)"
+  },
+  "justification": "Real numbers from one verify run (no re-run needed; the two other node processes on the machine were an idle, days-old Vite dev server and preview-server for an unrelated repo, not contending for CPU during Lighthouse): performance=98, accessibility=100, best-practices=100, seo=100; 0 console errors, 0 console warnings, 0 broken links (30 internal, including both cross-reference anchors into how-git-works.md, which resolve), mobileOverflowPx=0. The only verify-page failure is the expected NEEDS_MARKUS placeholder. The writer's fix to Figure 1 holds: 'annotate-for-rebase' now wraps to two d-small lines under the 'borrowed Hyperion' box and sits fully inside the drawing with no clipped edge, confirmed in all four theme/width combinations (desktop-light, desktop-dark, mobile-light, mobile-dark). All three figures (the shared starting graph, the merge's two-parent join, and the rebase's replayed line next to the untouched original two commits) render legibly at both 360-unit-viewBox widths, with correctly re-tinted accent/good/bad classes in dark mode and no scrolling or fade on any edge. Against Pro Git's rebasing chapter (fetched and read in full: 8 static commit-notation diagrams, the golden rule stated once, no interactive-rebase or squash coverage at all, and only illustrative, unlabelled, unrun command listings with no captured output), this article is ahead on every axis that matters for the query: it states and sources the same golden rule, adds a worked --fixup/--autosquash section Pro Git's chapter omits entirely, and every one of its 22 bash blocks is machine-verified against real Git 2.52 output rather than being typed prose. The rhythm holds up at this shorter length (2733 words, appropriately scoped to one narrow comparison rather than padded): prose/code/output/diagram alternate without a code block running more than a handful of commands, four exercises of different shapes (ancestor check, graph-reading prediction, force-push consequence, extend-the-check) are spaced through the piece and stay correctly collapsed behind 'Show solution' in every screenshot (desktop-light, mobile-dark, and the mobile-light/desktop-dark spot checks), heading hierarchy is a clean single H1 plus seven H2s that match the on-this-page list exactly, and the one pitfall-adjacent callout family used (exercises only, no note/warning/pitfall/dotnet in this article) is consistent and correctly styled in dark mode where checked. What keeps it under 9.0 is a small number of phone-width nits, all minor and all git's-own-output rather than the article's prose: in the 'What git rebase writes instead' section, the 'echo \"tip is the same commit: ...\"' bash line is left as one ~90-character line and clips at '$([ \"$befor' on a 390 px phone, which is inconsistent with the git log line two lines below it in the same block, which the writer did break with a trailing backslash; the point survives because the output panel underneath states 'tip is the same commit: no' in plain text, but the actual ternary comparison that produces it is hidden. Two of the git log --graph output panels (the merge commit graph and, to a lesser extent, the rebase-output graph) also clip trailing branch-label parentheses on a phone (e.g. 'Merge branch 'annotate' (HEAD -> mai[n)', 'Note: borrowed Hyperion (annotate-for[-rebase, annotate)', '1 file changed, 2 insertions(+), 2 delet[ions(-)'); in every case the very next paragraph restates the fact in prose ('annotate still names its own tip, unmoved'), so nothing essential is lost, but a reader relying on the panel alone would not see it. Exercise <details> solutions are not expanded by verify-page, so their code/output blocks (four exercises, all short, none looked especially wide in the visible prompt text) were not directly checked at 390 px; this is the same known limitation noted in prior round reviews for this pillar. The 'Related articles' card at the foot of the page surfaces only 'How Git Works Inside' and not 'Branching and Merging, Including Conflicts', even though both are prerequisites; this is presumably a tag-overlap artifact of the related-articles mechanism rather than an article defect, so it is not counted as an issue. None of the findings are structural, and the diagram work in particular is materially stronger than the round-1 diagram issues seen on sibling articles in this pillar (how-git-works round 1 was held to 8.1 specifically for two figures wider than the 360-unit budget clipping on phone; this article has no such problem in any figure).",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Section 'What git rebase writes instead', first bash block, the line 'echo \"tip is the same commit: $([ \"$before_tip\" = \"$after_tip\" ] && echo yes || echo no)\"' (mobile-dark part04/part05)",
+      "problem": "This ~90-character line is not broken, so on a 390 px phone it clips after '$([ \"$befor', hiding the actual before/after comparison. The git log --graph line directly beneath it in the same code block is broken with a trailing backslash, so the treatment is inconsistent within one block. The output panel underneath does state the answer ('tip is the same commit: no'), so the reader is not left without the fact, only without seeing how it is computed.",
+      "fixLooksLike": "Split the echo onto two or three lines, e.g. assign the comparison to a variable first ('same=$([ \"$before_tip\" = \"$after_tip\" ] && echo yes || echo no)' on its own line, then 'echo \"tip is the same commit: $same\"'), or wrap with a trailing backslash before '&&' the way the neighboring git log line already does. Re-run verify and check mobile part04/part05.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "git log --graph output panels for the merge and rebase (mobile-dark part04): 'Merge branch 'annotate' (HEAD -> mai[n)', '| * Note: borrowed Hyperion (annotate-for[-rebase, annotate)', '1 file changed, 2 insertions(+), 2 delet[ions(-)', and similarly '* Note: borrowed Hyperion (HEAD -> annota[te-for-rebase)' in the rebase output",
+      "problem": "Git's own branch-label parentheses and the diffstat summary line run past ~40 columns and are cut under the fade on a phone. In every instance the following paragraph already states the same fact in prose (that annotate still names its own tip, that annotate-for-rebase is now a straight line), so this is git's own text rather than lost information, matching the pattern accepted as minor in the round-2 design review of the sibling article branching-and-merging.md.",
+      "fixLooksLike": "Optional: drop the diffstat summary lines with 'sed $d' or similar (they carry no information the prose needs), and/or abbreviate branch names in the --format string where the full list of labels is not the point of that specific block. Not required before merge; git's own wording is not fully controllable and the prose already carries the point.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "All four exercises' collapsed <details> solutions",
+      "problem": "verify-page does not expand <details>, so the solution code/output blocks (Exercise 1 merge-base check, Exercise 2 grep -c, Exercise 3 has no code, Exercise 4 rev-list --min-parents) were not directly screenshotted at 390 px. Nothing in the visible prompt text suggests a problem, so this is an unverified area, not a found defect.",
+      "fixLooksLike": "Orchestrator or writer opens all four solutions at 390 px in a follow-up pass (or verify-page adds an open-all-details mode) and confirms no operative code or output is clipped.",
+      "owner": "writer"
+    }
+  ]
+}
