@@ -97,7 +97,7 @@ rows
 
 The multiplier `2654435761` is Knuth's multiplicative hash constant; it just needs to scatter `n` well enough that a visitor's rows land on different paths, statuses and dates instead of a suspiciously tidy pattern. The SQL on this page runs against SQLite 3.50 in one session; run the statements in order if you follow along.
 
-Ask for one visitor's hits with no index, and SQLite has exactly one way to answer: read every row.
+Ask for one visitor's hits with no [index](/glossary/#index-database), and SQLite has exactly one way to answer: read every row.
 
 ```sql run
 EXPLAIN QUERY PLAN
@@ -110,7 +110,7 @@ id  parent  notused  detail
 2   0       216      SCAN hit
 ```
 
-`EXPLAIN QUERY PLAN` reports one row per table the query touches. Each row has [four fields](https://www.sqlite.org/eqp.html): "An integer node id, an integer parent id, an auxiliary integer field that is not currently used, and a description of the node." Only the last one, `detail`, says anything about the plan itself; `id`/`parent` matter for queries with subqueries or joins (this one has neither, so `parent` is always 0), and `notused` is exactly what its name says. From here on, only `detail` is worth reading, and this page's first plan opens with the least helpful word it can show: [`SCAN`](https://www.sqlite.org/eqp.html), which the same page defines as "a full-table scan." SQLite's [query planning documentation](https://www.sqlite.org/queryplanner.html) explains why that is a *fixed* cost regardless of what the query asks for: "the entire content of the table must be read and examined in order to find the one row of interest." `SEARCH` is the alternative: it indicates that "only a subset of the table rows are visited," per that same `EXPLAIN QUERY PLAN` documentation.
+`EXPLAIN QUERY PLAN` reports one row per table the query touches. Each row has [four fields](https://www.sqlite.org/eqp.html): "An integer node id, an integer parent id, an auxiliary integer field that is not currently used, and a description of the node." Only the last one, `detail`, says anything about the plan itself; `id`/`parent` matter for queries with subqueries or [joins](/databases/sql-joins/) (this one has neither, so `parent` is always 0), and `notused` is exactly what its name says. From here on, only `detail` is worth reading, and this page's first plan opens with the least helpful word it can show: [`SCAN`](https://www.sqlite.org/eqp.html), which the same page defines as "a full-table scan." SQLite's [query planning documentation](https://www.sqlite.org/queryplanner.html) explains why that is a *fixed* cost regardless of what the query asks for: "the entire content of the table must be read and examined in order to find the one row of interest." `SEARCH` is the alternative: it indicates that "only a subset of the table rows are visited," per that same `EXPLAIN QUERY PLAN` documentation.
 
 A `SCAN` costs one comparison per row, so it costs the same whether the visitor you want is row 1 or row 300,000. Now measure it. `Microsoft.Data.Sqlite`, ["a lightweight ADO.NET provider for SQLite"](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/), builds its own copy of the same table and times the query directly, so the numbers below are wall-clock time, not a row count. This program (and the two later on this page that measure time) ran on .NET 10.0.12 on Windows 11, an 8-core x64 desktop (Intel Core i7-11700K); the SQLite build inside that NuGet package reports its own version, printed below, which need not match the 3.50 running the blocks above.
 
@@ -222,7 +222,7 @@ Each number is the best of five batches of 300 repeated queries, which smooths o
 
 ## What SQLite actually walks
 
-A table with no index is not unindexed in the sense of "unstructured": SQLite still keeps `hit` itself in a **B-tree**, a "table b-tree", keyed by the hidden `rowid` that backs `hit_id`. [SQLite's own file format documentation](https://www.sqlite.org/fileformat2.html) is exact about the shape: "A b-tree page is either an interior page or a leaf page. A leaf page contains keys and in the case of a table b-tree each key has associated data. An interior page contains K keys together with K+1 pointers to child b-tree pages." The keys inside one page are always sorted, and "for any key X, pointers to the left of X refer to b-tree pages on which all keys are less than or equal to X. Pointers to the right of X refer to pages where all keys are greater than X." Every leaf sits at the same depth, so no row is ever cheaper or more expensive to reach than any other.
+A table with no index is not unindexed in the sense of "unstructured": SQLite still keeps `hit` itself in a **B-tree**, a "table b-tree", keyed by `rowid`. `hit_id` is declared `INTEGER PRIMARY KEY`, and — as [this page's companion on primary keys](/databases/relational-model-and-keys/) covers for the general case — that is not a separate hidden column a visible one is backed by: [SQLite's own documentation](https://www.sqlite.org/lang_createtable.html#rowid) states that such a column "becomes an alias for the rowid," the same value under two names, one column. [SQLite's own file format documentation](https://www.sqlite.org/fileformat2.html) is exact about the shape: "A b-tree page is either an interior page or a leaf page. A leaf page contains keys and in the case of a table b-tree each key has associated data. An interior page contains K keys together with K+1 pointers to child b-tree pages." The keys inside one page are always sorted, and "for any key X, pointers to the left of X refer to b-tree pages on which all keys are less than or equal to X. Pointers to the right of X refer to pages where all keys are greater than X." Every leaf sits at the same depth, so no row is ever cheaper or more expensive to reach than any other.
 
 <figure class="diagram">
 <svg viewBox="0 0 360 300" role="img" aria-labelledby="btree-title btree-desc">
@@ -299,7 +299,7 @@ Ten times the rows means roughly ten times the leaves: about 25,180 instead of 2
 
 ## Seeks: the plan after CREATE INDEX
 
-`CREATE INDEX` builds a second B-tree over the same table, this one an "index b-tree": its keys are the indexed column's values, in sorted order, and each key carries the matching row's `rowid` instead of the row's data. [SQLite's documentation](https://www.sqlite.org/fileformat2.html) states the rule plainly: "There is one index b-tree in the database file for each index in the schema." Give the query planner one on `visitor_id`, and the same query's plan changes shape.
+`CREATE INDEX` builds a second B-tree over the same table, this one an "index b-tree": its keys are the indexed column's values, in sorted order, and each key carries the matching row's `rowid` instead of the row's data. [SQLite's documentation](https://www.sqlite.org/fileformat2.html) states the rule plainly: "There is one index b-tree in the database file for each index in the schema." Give the query planner one on `visitor_id` — [`CREATE INDEX`'s syntax](https://www.sqlite.org/lang_createindex.html) needs only a name and a column list for this simplest case — and the same query's plan changes shape.
 
 ```sql run
 CREATE INDEX idx_visitor ON hit(visitor_id);
@@ -314,7 +314,7 @@ id  parent  notused  detail
 3   0       61       SEARCH hit USING INDEX idx_visitor (visitor_id=?)
 ```
 
-`SCAN` became `SEARCH`, naming the index and the condition it is searching on. SQLite's [query planning documentation](https://www.sqlite.org/queryplanner.html) walks through exactly this shape of lookup for an index on a non-key column: the engine binary-searches the index, sorted by that column, to find a matching entry and its `rowid`, and then, as the documentation puts it, "does a second binary search on the original ... table to find the original row." Two binary searches, not one, but each costs `O(log N)` against the table's `Θ(n)` for a scan, and the documentation draws the same conclusion this page's own numbers do: "for a table with a large number of rows, this is still much faster than doing a full table scan." The same program that timed the scan, changed only to build the index before asking:
+`SCAN` became `SEARCH`, naming the index and the condition it is searching on: `detail` now reads `SEARCH hit USING INDEX idx_visitor (visitor_id=?)`. SQLite's [query planning documentation](https://www.sqlite.org/queryplanner.html) walks through exactly this shape of lookup for an index on a non-key column: the engine binary-searches the index, sorted by that column, to find a matching entry and its `rowid`, and then, as the documentation puts it, "does a second binary search on the original ... table to find the original row." Two binary searches, not one, but each costs `O(log N)` against the table's `Θ(n)` for a scan, and the documentation draws the same conclusion this page's own numbers do: "for a table with a large number of rows, this is still much faster than doing a full table scan." The same program that timed the scan, changed only to build the index before asking:
 
 ```csharp run id=seek-timing
 #:package Microsoft.Data.Sqlite@8.0.11
@@ -422,12 +422,12 @@ Across several runs here the seek cost between about 0.0014 and 0.0037 ms per qu
 
 ## Composite indexes: column order is not cosmetic
 
-An index can cover more than one column, and which column comes first decides what the index is sorted by. `(visitor_id, hit_at)` sorts by `visitor_id` first and only breaks ties with `hit_at`; `(hit_at, visitor_id)` sorts the other way. The two are different structures, useful for different queries, even though they mention the same two columns.
+An index can cover more than one column, the same way [a primary key can be composite](/databases/relational-model-and-keys/), and which column comes first decides what the index is sorted by. `(visitor_id, hit_at)` sorts by `visitor_id` first and only breaks ties with `hit_at`; `(hit_at, visitor_id)` sorts the other way. The two are different structures, useful for different queries, even though they mention the same two columns.
 
 ```sql run
 DROP INDEX idx_visitor;
 
-CREATE INDEX idx_visitor_date
+CREATE INDEX idx_vd
   ON hit(visitor_id, hit_at);
 
 EXPLAIN QUERY PLAN
@@ -437,11 +437,11 @@ WHERE visitor_id = 555 AND hit_at = '2025-02-14';
 
 ```text output
 id  parent  notused  detail
---  ------  -------  -------------------------------------------------------------------
-3   0       61       SEARCH hit USING INDEX idx_visitor_date (visitor_id=? AND hit_at=?)
+--  ------  -------  ---------------------------------------------------------
+3   0       61       SEARCH hit USING INDEX idx_vd (visitor_id=? AND hit_at=?)
 ```
 
-Both conditions narrow the search, because both name a prefix of the index's sort order: first pin down `visitor_id`, then, inside that visitor's block of entries, pin down `hit_at`. Ask only about `hit_at`, and the leading column is missing:
+`detail` now reads `SEARCH hit USING INDEX idx_vd (visitor_id=? AND hit_at=?)`. Both conditions narrow the search, because both name a prefix of the index's sort order: first pin down `visitor_id`, then, inside that visitor's block of entries, pin down `hit_at`. Ask only about `hit_at`, and the leading column is missing:
 
 ```sql run
 EXPLAIN QUERY PLAN
@@ -457,9 +457,9 @@ id  parent  notused  detail
 `hit_at` values for `2025-02-14` are scattered across every visitor's block, in no particular order relative to each other, so there is no contiguous range of the index to seek to; SQLite falls back to reading the table. [SQLite's own worked example](https://www.sqlite.org/queryplanner.html) of a two-column index makes the same point with a `fruit`/`state` table: an index `(fruit, state)` can satisfy a query that filters `fruit` alone — the documentation's own phrase is "simply ignoring the state column" — precisely because `fruit` is the leading column, while a filter on `state` alone needs an index that leads with `state` instead. Swap the column order here and the table itself is unchanged, but which query benefits flips:
 
 ```sql run
-DROP INDEX idx_visitor_date;
+DROP INDEX idx_vd;
 
-CREATE INDEX idx_date_visitor
+CREATE INDEX idx_dv
   ON hit(hit_at, visitor_id);
 
 EXPLAIN QUERY PLAN
@@ -468,9 +468,11 @@ SELECT * FROM hit WHERE hit_at = '2025-02-14';
 
 ```text output
 id  parent  notused  detail
---  ------  -------  --------------------------------------------------
-3   0       62       SEARCH hit USING INDEX idx_date_visitor (hit_at=?)
+--  ------  -------  ----------------------------------------
+3   0       62       SEARCH hit USING INDEX idx_dv (hit_at=?)
 ```
+
+`detail` now reads `SEARCH hit USING INDEX idx_dv (hit_at=?)`: swapping the column order made this query's `hit_at` filter searchable, at the cost of the `visitor_id` filter that `idx_vd` used to serve.
 
 ```sql run
 EXPLAIN QUERY PLAN
@@ -509,7 +511,7 @@ id  parent  notused  detail
 The rule of thumb this earns: put the column your queries filter alone, or filter most selectively, first. [SQLite's documentation](https://www.sqlite.org/queryplanner.html) adds a related warning worth keeping in mind when a schema accumulates indexes over time: a three-column index already contains everything a matching one-column or two-column prefix of it does, so "your database schema should never contain two indices where one index is a prefix of the other" — drop the narrower one.
 
 ::::exercise[Predict the plan]
-An index `idx_status_path` covers `(status, path)`. Before running anything, decide which of these three queries can use it directly (a `SEARCH`) and which falls back to a full scan:
+An index `idx_sp` covers `(status, path)`. Before running anything, decide which of these three queries can use it directly (a `SEARCH`) and which falls back to a full scan:
 
 (a) `WHERE status = 404`
 (b) `WHERE path = '/checkout'`
@@ -519,7 +521,7 @@ An index `idx_status_path` covers `(status, path)`. Before running anything, dec
 (a) and (c) search the index; (b) scans the table. `status` is the leading column, so a query that constrains `status` — alone or together with `path` — can start at the right place in the index. `path` alone says nothing about where in the `status`-major order to begin, so SQLite has no better option than reading every row.
 
 ```sql run
-CREATE INDEX idx_status_path ON hit(status, path);
+CREATE INDEX idx_sp ON hit(status, path);
 
 EXPLAIN QUERY PLAN
 SELECT * FROM hit WHERE status = 404;
@@ -527,9 +529,11 @@ SELECT * FROM hit WHERE status = 404;
 
 ```text output
 id  parent  notused  detail
---  ------  -------  -------------------------------------------------
-3   0       62       SEARCH hit USING INDEX idx_status_path (status=?)
+--  ------  -------  ----------------------------------------
+3   0       62       SEARCH hit USING INDEX idx_sp (status=?)
 ```
+
+`detail` reads `SEARCH hit USING INDEX idx_sp (status=?)`, confirming (a). Query (b), filtering on the non-leading column alone, falls back to a scan:
 
 ```sql run
 EXPLAIN QUERY PLAN
@@ -550,9 +554,11 @@ WHERE status = 404 AND path = '/checkout';
 
 ```text output
 id  parent  notused  detail
---  ------  -------  ------------------------------------------------------------
-3   0       61       SEARCH hit USING INDEX idx_status_path (status=? AND path=?)
+--  ------  -------  ---------------------------------------------------
+3   0       61       SEARCH hit USING INDEX idx_sp (status=? AND path=?)
 ```
+
+`detail` reads `SEARCH hit USING INDEX idx_sp (status=? AND path=?)`, confirming (c): `status` still anchors the search, and `path` narrows it further.
 :::
 ::::
 
@@ -561,8 +567,8 @@ id  parent  notused  detail
 An index only stores the columns you put in it, plus the `rowid` of the row it came from. Ordinarily that `rowid` is a second step: find the entry in the index, then use its `rowid` to fetch the actual row from the table's own B-tree. [SQLite's optimizer overview](https://www.sqlite.org/optoverview.html) spells out what changes when every column a query needs is already sitting in the index: "If, however, all columns that were to be fetched from the table are already available in the index itself, SQLite will use the values contained in the index and will never look up the original table row. This saves one binary search for each row." An index that makes the table lookup unnecessary is called, in that same documentation, a **covering index**.
 
 ```sql run
-DROP INDEX idx_date_visitor;
-DROP INDEX idx_status_path;
+DROP INDEX idx_dv;
+DROP INDEX idx_sp;
 
 CREATE INDEX idx_cover
   ON hit(visitor_id, hit_at, status);
@@ -578,7 +584,7 @@ id  parent  notused  detail
 2   0       55       SEARCH hit USING COVERING INDEX idx_cover (visitor_id=?)
 ```
 
-`USING COVERING INDEX` is SQLite's exact wording for this in `EXPLAIN QUERY PLAN` output; the query only asks for `hit_at` and `status`, both of which `idx_cover` already holds. Ask for anything outside the index — `path` or `hit_id`, say — with the identical index still in place, and the plan changes by one word:
+`detail` reads `SEARCH hit USING COVERING INDEX idx_cover (visitor_id=?)`. `USING COVERING INDEX` is SQLite's exact wording for this in `EXPLAIN QUERY PLAN` output; the query only asks for `hit_at` and `status`, both of which `idx_cover` already holds. Ask for anything outside the index — `path` or `hit_id`, say — with the identical index still in place, and the plan changes by one word:
 
 ```sql run
 EXPLAIN QUERY PLAN
@@ -591,7 +597,7 @@ id  parent  notused  detail
 3   0       62       SEARCH hit USING INDEX idx_cover (visitor_id=?)
 ```
 
-Same index, same `WHERE` clause; the only difference is the select list, and it is the difference between "look at the index" and "look at the index, then the table too." A covering index is not a separate kind of index you declare; it is an ordinary index that happens to hold every column a particular query needs.
+`detail` now reads `SEARCH hit USING INDEX idx_cover (visitor_id=?)` — the word `COVERING` is gone. Same index, same `WHERE` clause; the only difference is the select list, and it is the difference between "look at the index" and "look at the index, then the table too." A covering index is not a separate kind of index you declare; it is an ordinary index that happens to hold every column a particular query needs.
 
 ## Every index is also a write cost
 
@@ -729,7 +735,7 @@ Match the other half of the documentation's pairing instead: index the column wi
 ```sql run
 DROP INDEX idx_path;
 
-CREATE INDEX idx_path_ci
+CREATE INDEX idx_pci
   ON hit(path COLLATE NOCASE);
 
 EXPLAIN QUERY PLAN
@@ -738,11 +744,11 @@ SELECT * FROM hit WHERE path LIKE '/check%';
 
 ```text output
 id  parent  notused  detail
---  ------  -------  ------------------------------------------------------
-3   0       165      SEARCH hit USING INDEX idx_path_ci (path>? AND path<?)
+--  ------  -------  --------------------------------------------------
+3   0       165      SEARCH hit USING INDEX idx_pci (path>? AND path<?)
 ```
 
-The plan now searches a range instead of scanning, and case-insensitive matching still works, because `NOCASE` is what makes the column case-insensitive in the first place:
+`detail` now reads `SEARCH hit USING INDEX idx_pci (path>? AND path<?)`: the plan searches a range instead of scanning, and case-insensitive matching still works, because `NOCASE` is what makes the column case-insensitive in the first place:
 
 ```sql run
 SELECT COUNT(*) AS n FROM hit WHERE path LIKE '/CHECK%';
