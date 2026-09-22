@@ -38,7 +38,7 @@ sources:
     url: "https://pages.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf"
     publisher: "Arpaci-Dusseau Books"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Run the program below and it prints a number that is wrong. Not wrong because of a typo or an off-by-one; wrong because four [threads](/glossary/#thread) added to the same counter eight million times between them, and some of those additions never happened.
