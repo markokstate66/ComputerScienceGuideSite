@@ -54,7 +54,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener.start"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 The [previous article](/networking/how-the-internet-works/) typed a request by hand and read whatever came back from a real web server. This one builds the half of that conversation which has to answer: a program that opens a listening socket, reads a real request line and headers off the wire, decides what they mean, and writes back a response that follows the same grammar. Every status code, cache hit and cookie below comes from a `TcpListener` server running in the same process as its client, on loopback, so it is deterministic: run any of these programs as many times as you like and the bytes are identical, because nothing here depends on the network, the clock or another machine's configuration. Programs were run with the .NET 10 SDK (10.0.401) on Windows 11, x64; nothing in this article's output depends on that beyond the SDK version needed to compile file-based C# programs.
