@@ -1,0 +1,45 @@
+{
+  "role": "adsense",
+  "article": "src/content/articles/algorithms/binary-search.md",
+  "route": "/algorithms/binary-search/",
+  "round": 2,
+  "score": 8.6,
+  "comparedAgainst": [
+    "https://cp-algorithms.com/num_methods/binary_search.html",
+    "https://en.wikipedia.org/wiki/Binary_search",
+    "https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.array.binarysearch",
+    "https://www.geeksforgeeks.org/dsa/binary-search/ (search results only, not re-read this round)"
+  ],
+  "justification": "Read the whole article first, then the round-1 reviews. Original value over the top results is clear. cp-algorithms covers invariants, lower/upper bound, predicate search, real-valued search and a one-line overflow note, but has no library conventions, no wrong-program-that-passes-spot-checks and no exhaustive-oracle testing. Wikipedia covers duplicates and cost analysis but, as fetched, has no midpoint overflow, no invariants and no .NET/Java library behavior. This article opens with a plausible buggy search that passes four spot checks and fails 4 of 11 lookups, derives the fix line by line from a stated half-open invariant, reconciles the closed-interval convention the .NET runtime uses (table), verifies the probe-count formula exactly for n = 11, 1,000 and 1,000,000 rather than asserting it, shows the overflow arithmetic with checked/unchecked/>>> output, explains why Array.BinarySearch returns ~index and not -index (index 0), demonstrates the documented duplicate and unsorted-input caveats plus a comparer mismatch, and ends with answer-space search with its failure modes (non-monotonic predicate, unbracketed range, overflow, real-valued range). None of that is a rewording of a competitor. Running examples (bus departures, delays, thumbnail cache, isqrt) are the article's own; no GfG/cp-algorithms/Bloch example or code is reused. Distinctive-sentence searches (quoted phrases such as 'throw away the half that cannot hold the target', 'the first index whose element is greater than or equal to the target', the description sentence) returned no matching pages, only generic topic hits. Source checks: Bloch's post really says 1946/1962, 'nine years or so', that Bentley's proven-correct version contained the bug, the 2^30 threshold and both repairs, all matched by the article; the Learn wording 'not necessarily the first one' and the bitwise-complement definition are present on the Array.BinarySearch page; I read ArraySortHelper.cs and SpanHelpers.BinarySearch.cs on raw GitHub and the article's description (closed-interval loops, lo + ((hi - lo) >> 1) versus (int)(((uint)hi + (uint)lo) >> 1), the 'saves one subtraction' comment) is accurate. Every front-matter source now has at least one inline anchor (16 inline links in the body; the two textbooks are cited by name and chapter, which the brief allows), so the round-1 major on missing inline citation is fixed properly, not cosmetically. No filler intro (first sentence is the timetable program) and no filler outro (the last paragraph gives actionable advice and explains why overflow survives exhaustive small tests). No invented experience or statistics; measured values are deterministic (probe counts, Array.MaxLength as a wildcarded line). Prose is not machine-boilerplate: I searched for the usual tics (not X but Y, formulaic triplets, empty signposting) and found none worth flagging; paragraph lengths and section shapes vary. Compared with big-o-notation, amortized-analysis, arrays-and-dynamic-arrays and sql-joins: headings are specific and unrepeated, exercise forms vary (trace, find-the-hang, write-a-function, explain-the-overflow) and sit mid-article, there is no boilerplate Introduction/Conclusion. The one shared trait is a concrete scenario-plus-program opener, which is house style and not a reviewer concern. Navigation: docs/crosslinks/algorithms/binary-search.md exists with seven sensible, placed links and sibling boundaries; the glossary/prerequisite links resolve. Round-1 items: (1) zero inline source links: fixed. (2) bug two only in a collapsed solution: mostly fixed, the termination requirement and why an update that cannot shrink the interval loops forever is now in visible text (after the invariant bullets), and the exercise is signposted from there; a concrete failing input is still only inside the solution, which is a nit (see issues). (3) description keyword list: fixed, now one human sentence. (4) 'usually named' and 'natural picks' assertions: fixed. (5) CLRS generalisation: fixed, now merge sort (ch. 2) plus the ch. 8 lower bound. (6) 'Three things...' tic: fixed. (7) real-valued answer search: added as a bullet. Why not higher: at 1,110 lines the page is long and has few places where it goes beyond what MDN plus cp-algorithms together would give a strong reader (the value is in the integration, the oracle-testing habit and the ~index reasoning, not in new material), the textbook sources cannot be verified by a reader from a catalog URL, and the bug-two demonstration is not visible without expanding a solution. It is at the 8.5 bar (equal to MDN/Real Python quality with only nits), modestly above, not clearly better than the best existing result on every axis.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Intro paragraph after the second output block ('a search that never returns') and 'Say what lo and hi mean...' termination paragraphs versus exercise 'The loop that never returns'",
+      "problem": "The rule for bug two is now in visible text, but no failing input or output for a non-terminating search appears outside the collapsed exercise solution, so the second of 'three bugs this page works through' is demonstrated only for readers who open the solution.",
+      "fixLooksLike": "Either add one or two sentences with a concrete two-element example right after the termination paragraph ('with lo = 0, hi = 1 and lo = mid, mid is 0 and nothing changes'), or reword the intro to say the third symptom is left to an exercise. No new program needed.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The midpoint that overflows', second paragraph: 'His post quotes Jon Bentley's remark that binary search was first published in 1946...'",
+      "problem": "The 1946/1962 sentence is in Bloch's post, but the article attributes it to Bentley through Bloch. The article lists Programming Pearls only as a catalog page and Bloch's post itself refers to the tested program as being in Chapter 5, while the article cites column 4 for the invariant derivation. Nothing is wrong, but a reviewer cannot tell from the page which claim comes from which book location.",
+      "fixLooksLike": "Attribute the 1946/1962 line directly to Bloch's post ('the post states that...'), and in the Programming Pearls source entry or inline sentence say which claim relies on column 4 and which on the book's testing chapter as described by Bloch.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Front matter sources: Programming Pearls and CLRS entries (accessed 2026-09-18, publisher catalog URLs)",
+      "problem": "Textbook sources cannot be opened by the reader from a catalog page and carry an earlier access date than the rest of the list. The brief allows this for well-known facts with chapter names, but the CLRS entry lists chapters 2, 8 and 13 while the body cites all three only in one bullet list, so a reviewer may see them as thinly used.",
+      "fixLooksLike": "Keep as is, or narrow the source titles to the exact claims they support (merge sort O(n log n), comparison-sort lower bound, red-black trees) so the citation-to-claim mapping is obvious.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Whole article (about 1,100 lines, 12 runnable programs, four exercises)",
+      "problem": "Length is earned by depth, not padding, but the later sections (comparer mismatch, isqrt exercise) extend rather than deepen the core topic; a policy reviewer skimming for value will still see them as substantive, so this is a risk only for reader fatigue, not for low-value status.",
+      "fixLooksLike": "No change required. If trimming is ever wanted, the comparer subsection is the most self-contained candidate to split into its own future article without loss to the main argument.",
+      "owner": "writer"
+    }
+  ]
+}
