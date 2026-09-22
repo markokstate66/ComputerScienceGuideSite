@@ -1,0 +1,43 @@
+{
+  "article": "algorithms/sorting-algorithms-compared",
+  "route": "/algorithms/sorting-algorithms-compared/",
+  "round": 1,
+  "critic": "design",
+  "score": 8.0,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/sorting-algorithms/",
+    "https://www.programiz.com/dsa/sorting-algorithm"
+  ],
+  "justification": "Both top-ranking pages for \"sorting algorithms\" are thin directories: GeeksforGeeks is a link index with no code, no diagrams and no complexity tables on the page itself; Programiz has two useful comparison tables and three small static diagrams but no runnable code and only introductory depth. This article's execution clears both of them on almost every design axis a reader on a phone actually experiences: Lighthouse 91/100/100/100, zero console errors, zero broken links, zero horizontal overflow at 390px, clean heading hierarchy, consistent callout styling (exercise/dotnet), good text/code/figure rhythm (no walls of text), and all three hand-drawn SVG diagrams (merge tree, partition, decision tree) render legibly with correct labels and contrast in both light and dark theme at both desktop and phone width — the writer's reported fixes for the partition-figure annotation overflow and the merge-sort caption overflow both hold; no fading/clipped edges, no off-screen essential content, captions match what is visible. That alone would put this comfortably above the two comparison pages. What keeps it off the 8.5+ pass bar is one concrete, binding-rule violation: the \"Choosing a sort\" table (Algorithm / Worst case / Extra space / Stable / Best for, 5 columns) exceeds docs/WRITER_GUIDE.md §7's explicit phone guidance (\"Prefer at most three columns... Four columns of sentences will put half the table off-screen\"). On mobile (both themes, verified) only \"Algorithm\" and \"Worst case\" are visible before scrolling; \"Stable\" and \"Best for\" — the two columns the very next paragraph (\"Four questions narrow the table to one row... Does the order of equal keys matter?... Best for\") depends on — are pushed off-screen by default. That is not a shell defect (GFM tables auto-scroll by design) but a content/column-count choice the writer controls, and it directly undercuts the page's own closing argument on the device most readers use.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "## Choosing a sort — the summary table",
+      "problem": "The table has 5 columns (Algorithm, Worst case, Extra space, Stable, Best for). Verified on mobile-light and mobile-dark screenshots: only \"Algorithm\" and part of \"Worst case\" are visible in the viewport; \"Extra space\", \"Stable\" and \"Best for\" require horizontal scrolling to reach. This violates docs/WRITER_GUIDE.md §7 (\"Prefer at most three columns... if each row is really a short paragraph, use a list or sub-headings instead\"), and it hides exactly the two columns (Stable, Best for) the immediately following \"four questions\" paragraph asks the reader to consult.",
+      "fixLooksLike": "Cut to 3-4 columns readers actually need at a glance, e.g. drop \"Extra space\" (already stated in prose for each algorithm earlier in the article) and reorder to Algorithm / Stable / Best for / Worst case so the decision-relevant columns are visible first on a phone; or split into two narrower tables (complexity table; stability + best-for table).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 1 solution (\"Predict the counts, then run them\"), the step-by-step trace table",
+      "problem": "Same 5-column pattern (Step, value, Comparisons this step, Shifts this step, Array after) appears inside the collapsed solution. Not visible in the default screenshot pass since the `<details>` is collapsed, so it does not affect the initial reading experience, but it will hit the same off-screen-columns problem for any reader who opens it on a phone.",
+      "fixLooksLike": "Drop to 3 columns (Step, Comparisons/Shifts combined as \"2/1\", Array after) or present as a short list instead of a table.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 91,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "notes": {
+    "mobileOverflowPx": 0,
+    "performanceRerun": "not needed (91 ≥ 90 on first run)",
+    "placeholderFailure": "NEEDS_MARKUS byline/bio/legal-name placeholders present as expected; not counted as an issue per instructions",
+    "screenshotsReviewed": "desktop-light: all 15 parts + fold; mobile-dark: all 23 parts + fold; desktop-dark: fold + parts 04, 06, 14; mobile-light: fold + parts 04, 07, 15, 20",
+    "figuresChecked": "Figure 1 (merge tree), Figure 2 (partition), Figure 3 (decision tree) all confirmed correct and legible in both themes at both desktop and phone width; no fading/scrolling artifacts, labels readable, captions match rendered content"
+  }
+}
