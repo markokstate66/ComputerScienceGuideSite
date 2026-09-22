@@ -1,0 +1,62 @@
+{
+  "article": "src/content/articles/networking/how-the-internet-works.md",
+  "route": "/networking/how-the-internet-works/",
+  "role": "design",
+  "round": 4,
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work (MDN, fetched: ~800-1000 words on DNS/TCP/TLS/HTTP inside a longer page, two decorative diagrams, no runnable code, no RFC citations, no exercises or measurements)",
+    "https://github.com/alex/what-happens-when (fetched: ~3,500 words total, no diagrams, no code samples, no RFC citations, no exercises)",
+    "https://aws.amazon.com/blogs/mobile/what-happens-when-you-type-a-url-into-your-browser/ (fetched: ~2,800 words, ~400-500 on these four protocols, 4 screenshots, one timing number, no runnable code, defers TCP/TLS depth, no RFC citations)",
+    "https://www.freecodecamp.org/news/what-happens-when-you-type-a-url-into-your-browser-and-press-enter/ (link now 404s; excluded as evidence)"
+  ],
+  "justification": "This is the article's last round, and it earns the pass on design/UX. Fresh judgement first: Lighthouse is 96/100/100/100 (real numbers from lighthouse.json), zero console errors, zero console warnings, zero broken links (report.json 'broken': []), mobileOverflowPx 0, and the only build failure is the accepted NEEDS_MARKUS placeholder. Three figures each carry real information (Figure 1 sequence bands with per-band RTT and accent color for encrypted flights; Figure 2 chunked-body byte accounting; Figure 3 layer-wrapping with byte counts from the specs), all drawn on <=372-unit viewBoxes, theme-correct in dark (verified on desktop-dark and mobile-dark), annotations under the drawing, nothing the captions mention is cut. Heading hierarchy is one H1, specific H2s, H3s only under the long TCP/TLS sections, no boilerplate headings. Four content-bearing callouts (In .NET, Common pitfall, two Notes including one on NAT that used to be an unbroken paragraph), five exercises of different forms with collapsed, unspoiled solutions, a labelled 3-column timing table that renders cleanly on a 358px phone column, and a 28-item dated Sources list that reads fine at every width. Against the best-ranking pages for 'what happens when you type a url' (MDN, the AWS blog, and github.com/alex/what-happens-when, all fetched live), none has runnable/verified code, RFC-level citations, measured timings, working exercises, or diagrams that carry actual protocol data the way Figures 1-3 do; on presentation this page is at least equal to MDN and better illustrated than any comparator. Round-3 specifically claimed every remaining clipped line was targeted, and that claim holds under scrutiny: (1) the round-3 MAJOR, a sentence about case-insensitive header names duplicated back to back in 'Where the response ends', now appears exactly once (confirmed in the article source and in desktop-light-part06 / mobile-dark-part09). (2) Every token round 3 named as specifically cut is now fully visible at 390px on its own line, confirmed by direct screenshot inspection: `OrdinalIgnoreCase` (hoisted to `const StringComparison ic = OrdinalIgnoreCase;`, mobile-dark-part06), the `Host: {host}\\r\\n` header literal (mobile-dark-part06/11), `AuthenticateAsClientAsync` (wrapped so the method name is alone on its line in both the id=secure and id=names programs, mobile-dark-part11/14), `tls.RemoteCertificate!.Subject` (mobile-dark-part14, not cut at '.Sub' as round 3 found), and both `IPStatus.TtlExpired` and `IPStatus.TimedOut` (each alone on its own line, mobile-dark-part19, not cut at 'Timed' as round 3 found). The IsFraming `||` that round 3 flagged as off-screen is now the first token on its own wrapped line and fully visible (mobile-dark-part07). The timing-table header string round 3 flagged as cut after 'tl' is now split into two short concatenated literals and fully visible (mobile-dark-part11). The `OperationCanceledException` round-3 flagged as breaking mid-identifier in inline code is now prose-wrapped with the bare type name in a short inline span that does not break (mobile-dark-part08). The heading round 3 asked to be retitled to name bands 2 and 4 now reads 'Bands 2 and 4: TCP and HTTP without TLS' (mobile-dark-part06). The NAT paragraph round 3 flagged as an unbroken wall of text is now its own 'Where addresses get rewritten' callout (mobile-dark-part18). I checked every desktop-light part (fold + 01-17), every mobile-dark part (fold + 01-26), desktop-dark (fold + 01-02) and mobile-light (fold + 01-02) directly with the Read tool; nothing new is broken and dark-theme rendering of all three diagrams and every callout is correct. Held below a higher score for two small, genuinely open items, both already on record and neither a regression: Exercises 3 and 4 are still stacked back to back with no separating content (round 3 marked this optional, unchanged, writer-owned but low stakes), and the phone hero still stacks Published/Updated/read-time to several lines before the first paragraph (open since round 1, shell-level, owned by the integrator, and the placeholder byline currently makes it taller than production will be). A few code lines still lose a pure-boilerplate tail under the phone fade (a closing `);`, a trailing `.LocalEndpoint;`, a `\\r\\n` continuation) with the operative identifier already visible earlier on the same line or the line above; WRITER_GUIDE section 7 explicitly allows this ('fine when the tail is boilerplate'), so these are not counted as defects.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "'Where the time went', Exercise 3 'Take NoDelay Away' immediately followed by Exercise 4 'Measure What Connection Reuse Saves'",
+      "problem": "The two exercises are still stacked back to back with no prose, figure or output between them, so the last third of the page reads as text, text, exercise, exercise. Flagged as optional in round 3; unchanged in round 4.",
+      "fixLooksLike": "Optional: move one exercise next to the measurement it most directly extends, or add a short transition sentence between them. Not required for a pass.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Article hero at phone width (mobile-dark-fold, mobile-light-fold)",
+      "problem": "Unchanged since round 1: the byline/Published/Updated/read-time metadata stacks to several lines, then the collapsed 'On this page' box, so the article's first sentence starts well down the first screen. The placeholder byline (NEEDS_MARKUS) currently makes this taller than it will be once the owner supplies the author name.",
+      "fixLooksLike": "Shell: put Published, Updated and read time on one or two lines at 390px. Re-check after the byline placeholder is filled. This is shell-level, not something the writer can fix in the article file; log or confirm it is already logged in docs/INTEGRATOR_REQUESTS.md.",
+      "owner": "integrator"
+    }
+  ],
+  "roundThreeFollowUp": {
+    "duplicate_sentence_major": "Fixed. 'Header names are case-insensitive (RFC 9110, section 5.1), which is why IsFraming ignores case.' now appears exactly once in 'Where the response ends'.",
+    "id_plain_OrdinalIgnoreCase_and_pipe": "Fixed. Hoisted to a top-level const on its own line; the IsFraming || now starts its own wrapped line, fully visible.",
+    "id_secure_header_literal_and_authenticate": "Fixed. The column-header string is split into two short concatenated literals; AuthenticateAsClientAsync is alone on its own line in both id=secure and id=names.",
+    "remote_certificate_subject": "Fixed. tls.RemoteCertificate!.Subject renders on one line, not cut.",
+    "ipstatus_timedout_ttlexpired": "Fixed. Both comparisons wrap so the enum member is alone on its own line.",
+    "operationcanceledexception_inline_break": "Fixed. Reworded so the bare type name sits in a short inline span; no longer breaks mid-identifier.",
+    "missing_band_heading": "Fixed. Heading now reads 'Bands 2 and 4: TCP and HTTP without TLS'.",
+    "nat_paragraph_rhythm": "Fixed. NAT content is now its own 'Where addresses get rewritten' note callout instead of a fourth consecutive dense paragraph.",
+    "exercise_3_4_stacking": "Still open, optional, unchanged (see issues above).",
+    "hero_phone": "Still open, shell-level, unchanged since round 1 (see issues above)."
+  },
+  "lighthouse": {
+    "performance": 96,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "lighthouseDetail": "FCP 2.3s (simulated mobile). Flagged, non-blocking, unchanged pattern across all four rounds: unused CSS 13 KiB, document latency est. 175 KiB, bfcache (2 reasons, shell-level/site-wide), network dependency tree. All four Lighthouse categories clear the 90 gate.",
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "verifyPage": {
+    "words": 5901,
+    "codeBlocks": 24,
+    "figures": 3,
+    "h1": 1,
+    "internalLinks": 26,
+    "screenshotParts": { "desktop-light": 17, "desktop-dark": 17, "mobile-light": 26, "mobile-dark": 26 },
+    "failures": ["placeholder text: NEEDS_MARKUS (expected)"]
+  },
+  "screenshotsRead": "desktop-light fold + parts 01-17 (all); mobile-dark fold + parts 01-26 (all); desktop-dark fold + parts 01-02; mobile-light fold + parts 01-02. All five previously-flagged code blocks (id=plain, id=secure, id=names, id=capture, id=hops) inspected specifically for the round-3-named tokens; all now fully visible at 390px. Collapsed exercise solutions were not visible in any screenshot (expected; they render collapsed)."
+}

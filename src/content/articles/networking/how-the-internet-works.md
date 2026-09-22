@@ -4,7 +4,7 @@ description: "Follow one request to example.com through DNS, TCP, TLS 1.3 and HT
 pillar: networking
 order: 1
 author: markus
-published: 2026-09-18
+published: 2026-09-21
 updated: 2026-09-21
 level: beginner
 tags: [dns, tcp, tls, http, network-layers]
@@ -118,7 +118,11 @@ sources:
     url: "https://www.iana.org/help/example-domains"
     publisher: "IANA"
     accessed: 2026-09-18
-draft: true
+  - title: "ping"
+    url: "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/ping"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-21
+draft: false
 ---
 
 Requesting `https://example.com/` is four separate conversations, held one after another: a DNS lookup that turns the name into an address, a TCP handshake that opens a connection to that address, a TLS handshake that encrypts the connection and proves who is at the other end, and an HTTP exchange that finally asks for the page. On a fresh connection each costs about one network round trip (the time for a packet to reach the other end and the answer to come back, abbreviated RTT): the first to a DNS resolver, usually close to you, and the other three to the web server. Without shortcuts such as connection reuse, nothing in a later conversation can start until the earlier one has finished.
@@ -173,7 +177,7 @@ Requesting `https://example.com/` is four separate conversations, held one after
 <figcaption>Figure 1. One request, four exchanges. On a fresh connection each band has to finish before the next can begin, so the page cannot start arriving until about four round trips have passed: one to the resolver and three to the web server.</figcaption>
 </figure>
 
-The core path is the URL section and bands 1 to 4; the packets, hop counting and layer sections that follow are extensions. Each band gets its own C# program, run against the real `example.com`. IANA keeps `example.com` online for documentation and says it may be used in examples without asking, though it warns against building anything that depends on its web server ([IANA, Example Domains](https://www.iana.org/help/example-domains)). That warning shapes the output panels: `[...]` stands wherever a value depends on your network, the date, or how that server is configured this month.
+The core path is the URL section and bands 1 to 4; the packets, hop counting and layer sections that follow are extensions. Bands 1 and 3 each get their own C# program; bands 2 and 4 share one. Every program runs against the real `example.com`. IANA keeps `example.com` online for documentation and says it may be used in examples without asking, though it warns against building anything that depends on its web server ([IANA, Example Domains](https://www.iana.org/help/example-domains)). That warning shapes the output panels: `[...]` stands wherever a value depends on your network, the date, or how that server is configured this month.
 
 ## The URL already says which conversations are needed
 
@@ -191,8 +195,10 @@ Show("path", url.AbsolutePath);
 Show("query", url.Query);
 Show("fragment", url.Fragment);
 
-static void Show(string part, object value) =>
-    Console.WriteLine($"{part,-9} {value}");
+static void Show(
+    string part, object value) =>
+    Console.WriteLine(
+        $"{part,-9} {value}");
 ```
 
 ```text output
@@ -264,7 +270,8 @@ const string host = "example.com";
 try
 {
     await Lookup("localhost");
-    IPAddress[] found = await Lookup(host);
+    IPAddress[] found =
+        await Lookup(host);
     await Lookup(host);
     Console.WriteLine(
         $"{found.Length} found, " +
@@ -273,16 +280,19 @@ try
 catch (SocketException e)
 {
     Console.WriteLine(
-        $"lookup failed: {e.SocketErrorCode}");
+        $"lookup failed: " +
+        $"{e.SocketErrorCode}");
 }
 
-static async Task<IPAddress[]> Lookup(string name)
+static async Task<IPAddress[]> Lookup(
+    string name)
 {
     var clock = Stopwatch.StartNew();
     IPAddress[] found = await
         Dns.GetHostAddressesAsync(
             name);
-    double ms = clock.Elapsed.TotalMilliseconds;
+    double ms =
+    clock.Elapsed.TotalMilliseconds;
     Console.WriteLine(
         $"{name,-12} " +
         $"{ms,6:F1} ms");
@@ -301,7 +311,7 @@ Measurements from here on were taken on Windows 11, x64, with the .NET 10 SDK (1
 
 The `localhost` line took 18 to 24 ms over three runs even though no packet left the machine. The extra time is start-up work in the first name lookup of a process (loading the networking code, initializing the resolver), paid once. Without a throwaway lookup in front, that cost would land on whichever measurement came first and be mistaken for network time.
 
-After that, `example.com` took 1 to 3 ms on its first lookup and 0.5 ms on the second in the same three runs. The first was fast because something on this machine had asked for the same name within the last few minutes and the answer was still stored. A run that follows a long enough pause finds no stored answer, and then the first lookup has to leave the machine and costs at least a round trip to the recursive server, and more if that server does not have the record either. The stored answer is what the lifetime in Figure 1 is for: every DNS record carries a time to live, the number of seconds it may be reused before it has to be fetched again ([RFC 1034, section 3.6](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.6)), and resolvers at every level keep answers for that long.
+After that, `example.com` took 1 to 3 ms on its first lookup and 0.5 ms on the second in the same three runs. The first was fast, which points to a stored answer somewhere between this machine and the recursive resolver, either in the operating system's own cache or in a resolver on the path; this program cannot tell which layer answered. A run that follows a long enough pause finds no stored answer anywhere on that path, and then the first lookup has to leave the machine and costs at least a round trip to the recursive server, and more if that server does not have the record either. The stored answer is what the lifetime in Figure 1 is for: every DNS record carries a time to live, the number of seconds it may be reused before it has to be fetched again ([RFC 1034, section 3.6](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.6)), and resolvers at every level keep answers for that long.
 
 :::dotnet
 `Dns.GetHostAddressesAsync` is not a DNS client. It calls the operating system's name resolution API (`getaddrinfo` on Windows), so an entry in the `hosts` file wins without any DNS query (one reason `localhost` needs no network), and IPv6 addresses are filtered out if the machine has no IPv6 installed ([Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.net.dns.gethostaddresses#remarks)). Which layer answered a fast lookup, the operating system or a cache further along the path, is something this program cannot tell you.
@@ -309,15 +319,18 @@ After that, `example.com` took 1 to 3 ms on its first lookup and 0.5 ms on the s
 
 A name can map to several addresses, as it did here. The client picks one and moves on; the others are alternatives if the connection fails.
 
-## TCP and HTTP first, without TLS
+## Bands 2 and 4: TCP and HTTP without TLS
 
 TLS exists to make the conversation unreadable to anyone watching, which makes it a poor place to start reading. `example.com` also answers unencrypted HTTP on port 80, so this program skips band 3, opens a TCP connection, and types the request by hand.
 
 ```csharp run id=plain
 using System.Net.Sockets;
 using System.Text;
+using static System.StringComparison;
 
 const string host = "example.com";
+const StringComparison ic =
+    OrdinalIgnoreCase;
 string request =
     "GET / HTTP/1.1\r\n" +
     $"Host: {host}\r\n" +
@@ -325,19 +338,23 @@ string request =
     "\r\n";
 
 using var tcp = new TcpClient();
-using var limit = new CancellationTokenSource(
-    TimeSpan.FromSeconds(10));
+using var limit =
+    new CancellationTokenSource(
+        TimeSpan.FromSeconds(10));
 CancellationToken stop = limit.Token;
 try
 {
     await tcp.ConnectAsync(host, 80, stop);
     Socket sock = tcp.Client;
     Console.WriteLine(
-        $"local    {sock.LocalEndPoint}");
+        $"local    " +
+        $"{sock.LocalEndPoint}");
     Console.WriteLine(
-        $"remote   {sock.RemoteEndPoint}");
+        $"remote   " +
+        $"{sock.RemoteEndPoint}");
 
-    NetworkStream stream = tcp.GetStream();
+    NetworkStream stream =
+        tcp.GetStream();
     byte[] bytes =
         Encoding.ASCII.GetBytes(request);
     await stream.WriteAsync(bytes, stop);
@@ -352,18 +369,18 @@ try
     string reply = Encoding.UTF8.GetString(
         all.ToArray());
     int blank = reply.IndexOf(
-        "\r\n\r\n",
-        StringComparison.Ordinal);
+        "\r\n\r\n", Ordinal);
     if (blank < 0)
-        throw new IOException("no blank line");
+        throw new IOException(
+            "no blank line");
     string[] head =
         reply[..blank].Split("\r\n");
     string body = reply[(blank + 4)..];
     string start =
         body[..Math.Min(24, body.Length)];
     string framing =
-        head.FirstOrDefault(IsFraming) ??
-        "neither framing header";
+        head.FirstOrDefault(IsFraming)
+        ?? "neither framing header";
     string shown =
         start.Replace("\r\n", "\\r\\n");
 
@@ -385,10 +402,9 @@ catch (Exception e) when (e is
 }
 
 static bool IsFraming(string line) =>
-    line.StartsWith("Content-Length:",
-        StringComparison.OrdinalIgnoreCase) ||
-    line.StartsWith("Transfer-Encoding:",
-        StringComparison.OrdinalIgnoreCase);
+    line.StartsWith("Content-Length:", ic)
+    || line.StartsWith(
+        "Transfer-Encoding:", ic);
 ```
 
 ```text output
@@ -425,11 +441,11 @@ The two address lines show what identifies a TCP connection: the pair of endpoin
 
 Those 56 bytes are a complete HTTP/1.1 request. The format is a start line, then header lines, then an empty line, each ended by a carriage return and line feed ([RFC 9112, section 2.1](https://www.rfc-editor.org/rfc/rfc9112.html#section-2.1)). The start line is a method, a target and a version separated by single spaces ([section 3](https://www.rfc-editor.org/rfc/rfc9112.html#section-3)).
 
-`Host` is the one header that every HTTP/1.1 request must carry ([RFC 9112, section 3.2](https://www.rfc-editor.org/rfc/rfc9112.html#section-3.2)). It looks redundant, because the connection already goes to that host's address, but an address can serve many sites (the certificate experiment below shows one that does), and the header is how the server tells them apart. `Connection: close` asks the server to close the connection after this response. Without it an HTTP/1.1 connection stays open for more requests ([RFC 9112, section 9.3](https://www.rfc-editor.org/rfc/rfc9112.html#section-9.3)), and `CopyToAsync`, which reads until the other side closes, would wait until the server gave up on the idle connection or the 10-second limit cancelled the read. In the second case the program prints only `failed: OperationCanceledException` and shows no response.
+`Host` is the one header that every HTTP/1.1 request must carry ([RFC 9112, section 3.2](https://www.rfc-editor.org/rfc/rfc9112.html#section-3.2)). It looks redundant, because the connection already goes to that host's address, but an address can serve many sites (the certificate experiment below shows one that does), and the header is how the server tells them apart. `Connection: close` asks the server to close the connection after this response. Without it an HTTP/1.1 connection stays open for more requests ([RFC 9112, section 9.3](https://www.rfc-editor.org/rfc/rfc9112.html#section-9.3)), and `CopyToAsync`, which reads until the other side closes, would wait until the server gave up on the idle connection or the 10-second limit cancelled the read. In the second case the program prints only the failure line for `OperationCanceledException` and shows no response.
 
 ### Where the response ends
 
-TCP delivers a stream of bytes. It promises the bytes arrive complete and in order, and explicitly promises nothing about how they are grouped: what one side sends in a single write may arrive as several reads, or merged with the next write ([RFC 9293, section 3.7](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7)). So HTTP has to mark the end of a message itself, and the `22f` at the start of the body is how this server did it. With `Transfer-Encoding: chunked`, the body is sent as pieces, each preceded by its length in hexadecimal on a line of its own, and finished by a piece of length zero ([RFC 9112, section 7.1](https://www.rfc-editor.org/rfc/rfc9112.html#section-7.1)). A server that knows the size in advance sends `Content-Length` instead, and a client has to handle both ([RFC 9112, section 6.3](https://www.rfc-editor.org/rfc/rfc9112.html#section-6.3)). Header names are case-insensitive ([RFC 9110, section 5.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-5.1)), which is why `IsFraming` ignores case. Header names are case-insensitive ([RFC 9110, section 5.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-5.1)), which is why `IsFraming` ignores case.
+TCP delivers a stream of bytes. It promises the bytes arrive complete and in order, and explicitly promises nothing about how they are grouped: what one side sends in a single write may arrive as several reads, or merged with the next write ([RFC 9293, section 3.7](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7)). So HTTP has to mark the end of a message itself, and the `22f` at the start of the body is how this server did it. With `Transfer-Encoding: chunked`, the body is sent as pieces, each preceded by its length in hexadecimal on a line of its own, and finished by a piece of length zero ([RFC 9112, section 7.1](https://www.rfc-editor.org/rfc/rfc9112.html#section-7.1)). A server that knows the size in advance sends `Content-Length` instead, and a client has to handle both ([RFC 9112, section 6.3](https://www.rfc-editor.org/rfc/rfc9112.html#section-6.3)). Header names are case-insensitive ([RFC 9110, section 5.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-5.1)), which is why `IsFraming` ignores case.
 
 <figure class="diagram">
 <svg viewBox="0 0 360 250" role="img" aria-labelledby="chunk-title chunk-desc">
@@ -520,15 +536,20 @@ var options =
         [SslApplicationProtocol.Http11],
 };
 byte[] request = Encoding.ASCII.GetBytes(
-    $"GET / HTTP/1.1\r\nHost: {host}\r\n" +
+    "GET / HTTP/1.1\r\n" +
+    $"Host: {host}\r\n" +
     "Connection: close\r\n\r\n");
 var clock = new Stopwatch();
 string info = "";
 
-Console.WriteLine("round   dns   tcp   tls  http");
+Console.WriteLine(
+    "round   dns   tcp" +
+    "   tls  http");
 try
 {
-    for (int round = 1; round <= 3; round++)
+    for (int round = 1;
+        round <= 3;
+        round++)
     {
         clock.Restart();
         IPAddress[] found = await
@@ -542,14 +563,16 @@ try
             found[0], 443);
         double connect = Lap();
 
-        using var tls =
-            new SslStream(tcp.GetStream());
-        await tls.AuthenticateAsClientAsync(
-            options);
+        using var tls = new SslStream(
+            tcp.GetStream());
+        await tls
+            .AuthenticateAsClientAsync(
+                options);
         double handshake = Lap();
 
         await tls.WriteAsync(request);
-        using var reader = new StreamReader(tls);
+        using var reader =
+            new StreamReader(tls);
         string? status =
             await reader.ReadLineAsync();
         double reply = Lap();
@@ -561,8 +584,8 @@ try
             $"{handshake,6:F1}" +
             $"{reply,6:F1}");
         info = $"{tls.SslProtocol} " +
-            $"{status}\n" +
-            $"{tls.NegotiatedCipherSuite}";
+        $"{status}\n" +
+        $"{tls.NegotiatedCipherSuite}";
     }
     Console.WriteLine(info);
 }
@@ -575,7 +598,8 @@ catch (Exception e) when (e is
 
 double Lap()
 {
-    double ms = clock.Elapsed.TotalMilliseconds;
+    double ms =
+    clock.Elapsed.TotalMilliseconds;
     clock.Restart();
     return ms;
 }
@@ -651,9 +675,10 @@ static async Task<string> Ask(
         new SslStream(tcp.GetStream());
     try
     {
-        await tls.AuthenticateAsClientAsync(
-            name);
-        return tls.RemoteCertificate!.Subject;
+        await tls
+            .AuthenticateAsClientAsync(name);
+        return
+        tls.RemoteCertificate!.Subject;
     }
     catch (AuthenticationException)
     {
@@ -685,6 +710,7 @@ The ClientHello that carries the host name is sent before encryption starts, so 
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using static System.StringComparison;
 
 var listener =
     new TcpListener(IPAddress.Loopback, 0);
@@ -695,24 +721,26 @@ const string blankLine = "\r\n\r\n";
 
 Task server = Task.Run(async () =>
 {
-    using TcpClient peer =
-        await listener.AcceptTcpClientAsync();
+    using TcpClient peer = await
+        listener.AcceptTcpClientAsync();
     NetworkStream stream = peer.GetStream();
 
-    string seen = "";
+    var seen = new StringBuilder();
     var buffer = new byte[1024];
-    while (!seen.EndsWith(
-        blankLine, StringComparison.Ordinal))
+    while (!seen.ToString().EndsWith(
+        blankLine, Ordinal))
     {
         int n = await stream.ReadAsync(
             buffer);
         if (n == 0) break;
-        seen += Encoding.ASCII.GetString(
-            buffer, 0, n);
+        seen.Append(
+            Encoding.ASCII.GetString(
+                buffer, 0, n));
     }
     Console.WriteLine("server read:");
     Console.Write(
-        seen.Replace("\r\n", "\\r\\n\n"));
+        seen.ToString().Replace(
+            "\r\n", "\\r\\n\n"));
 
     string body = "hello over loopback";
     byte[] reply = Encoding.ASCII.GetBytes(
@@ -795,11 +823,13 @@ The numbers in Figure 3 come from the specifications. A TLS 1.3 record has a 5-b
 
 IP is where the network stops making promises. It moves each packet, independently, one hop closer to the destination address, with no acknowledgments and no retransmission ([RFC 791, section 1.4](https://www.rfc-editor.org/rfc/rfc791.html#section-1.4)). In the architecture RFC 1122 describes, routers keep no connection state and forward each packet independently; everything needed for reliability lives in the two end hosts ([RFC 1122, section 1.1.2](https://www.rfc-editor.org/rfc/rfc1122.html#section-1.1.2)). The ordering and completeness that the HTTP code relied on were built by TCP at the two ends, from the sequence numbers set up in band 2, by resending whatever was not acknowledged.
 
-That is the model, and real paths bend it. Where a network address port translator sits on the path, as it commonly does between a home network and the internet, it rewrites the source address and TCP or UDP port of each outgoing packet so that many private machines can share one public address, and it remembers the mapping to route the replies back ([RFC 3022, section 2.2](https://www.rfc-editor.org/rfc/rfc3022.html#section-2.2)). So the local port printed by the plain-TCP program is your machine's view; the server may see a different port, and a different address, on the same connection. A box that reads and rewrites TCP ports is not a router that reads only IP. The rule "routers read only IP" describes what forwarding requires, not what every box on the path does.
+:::note[Where addresses get rewritten]
+That is the model, and real paths bend it. Where a network address port translator sits on the path, it rewrites the source address and TCP or UDP port of each outgoing packet so that many private machines can share one public address, and it remembers the mapping to route the replies back ([RFC 3022, section 2.2](https://www.rfc-editor.org/rfc/rfc3022.html#section-2.2)). So the local port printed by the plain-TCP program is your machine's view; the server may see a different port, and a different address, on the same connection. A box that reads and rewrites TCP ports is not a router that reads only IP. The rule "routers read only IP" describes what forwarding requires, not what every box on the path does.
+:::
 
 ### Counting the hops
 
-One field of the IP header can be used to make the routers visible. Every router that forwards a packet must reduce its time to live (TTL) by at least one, and a packet whose TTL reaches zero is destroyed ([RFC 791, section 3.2](https://www.rfc-editor.org/rfc/rfc791.html#section-3.2)), which stops a misrouted packet from circulating forever. The router that destroys it may send an ICMP "time exceeded" message back to the sender ([RFC 792](https://www.rfc-editor.org/rfc/rfc792.html)). Send a packet with TTL 1 and the first router reports itself; TTL 2 reaches the second; and so on until the destination answers. This is the method behind the `tracert` and `traceroute` commands, written out with `Ping`:
+One field of the IP header can be used to make the routers visible. Every router that forwards a packet must reduce its time to live (TTL) by at least one, and a packet whose TTL reaches zero is destroyed ([RFC 791, section 3.2](https://www.rfc-editor.org/rfc/rfc791.html#section-3.2)), which stops a misrouted packet from circulating forever. The router that destroys it may send an ICMP "time exceeded" message back to the sender ([RFC 792](https://www.rfc-editor.org/rfc/rfc792.html)). Send a packet with TTL 1 and the first router reports itself; TTL 2 reaches the second; and so on until the destination answers. This is the method behind the `tracert` and `traceroute` commands, written out with `Ping`. The 32-byte payload below mirrors the `/l` default of the Windows `ping` command itself ([Microsoft Learn, ping](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/ping)); its contents make no difference to the result.
 
 ```csharp run id=hops
 using System.Net;
@@ -813,7 +843,8 @@ try
             "example.com");
     using var ping = new Ping();
     var wait = TimeSpan.FromSeconds(2);
-    int answered = 0, silent = 0, ttl = 0;
+    int answered = 0,
+        silent = 0, ttl = 0;
     IPStatus status = IPStatus.Unknown;
 
     while (ttl < 30)
@@ -831,9 +862,11 @@ try
                 options);
         status = reply.Status;
 
-        if (status == IPStatus.TtlExpired)
+        if (status ==
+            IPStatus.TtlExpired)
             answered++;
-        else if (status == IPStatus.TimedOut)
+        else if (status ==
+            IPStatus.TimedOut)
             silent++;
         else
             break;
