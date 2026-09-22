@@ -46,7 +46,7 @@ sources:
     url: "https://man7.org/linux/man-pages/man7/sched.7.html"
     publisher: "Linux man-pages"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 When more than one runnable thread is waiting and a core is free, something has to pick which one runs next, for how long, and what happens to the ones that lose. That something is the CPU scheduler, and the [processes vs threads](/operating-systems/processes-and-threads/) article already showed that [the scheduler time-slices](/operating-systems/processes-and-threads/#what-a-context-switch-costs) and that each hand-off costs a real, measured amount of time. This article is about the policy layer above that: the rule the scheduler uses to choose, five real implementations of that rule in C#, and what two real operating systems actually run today.
