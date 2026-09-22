@@ -46,7 +46,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.pop"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Here is a small [graph](/glossary/#graph) of application startup modules. An edge `A -> B` means "A must finish initializing before B can start."
