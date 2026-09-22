@@ -1,0 +1,30 @@
+{
+  "article": "src/content/articles/data-structures/hash-tables.md",
+  "route": "/data-structures/hash-tables/",
+  "round": 2,
+  "critic": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/hash-table-data-structure/ -- a dense, ad-supported reference page with no evident dark-mode support and no per-topic diagrams tailored to a chained-vs-open-addressing comparison; this article's two purpose-drawn, dual-themed SVG figures and a mobile-safe closing summary clear it easily on the design/UX axis.",
+    "https://www.tutorialsteacher.com/csharp/csharp-dictionary -- a plain C#-Dictionary tutorial with no figures, no dark theme and no phone-specific layout handling at all; this article's collapsible exercises, faded scroll cues and themed code panels remain a clear step up.",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 -- reference-style API docs: functional and responsive but no diagrams, no worked examples, no exercises; not built to teach the buckets/entries layout the way this article's Figure 2 does."
+  ],
+  "justification": "Real numbers from a serial `verify-page.mjs --drafts` run: Lighthouse 93/100/100/100 (all four categories clear the round's 90 floor, performance up from round 1's 91), zero console errors, zero broken links, mobileOverflowPx 0. The round-1 blocker is resolved: the writer replaced the two-column 'Situation'/'Use' comparison table with a five-item bulleted list ('Choosing chaining, open addressing, or Dictionary<TKey,TValue>' section). I confirmed directly in the mobile-light and mobile-dark part-19/20 screenshots (390px) that every item, including the previously-hidden 'Custom key type: override GetHashCode/Equals together, from immutable state, or use a record,' is now fully visible with normal text wrapping in both themes -- no truncation, no horizontal scroll, no reliance on the `.fade-r` edge-fade affordance. This is a strict improvement over a table that was unreadable on the majority (phone) viewport per WRITER_GUIDE.md's own framing. I did a fresh full pass on the rest of the page. Both hand-written SVG diagrams remain fully legible at 390px in both themes: Figure 1 (chaining vs. open-addressing collision resolution, mobile-light/dark part 3-4) and Figure 2 (buckets[]/entries[] parallel-array layout with a worked example, part 9) render crisp strokes, readable labels and correctly themed captions with no clipping. Heading hierarchy is unchanged and correct: one h1, h2 sections matching the on-page structure, and the single h3 ('Building HashMap<K,V>: real chaining, not pseudocode') properly nested. All four exercises (Remove, amortized resize, struct-key prediction, find-the-bug) collapse their solutions behind a working `<details><summary>Show solution</summary>` toggle -- verified directly in mobile screenshots for exercises 1, 3 and 4, and exercise 2's collapsed state is consistent with the same component used throughout. Code/prose rhythm is unchanged from round 1: worked example, then prose walking the exact lines, repeated through nine sections; some sections re-paste the full HashMap<TKey,TValue> class verbatim so each snippet compiles standalone under run-code.mjs, producing long scroll-only-code stretches (e.g. parts 5 and 7) -- this is a site-wide convention already noted as non-scoring in round 1, and it is unchanged here. No new defects were introduced by the table-to-list conversion or found elsewhere on a fresh pass. The one remaining item is the same non-article, integrator-owned Lighthouse performance profile flagged in round 1 (bfcache restoration blocked, elevated FCP/LCP/max-potential-FID, unused CSS) -- performance still clears the 90 floor at 93 and improved slightly since round 1, so this does not affect the score.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "site-wide performance profile (affects this route's Lighthouse run; not this article's markup)",
+      "problem": "Lighthouse performance is 93 (clears the round's >=90 gate, up from 91 in round 1) but several sub-audits still score low: First Contentful Paint 0.63 (2.6s), Largest Contentful Paint 0.87 (2.6s), Max Potential FID 0.33 (310ms), unused CSS rules 0.5 (est. 12 KiB), document request latency 0.5 (est. 215 KiB savings), and 'Page prevented back/forward cache restoration' still scores 0 with 2 failure reasons; 'Network dependency tree' also scores 0. These come from shared page shell/script/network behavior, not from anything in the article body, and are unchanged in kind from round 1.",
+      "fixLooksLike": "Integrator investigates what blocks bfcache restoration (commonly an unload/beforeunload listener or a no-store cache header) and what is delaying first paint/LCP/input responsiveness; likely a global fix that lifts every article's score, not a per-article change.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 93,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

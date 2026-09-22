@@ -46,7 +46,7 @@ sources:
     url: "https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/"
     publisher: "MIT Press"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Look up `"carol"` in a `Dictionary<string,int>` holding four entries or four million, and .NET does roughly the same amount of work either way: turn the string into a number, jump to about that position in an array, compare a handful of candidates. That jump is what a [hash table](/glossary/#hash-table) adds on top of the [array](/glossary/#array) indexing from earlier in this pillar — index arithmetic for keys that are not already small integers.
