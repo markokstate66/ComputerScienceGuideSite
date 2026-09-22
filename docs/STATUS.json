@@ -41,8 +41,8 @@
   },
   "totals": {
     "planned": 67,
-    "passed": 6,
-    "inReview": 1,
+    "passed": 7,
+    "inReview": 0,
     "drafted": 6,
     "notStarted": 54,
     "cut": 0
@@ -457,17 +457,24 @@
       "wave": "A",
       "shape": "Q",
       "title": "Encapsulation, Inheritance, Polymorphism, Abstraction, Without the Clichés",
-      "state": "in-review",
-      "round": 1,
+      "state": "passed",
+      "round": 3,
       "scores": {
-        "technical": 7,
-        "adsense": 8.7,
-        "design": 8.2
+        "technical": 9.0,
+        "adsense": 9.3,
+        "design": 9.0
       },
       "codePass": true,
-      "lighthouse": null,
+      "lighthouse": [
+        95,
+        100,
+        100,
+        100
+      ],
       "openIssues": [
-        "round-1 issues in docs/reviews/oop-design/four-pillars-of-oop.round-1.*.json"
+        "byline NEEDS_MARKUS placeholder (owner input)",
+        "wave-3 cross-links in docs/crosslinks/",
+        "level: beginner front matter doesn't fully match the CoreCLR-internals depth in the back half (mitigated by inline definitions and a skip-ahead signpost)"
       ],
       "history": [
         {
@@ -478,9 +485,28 @@
           "design": 8.2,
           "pass": false,
           "note": "reviews in docs/reviews/"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-21",
+          "technical": 7.0,
+          "adsense": 9.0,
+          "design": 8.8,
+          "pass": false
+        },
+        {
+          "round": 3,
+          "date": "2026-09-21",
+          "technical": 9.0,
+          "adsense": 9.3,
+          "design": 9.0,
+          "pass": true,
+          "note": "a first round-3 writer pass was lost to an orchestration error (uncommitted edits reverted by a stray git checkout); redone cleanly from the round-2 baseline before scoring"
         }
       ],
-      "batch": 1
+      "batch": 1,
+      "lighthouseNote": "serial run by orchestrator, 2026-09-21",
+      "published": "2026-09-21"
     },
     {
       "pillar": "oop-design",

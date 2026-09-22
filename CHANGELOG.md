@@ -11,6 +11,7 @@ User-visible and repo-visible changes. Newest first.
 - Published article: `algorithms/binary-search` (passed round 2: technical 8.7 / AdSense 8.6 / design 8.7).
 - Published article: `version-control/branching-and-merging` (passed round 2: technical 8.8 / AdSense 9.2 / design 8.5).
 - Published article: `networking/how-the-internet-works` (passed round 4, its last round before a mandatory cut: technical 9.2 / AdSense 8.8 / design 8.7).
+- Published article: `oop-design/four-pillars-of-oop` (passed round 3: technical 9.0 / AdSense 9.3 / design 9.0).
 - Ten draft articles (`draft: true`, excluded from the build): see `docs/STATUS.json`.
 - Technical SEO: own `sitemap.xml` with real `lastmod`, corrected `robots.txt`, JSON-LD (Article with Person author, BreadcrumbList, WebSite, Organization), per-pillar OG images under 15 KB, `apple-touch-icon.png`, `logo.png`, 301s for every legacy URL, real 404.
 - Tools: `tools/verify-page.mjs`, `tools/run-code.mjs`, `tools/make-images.mjs`.

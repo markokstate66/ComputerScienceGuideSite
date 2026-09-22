@@ -2,6 +2,14 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-21 — `/ship 19`: oop-design/four-pillars-of-oop merged
+
+- PR #19 squash-merged into `adsense-rebuild`, branch deleted, issue #2 closed. Round 3 gauntlet result: technical 9.0 / AdSense 9.3 / design 9.0, all ≥ the 8.5 bar.
+- Verified before merge: `npm run build` green (26 pages), `node tools/run-code.mjs src/content/articles/oop-design/four-pillars-of-oop.md` PASS (blocks=29, executed=15).
+- Serial `verify-page` Lighthouse (owner-facing, run earlier by the consumer with nothing else running): 95/100/100/100. Only failure was the expected `NEEDS_MARKUS` byline placeholder.
+- `docs/STATUS.json` totals: passed 6 → 7, inReview 1 → 0.
+- Note for the record: this article's round 3 was redone once mid-session after an orchestration mistake discarded the first round-3 writer pass (a stray `git checkout` reverted uncommitted edits). The scores shipped here are from the clean redo, verified against the file as committed.
+
 ## 2026-09-21 — `/ship 18`: networking/how-the-internet-works merged
 
 - PR #18 squash-merged into `adsense-rebuild`, branch deleted, issue #3 closed. Round 4 gauntlet result (its last round before a mandatory cut): technical 9.2 / AdSense 8.8 / design 8.7, all ≥ the 8.5 bar.
