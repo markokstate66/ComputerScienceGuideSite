@@ -43,12 +43,12 @@ Two rules of thumb get repeated for interfaces versus abstract classes: an inter
 
 | Capability | Interface | Abstract class |
 |---|---|---|
-| Instance fields | Not allowed (`CS0525`) | Allowed |
-| Instance constructors | Not allowed (`CS0526`) | Allowed, typically `protected` |
-| A member with a body | Allowed since C# 8 | Always allowed |
-| Access modifiers on members | Public by default; a bodied member may be `private`, `protected` or `internal` | Any modifier, as on any class member |
-| `static abstract` / `static virtual` members | Allowed since C# 11 | Not allowed |
-| Base types a type may have | Any number of interfaces | Exactly one base class |
+| Instance fields | No (`CS0525`) | Yes |
+| Instance constructors | No (`CS0526`) | Yes, usually `protected` |
+| Member with a body | Yes, since C# 8 | Yes, always |
+| Default member access | Public by default | Any modifier |
+| Static abstract/virtual | Yes, since C# 11 | No |
+| Base types allowed | Any number | Exactly one |
 | Direct instantiation | Never | Never |
 
 A member declared with no body — the ordinary case, `void Send(string message);` — is implicitly `public` and cannot be marked otherwise [[3]](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/interfaces). Every other row needs code to be believed rather than taken on faith, and the sections below run each one.
@@ -324,8 +324,8 @@ An abstract class can hold both, and that combination — private state plus a c
 ```csharp run id=throttled-notifier
 INotifier[] channels =
 [
-    new EmailNotifier(maxPerMinute: 2),
-    new SmsNotifier(maxPerMinute: 1),
+    new EmailNotifier(max: 2),
+    new SmsNotifier(max: 1),
 ];
 
 foreach (var channel in channels)
@@ -337,48 +337,55 @@ interface INotifier
     void Send(string message);
 }
 
-abstract class ThrottledNotifier : INotifier
+abstract class ThrottledNotifier
+    : INotifier
 {
-    private readonly int _maxPerMinute;
-    private int _sentThisMinute;
+    private readonly int _max;
+    private int _sent;
 
-    protected ThrottledNotifier(int maxPerMinute)
+    protected ThrottledNotifier(int max)
     {
         ArgumentOutOfRangeException
-            .ThrowIfNegativeOrZero(maxPerMinute);
-        _maxPerMinute = maxPerMinute;
+            .ThrowIfNegativeOrZero(max);
+        _max = max;
     }
 
     public void Send(string message)
     {
-        if (_sentThisMinute >= _maxPerMinute)
+        if (_sent >= _max)
         {
             Console.WriteLine(
                 $"[{Label}] dropped: {message}");
             return;
         }
-        _sentThisMinute++;
+        _sent++;
         Deliver(message);
     }
 
-    protected abstract string Label { get; }
-    protected abstract void Deliver(string message);
+    protected abstract
+        string Label { get; }
+    protected abstract
+        void Deliver(string msg);
 }
 
-sealed class EmailNotifier(int maxPerMinute)
-    : ThrottledNotifier(maxPerMinute)
+sealed class EmailNotifier(int max)
+    : ThrottledNotifier(max)
 {
-    protected override string Label => "email";
-    protected override void Deliver(string message)
-        => Console.WriteLine($"[email] {message}");
+    protected override
+        string Label => "email";
+    protected override
+        void Deliver(string msg)
+        => Console.WriteLine($"[email] {msg}");
 }
 
-sealed class SmsNotifier(int maxPerMinute)
-    : ThrottledNotifier(maxPerMinute)
+sealed class SmsNotifier(int max)
+    : ThrottledNotifier(max)
 {
-    protected override string Label => "sms";
-    protected override void Deliver(string message)
-        => Console.WriteLine($"[sms] {message}");
+    protected override
+        string Label => "sms";
+    protected override
+        void Deliver(string msg)
+        => Console.WriteLine($"[sms] {msg}");
 }
 ```
 
@@ -391,17 +398,17 @@ sealed class SmsNotifier(int maxPerMinute)
 [sms] dropped: msg 3
 ```
 
-`_maxPerMinute` and `_sentThisMinute` are private to `ThrottledNotifier`; neither `EmailNotifier` nor `SmsNotifier` can see or reset them directly, and the constructor's `ThrowIfNegativeOrZero` check runs exactly once, for every channel, because it lives in the one constructor they all call. An interface has no field to check, so an interface-only version of this design would have to trust each implementer to copy the throttling logic correctly, or to compose in a separate throttling object by hand.
+`_max` and `_sent` are private to `ThrottledNotifier`; neither `EmailNotifier` nor `SmsNotifier` can see or reset them directly, and the constructor's `ThrowIfNegativeOrZero` check runs exactly once, for every channel, because it lives in the one constructor they all call. An interface has no field to check, so an interface-only version of this design would have to trust each implementer to copy the throttling logic correctly, or to compose in a separate throttling object by hand.
 
 ::::exercise[Add a way to reset the counter]
-Add a public `Reset()` operation to the notifier hierarchy above that zeroes the count for one channel, without giving `EmailNotifier` or `SmsNotifier` direct access to `_sentThisMinute`. Where does `Reset()` have to live, and why is that the only place a plain interface version of `INotifier` could not put it?
+Add a public `Reset()` operation to the notifier hierarchy above that zeroes the count for one channel, without giving `EmailNotifier` or `SmsNotifier` direct access to `_sent`. Where does `Reset()` have to live, and why is that the only place a plain interface version of `INotifier` could not put it?
 
 :::solution
-`Reset()` has to be a member of `ThrottledNotifier`, because `_sentThisMinute` is private there. A plain `INotifier` interface has nowhere to put a reset that touches shared state, because it has no state to touch — every implementer would need its own copy of the counter and its own `Reset`, with no guarantee the two stay consistent.
+`Reset()` has to be a member of `ThrottledNotifier`, because `_sent` is private there. A plain `INotifier` interface has nowhere to put a reset that touches shared state, because it has no state to touch — every implementer would need its own copy of the counter and its own `Reset`, with no guarantee the two stay consistent.
 
 ```csharp run id=throttled-notifier-reset
 INotifier channel =
-    new EmailNotifier(maxPerMinute: 2);
+    new EmailNotifier(max: 2);
 channel.Send("a");
 channel.Send("b");
 channel.Send("c");
@@ -416,35 +423,39 @@ interface INotifier
     void Send(string message);
 }
 
-abstract class ThrottledNotifier : INotifier
+abstract class ThrottledNotifier
+    : INotifier
 {
-    private readonly int _maxPerMinute;
-    private int _sentThisMinute;
+    private readonly int _max;
+    private int _sent;
 
-    protected ThrottledNotifier(int maxPerMinute)
-        => _maxPerMinute = maxPerMinute;
+    protected ThrottledNotifier(int max)
+        => _max = max;
 
     public void Send(string message)
     {
-        if (_sentThisMinute >= _maxPerMinute)
+        if (_sent >= _max)
         {
-            Console.WriteLine($"dropped: {message}");
+            Console.WriteLine(
+                $"dropped: {message}");
             return;
         }
-        _sentThisMinute++;
+        _sent++;
         Deliver(message);
     }
 
-    public void Reset() => _sentThisMinute = 0;
+    public void Reset() => _sent = 0;
 
-    protected abstract void Deliver(string message);
+    protected abstract
+        void Deliver(string msg);
 }
 
-sealed class EmailNotifier(int maxPerMinute)
-    : ThrottledNotifier(maxPerMinute)
+sealed class EmailNotifier(int max)
+    : ThrottledNotifier(max)
 {
-    protected override void Deliver(string message)
-        => Console.WriteLine($"email: {message}");
+    protected override
+        void Deliver(string msg)
+        => Console.WriteLine($"email: {msg}");
 }
 ```
 
@@ -651,7 +662,7 @@ A teammate's pull request adds order history to a shipped `IAccount` interface u
      void Deposit(decimal amount);
 +
 +    // new in this PR
-+    IReadOnlyList<string> RecentActivity
++    IReadOnlyList<string> History
 +        { get; }
  }
 ```
@@ -670,7 +681,7 @@ interface IAccount
     void Deposit(decimal amount);
 
     // new in this PR
-    IReadOnlyList<string> RecentActivity { get; }
+    IReadOnlyList<string> History { get; }
 }
 
 class CheckingAccount(decimal balance) : IAccount
@@ -680,20 +691,20 @@ class CheckingAccount(decimal balance) : IAccount
 }
 ```
 
-The fix is to give `RecentActivity` a default body instead of leaving it bodyless, the same move `SendBatch` got. `CheckingAccount` is unchanged and compiles again, now with a default, empty activity list:
+The fix is to give `History` a default body instead of leaving it bodyless, the same move `SendBatch` got. `CheckingAccount` is unchanged and compiles again, now with a default, empty activity list:
 
 ```csharp run id=account-fix
 IAccount account = new CheckingAccount(100m);
 account.Deposit(25m);
 Console.WriteLine(account.Balance);
-Console.WriteLine(account.RecentActivity.Count);
+Console.WriteLine(account.History.Count);
 
 interface IAccount
 {
     decimal Balance { get; }
     void Deposit(decimal amount);
 
-    IReadOnlyList<string> RecentActivity
+    IReadOnlyList<string> History
         => Array.Empty<string>();
 }
 
