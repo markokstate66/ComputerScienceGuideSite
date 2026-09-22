@@ -38,7 +38,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.stackoverflowexception"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A loop nested inside another loop is not automatically O(*n*²): that only holds once both trip counts actually depend on *n*. [Big-O notation](/complexity/big-o-notation/) covered a single loop and one pair of nested loops, then closed with five rules of thumb for reading a bound off C# code. This page turns those rules into a repeatable procedure, reaches the loop shapes they didn't — loops that halve, loops whose inner bound rides on the outer one — and then does for recursive code what tracing a loop cannot: turns a function that calls itself into a number, by way of recurrence relations and the Master Theorem.
@@ -587,7 +587,7 @@ static int[] MakeScores(int count)
 Change *a* from 2 to 3 — three recursive calls on half the input each, plus Θ(*n*) work per call: *T*(*n*) = 3*T*(*n*/2) + O(*n*). Work out *p* = log₂ 3 ≈ 1.585 and which case applies, then confirm by running.
 
 :::solution
-*n*<sup>*p*</sup> = *n*<sup>1.585</sup>, and *f*(*n*) = O(*n*) = O(*n*<sup>1.585−ε</sup>) for any ε < 0.585: case 1, so *T*(*n*) = Θ(*n*<sup>1.585</sup>). This is not a made-up exponent — it is the cost of Karatsuba's integer multiplication algorithm, which splits an *n*-digit multiplication into three multiplications of *n*/2 digits, exactly this recurrence, beating the naive O(*n*²) method for large enough *n*.
+*n*<sup>*p*</sup> = *n*<sup>1.585</sup>, and *f*(*n*) = O(*n*) = O(*n*<sup>1.585−ε</sup>) for any ε < 0.585: case 1, so *T*(*n*) = Θ(*n*<sup>1.585</sup>). This is not a made-up exponent — it is the shape of a real technique for multiplying large integers: instead of the naive four half-size multiplications a straightforward split produces, combine three half-size multiplications with extra additions instead, which is exactly this recurrence.
 
 Doubling *n* should multiply the cost by 2<sup>1.585</sup> ≈ 3 — the same 3 as *a*, since the leaves dominate:
 
@@ -633,14 +633,14 @@ The ratio closes in on 3.00 from above as *n* grows, matching 2<sup>log₂ 3</su
 ::::
 
 :::dotnet
-Every recursive call in this section keeps a real stack frame until it returns; nothing here relies on the JIT collapsing them. A Θ(*n*) recursion — case 1 above, `RecursiveMax` included — allocates *n* stack frames at its deepest point, not log *n*, because the deepest branch of the tree still has to return through every ancestor above it. The default thread stack size in .NET is documented as 1 megabyte, and an unhandled [`StackOverflowException`](https://learn.microsoft.com/en-us/dotnet/api/system.stackoverflowexception) "can't be caught... and the corresponding process is terminated by default." That is a [space complexity](/glossary/#space-complexity) concern, not a time one, and it is why a recursive solution whose recursion *depth* (not its total call count) grows with *n* is sometimes rewritten as an explicit loop with its own stack or queue — a trade this page does not measure.
+Every recursive call in this section keeps a real stack frame until it returns; nothing here relies on the JIT collapsing them. What decides how many frames pile up at once is recursion *depth*, not total call count — those are different numbers, as the aside on `RecursiveMax`'s call count warned earlier. `RecursiveMax` makes Θ(*n*) calls in total, but because it halves its range on every call, its stack never holds more than Θ(log *n*) frames at once: on the 256-score row of the table above, the deepest branch is 8 calls deep, not 256. A recursion whose *depth* is genuinely Θ(*n*) is quicksort's worst case, below: *T*(*n*) = *T*(*n* − 1) + Θ(*n*) peels off one element per call, so a first-element pivot on already-sorted input recurses 255 levels deep for 256 elements, one call returning through every ancestor above it. The default thread stack size in .NET is documented as [1 megabyte](https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread.-ctor?view=net-10.0), and an unhandled [`StackOverflowException`](https://learn.microsoft.com/en-us/dotnet/api/system.stackoverflowexception) "can't be caught... and the corresponding process is terminated by default." That is a [space complexity](/glossary/#space-complexity) concern, not a time one, and it is why a recursive solution whose recursion depth grows with *n* is sometimes rewritten as an explicit loop with its own stack or queue — a trade this page does not measure.
 :::
 
 ## When does the Master Theorem not apply?
 
 The theorem needs *a* and *b* to be constants and every subproblem to be the same size, *n*/*b*. Two common shapes break that, and a third slips between the cases without breaking it at all.
 
-**Quicksort's worst case doesn't divide the input at all.** Partitioning around a pivot costs Θ(*n*) — NIST's dictionary calls this shape "[hard split, easy merge](https://xlinux.nist.gov/dads/HTML/hardSplitEasyMerge.html)", the reverse of merge sort's — and on already-sorted input with a first-element pivot, every partition puts all *n* − 1 remaining items on one side and none on the other. The recurrence is *T*(*n*) = *T*(*n* − 1) + Θ(*n*), which is not *a*·*T*(*n*/*b*) at all: one recursive call, not *a* of them, and the input shrinks by a fixed amount rather than a fixed factor. Unrolling it by hand gives (*n* − 1) + (*n* − 2) + ... + 1 — the exact round-robin sum from earlier in this page, so the worst case is Θ(*n*²) by the same arithmetic-series argument, no master theorem required.
+**Quicksort's worst case doesn't divide the input at all.** Partitioning around a pivot costs Θ(*n*) — NIST's dictionary calls this shape "[hard split, easy merge](https://xlinux.nist.gov/dads/HTML/hardSplitEasyMerge.html)", the reverse of merge sort's — and on already-sorted input with a first-element pivot, every partition puts all *n* − 1 remaining items on one side and none on the other — the degenerate case CLRS chapter 7 walks through for exactly this pivot choice. The recurrence is *T*(*n*) = *T*(*n* − 1) + Θ(*n*), which is not *a*·*T*(*n*/*b*) at all: one recursive call, not *a* of them, and the input shrinks by a fixed amount rather than a fixed factor. Unrolling it by hand gives (*n* − 1) + (*n* − 2) + ... + 1 — the exact round-robin sum from earlier in this page, so the worst case is Θ(*n*²) by the same arithmetic-series argument, no master theorem required.
 
 **Unequal-sized subproblems** — *T*(*n*) = *T*(*n*/3) + *T*(2*n*/3) + Θ(*n*), say — also fall outside the theorem's shape, though a recursion tree still solves them: every level's sizes sum to *n* regardless of how unevenly they split, so each of the tree's Θ(log *n*) levels still contributes Θ(*n*), giving Θ(*n* log *n*) overall even though the tree is lopsided, with branches of different lengths depending which side keeps getting the bigger share.
 

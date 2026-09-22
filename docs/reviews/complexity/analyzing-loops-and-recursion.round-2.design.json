@@ -1,0 +1,28 @@
+{
+  "critic": "design",
+  "article": "complexity/analyzing-loops-and-recursion",
+  "round": 2,
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/how-to-analyse-complexity-of-recurrence-relation/",
+    "https://www.freecodecamp.org/news/big-o-notation-why-it-matters-and-why-it-doesnt-1674cfa8a23c/"
+  ],
+  "justification": "verify-page.mjs (PowerShell, --drafts) passes clean apart from the expected NEEDS_MARKUS placeholder: Lighthouse 98/100/100/100 (performance +1 vs round 1's 97, within normal run-to-run noise and possibly this machine being less loaded this pass; still worth the orchestrator re-measuring serially per its own policy since other agents may be active), 0 console errors, 0 broken internal links, 0px mobile overflow at 390px, words=3491, code=25, fig=2. I formed a fresh judgement before opening the round-1 review: read the full article source, the diff between the round-1 and round-2 commits (d82c4d8 to 0a8ea65 — four textual edits: the :::dotnet callout rewrite, the added CLRS chapter 7 citation on the quicksort-degenerate-case sentence, the '1 megabyte' phrase turned into a Microsoft Learn link, and the softened Karatsuba-naming claim in the triple-split exercise solution), then opened all 12 desktop-light parts, all 18 mobile-dark parts, the fold plus desktop-dark parts 9-10 (the edited :::dotnet callout and the new CLRS citation), and the fold plus mobile-light parts 2 and 13 (same regions, mobile). None of the four edits are layout-affecting: no new figures, tables, code blocks or callouts were added or removed, only sentences inside the existing :::dotnet callout and two prose paragraphs were reworded, so there was low a priori risk of regression, and I found none. The rewritten :::dotnet callout is longer than round 1's version but stays inside the callout's rounded box in all four theme/device combinations, wraps cleanly, and keeps its accent-coloured left border and heading in both themes. The new '1 megabyte' link renders as a normal inline link (underlined, accent-coloured) in both light and dark, sits mid-sentence without breaking the paragraph rhythm, and is not confusable with the adjacent StackOverflowException code span. The CLRS chapter 7 clause reads as a normal em-dash aside in the quicksort paragraph, no different in weight or emphasis from the surrounding prose, in every screenshot checked. Reading rhythm, heading hierarchy (H2 question-headings, H3 for the three Master Theorem cases, no skipped levels), code-block/output-panel pairing, the two hand-drawn SVG diagrams (round-robin staircase, recursion tree, both 360 viewBox, no scrolling or fading at 390px in either theme), table-free design (this article uses only text output panels, which stay inside 40 columns in the rows I checked), collapsed exercises (four, unspoiled, varied forms), and the sources list (all 7 sources present, correctly linked, dates and publishers shown) are all unchanged from round 1 and remain strong. Compared against the two ranking pages for 'how to calculate time complexity': GeeksforGeeks's recurrence-relation page has zero diagrams and only a two-sentence, example-free mention of the Master Theorem before linking out; freeCodeCamp's Big-O piece has real diagrams but almost no recursion-complexity coverage and carries a donation banner, a 15-item book sidebar and app-download badges inside the reading column. This article still beats both on originality (hand-drawn theme-aware SVGs vs. none or stock images), depth (three fully worked Master Theorem cases with measured C# confirming each, vs. a bare statement of the formula), and cleanliness (zero ad/promotional content). That clears the 8.5 MDN/Real-Python bar with the same margin round 1 found. The score holds at 9.2, not higher: the round-2 edits improved technical precision and sourcing but did not touch anything a design critic scores, and 'effort was made' is not grounds to raise a design score on its own. It does not go above 9.2 for the same reason round 1 gave: the one minor phone-width fade below still exists, unaddressed (correctly, since WRITER_GUIDE.md explicitly allows it for boilerplate tails).",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Sequential-loops and nested-loops sections, mobile screenshots (mobile-dark-part02/part03, mobile-light-part02): the `foreach (int n in (int[])[1_000, 2_000, 4...` array-literal line and the `MakeCodes(m, seed:...)` call",
+      "problem": "Unchanged from round 1: a handful of setup lines (the test-size array literal, a constructor's `seed:` argument) run past the ~40-character visible width on a 390px phone and fade under the right edge.",
+      "fixLooksLike": "Not required — WRITER_GUIDE.md section 7 explicitly allows this when the tail is boilerplate and not the point of the line; the same n values reappear as the output panel's first column directly below, so no evidence is hidden. Carried forward from round 1 as a polish note only, not a blocker.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 98,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
