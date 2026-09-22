@@ -58,7 +58,7 @@ sources:
     url: "https://devblogs.microsoft.com/dotnet/understanding-the-whys-whats-and-whens-of-valuetask/"
     publisher: ".NET Blog, Microsoft"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A C# compiler does not leave `await` in the assembly. It rewrites an `async` method into a state machine, in a documented and mechanical way, and it does that rewriting the same way whether the method waits ten milliseconds or reads a socket. This page starts from a method that blocks its calling thread, measures what that costs, then builds by hand the state machine the compiler would generate for its `async` replacement, before working through what that rewriting explains: why a stray `.Result` call deadlocks some programs and not others, and why an `async void` method can throw in a place no `catch` block reaches.
