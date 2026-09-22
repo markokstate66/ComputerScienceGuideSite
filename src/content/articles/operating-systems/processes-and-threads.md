@@ -4,7 +4,7 @@ description: "Watch from C# what a process and a thread each own: shared heap, p
 pillar: operating-systems
 order: 1
 author: markus
-published: 2026-09-21
+published: 2026-09-22
 updated: 2026-09-22
 level: intermediate
 tags: [processes, threads, thread-pool, concurrency, context-switch]
@@ -94,7 +94,7 @@ sources:
     url: "https://www.chromium.org/developers/design-documents/multi-process-architecture/"
     publisher: "The Chromium Projects"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A [process](/glossary/#process) is the operating system's unit of ownership: it holds memory, open files and a security identity. A [thread](/glossary/#thread) is the unit of execution: the thing the scheduler places on a CPU core. A running program is one process with at least one thread inside it. Most practical differences between the two (what a crash destroys, what is cheap to create, what can corrupt what) follow from a single fact: threads of one process share its memory, and separate processes do not. The programs below make that fact visible from C#, then put prices on it.
@@ -373,7 +373,7 @@ The exit code differs by platform: an unhandled .NET exception produces a large 
 
 There are usually more runnable threads than cores, so the scheduler time-slices. A *context switch* is the act of taking one thread off a core and putting another on, and it is really a decision wrapped in bookkeeping. The decision is which thread runs next: among every thread the scheduler currently considers ready, it is whichever one sits at the head of the highest-priority queue that has one waiting. The bookkeeping is what keeps that decision working over time: the thread being removed has its registers and other execution state saved so it can resume later, and if it was preempted rather than blocked, it rejoins its priority's queue instead of vanishing from scheduling entirely; the thread chosen to run next has its saved state loaded back into the core and continues from wherever it left off ([Context Switches](https://learn.microsoft.com/en-us/windows/win32/procthread/context-switches)).
 
-A switch happens when a thread's time slice (its *quantum*) runs out and an equal-priority thread is ready, when a higher-priority thread becomes ready, or when the running thread has to wait for something, in which case it gives up the rest of its slice ([Context Switches](https://learn.microsoft.com/en-us/windows/win32/procthread/context-switches)). On Windows the thread, not the process, is the entity that gets scheduled, and on Linux each thread is likewise its own kernel scheduling entity ([pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html)). A process with 50 ready threads competes as 50 entries.
+What ends a thread's turn on the core comes in two shapes. One is voluntary: the thread blocks because it has to wait for a lock, a signal or an I/O completion, and it does this before its quantum is spent, so whatever was left of it is simply lost rather than carried over to next time. The other is the scheduler taking the core away, and that happens under two distinct conditions, not one: a thread's quantum being spent is only a reason to switch if some other ready thread at that priority *or higher* is waiting for a turn, while a strictly higher-priority thread becoming ready can end a running thread's turn without waiting for its quantum to be spent at all ([Context Switches](https://learn.microsoft.com/en-us/windows/win32/procthread/context-switches)). On Windows the thread, not the process, is the entity that gets scheduled, and on Linux each thread is likewise its own kernel scheduling entity ([pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html)). A process with 50 ready threads competes as 50 entries.
 
 Switching between two threads of the same process leaves the address space alone. Switching to a thread of another process must also switch to that process's page tables, and *Operating Systems: Three Easy Pieces* names this as the one major difference between the two kinds of switch ([OSTEP chapter 26](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)).
 
@@ -455,7 +455,7 @@ two threads, one core: [...] ns
 
 Six runs on the test machine (Core i7-11700K, 8 cores and 16 logical processors, with other work sharing the machine while these numbers were taken) gave 13 to 20 ns for the single thread, roughly 7,600 to 22,000 ns for two threads on any core, and roughly 3,000 to 8,500 ns for two threads on one core.
 
-The single-core figure is the cleanest, because pinning both threads to one core removes the cost of waking a second, possibly idle, core. A round there contains two switches, and on Windows each `Set` and each `WaitOne` reaches into the kernel, because `AutoResetEvent` is a thin wrapper over a native OS handle rather than something the runtime can resolve in user mode alone ([AutoResetEvent Class](https://learn.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent)); a round is therefore four such calls plus the two switches. So one switch between threads of the same process, with almost no data to evict from the caches, cost roughly 1.5 to 4 microseconds on these runs. Even the low end is one to two orders of magnitude above the cost of doing the same work as two method calls. A quieter machine should sit nearer the low end; a busier one pushes it higher, because a "switch" here also has to wait its turn for the one core.
+The single-core figure is the cleanest, because pinning both threads to one core removes the cost of waking a second, possibly idle, core. A round there contains two switches, and on Windows each `Set` and each `WaitOne` operates on a native OS handle, because `AutoResetEvent` is a thin wrapper over one rather than something the runtime can resolve in user mode alone ([AutoResetEvent Class](https://learn.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent)); a round is therefore four such calls plus the two switches. So one switch between threads of the same process, with almost no data to evict from the caches, cost roughly 1.5 to 4 microseconds on these runs. Even the low end is one to two orders of magnitude above the cost of doing the same work as two method calls. A quieter machine should sit nearer the low end; a busier one pushes it higher, because a "switch" here also has to wait its turn for the one core.
 
 The any-core figure did not show the earlier, cleaner gap that a quiet machine produces: run over run, letting the OS place each thread on any of the 16 processors was between about 1.2 and 4.7 times slower than pinning both to one core, not a single fixed multiple. The likely mechanism, which this program cannot confirm, is the same one that applies on a quiet machine: the woken thread tends to land on a different, possibly idle, core, which pays for waking that core as well as the thread. What changes under load is that the one-core baseline is no longer clean either, since it is now competing with everything else for that one core, so the gap between the two configurations narrows and jitters.
 
@@ -530,7 +530,7 @@ new thread          [...] us
 new process         [...] us
 ```
 
-Eleven runs on the test machine gave 8 to 11 microseconds per pool job, roughly 85 to 165 per dedicated thread, and roughly 24,000 to 28,000 (24 to 28 ms) per child process. Each step up is roughly one to two orders of magnitude.
+Eleven runs on the test machine gave 8 to 11 microseconds per pool job, roughly 85 to 165 per dedicated thread, and roughly 24,000 to 28,000 (24 to 28 ms) per child process. The pool-to-thread step is roughly one order of magnitude (about eight to twenty times); the thread-to-process step stacks a further two to three orders of magnitude on top of that.
 
 The process figure needs a caveat: the child is another .NET program, so those 24-to-28 ms include starting the runtime in the new process, not only the operating system's work to create it. For a .NET developer that is the honest price, because it is the one you pay. It also explains a design you see everywhere in server software: processes are started rarely and kept, threads are pooled, and the unit of work that is created and destroyed thousands of times a second is something lighter than either.
 
