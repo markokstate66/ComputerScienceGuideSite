@@ -34,7 +34,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/core/sdk/file-based-apps"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A red bar is not a bug report. It is the next sentence of a specification written in code, one test at a time, with the implementation kept just far enough ahead to satisfy the sentence already written and no further. This article writes one such specification end to end: a scorer for ten-pin bowling, through five real red-green-refactor laps. Every version of the code below is the actual file from that lap, compiled and run, not a cleaned-up retelling.
