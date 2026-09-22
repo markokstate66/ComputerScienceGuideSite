@@ -1,0 +1,88 @@
+{
+  "article": "src/content/articles/oop-design/four-pillars-of-oop.md",
+  "route": "/oop-design/four-pillars-of-oop/",
+  "round": 2,
+  "role": "technical",
+  "date": "2026-09-21",
+  "score": 7.0,
+  "uncappedScore": 8.6,
+  "runCodePass": "PASS oop-design/four-pillars-of-oop.md  blocks=27 executed=14 (run myself from PowerShell: node tools/run-code.mjs src/content/articles/oop-design/four-pillars-of-oop.md)",
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop",
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/inheritance",
+    "https://www.freecodecamp.org/news/how-to-use-oop-in-c-sharp/",
+    "https://www.pluralsight.com/labs/codeLabs/guided-exploring-the-pillars-of-object-oriented-programming-in-c"
+  ],
+  "justification": "Capped at 7.0 by one verifiable wrong generalisation (the Template Method exercise claims no derived class can hand a negative price to a caller, which is false; see issue 1); without the cap this is about 8.6. Against the pages that rank for the query, it is clearly deeper. Microsoft Learn's tutorial (BankAccount, one-line definitions, no invariant discussion, no dispatch mechanism, no costs), freeCodeCamp's C# OOP page (Father/Child, MP3/WAV, Dog/Cat analogies, no costs, no primary-source citations) and the Pluralsight lab (ticket tracker, beginner tasks) all stop at definitions plus a keyword demo. This article adds encapsulation framed as invariants with a before/after program and a leak exercise whose claims I re-derived (cast to List<Line> succeeds when Lines returns _lines; with AsReadOnly it throws InvalidCastException; cast to IList<Line> compiles and Add throws NotSupportedException), a CoreCLR method-table account that matches the Book of the Runtime and JIT design notes, a GetBaseDefinition demo whose semantics match the MethodInfo remarks (new returns itself), overload-vs-override, constructor-order and unwritten-postcondition failure modes, and an interface that admits Unreachable. Every program is correct and idiomatic modern C# (records, primary constructors, collection expressions, empty-body classes); run-code passes 14 executed blocks and I re-ran the primary-constructor variant of the constructor demo on .NET 10, which prints 'Team: 12/seat, min 5' on both lines exactly as the note says. I opened and checked against sources: the four-basic-principles and three-primary-characteristics quotes and the only-one-direct-base-class sentence (Microsoft Learn); the spec quote 'In a virtual method invocation, the run-time type of the instance for which that invocation takes place determines the actual method implementation to invoke' (verbatim in dotnet/csharpstandard classes.md 15.6.4, quote now fixed), abstract-method wording, variable-initializers-before-base-constructor (15.11.3) and the static-binding sentence (12.3.1); 'a chain of 3 dependent loads' with the two-level chunk, and the sealed / exact-type devirtualization conditions (GuardedDevirtualization.md); 'mostly because calls to virtual members are not inlined', 'DO NOT make members virtual unless...', 'calling into a protected virtual member' (Framework Design Guidelines); VSD is enabled only for interface calls and why (startup working set, class-virtual throughput); the MethodTable/v-table comparison; 'Each MethodDesc has a slot, which contains the current entry point'; CA2214 'Enabled by default in .NET 10: No'; Wadler's 12 November 1998 note. All of these hold. Remaining problems: (1) the Template Method exercise's guarantee is overstated (a derived class can hide the non-virtual method with new; I ran it and got -1 back through a derived-typed variable); (2) 'a switch over class types compiles with warning CS8509' is only true of switch expressions (I compiled both forms; the switch statement gives no warning) and 'C# has no way to declare a class hierarchy closed' is true of C# 14 but is about to be stale (C# 15 / .NET 11 previews add the closed modifier for exactly this); (3) Liskov is named and dated in the body but still has no source entry, and the 1994-paper attribution is loose; (4) a handful of nits (spec section pointer, 2008 guidelines page used as current evidence for the inlining claim, InvalidOperationException for argument checks, 'The Plan hierarchy qualifies' after showing it did not, Wadler's static-type-safety condition dropped). Round-1 check: the blocker (Paid iff nothing owed, false for Draft) is genuinely fixed in the prose, in Figure 1 and in the refund solution, which now reasons through Draft; the misquote major is fixed (verbatim); the primary-constructor caveat major is fixed and correct, and I verified it; the 3-loads-vs-2 minor is fixed with the chunk explanation; exactly-one-base-class, AsReadOnly IList cast, thread hand-wave, expression-problem naming and per-read wrapper allocation minors are all fixed; the Liskov citation minor is only half fixed. The article is level: beginner / prerequisites: [] yet goes to reflection and JIT devirtualization; plain one-sentence glosses of virtual/override/abstract were added at the Plan program, which mostly answers the round-1 adsense audience concern, so I do not raise it as a technical issue beyond a note.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Exercise 'Move the check to where the promise is made', the prompt ('so that no derived class, present or future, can hand a negative price to a caller') and the solution sentence 'Callers cannot reach `Compute` at all, so the check cannot be skipped.'",
+      "problem": "Wrong generalisation (no derived class ... can / cannot be skipped). C# cannot stop a derived class from declaring `public new decimal PriceFor(Usage u) => Compute();`. I compiled and ran this against the solution's Plan: through a `Plan` variable the check runs and throws, but through a variable typed as the derived class the call returns -1 with no check. The article itself has just taught `new` hiding (LegacyPlan), so a strong student will see this at once. The guarantee holds only for calls made through a Plan reference, and CS0108 warns on the hiding member unless `new` is written.",
+      "fixLooksLike": "Scope it: 'so that a caller holding a Plan can never receive a negative price' and 'Callers holding a Plan cannot reach Compute, so they cannot skip the check. A derived class can still hide PriceFor with new, but then the compiler makes it say so (CS0108) and code that takes a Plan is unaffected.' One or two sentences; the design advice stays correct.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Polymorphism ... The trade runs the other way' paragraph, last sentence: 'C# has no way to declare a class hierarchy closed, so a `switch` over class types compiles with warning CS8509 unless it ends in a fallback arm.'",
+      "problem": "Two imprecisions. (a) CS8509 is the non-exhaustive warning for switch expressions; I compiled both forms and a switch statement over the same classes produces no warning. (b) 'C# has no way' is true of C# 14 / .NET 10 (the article's target) but the C# 15 previews in .NET 11 (Preview 5 and 6) add a `closed` modifier for exactly this purpose, so an article dated September 2026 will read stale within months.",
+      "fixLooksLike": "'a switch expression over class types compiles with warning CS8509 unless it ends in a fallback arm, because as of C# 14 the compiler cannot know the hierarchy is complete (C# 15 previews add a closed modifier to change that).' Cite the C# feature page or drop the parenthesis and scope with 'in C# 14'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'An override can break a promise the base class made', last paragraph: Liskov substitution principle 'after Barbara Liskov and Jeannette Wing's 1994 paper'",
+      "problem": "Round-1 asked for a source; the name and date were added to the prose but the paper is still not in front-matter sources and there is no inline citation, so this is a dated history claim without a primary source (brief rule 3). The attribution is also loose: the principle was stated by Liskov in her 1987 OOPSLA keynote; the 1994 Liskov and Wing paper is its formal treatment (history-and-dates claim I am confident of but did not open here).",
+      "fixLooksLike": "Add 'A Behavioral Notion of Subtyping' (ACM TOPLAS 16(6), 1994) to sources with an accessed date, cite it inline, and word it 'formalised by Liskov and Wing in 1994' (or say 'known as the Liskov substitution principle; Liskov and Wing give the formal definition in ...').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'So when is inheritance the right tool?' final sentence of the list: 'The `Plan` hierarchy qualifies.'",
+      "problem": "Contradicts what the page just demonstrated. The three conditions include 'rules enforced in non-virtual methods', but `Plan` as first written has a public abstract `PriceFor` and enforces nothing; it qualifies only after the Template Method exercise. The 'How do the four fit together' section then silently uses the fixed version.",
+      "fixLooksLike": "'The `Plan` hierarchy qualifies once the check lives in a non-virtual `PriceFor`, as in the exercise; the first version did not.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What does a virtual call cost?' second sentence and the intro sentence 'Polymorphism costs an indirect call at run time' (after the table)",
+      "problem": "The claim that the larger cost is 'usually the optimization that is lost' rests on a Framework Design Guidelines page that is a reprint of the 2008 second edition, and the page itself says some information may be out of date. The article then goes on to describe devirtualization and guarded devirtualization, which is exactly what has changed since. Also 'costs an indirect call' as a flat statement ignores the cases the article covers two sections later.",
+      "fixLooksLike": "Attribute the era ('The 2008 edition of the Framework Design Guidelines says ... ; the JIT can now recover some of that, below') and soften the intro to 'Polymorphism usually costs an indirect call at run time'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 'Predict what `new` does', solution, last sentences: 'The specification walks through the same situation in its section on override methods [3]' and 'That is why the compiler warns (CS0108)...'",
+      "problem": "(a) The spec's worked example of a hidden method versus an overridden one is in 15.6.4 Virtual methods, not 15.6.5 Override methods (which is about signature matching rules), and its hidden method is non-virtual (A.F / B.F) or `new virtual` (C.F), not the virtual-hidden-by-non-virtual shape of LegacyPlan, so 'the same situation' overstates the match. (b) 'That is why the compiler warns' asserts the compiler team's motive; the CS0108 page only says the member hides an inherited one and that new signals intent.",
+      "fixLooksLike": "'The specification's section on virtual methods walks through a close relative of this situation [3].' and 'which is one reason the compiler warns (CS0108) when you hide a member without writing new'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Wadler paragraph: 'extend both the cases and the operations without touching existing code [14]'",
+      "problem": "Wadler's actual goal is 'without recompiling existing code, and while retaining static type safety (e.g., no casts)'. Dropping the static-type-safety condition matters: with casts the problem is easy, and the article's own `Line`/`Plan` examples could be answered with a cast-based visitor. The condition is what makes it a problem.",
+      "fixLooksLike": "'... without recompiling existing code and without giving up static type safety.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Invoice class: `Require(amount > 0, \"Amounts are above zero.\")` in AddLine and RecordPayment; same helper in the refund and other listings",
+      "problem": "Idiom. Bad argument values are thrown as InvalidOperationException. The Framework Design Guidelines and Microsoft's own OOP tutorial (which the article cites) use ArgumentOutOfRangeException for a non-positive amount and reserve InvalidOperationException for wrong-state calls (issued/frozen). A reader who copies the helper learns to throw the wrong exception type for argument errors, and callers can no longer tell 'wrong state' from 'bad argument' by type.",
+      "fixLooksLike": "Keep InvalidOperationException for state rules (Lines are frozen, Not open for payment, Only 44 is owed) and use `ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount)` for the amount checks, or add one sentence saying the helper deliberately uses one exception type for brevity and real code should split them. The exercise catches would need to catch both.",
+      "owner": "writer"
+    }
+  ],
+  "roundOneFollowUp": {
+    "blockerInvariantPaidIffNothingOwed": "fixed (prose says a paid invoice owes nothing and an issued one owes something; Figure 1 text and desc updated; refund solution reasons through Draft)",
+    "majorSpecMisquote": "fixed, verbatim against dotnet/csharpstandard 15.6.4",
+    "majorPrimaryConstructorCaveat": "fixed; I reproduced the claim on .NET 10",
+    "minorThreeLoadsVsTwo": "fixed",
+    "minorExactlyOneBaseClass": "fixed",
+    "minorAsReadOnlyIListCast": "fixed and correct",
+    "minorThreadHandWave": "fixed (scoped, out of scope)",
+    "minorExpressionProblemNamed": "fixed (named and cited), but see issues 2 and 7",
+    "minorLiskovSource": "half fixed, still uncited (issue 3)",
+    "minorPerReadAllocation": "fixed (acknowledged in prose)",
+    "adsenseMajorBeginnerLabel": "partly answered by inline glosses of abstract/virtual/override; front matter still says beginner, no prerequisites"
+  }
+}

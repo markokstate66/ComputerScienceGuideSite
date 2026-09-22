@@ -1,0 +1,60 @@
+{
+  "article": "src/content/articles/oop-design/four-pillars-of-oop.md",
+  "route": "/oop-design/four-pillars-of-oop/",
+  "round": 3,
+  "role": "design",
+  "score": 9.0,
+  "lighthouse": { "performance": 96, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "verifyNotes": "One run of `node tools/verify-page.mjs --drafts /oop-design/four-pillars-of-oop/` from PowerShell; nothing else was loading the machine. words=4709, codeBlocks=29, figures=2, h1=1, internalLinks=27, external=17 (0 broken), mobileOverflowPx=0, consoleErrors=[], consoleWarnings=[]. Only failure is the expected placeholder check (NEEDS_MARKUS x3). report.json lighthouse: performance 96, accessibility 100, best-practices 100, seo 100 (lighthouse.json shows the 96 comes from FCP 2.2s, max-potential-FID, unused CSS, bf-cache and document-latency sub-audits — all shell-level, not article content). Screenshots opened: all 15 desktop-light parts, all 23 mobile-dark parts, desktop-dark fold + parts 04 and 08, mobile-light fold + parts 05 and 10.",
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop (re-fetched this round: ~2,300 words, one BankAccount/LineOfCredit worked example, code shown but only one output block on the page — an unhandled-exception stack trace — no other program's output is printed, no figures, no exercises, no source citations)",
+    "https://www.freecodecamp.org/news/four-pillars-of-object-oriented-programming/ (re-fetched this round: JavaScript, not C#; one inheritance diagram; a couple of inline console-log style comments standing in for output, not real run output; no exercises; no source citations; no runtime-mechanics content at all — no vtables, no dispatch cost)",
+    "Round-1/2 set carried for context, not re-fetched this round: c-sharpcorner.com/UploadFile/e6a07d/pillars-of-oop, backend.turing.edu/module1/lessons/four_pillars_of_oop"
+  ],
+  "justification": "Formed a fresh view before opening prior rounds. The two pages re-fetched this round confirm last round's finding: neither has a real output panel for more than one snippet, neither has a theme-aware diagram pair, neither has runnable/verified code, and neither goes near dispatch mechanics. This page pairs every program with a real output panel (or a red does-not-compile/throws badge), has two SVG figures that are legible at 390px in both themes (checked fold-through on mobile-dark, spot-checked on desktop-dark and mobile-light), a two-column summary table that fits a phone with no scroll, five exercises spread through the article with collapsed solutions that give nothing away, three earned callouts, and a 17-item source list with inline numbered citations. Reading rhythm is short paragraphs punctuated by code, a numbered '4 design decisions' list, and a labelled figure — no walls of text on any device. I checked every round-1/round-2 blocker and major first: there were none outstanding (both rounds only ever carried minors past round 1, and round 1's single major — phone clipping of operative tokens — was marked fixed in round 2 and I confirm it stays fixed: I found no line in any mobile-dark screenshot where prose-critical code or a string literal is cut by the fade). Of round 2's six minors, four are now fixed: the code-highlighting drop on the PromoPlan block colors correctly throughout (desktop-light part 11, mobile-dark part 17); Figure 1's 'Invoice' label now sits clear of the arrowheads on its own line at the top-left of the box; the eight lines with fading trailing punctuation are gone (I could not find one at 41+ columns in the full mobile-dark or mobile-light pass); and both long listings (Invoice, plans) now have a `// --- the class ---` comment banner plus a lead-in sentence telling the phone reader which methods to read, so the block is no longer landmark-free. Two minors are unresolved and I am carrying them forward rather than inflating the score for effort spent elsewhere: the 'How do the four fit together?' synthesis paragraph still names `Compute`, a member that exists only inside Exercise 3's collapsed solution, so a reader who has not opened that solution meets an undefined name in the section meant to tie the whole article together; and the front matter still says `level: beginner` / `prerequisites: []` on a page whose second half covers method tables, guarded devirtualization and virtual stub dispatch, with nothing at the top of that half telling a beginner it is skippable (there is a skip-ahead sentence only at the very start of the runtime section, not reinforced by the badge). Neither blocks a pass on its own and neither is new; I list them because they still hold. Not a 10: those two nits, plus the still-open low-priority integrator note about desktop code column width, keep this short of 'clearly better with nothing left to point at'. It is comfortably past 8.5 (MDN/Real-Python quality with only nits) given the depth, verification and device coverage the compared pages simply do not have.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "H2 'How do the four fit together?', first paragraph (the sentence 'Give Plan a public, non-virtual PriceFor that checks a result and calls a protected abstract Compute for the formula, the shape the last exercise built')",
+      "problem": "`Compute` is defined only inside Exercise 3's collapsed solution above. A reader who has not clicked 'Show solution' reaches the section that is supposed to synthesize all four pillars and meets a method name with no visible definition on the page. This is the same gap round 2 flagged; it is unchanged in round 3.",
+      "fixLooksLike": "Either restate the shape inline without relying on the name ('a public, non-virtual PriceFor that checks the result and delegates the formula to a protected abstract method each plan overrides'), or show the 6-8 line Plan skeleton from the exercise 3 solution directly in this section so the names it uses are visible without opening anything."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Front matter `level: beginner`, `prerequisites: []`, versus 'What the runtime does with plan.PriceFor(usage)', 'What does a virtual call cost?' and the 'In .NET' callout",
+      "problem": "The BEGINNER badge and empty prerequisites are unchanged since round 1, while roughly a third of the article covers method tables, slots, guarded devirtualization and virtual stub dispatch. The one skip-ahead sentence sits only at the top of that stretch; nothing at the badge or table of contents signals it to a reader deciding whether the page is for them.",
+      "fixLooksLike": "Either change level to intermediate with a prerequisite on basic classes/objects, or keep beginner and add a one-line note in the 'On this page' area or right under the title that the CoreCLR-internals sections are optional and where the argument resumes."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Code block component on desktop, all csharp/output blocks (desktop-light parts 02-14)",
+      "problem": "Carried from rounds 1 and 2, still open: because code is wrapped for a 390px column, desktop code blocks use less than half of the available column width, making long listings (Invoice, plans) very tall on desktop too.",
+      "fixLooksLike": "Optional, low priority: a slightly larger code font on wide viewports, or an expand/collapse control on listings over ~60 lines. Append to docs/INTEGRATOR_REQUESTS.md if not already recorded from prior rounds."
+    }
+  ],
+  "round2Followup": {
+    "design": [
+      { "issue": "minor: Compute referenced only inside collapsed exercise-3 solution", "status": "not fixed, carried forward" },
+      { "issue": "minor: code-highlighting drop on the PromoPlan/record Usage block", "status": "fixed — colors are consistent throughout that block in both themes" },
+      { "issue": "minor: level beginner vs. runtime-mechanics depth, empty prerequisites", "status": "not fixed, carried forward" },
+      { "issue": "minor: Figure 1 'Invoice' label collides with arrowheads", "status": "fixed — label sits clear at the box's top-left" },
+      { "issue": "minor: eight csharp lines at 41 columns fade their trailing punctuation", "status": "fixed — none found in this round's full screenshot pass" },
+      { "issue": "minor: Invoice/plans listings are unbroken screens of code", "status": "fixed — comment banner plus lead-in sentence now mark the class boundary in both listings" },
+      { "issue": "minor (integrator): monospace digit 4 renders with an open top on some machines", "status": "not observable as a problem in this round's screenshots; not re-raised" },
+      { "issue": "minor (integrator): desktop code column half-empty", "status": "still open, low priority, carried forward" }
+    ]
+  },
+  "crosslinksFile": "docs/crosslinks/oop-design/four-pillars-of-oop.md exists and is sensible; missing body links to unpublished siblings are not an issue.",
+  "notIssues": [
+    "NEEDS_MARKUS byline, bio and footer placeholders (expected)",
+    "draft: true",
+    "Keep reading shows hub links only because pillar siblings are unpublished",
+    "Exercise solutions being invisible in full-page screenshots (they are collapsed by design per the writer guide; verified the collapsed state renders correctly, not a defect)"
+  ]
+}
