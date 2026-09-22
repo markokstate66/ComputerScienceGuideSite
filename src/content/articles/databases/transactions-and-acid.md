@@ -183,7 +183,7 @@ member_id  balance_cents
 300 cents have gone missing. Ada was debited, Boris was never credited, and nothing in the database records that a transfer was even attempted. This is precisely the failure atomicity rules out — provided the transaction is actually opened, and actually rolled back when a step fails.
 
 ::::exercise[Commit after an ignored error]
-Reset Ada to 500 first. Now suppose the application code opens a transaction, debits Ada, attempts to credit Boris, and its `catch` block logs the `CHECK constraint failed` error from the credit but has a bug: it calls `COMMIT` instead of `ROLLBACK`. Does the `COMMIT` succeed or fail? What are the final balances? [PostgreSQL's tutorial](https://www.postgresql.org/docs/current/tutorial-transactions.html) says that once a statement inside a transaction errors, the transaction is left in an aborted state, and "the only way to regain control... [is] rolling it back completely and starting again" (or a savepoint). Does SQLite behave the same way?
+Reset Ada to 500 first. Now suppose the application code opens a transaction, debits Ada, attempts to credit Boris, and its `catch` block logs the `CHECK constraint failed` error from the credit but has a bug: it calls `COMMIT` instead of `ROLLBACK`. Does the `COMMIT` succeed or fail? What are the final balances? [PostgreSQL's tutorial](https://www.postgresql.org/docs/current/tutorial-transactions.html) says that once a statement inside a transaction errors, the transaction is left in an aborted state, and "ROLLBACK TO is the only way to regain control of a transaction block that was put in aborted state by the system due to an error, short of rolling it back completely and starting again." Does SQLite behave the same way?
 
 :::solution
 SQLite lets the `COMMIT` succeed. [SQLite's documentation for its default `ABORT` conflict resolution algorithm](https://www.sqlite.org/lang_conflict.html) says a constraint violation "aborts the current SQL statement... but changes caused by prior SQL statements within the same transaction are preserved and the transaction remains active" — and calls this "the default behavior and the behavior specified by the SQL standard." A failed statement does not mark the transaction as broken; it just undoes itself and leaves the transaction open and otherwise usable, so a `COMMIT` right after is a perfectly ordinary `COMMIT` as far as SQLite is concerned:
@@ -271,16 +271,16 @@ A dirty read is the easiest to picture. Suppose a database allowed one connectio
 
 ## Which SQL-standard isolation level prevents which anomaly?
 
-The SQL standard defines four isolation levels by which of the first three anomalies each one permits. [PostgreSQL's documentation](https://www.postgresql.org/docs/current/transaction-iso.html) reproduces the standard's own table:
+The SQL standard defines four isolation levels by which of the first three anomalies each one permits. [PostgreSQL's documentation](https://www.postgresql.org/docs/current/transaction-iso.html) presents this as a table of what the standard permits at each level, adapted here to the three anomalies above (PostgreSQL's own version of the table adds a fourth column for the serialization anomaly, covered separately below):
 
-| Isolation level | Dirty read | Non-repeatable read | Phantom read |
+| Level | Dirty | Non-repeat | Phantom |
 |---|---|---|---|
-| Read Uncommitted | Possible | Possible | Possible |
-| Read Committed | Not possible | Possible | Possible |
-| Repeatable Read | Not possible | Not possible | Possible |
-| Serializable | Not possible | Not possible | Not possible |
+| Uncommitted | Yes | Yes | Yes |
+| Committed | No | Yes | Yes |
+| Repeatable | No | No | Yes |
+| Serializable | No | No | No |
 
-Read the table as a floor, not a ceiling: the standard says what each level must prevent, not how. An engine may prevent more than its level requires — [PostgreSQL's own Repeatable Read does not allow phantom reads either](https://www.postgresql.org/docs/current/transaction-iso.html), which the standard permits but does not demand. A serialization anomaly is a separate, stronger guarantee: even a transaction that reads and writes disjoint rows from every other transaction can still produce a result no one-at-a-time ordering would, and only Serializable rules that out.
+Read the table as a floor, not a ceiling: the standard says what each level must prevent, not how, and an engine may prevent more than its level requires. PostgreSQL's own table flags exactly two such cells as "Allowed, but not in PG": requesting Read Uncommitted in PostgreSQL actually gets Read Committed behavior, because, as its documentation explains, "it is the only sensible way to map the standard isolation levels to PostgreSQL's multiversion concurrency control architecture" — so the dirty read the standard allows at that level never happens there. [PostgreSQL's own Repeatable Read does not allow phantom reads either](https://www.postgresql.org/docs/current/transaction-iso.html), which the standard permits but does not demand. A serialization anomaly is a separate, stronger guarantee: even a transaction that reads and writes disjoint rows from every other transaction can still produce a result no one-at-a-time ordering would, and only Serializable rules that out.
 
 ::::exercise[Name the anomaly]
 T1 runs `SELECT COUNT(*) FROM wallet WHERE balance_cents > 0` and gets 2. Before T1 commits, T2 inserts a third wallet with a positive balance and commits. T1 re-runs the exact same query, still inside its own transaction, and now gets 3. Which anomaly is this, and which is the *weakest* of the four standard levels that guarantees it cannot happen?
@@ -296,7 +296,7 @@ Both default to the same name, Read Committed, but get there by different mechan
 
 [SQL Server's documentation](https://learn.microsoft.com/en-us/sql/t-sql/statements/set-transaction-isolation-level-transact-sql) states plainly that Read Committed "is the SQL Server default." By default that means locking: "the Database Engine uses shared locks to prevent other transactions from modifying rows while the current transaction is running a read operation," and those shared locks are released statement by statement, not held for the whole transaction — which is exactly why non-repeatable and phantom reads are still possible at this level. SQL Server also offers a row-versioned Read Committed, `READ_COMMITTED_SNAPSHOT`, which reads a consistent snapshot instead of taking locks; it is off by default on a boxed SQL Server instance, but the same documentation notes it "is the default on Azure SQL Database and SQL database in Microsoft Fabric."
 
-PostgreSQL has no locking alternative for reads at all. [Its manual](https://www.postgresql.org/docs/current/transaction-iso.html) confirms "Read Committed is the default isolation level in PostgreSQL," and describes what that means under MVCC (multiversion concurrency control): "a `SELECT` query... sees only data committed before the query began; it never sees either uncommitted data or changes committed by concurrent transactions during the query's execution." The key word is *query*, not *transaction* — every statement gets its own fresh snapshot. PostgreSQL's Repeatable Read is the same mechanism at a coarser grain: "a query in a repeatable read transaction sees a snapshot as of the start of the first non-transaction-control statement in the transaction," so every statement in that transaction shares one snapshot, which is exactly what stops the non-repeatable read the table above predicts it should stop.
+PostgreSQL has no locking alternative for reads at all. [Its manual](https://www.postgresql.org/docs/current/transaction-iso.html) confirms "Read Committed is the default isolation level in PostgreSQL," and describes what that means under MVCC (multiversion concurrency control): "a `SELECT` query... sees only data committed before the query began; it never sees either uncommitted data or changes committed by concurrent transactions during the query's execution." The key word is *query*, not *transaction* — every statement gets its own fresh snapshot. PostgreSQL's Repeatable Read is the same mechanism at a coarser grain: "a query in a repeatable read transaction sees a snapshot as of the start of the first non-transaction-control statement in the transaction, not as of the start of the current statement within the transaction," so every statement in that transaction shares one snapshot, which is exactly what stops the non-repeatable read the table above predicts it should stop.
 
 So "Read Committed" names a guarantee, not an implementation: SQL Server's default reaches it by taking and releasing row locks per statement, PostgreSQL's default reaches it by handing every statement a fresh multi-version snapshot, and neither approach lets one connection see another's in-progress write either way.
 
@@ -428,8 +428,7 @@ try
 catch (SqliteException ex)
 {
     Console.WriteLine(
-        $"A's COMMIT: failed ({ex.SqliteErrorCode} " +
-        $"{ex.Message})");
+        $"A's COMMIT: failed (code {ex.SqliteErrorCode})");
 }
 
 // B repeats the exact same query, same transaction.
@@ -451,12 +450,12 @@ File.Delete(path);
 
 ```text output
 B's first count:  2
-A's COMMIT: failed (5 SQLite Error 5: 'database is locked'.)
+A's COMMIT: failed (code 5)
 B's second count: 2
 B's count after both finish: 3
 ```
 
-A's row still matched B's `WHERE balance_cents > 0`, and A's insert even succeeded — but A's `COMMIT` did not. A's `INSERT` only needed the RESERVED lock, which coexists with B's SHARED lock just fine; A's `COMMIT` needs to escalate all the way to EXCLUSIVE, which [requires every SHARED lock to be released first](https://www.sqlite.org/lockingv3.html), and B is still holding one. B's transaction sees no phantom row and no non-repeatable read, but not because SQLite quietly gave it a stable snapshot the way PostgreSQL's MVCC does — B simply never has to reconcile a competing commit, because [SQLite blocks that commit](https://www.sqlite.org/rescode.html) until B is done. `SQLITE_BUSY`, the code behind `'database is locked'`, means exactly this: "the database file could not be written... because of concurrent activity by some other database connection." SQLite is not choosing between Read Committed and Repeatable Read here; it is refusing to let a second writer finish at all while a reader is mid-transaction, which is a stronger, blunter guarantee than either standard level promises.
+A's row still matched B's `WHERE balance_cents > 0`, and A's insert even succeeded — but A's `COMMIT` did not. A's `INSERT` only needed the RESERVED lock, which coexists with B's SHARED lock just fine; A's `COMMIT` needs to escalate all the way to EXCLUSIVE, which [requires every SHARED lock to be released first](https://www.sqlite.org/lockingv3.html), and B is still holding one. B's transaction sees no phantom row and no non-repeatable read, but not because SQLite quietly gave it a stable snapshot the way PostgreSQL's MVCC does — B simply never has to reconcile a competing commit, because [SQLite blocks that commit](https://www.sqlite.org/rescode.html) until B is done. That code, 5, is `SQLITE_BUSY`, whose full message is `'database is locked'`, and [SQLite's own documentation](https://www.sqlite.org/rescode.html) says it means exactly this: "the database file could not be written... because of concurrent activity by some other database connection." SQLite is not choosing between Read Committed and Repeatable Read here; it is refusing to let a second writer finish at all while a reader is mid-transaction, which is a stronger, blunter guarantee than either standard level promises.
 
 ## How does write-ahead logging change durability and concurrency?
 
@@ -547,7 +546,7 @@ B reads again, same snapshot: 500
 B's next read, new snapshot:  200
 ```
 
-In WAL mode, A's `COMMIT` no longer waits on B at all: [WAL mode "permits simultaneous readers and writers... because changes do not overwrite the original database file, but rather go into the separate write-ahead log file"](https://www.sqlite.org/wal.html), so a writer never has to evict a reader to finish. B's transaction still sees a consistent snapshot throughout — 500, then 500 again — but this time it is because [SQLite hands B's read transaction a fixed point in the WAL to read from](https://www.sqlite.org/wal.html), conceptually the same trade PostgreSQL's MVCC makes, not because anyone was blocked. Only once B ends its own transaction does its next read pick up A's committed change. Durability is unaffected either way: [checkpointing](https://www.sqlite.org/wal.html) still has to sync the WAL to storage before folding it back into the main file, exactly as the rollback journal has to sync before it can be deleted.
+In WAL mode, A's `COMMIT` no longer waits on B at all: [SQLite's WAL documentation explains that "because writers do nothing that would interfere with the actions of readers, writers and readers can run at the same time"](https://www.sqlite.org/wal.html) — or, as the same page's list of advantages puts it, "readers do not block writers and a writer does not block readers" — so a writer never has to evict a reader to finish. B's transaction still sees a consistent snapshot throughout — 500, then 500 again — but this time it is because [SQLite hands B's read transaction a fixed point in the WAL to read from](https://www.sqlite.org/wal.html), conceptually the same trade PostgreSQL's MVCC makes, not because anyone was blocked. Only once B ends its own transaction does its next read pick up A's committed change. Durability is unaffected either way: [checkpointing](https://www.sqlite.org/wal.html) still has to sync the WAL to storage before folding it back into the main file, exactly as the rollback journal has to sync before it can be deleted.
 
 ## What happens when two transactions each wait on a lock the other holds?
 
@@ -619,8 +618,7 @@ var taskB = Task.Run(() =>
     }
     catch (SqliteException ex)
     {
-        resultB = $"B's UPDATE: failed " +
-            $"({ex.SqliteErrorCode} {ex.Message})";
+        resultB = $"B's UPDATE: failed (code {ex.SqliteErrorCode})";
     }
 });
 
@@ -641,8 +639,7 @@ var taskA = Task.Run(() =>
     }
     catch (SqliteException ex)
     {
-        resultA = $"A's COMMIT: failed " +
-            $"({ex.SqliteErrorCode} {ex.Message})";
+        resultA = $"A's COMMIT: failed (code {ex.SqliteErrorCode})";
     }
 });
 
@@ -663,8 +660,8 @@ File.Delete(path);
 ```
 
 ```text output
-A's COMMIT: failed (5 SQLite Error 5: 'database is locked'.)
-B's UPDATE: failed (5 SQLite Error 5: 'database is locked'.)
+A's COMMIT: failed (code 5)
+B's UPDATE: failed (code 5)
 Final balances unchanged: 500, 800
 ```
 
@@ -700,7 +697,7 @@ The two `Barrier`s and the `ManualResetEventSlim` in that program exist only to 
 <figcaption>Figure 2. The lock-state timeline behind the demo above. Unlike SQL Server's deadlock monitor, which picks a victim so the other transaction can finish, neither SQLite connection here gets to finish; both retry loops just time out.</figcaption>
 </figure>
 
-That difference matters for how you write retry logic. [SQL Server's deadlock guide](https://learn.microsoft.com/en-us/sql/relational-databases/sql-server-deadlocks-guide) says the engine "terminates the current batch... rolls back the transaction of the deadlock victim, and returns error 1205," so exactly one side needs to retry; the other already succeeded. Against SQLite, a `SQLITE_BUSY` on either side tells you only that *your* attempt timed out — the other connection may have failed too, may still be waiting, or may have already succeeded before your timeout expired. [Microsoft.Data.Sqlite's `Default Timeout` connection string keyword](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings) sets this per connection (30 seconds unless you override it), or `PRAGMA busy_timeout` as shown above sets it directly — [SQLite's own description of the underlying call](https://www.sqlite.org/c3ref/busy_timeout.html) is that it "sleeps for a specified amount of time when a table is locked" and, once that budget is used up, simply "returns SQLITE_BUSY." Application code has to be ready to retry its own transaction from the start once that happens, not just assume the other side lost the race.
+That difference matters for how you write retry logic. [SQL Server's deadlock guide](https://learn.microsoft.com/en-us/sql/relational-databases/sql-server-deadlocks-guide) says that when the engine chooses a transaction as a deadlock victim, it "terminates the current batch, rolls back the transaction, and returns error 1205 to the application," so exactly one side needs to retry; the other already succeeded. Against SQLite, a `SQLITE_BUSY` on either side tells you only that *your* attempt timed out — the other connection may have failed too, may still be waiting, or may have already succeeded before your timeout expired. [Microsoft.Data.Sqlite's `Default Timeout` connection string keyword](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings) sets this per connection (30 seconds unless you override it), or `PRAGMA busy_timeout` as shown above sets it directly — [SQLite's own description of the underlying call](https://www.sqlite.org/c3ref/busy_timeout.html) is that it "sleeps for a specified amount of time when a table is locked" and, once that budget is used up, simply "returns SQLITE_BUSY." Application code has to be ready to retry its own transaction from the start once that happens, not just assume the other side lost the race.
 
 ::::exercise[Why a consistent lock order avoids the cycle]
 In the demo above, A updates wallet 1 then commits; B reads wallet 2 then tries to update wallet 2. Suppose B instead updated wallet 1 *first*, i.e. both connections always touch wallet 1 before wallet 2. Using the five SQLite lock states — UNLOCKED, SHARED, RESERVED, PENDING, EXCLUSIVE — explain why this ordering cannot reproduce the cycle in the demo.
