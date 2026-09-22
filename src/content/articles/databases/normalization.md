@@ -34,7 +34,7 @@ sources:
     url: "https://www.sqlite.org/datatype3.html"
     publisher: "SQLite"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A small mail-order bookstore that sells to schools and offices keeps its orders in a spreadsheet: one row per order, a column for the customer, and a column listing which books went out.
