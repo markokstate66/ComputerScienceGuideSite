@@ -41,9 +41,9 @@
   },
   "totals": {
     "planned": 67,
-    "passed": 9,
+    "passed": 10,
     "inReview": 0,
-    "drafted": 4,
+    "drafted": 3,
     "notStarted": 54,
     "cut": 0
   },
@@ -789,16 +789,47 @@
       "wave": "A",
       "shape": "B",
       "title": "The Relational Model: Tables, Keys and Relationships",
-      "state": "drafted",
-      "round": 1,
-      "scores": null,
+      "state": "passed",
+      "round": 2,
+      "scores": {
+        "technical": 8.8,
+        "adsense": 9.3,
+        "design": 9.3
+      },
       "codePass": true,
-      "lighthouse": null,
-      "openIssues": [
-        "round-1 draft written, run-code green (orchestrator run 2026-09-18), NOT yet reviewed by any critic"
+      "lighthouse": [
+        97,
+        100,
+        100,
+        100
       ],
-      "history": [],
-      "batch": 1
+      "openIssues": [
+        "byline NEEDS_MARKUS placeholder (owner input)",
+        "wave-3 cross-links in docs/crosslinks/",
+        "two SQL error-message output panels fade past ~40 columns on phone (exact-match output, can't shorten)"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-21",
+          "technical": 7.0,
+          "adsense": 9.0,
+          "design": 9.3,
+          "pass": false,
+          "note": "late_fee column not enforced as whole dollars despite the article's own stated rule"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-22",
+          "technical": 8.8,
+          "adsense": 9.3,
+          "design": 9.3,
+          "pass": true
+        }
+      ],
+      "batch": 1,
+      "lighthouseNote": "serial run by orchestrator, 2026-09-22",
+      "published": "2026-09-22"
     },
     {
       "pillar": "databases",

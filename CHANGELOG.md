@@ -14,6 +14,7 @@ User-visible and repo-visible changes. Newest first.
 - Published article: `oop-design/four-pillars-of-oop` (passed round 3: technical 9.0 / AdSense 9.3 / design 9.0).
 - Published article: `complexity/big-o-notation` (passed round 3: technical 9.4 / AdSense 9.3 / design 8.7).
 - Published article: `csharp-dotnet/value-types-vs-reference-types` (passed round 1: technical 9.3 / AdSense 9.0 / design 9.0, first article in the csharp-dotnet pillar).
+- Published article: `databases/relational-model-and-keys` (passed round 2: technical 8.8 / AdSense 9.3 / design 9.3).
 - Ten draft articles (`draft: true`, excluded from the build): see `docs/STATUS.json`.
 - Technical SEO: own `sitemap.xml` with real `lastmod`, corrected `robots.txt`, JSON-LD (Article with Person author, BreadcrumbList, WebSite, Organization), per-pillar OG images under 15 KB, `apple-touch-icon.png`, `logo.png`, 301s for every legacy URL, real 404.
 - Tools: `tools/verify-page.mjs`, `tools/run-code.mjs`, `tools/make-images.mjs`.

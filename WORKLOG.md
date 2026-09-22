@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-22 — `/ship 23`: databases/relational-model-and-keys merged
+
+- PR #23 squash-merged into `adsense-rebuild`, branch deleted, issue #8 closed. Round 2 gauntlet result: technical 8.8 / AdSense 9.3 / design 9.3, all ≥ the 8.5 bar.
+- Verified before merge: `npm run build` green (30 pages), `node tools/run-code.mjs src/content/articles/databases/relational-model-and-keys.md` PASS (blocks=72, executed=42).
+- Serial `verify-page` Lighthouse (owner-facing, run earlier by the consumer with nothing else running): 97/100/100/100. Only failure was the expected `NEEDS_MARKUS` byline placeholder.
+- `docs/STATUS.json` totals: passed 9 → 10, drafted 4 → 3.
+
 ## 2026-09-22 — `/ship 22`: csharp-dotnet/value-types-vs-reference-types merged
 
 - PR #22 squash-merged into `adsense-rebuild`, branch deleted, issue #7 closed. Round 1 gauntlet result: technical 9.3 / AdSense 9.0 / design 9.0, all ≥ the 8.5 bar. First published article in the csharp-dotnet pillar.
