@@ -50,7 +50,7 @@ sources:
     url: "https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Array.cs"
     publisher: "GitHub, dotnet/runtime"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Sort the array `[3, 1, 4, 1, 5, 9, 2, 6]` with insertion sort and it makes 14 comparisons. Sort the same eight numbers already in order and it makes 7. Sort them reversed and it makes 28. Selection sort, given all three arrays, makes 28 comparisons every single time — it cannot tell a sorted array from a reversed one until it has looked at every element regardless. That gap between "adapts to the input" and "always pays the worst case" is most of what choosing a sorting algorithm comes down to. This page builds five of them, counts what each one actually does, proves a limit none of them can beat, and ends with what `Array.Sort` and `OrderBy` run when you call them.
@@ -116,12 +116,12 @@ Before running anything, predict how many comparisons and how many left-shifts i
 :::solution
 Comparisons: 9. Shifts: 7. Tracing it by hand (`a[j] <= value` breaks the loop, anything else shifts):
 
-| Step | value | Comparisons this step | Shifts this step | Array after |
-|---|---:|---:|---:|---|
-| i=1 | 2 | 1 | 1 | `[2, 5, 8, 2, 1]` |
-| i=2 | 8 | 1 | 0 | `[2, 5, 8, 2, 1]` |
-| i=3 | 2 | 2 | 2 | `[2, 2, 5, 8, 1]` |
-| i=4 | 1 | 4 | 4 | `[1, 2, 2, 5, 8]` |
+| Step | Compares / shifts | Array after |
+|---|---:|---|
+| i=1, value=2 | 1 / 1 | `[2, 5, 8, 2, 1]` |
+| i=2, value=8 | 1 / 0 | `[2, 5, 8, 2, 1]` |
+| i=3, value=2 | 2 / 2 | `[2, 2, 5, 8, 1]` |
+| i=4, value=1 | 4 / 4 | `[1, 2, 2, 5, 8]` |
 
 Totals: 1+1+2+4 = 9 comparisons, 1+0+2+4 = 7 shifts.
 
@@ -411,6 +411,8 @@ pivot index: 6
 ```
 
 A partition of *m* elements does *m* − 1 comparisons. If the two sides it produces are always close to equal, that is the same halving pattern as merge sort and the total is Θ(*n* log *n*); Sedgewick and Wayne give [~2*n* ln *n* comparisons on average](https://algs4.cs.princeton.edu/23quicksort/) for randomly ordered distinct keys, more than merge sort's own range even at its upper end (2 ln *n* is about 1.39 log₂ *n*). Quicksort still tends to be faster in practice, because — unlike merge sort — it is [in-place, "uses only a small auxiliary stack"](https://algs4.cs.princeton.edu/23quicksort/), with no second array to copy into on every merge. But nothing stops the split from being as lopsided as possible: pick the last element as the pivot on an array that is *already sorted*, and every partition peels off exactly one element, giving the same 1 + 2 + ⋯ + (*n* − 1) shape as insertion sort's worst case.
+
+The comparison counts below, and every other seeded-`Random` count on this page, were produced with .NET 10 (SDK 10.0.401, runtime 10.0.12) on Windows 11, on a desktop with an Intel Core i7-11700K. `Random`'s algorithm changed in .NET 6, but only for the parameterless `new Random()`; a seeded `new Random(seed)`, which is what every measurement on this page uses, deliberately kept the pre-.NET-6 algorithm for compatibility, so these numbers reproduce exactly on any .NET version from 6 onward.
 
 ```csharp run id=quicksort-cost
 using System.Globalization;
@@ -860,13 +862,13 @@ static int LowerBound(int n)
 
 ```text output
 permutations checked: 40320
-min comparisons: [...]
-max comparisons: [...]
-average: [...]
+min comparisons: 12
+max comparisons: 17
+average: 15.7
 lower bound, n=8: 16
 ```
 
-Every one of the 40,320 orderings is a real input this merge sort could be handed, so the maximum observed is this implementation's true worst case for *n* = 8, not an estimate. It sits inside the [12, 24] range from Sedgewick and Wayne, and the worst case is bounded below by the 16 the decision-tree argument requires of *any* comparison sort — which no measurement of a single implementation could show on its own, only the proof does.
+Every one of the 40,320 orderings is a real input this merge sort could be handed, so the maximum observed is this implementation's true worst case for *n* = 8, not an estimate — and unlike the seeded-`Random` counts elsewhere on this page, these three numbers are exhaustive and reproduce exactly on any machine. It sits inside the [12, 24] range from Sedgewick and Wayne, and the worst case is bounded below by the 16 the decision-tree argument requires of *any* comparison sort — which no measurement of a single implementation could show on its own, only the proof does. The gap is one comparison: the worst case measured here, 17, is only one above the proven floor of 16, so for *n* = 8 this particular merge sort is about as close to optimal as a comparison sort can get.
 
 ::::exercise[Prove it: the bound for five and six elements]
 Without running any code, compute ⌈log₂(5!)⌉ and ⌈log₂(6!)⌉. Then check both with `LowerBound` from the program above.
@@ -906,7 +908,7 @@ None of the five algorithms above is what runs when C# code calls `Array.Sort` o
 - "If the number of partitions exceeds 2 \* Log *N*, where *N* is the range of the input array, it uses a Heapsort algorithm."
 - "Otherwise, it uses a Quicksort algorithm."
 
-[`ArraySortHelper.cs`](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Collections/Generic/ArraySortHelper.cs) computes that heapsort trigger as a fixed recursion-depth budget, `2 * (BitOperations.Log2((uint)keys.Length) + 1)`, decremented once per partition; hitting zero switches the *current* partition to heapsort rather than recursing further. [`Array.cs`](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Array.cs) fixes the 16-element cutoff as `IntrosortSizeThreshold`, with a comment that "empirically, 16 seems to speed up most cases without slowing down others, at least for integers." The quicksort step itself picks its pivot as the median of the partition's first, middle and last elements: the source sorts those three positions into order and then uses the middle one, with a comment reading "compute median-of-three. But also partition them, since we've done the comparison."
+[`ArraySortHelper.cs`](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Collections/Generic/ArraySortHelper.cs) computes that heapsort trigger as a fixed recursion-depth budget, `2 * (BitOperations.Log2((uint)keys.Length) + 1)`, decremented once per partition; hitting zero switches the *current* partition to heapsort rather than recursing further. [`Array.cs`](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Array.cs) fixes the 16-element cutoff as `IntrosortSizeThreshold`, with a comment that "[e]mpirically, 16 seems to speed up most cases without slowing down others, at least for integers." The quicksort step itself picks its pivot as the median of the partition's first, middle and last elements: the source sorts those three positions into order and then uses the middle one, with a comment reading "[c]ompute median-of-three. But also partition them, since we've done the comparison."
 :::
 
 Every piece matches something on this page: the 16-element cutoff hands small partitions to insertion sort exactly because — as the earlier section on [big-O's hidden constants](/complexity/big-o-notation/#when-the-dropped-constant-decides-the-winner) measures directly — insertion sort's simpler inner loop wins at small sizes despite its worse Big-O; median-of-three is a cheaper, deterministic alternative to this page's random shuffle, and it already defeats the plain already-sorted case above on its own, since the middle of a sorted range is its true median; and the recursion-depth budget is the backstop for inputs adversarial enough to beat median-of-three too, handing that partition to heap sort instead of letting quicksort's rare quadratic case run. The result is an algorithm with quicksort's typical speed and heap sort's worst-case guarantee, and [the documentation states the combined cost](https://learn.microsoft.com/en-us/dotnet/api/system.array.sort) as "an O(*n* log *n*) operation" outright, not just "usually."
@@ -947,13 +949,13 @@ OrderBy stable:    True
 
 That matches [the `List<T>.Sort` documentation](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.sort) directly: "this implementation performs an unstable sort." `Enumerable.OrderBy` does not use introsort or share this limitation; [its documentation states](https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.orderby) "this method performs a stable sort" without naming an algorithm. Since `OrderBy` is still a comparison sort, the Ω(*n* log *n*) floor proved above applies to it too, so O(*n* log *n*) is the reasonable expectation even without a documented figure to cite.
 
-::::exercise[Measure it: how close does Array.Sort get to 2n ln n?]
-`Array.Sort` accepts an `IComparer<T>`. Write one whose `Compare` method increments a counter before delegating to `CompareTo`, pass it to `Array.Sort`, and measure the real comparison count on random arrays of 100, 1,000 and 10,000 `int`s. Compare against Sedgewick and Wayne's ~2*n* ln *n* quicksort average from earlier in this article.
+::::exercise[Measure it: how close does Array.Sort get to the exact quicksort average?]
+`Array.Sort` accepts an `IComparer<T>`. Write one whose `Compare` method increments a counter before delegating to `CompareTo`, pass it to `Array.Sort`, and measure the real comparison count on random arrays of 100, 1,000 and 10,000 `int`s. The ~2*n* ln *n* figure used earlier in this article is only the leading-order term of a more precise formula: the exact average comparison count for a random-pivot quicksort on *n* distinct keys is *C*(*n*) = 2(*n* + 1)*H*ₙ − 4*n*, where *H*ₙ = 1 + ½ + ⅓ + ⋯ + 1/*n* is the *n*th harmonic number (CLRS derives this refinement in its quicksort chapter). Compute *C*(*n*) alongside the measured count instead of the cruder ~2*n* ln *n*, and see how much of a "beat" survives.
 
 :::solution
 ```csharp run
 int[] sizes = [100, 1_000, 10_000];
-Console.WriteLine($"{"n",7}{"actual",10}{"~2n ln n",11}");
+Console.WriteLine($"{"n",7}{"actual",10}{"exact avg",12}{"% below",9}");
 foreach (int n in sizes)
 {
     var random = new Random(11);
@@ -968,34 +970,55 @@ foreach (int n in sizes)
     });
     Array.Sort(data, counting);
 
-    int predicted = (int)(2 * n * Math.Log(n));
-    Console.WriteLine($"{n,7}{comparisons,10}{predicted,11}");
+    double exactAverage = ExactQuicksortAverage(n);
+    double percentBelow = 100.0 * (exactAverage - comparisons) / exactAverage;
+    Console.WriteLine($"{n,7}{comparisons,10}{exactAverage,12:F1}{percentBelow,8:F1}%");
+}
+
+static double ExactQuicksortAverage(int n)
+{
+    double harmonic = 0;
+    for (int k = 1; k <= n; k++) harmonic += 1.0 / k;
+    return 2 * (n + 1) * harmonic - 4 * n;
 }
 ```
 
 ```text output
-      n    actual   ~2n ln n
-    100       631        921
-   1000     10202      13815
-  10000    146439     184206
+      n    actual   exact avg  % below
+    100       631       647.9     2.6%
+   1000     10202     10985.9     7.1%
+  10000    146439    155771.7     6.0%
 ```
 
-`Array.Sort` beats the plain-quicksort prediction by 20 to 30 percent at every size, not just approaches it — consistent with median-of-three picking a better pivot than a random element would, and with the insertion-sort fallback finishing small partitions in fewer comparisons than one more level of partitioning would cost. The gap narrows as *n* grows (31%, then 26%, then 21%), since a fixed advantage from a handful of better pivot choices matters less as the total comparison count grows.
+Against the precise average instead of the crude ~2*n* ln *n* headline, `Array.Sort`'s real advantage is only 2.6 to 7.1 percent across these three sizes, not the 20 to 30 percent that comparing to ~2*n* ln *n* would suggest — most of that headline gap was the crude formula being loose, not `Array.Sort` being that much better than plain quicksort. The residual that's left is plausibly median-of-three plus the insertion-sort fallback for small partitions, but this measurement cannot isolate which: the "shuffled first" run in the `quicksort-cost` block above — a plain last-element-pivot quicksort with *no* median-of-three and *no* insertion-sort fallback — made 10,134 comparisons at *n* = 1,000, barely below `Array.Sort`'s 10,202 here and well inside the noise the four-seed exercise after it already showed (10,134 to 10,556). A 1 percent difference between an implementation with median-of-three and one without it is not evidence that median-of-three is doing much of anything at this size; it mainly shows that both implementations are close to the same precise average, as the formula says they should be.
 :::
 ::::
 
 ## Choosing a sort
 
-| Algorithm | Worst case | Extra space | Stable | Best for |
-|---|---|---|---|---|
-| Insertion sort | Θ(n²) | O(1) | Yes | Small or nearly-sorted input |
-| Selection sort | Θ(n²) | O(1) | No | Rarely — minimizes swaps, not comparisons |
-| Merge sort | Θ(n log n) | Θ(n) | Yes | Guaranteed time and stability matter more than memory |
-| Quicksort | Θ(n²), rare with a good pivot | O(log n) | No | Typical case speed, memory is tight |
-| Heap sort | Θ(n log n) | O(1) | No | Guaranteed time *and* O(1) memory |
-| `Array.Sort` / `List<T>.Sort` | Θ(n log n) | O(log n) | No | Default choice with no stability requirement |
-| `Enumerable.OrderBy` | Θ(n log n)\* | Θ(n) | Yes | Stability matters, or chaining `ThenBy` |
+Worst-case time first (extra space was already stated in each algorithm's own section above: O(1) for insertion, selection and heap sort; Θ(n) for merge sort and `OrderBy`; O(log n) for quicksort's recursion stack, which `Array.Sort`/`List<T>.Sort` share since they fall back to the same partitioning):
 
+| Algorithm | Worst case |
+|---|---|
+| Insertion sort | Θ(n²) |
+| Selection sort | Θ(n²) |
+| Merge sort | Θ(n log n) |
+| Quicksort | Θ(n²)† |
+| Heap sort | Θ(n log n) |
+| `Array.Sort` / `List<T>.Sort` | Θ(n log n) |
+| `Enumerable.OrderBy` | Θ(n log n)\* |
+
+† Rare in practice with a good pivot choice (a shuffle, or median-of-three); see the quicksort section above.
 \* Not documented as a specific bound; it follows from `OrderBy` being a comparison sort, per the previous section.
+
+Stability and where each one earns its keep — the two properties the questions below actually turn on:
+
+- **Insertion sort** — stable. Best for small or nearly-sorted input.
+- **Selection sort** — not stable. Best for almost nothing — it minimizes swaps, not comparisons.
+- **Merge sort** — stable. Best for when a guaranteed time bound and stability matter more than memory.
+- **Quicksort** — not stable. Best for typical-case speed when memory is tight.
+- **Heap sort** — not stable. Best for a guaranteed time bound *and* O(1) memory.
+- **`Array.Sort` / `List<T>.Sort`** — not stable. The default choice when no stability requirement applies.
+- **`Enumerable.OrderBy`** — stable. Best for when stability matters, or when chaining `ThenBy`.
 
 Four questions narrow the table to one row. **Does the order of equal keys matter?** If yes, that rules out selection sort, quicksort, heap sort and `Array.Sort` — reach for merge sort, `OrderBy`, or `Array.Sort` with a comparer that falls back to comparing original position when the primary keys tie. **Is the input already close to sorted, or small?** Insertion sort wins there specifically, which is exactly why introsort switches to it under 16 elements rather than trusting quicksort's general-case speed on a case it is not needed for. **Does a single slow call matter (a real-time system, a deadline), or only the average?** That is heap sort or introsort (which absorbs heap sort as its fallback) over plain quicksort, whose worst case is real even if rare. **Otherwise:** `Array.Sort` or `List<T>.Sort` already combine three of the algorithms on this page — insertion sort for small partitions, quicksort with a chosen pivot for the common case, heap sort as the guarantee — so writing a general-purpose sort by hand only pays off when one of the first three questions demands a property introsort does not have.

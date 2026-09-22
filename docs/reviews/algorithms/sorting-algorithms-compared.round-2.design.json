@@ -1,0 +1,30 @@
+{
+  "article": "algorithms/sorting-algorithms-compared",
+  "route": "/algorithms/sorting-algorithms-compared/",
+  "round": 2,
+  "critic": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://en.wikipedia.org/wiki/Sorting_algorithm",
+    "https://www.geeksforgeeks.org/dsa/sorting-algorithms/"
+  ],
+  "justification": "Round 1 scored 8.0 and withheld a pass for one concrete, binding-rule violation: the 'Choosing a sort' table had 5 columns (Algorithm/Worst case/Extra space/Stable/Best for) and only the first ~2 were visible at 390px without horizontal scroll, hiding exactly the two columns (Stable, Best for) the closing 'four questions' paragraph depends on. The round-2 writer pass fixes this by (1) moving 'extra space' into the lead-in prose of the section (already stated per-algorithm earlier in the article) and cutting the table to 2 columns (Algorithm / Worst case), and (2) replacing the Stable/Best-for columns with a plain bulleted list, one line per algorithm ('Insertion sort — stable. Best for small or nearly-sorted input.', etc.). I verified this is real, not cosmetic: re-ran `node tools/verify-page.mjs --drafts /algorithms/sorting-algorithms-compared/` and read every desktop-light (16 parts) and mobile-dark (24 parts + fold) screenshot part in full, plus spot-checked desktop-dark (fold, parts 04/08/14) and mobile-light (fold, parts 07/20/21). At 390px in both themes, the 'Choosing a sort' table (mobile-dark part20/21, mobile-light part20/21) now shows Algorithm and Worst case fully within the viewport with no truncation and no horizontal scroll needed, and the Stable/Best-for bulleted list directly below it is fully legible with normal text wrapping — the exact content the round-1 finding said was hidden is now on-screen by default. The round-1 minor finding (Exercise 1's solution table, same 5-column shape) is also fixed: I read the article source directly (the solution is collapsed by default so screenshots alone can't show it) and confirmed it is now 3 columns (Step / Compares-shifts combined / Array after), matching WRITER_GUIDE's 'at most three columns' guidance — this was verified in source since `<details>` stayed collapsed in every screenshot pass, which is itself correct (exercise answers are not given away in the default view). report.json confirms mobileOverflowPx: 0, consoleErrors: [], broken: [], and Lighthouse 92/100/100/100 (performance ticked up from round 1's 91). I also did a full independent design pass: all three SVG diagrams (Figure 1 merge tree, Figure 2 partition, Figure 3 decision tree) render legibly with correct labels and contrast in both themes at both widths (checked directly in mobile-dark parts 4-5, 8, 15 and mobile-light part 7, and desktop-light/dark equivalents); code blocks and output panels are consistently styled and scroll horizontally within their own box rather than pushing the page wide, which is the correct pattern (only prose/data tables are bound by the three-column phone rule); heading hierarchy and rhythm are clean throughout (prose/code/diagram/exercise sections alternate, no walls of text); all six exercise solutions stayed collapsed in every screenshot pass. Compared against two real published sources: Wikipedia's 'Sorting algorithm' page uses a comparison table with nine columns (Name/Best/Average/Worst/Memory/Stable/In-place/Method/Other notes) — a far worse phone-width problem than this article ever had — no runnable code, and only narrative-level selection guidance; GeeksforGeeks's sorting-algorithms hub has no comparison table, no code, and no diagrams at all, functioning as a link index. This article's fixed 2-column table plus list, 28 machine-verified C# code blocks, three custom diagrams, and an explicit four-question decision procedure clear both sources decisively on every design axis now that the one binding-rule violation is resolved. No new issues were introduced by the fix.",
+  "issues": [],
+  "lighthouse": {
+    "performance": 92,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "notes": {
+    "mobileOverflowPx": 0,
+    "performanceRerun": "not needed (92 ≥ 90 on first run)",
+    "placeholderFailure": "NEEDS_MARKUS byline/bio/legal-name placeholders present as expected; not counted as an issue per instructions",
+    "screenshotsReviewed": "desktop-light: all 16 parts; mobile-dark: all 24 parts + fold; desktop-dark: fold + parts 04, 08, 14; mobile-light: fold + parts 07, 20, 21",
+    "figuresChecked": "Figure 1 (merge tree), Figure 2 (partition), Figure 3 (decision tree) all confirmed correct and legible in both themes at both desktop and phone width; no fading/scrolling artifacts, labels readable, captions match rendered content",
+    "round1MajorFix": "'Choosing a sort' table cut from 5 columns to 2 (Algorithm / Worst case) with Stable/Best-for moved to a bulleted list; confirmed fully visible with no truncation at 390px in both themes (mobile-dark part20/21, mobile-light part20/21) and on desktop (desktop-light part14, desktop-dark part14)",
+    "round1MinorFix": "Exercise 1 solution table cut from 5 columns to 3 (Step / Compares-shifts / Array after); verified in article source (src/content/articles/algorithms/sorting-algorithms-compared.md, lines 119-124) since the <details> element stays collapsed by default and was not visible open in any screenshot pass"
+  }
+}
