@@ -1,0 +1,51 @@
+{
+  "article": "src/content/articles/databases/normalization.md",
+  "route": "/databases/normalization/",
+  "round": 1,
+  "role": "design",
+  "score": 9.1,
+  "lighthouse": { "performance": 97, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "command": "node tools/verify-page.mjs --drafts /databases/normalization/",
+    "runs": 1,
+    "checkedAt": "2026-09-22T21:29:37Z",
+    "words": 3592,
+    "codeBlocks": 54,
+    "figures": 1,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, owner-supplied)"],
+    "lighthouseNotes": "Single run, no re-run needed: 97/100/100/100 is well clear of the 90 gate on the first attempt. The tool's own build step printed a transient '[ERROR] The build was canceled' line mid-run (other worktrees were building concurrently per the task brief), but the run still completed a full private build, produced all 74 screenshots (15 desktop-light + 15 desktop-dark + 22 mobile-light + 22 mobile-dark, plus 4 folds) and a full report.json/lighthouse.json, and the numbers match the summary.json written at completion, so the stray log line did not corrupt this result.",
+    "screenshotsOpened": "desktop-light fold + parts 01-15 (all), mobile-dark fold + parts 01-22 (all), desktop-dark fold + parts 03, 08, 12 (diagram), mobile-light fold + parts 09, 17, 18 (diagram)"
+  },
+  "comparedAgainst": [
+    "https://www.guru99.com/database-normalization.html",
+    "https://www.geeksforgeeks.org/dbms/normal-forms-in-dbms/"
+  ],
+  "justification": "Real numbers from node tools/verify-page.mjs --drafts /databases/normalization/ (single run): lighthouse performance=97, accessibility=100, bestPractices=100, seo=100; consoleErrors=0; consoleWarnings=0; brokenLinks=0; mobileOverflowPx=0; 3592 words, 54 code blocks (30 executed sql run + their text output panels), 1 figure. The only verify failure is the expected NEEDS_MARKUS placeholder. I read every desktop-light part (fold + 01-15) and every mobile-dark part (fold + 01-22) in full, and spot-checked desktop-dark (fold, 03, 08, and part 12 which holds the diagram) and mobile-light (fold, 09, and parts 17-18 which hold the diagram). Fetched against two real published treatments of the same topic (Guru99's normalization guide, GeeksforGeeks' normal-forms page) for illustration depth: both use static, non-executable example tables with no real SQL; Guru99 gives 3NF a detailed multi-table walkthrough but BCNF only a one-paragraph aside with zero worked examples ('also referred as 3.5 Normal Form'); GeeksforGeeks treats every normal form as an isolated, disconnected mini-example rather than one schema decomposed progressively, and its only diagram is a static Venn-style hierarchy of the five normal forms, not a decomposition. This article is well ahead of both: one running order_flat table is provably corrupted (real UPDATE/INSERT/DELETE anomalies, not asserted ones) and then actually decomposed through all four forms with real CREATE TABLE/INSERT/SELECT statements whose results are machine-verified, including the genuinely hard case most 101-level sources skip entirely -- a table (rep_of) that passes 3NF's letter but fails BCNF, proven by two real GROUP BY/HAVING queries rather than asserted from a rule. The single diagram (order_flat splitting into seven BCNF tables) is legible and correctly themed in all four viewport/theme combinations: SVG classes only (d-box-warn for the source table, d-box-good for the seven results, d-accent arrow), text readable at both mobile and desktop widths, caption states what to notice, ids and aria-labelledby wired correctly. Exercise solutions (three of them) stay correctly collapsed behind 'Show solution' in every screenshot at both themes and widths -- no giveaway text leaks above the fold. Heading hierarchy is clean: one H1 from front matter, every body heading is H2 (no H3 needed for this linear walkthrough, so no skipped levels), and the 'On this page' TOC matches. The crosslink to the still-unpublished /databases/indexes/ is handled correctly per docs/WRITER_GUIDE.md section 6 and the article's own crosslinks file: the sentence ('What an index does to the cost of each of those joins is a separate question...') reads correctly without a link and is not linked in the body, so it does not break verify-page's link check; docs/crosslinks/databases/normalization.md documents the anchor for wave-3 wiring. The prose/SQL/result rhythm holds up across a long, code-dense walk: paragraphs between code blocks are substantial (several sentences, not one-liners), the functional-dependency list and three exercises break up what would otherwise be a long unbroken run of CREATE/INSERT/SELECT, and no code block runs long enough to lose the thread. It falls short of a 9.3+ score for three minor, fixable reasons (below), none of which is a rendering defect and none of which blocks the pass gate.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Figure placement: the only diagram (Figure 1, 'order_flat decomposed into seven normalized tables') sits at article line ~709, after the BCNF section and about 85% of the way through the page. Seen at desktop-light part12, mobile-dark parts 17-18.",
+      "problem": "For a topic that is fundamentally about a schema's shape changing at each cut (1NF -> 2NF -> 3NF -> BCNF), the entire 1NF/2NF/3NF walk -- roughly two-thirds of the article's length and 20+ of its 30 executed SQL blocks -- has zero visual aid; the reader tracks which columns moved into which table from prose and CREATE TABLE statements alone until the single summary diagram appears near the end. This is the one place the article reads closer to a wall of SQL than the rest, which is otherwise well-paced by prose and exercises.",
+      "fixLooksLike": "Optional for this round since nothing here fails a binding rule: a small interim diagram after the 2NF split (order_flat -> orders/products/order_line, 3 boxes) or after 3NF (adding zip_codes/customers) would reinforce the shape change before the reader reaches the final 7-table figure. Not required to pass; worth considering if a round 2 happens for other reasons."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "The Atomic Habits insertion-anomaly example (article lines 218-230): 'VALUES (106, 'Atomic Habits', 'Nonfiction', 18);' vs. the following paragraph's 'this book exists, it costs $18'. Seen at mobile-dark part05 (the VALUES line fades after 'Nonfiction).",
+      "problem": "The prose explicitly echoes the price ('it costs $18') as the fact being demonstrated, but on a 390px phone the VALUES list fades right after the category string, so the '18' the sentence is quoting is not visible without scrolling. Low-impact because the actual point of the example (the INSERT fails with NOT NULL constraint failed) is carried by the RESULT panel directly below, which is fully visible.",
+      "fixLooksLike": "Break the VALUES list onto its own line the way the larger order_flat INSERTs already are elsewhere in the article, e.g. 'VALUES\\n  (106, 'Atomic Habits', 'Nonfiction', 18);' so '18' lands within the first ~40 columns."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "The two BCNF candidate-key verification queries (article lines 597-619, the GROUP BY ... HAVING COUNT(*) > 1 checks on rep_of). Seen at desktop-light part10, mobile-dark part15.",
+      "problem": "Both queries correctly return zero rows (proving no duplicate exists), but the RESULT panel renders as just a header row and a dashed rule with nothing under it, which at a glance can read as a truncated or broken panel rather than 'zero rows, as expected' -- the same shell-level ambiguity noted in the sql-joins round-1 design review. It's better mitigated here than in that article: the sentence immediately after ('Neither query returns a row, so both ... are candidate keys') states the result in words, so a reader is not left guessing. Flagging for consistency across the pillar rather than as a standalone defect.",
+      "fixLooksLike": "No article-level fix needed given the prose already covers it. If the shell ever grows a '(0 rows)' footer for empty result sets (see the sql-joins review's shell-level suggestion to the integrator), this page would benefit from it too, but that is an integrator concern, not a writer fix for this round."
+    }
+  ]
+}
