@@ -34,7 +34,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/interfaces"
     publisher: "Microsoft Learn / dotnet/csharpstandard"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Two rules of thumb get repeated for interfaces versus abstract classes: an interface says what a type can do, an abstract class says what a type is. Both survive contact with the language only partly. C# 8 let an interface member carry a body, so an interface can now say a good deal about *how* something is done. C# 11 let an interface demand a `static` member from its implementers, which has nothing to do with instances at all. The useful question is not the mnemonic; it is which of a short list of concrete capabilities each construct has, what happens when two interfaces disagree about one of them, and which of that list your design actually needs.
