@@ -1,0 +1,105 @@
+{
+  "article": "src/content/articles/data-structures/arrays-and-dynamic-arrays.md",
+  "route": "/data-structures/arrays-and-dynamic-arrays/",
+  "round": 1,
+  "role": "design",
+  "score": 7.6,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/arrays (fetched and read: syntax reference, no memory layout, no cost model, no measurement, no diagrams)",
+    "https://learn.microsoft.com/en-us/dotnet/standard/collections/selecting-a-collection-class (fetched and read: a question checklist, no complexity, no measurement)",
+    "https://en.wikipedia.org/wiki/Dynamic_array (fetched and read: one illustration, pseudocode, complexity table, growth factors across languages)"
+  ],
+  "justification": "The content and the visual system are well above the pages that rank for this query. MS Learn is a syntax reference and Wikipedia is a definition with one picture; this page measures things, has three purpose-built SVG figures with captions that say what to notice (figures 1, 2 and 3 all read correctly in light and dark, colours held, and annotations sit under the drawings as the phone rules require), consistent callouts (amber for the Big-O warning, red for the pitfall, green for four exercises with collapsed solutions), status badges on non-running blocks (Throws InvalidOperationException, Does not compile: CS8345), and a decision list plus a dated ten-item sources list at the end. Heading hierarchy is flat and specific (10 h2/h3 headings, no boilerplate), the sticky TOC on desktop and the collapsed 'On this page' on mobile both work, there is no mobile page overflow, and the build is clean (no console errors, no broken links). It does not reach 8.5 because of the phone experience of the code and two rhythm problems. On a 390 px screen the operative part of many statements is clipped off the right edge: the Add and Insert(0, i) calls in the front-versus-back benchmark, the sizes array, the loop headers in SumRowFirst and SumColumnFirst, the NsPerElement call sites, most of the Span/ArraySegment program, and the DropEvens exercise (which is narrower still inside its callout). The brief names this as a binding lesson. Then, the two largest programs (the 66-line timing harness that opens the article and the roughly 110-line layout benchmark of six near-identical methods) put a wall of scaffolding in front of the payoff, and the central insight of the article, why the column-first loop is slow, is delivered as about a screen and a half of dense prose (two paragraphs of 9 to 10 desktop lines, 20 plus mobile lines) with no figure. Those are all fixable by the writer; none is a design-system defect.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Mobile (390 px), code blocks throughout: the front-vs-back benchmark (the two Time(() => ...) lambdas and the sizes array), the first timing program (sizes array, header WriteLine, NsPerElement(grid, SumRo... call sites, SumRowFirst/SumColumnFirst loop headers), the Span/ArraySegment program, DynamicArray usage lines, layout-benchmark Report/Best, exercise 3 DropEvens block, Sum* methods in the 'Does the wrapper make a list slower' program",
+      "problem": "Horizontal clipping hides the operative part of statements. In the Add-vs-Insert(0) program the two lines that are the whole point read 'for (int i = 0; i < n; i++) list.' with Add or Insert(0, i) off-screen, so a phone reader cannot see what is being compared. In the first program the call that selects which loop is measured ('NsPerElement(grid, SumRo...') and the for-loop conditions are clipped. In exercise 3 the values array and DropEvens signature are cut because the block sits inside a padded callout. This is the 'Phones' lesson in EDITORIAL_BRIEF and WRITER_GUIDE (about 40 visible characters).",
+      "fixLooksLike": "Wrap statements so nothing that carries meaning exceeds about 40 characters: put each lambda body on its own indented line ('list.Add(i);' on its own line), break the for headers or use shorter loop variables, split the sizes array over two lines, give Report and NsPerElement short parameter names, and split long $-strings. Re-run verify-page and confirm the operative token of every line is visible in the mobile-dark screenshots.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Section 'Why the column-first loop falls off a cliff', from the Drepper numbered list to the 'The 4096 row is a separate effect' paragraph (desktop parts 04-05, mobile parts 06-08)",
+      "problem": "The central idea of the article (stride versus cache lines, eviction, set conflicts at 16,384 bytes) is delivered only as prose: a three-item list, then a 9-line paragraph and a 10-line paragraph on desktop that become 20+ line unbroken slabs on a phone (mobile part 07 is a whole screen of text with no heading, figure, code or callout). This is the place a diagram would show something prose cannot, and the page's three figures all sit elsewhere.",
+      "fixLooksLike": "Add a Figure showing the 4000 x 4000 grid as one long memory strip: 64-byte cache lines marked, row-first reading walking along adjacent lines, column-first hopping 16,000 bytes and landing on a new line each time, with the annotation under the drawing. Split 'The 4096 row' into its own H3 or a short callout so the associativity caveat is scannable, and cut each paragraph to 4-5 lines.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Opening program (66 lines, desktop parts 02-03) and the layout benchmark in 'Grids: one rectangle or an array of rows' (about 110 lines, desktop parts 13-14, three full mobile screens)",
+      "problem": "Reading rhythm. The first program is the hook, but the reader scrolls past about two screens of harness (NsPerElement with warm-up and repetition arithmetic) before seeing any result, and then the output panel contains only '[...]' placeholders, so the first result the reader sees is a hand-typed table below. The layout benchmark repeats six nearly identical 5-line methods (RectRows, RectCols, JagRows, JagCols, FlatRows, FlatCols) plus a Report/Best wrapper; on a phone it is more than three screens of code with no prose.",
+      "fixLooksLike": "Lead each program with the two or three lines that differ (the two loop bodies) and put the measurement harness after them, or shorten the harness (fewer knobs, one helper). For the layout benchmark show one rows/columns pair per layout and say the others differ only in the indexer, or pass the access as a lambda so each variant is one line. Keep every line the harness needs, but the visible code should be the part the reader learns from.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "First results table (Size, Grid MB, Row ns, Col ns, Ratio), mobile parts 03-04",
+      "problem": "Five columns exceed 390 px; the last column, Ratio, which is the point of the table, is cut off at the right edge and faded (values 1.0 ... 17.8 are only half visible). The table scrolls inside its own wrapper (page overflow is 0), but nothing tells the reader it scrolls and the key column is the hidden one.",
+      "fixLooksLike": "Drop the Grid MB column into the prose or the Size column (for example '2000 (15 MB)'), or reorder so Ratio comes before the two raw columns, so all essential columns fit at 390 px. If the table stays wide, the shell should show a scroll affordance (see integrator issue below).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Output panels after the timing programs: 'n Add ms Insert(0) ms' with rows like '25,000[...]', and the three '[...]'-only panels",
+      "problem": "The wildcard is glued to the number ('25,000[...]'), so the header columns no longer line up with the rows, and the panels show placeholders only. A reader who copies the program sees real numbers that do not resemble the panel. The prose does say the panel shows only the shape, but the glued wildcard looks like a typo and the four-line panels read as empty.",
+      "fixLooksLike": "Keep a space before the wildcards and align them under the headers ('25,000  [...]  [...]'), or put a single [...] per timing cell so the two-column shape is visible. Keep the sentence that tells the reader real numbers will differ.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Inline citations such as '(section 3.2)', '(section 3.3.2)', '(Drepper, section 3.3.1, on associativity)' and the Sources list",
+      "problem": "Inline citations are plain text and not tied to the numbered Sources list (ECMA-335 and the C# reference are linked in the prose, Drepper is linked once, the section numbers are not). A reader cannot tell that '(section 3.2)' refers to source 3 without connecting the names, and the LWN item in the list is 'part 2' while the prose names the whole paper.",
+      "fixLooksLike": "Add a bracketed number or superscript that links to the numbered source at each claim ('... 64 bytes [3, section 3.2]'), and make the source titles in the prose match the list entries.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'A list is an array with a counter' and its H3s ('Does the wrapper make a list slower than an array?', 'The third field: catching edits during a loop')",
+      "problem": "Growth (capacity 4, then doubling, the Count/Capacity output) is shown only as code and a two-line output; there is no figure of the backing array being replaced, unlike the other structure changes on the page. The H3 'The third field' comes after a benchmark that the reader has to cross before returning to the fields, so the section is three topics deep and the earlier H2 promise (three fields) is split.",
+      "fixLooksLike": "Optional small figure: Count 4/Capacity 4 to the new array with Capacity 8 and 4 elements copied. Move 'The third field' directly after the field list or retitle it so the three-field structure is not interrupted by the timing subsection.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercises 1-4 (callouts) and the ending",
+      "problem": "All four exercises are visually identical green callouts and three of the four are the same shape (compute or predict, then check with a program); the page ends on a decision list and Sources with no closing task, which is acceptable but it means the exercise form varies less than the brief asks. The solutions are collapsed, which is correct.",
+      "fixLooksLike": "Keep the collapsed solutions; vary one exercise into a different form (for example a find-the-bug on a Span over a list after Add, or a measure-it on capacity pre-sizing with new List<T>(n)) and title it for what it practises.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Mobile hero and first screen (mobile-dark-fold, mobile-light-fold)",
+      "problem": "On a phone the hero (title, 4-line description, byline, date, 'INTERMEDIATE' chip wrapping to a third meta line), the collapsed 'On this page' card, and the 'Before you read' card take about 1,600 px, so the fold shows the first line of the hook and nothing more. The description then repeats the promise the intro paragraph makes.",
+      "fixLooksLike": "Shell-level: put the chip on the same row as the reading time or shorten the meta block, and tighten spacing between the TOC card and the prerequisite card so the first paragraph starts higher on a 390 x 844 screen.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Shell: code blocks and tables on mobile (all parts)",
+      "problem": "Wide code blocks and tables scroll horizontally but the only hint is a slight right-edge fade; there is no scrollbar or visible affordance, so clipped content (issue 1) can look like it is simply cut.",
+      "fixLooksLike": "Append to docs/INTEGRATOR_REQUESTS.md: a visible thin horizontal scrollbar or a small 'scroll' cue on code blocks and tables that overflow at phone width.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 94,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "note": "Measured by verify-page under heavy machine load from other agents, so performance is unreliable; the orchestrator re-measures serially. Slow items reported: First Contentful Paint 2.5 s, Max Potential FID 330 ms, unused CSS 12 KiB, bfcache blocked, document latency."
+  },
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "verifyPage": {
+    "words": 4486,
+    "codeBlocks": 28,
+    "figures": 3,
+    "internalLinks": 34,
+    "externalLinks": 10,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected: byline, bio and footer placeholders)"]
+  },
+  "screenshotsReviewed": "desktop-light fold + parts 01-15; mobile-dark fold + parts 01-23; desktop-dark fold + parts 04 and 13; mobile-light fold + parts 05 and 13"
+}
