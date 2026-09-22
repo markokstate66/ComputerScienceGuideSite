@@ -54,10 +54,10 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/standard/events/"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
-A .NET program never calls `free`. Every `new` asks the garbage collector for a slot on the managed heap, and the collector decides, unasked, when that slot's contents stop mattering. It gets that decision right almost all the time, which is exactly why the times it looks like it got something wrong — a subscriber that never dies, a file handle held open long after the `using` block ended — are confusing. Both of those have real mechanical explanations, and both are demonstrated below with running code, not just described.
+On the managed heap, a .NET program never calls `free`. Every `new` asks the garbage collector for a slot there, and the collector decides, unasked, when that slot's contents stop mattering. It gets that decision right almost all the time, which is exactly why the times it looks like it got something wrong — a subscriber that never dies, a file handle held open long after the `using` block ended — are confusing. Both of those have real mechanical explanations, and both are demonstrated below with running code, not just described.
 
 ## What decides whether an object is garbage?
 
@@ -178,7 +178,7 @@ b.IsAlive: False
 
 ## Why sort objects into generations instead of collecting everything at once?
 
-Because most objects die young. The [Fundamentals](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/fundamentals) page states the two premises the whole scheme rests on: "it's faster to compact the memory for a portion of the managed heap than for the entire managed heap," and "newer objects have shorter lifetimes, and older objects have longer lifetimes." Put an object into **generation 0** when it is created. Collect generation 0 by itself, often and cheaply, and most of what is in it turns out to be garbage — a loop variable, a string built for one `Console.WriteLine`, a LINQ enumerator. What survives moves to generation 1, a buffer; what survives *that* moves to generation 2, which is scanned only when the younger generations can't free enough memory on their own ([Fundamentals](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/fundamentals)). Collecting generation 2 collects every generation younger than it too, which is why it is also called a full garbage collection.
+Because most objects die young. The [Fundamentals](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/fundamentals) page states the two premises the whole scheme rests on: "it's faster to compact the memory for a portion of the managed heap than for the entire managed heap," and "newer objects have shorter lifetimes, and older objects have longer lifetimes." Put an object into **generation 0** when it is created. Collect generation 0 by itself, often and cheaply, and most of what is in it turns out to be garbage — a loop variable, a string built for one `Console.WriteLine`, a LINQ enumerator. What survives moves to generation 1, a buffer; what survives *that* moves to generation 2 — usually because a generation 0 collection, and then a generation 1 collection, didn't free enough memory on their own. That cascade is the common path, not the only one: the Fundamentals page's "Conditions for a garbage collection" section also lists a low-memory notification from the operating system or host, and an explicit `GC.Collect()` call, as independent triggers that can force a full sweep of every generation without generations 0 and 1 first proving insufficient ([Fundamentals](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/fundamentals)). Collecting generation 2 collects every generation younger than it too, which is why it is also called a full garbage collection.
 
 `GC.GetGeneration` reports which generation an object is currently in, and `GC.Collect(n)` forces a collection up through generation `n` ([GC.Collect Method](https://learn.microsoft.com/en-us/dotnet/api/system.gc.collect)). Together they show promotion happening to one specific object, one step at a time:
 
@@ -187,23 +187,23 @@ var longLived = new byte[16];
 Report("just allocated", longLived);
 
 GC.Collect(0);
-Report("survived a gen 0 collection", longLived);
+Report("after gen 0", longLived);
 
 GC.Collect(1);
-Report("survived a gen 1 collection", longLived);
+Report("after gen 1", longLived);
 
 static void Report(string when, object o) =>
     Console.WriteLine(
-        $"{when,-30}generation {GC.GetGeneration(o)}");
+        $"{when,-16}generation {GC.GetGeneration(o)}");
 ```
 
 ```text output
-just allocated                generation 0
-survived a gen 0 collection   generation 1
-survived a gen 1 collection   generation 2
+just allocated  generation 0
+after gen 0     generation 1
+after gen 1     generation 2
 ```
 
-The generation-0-only collections that dominate real programs are cheaper precisely because they never have to look at generations 1 or 2 at all. `GC.CollectionCount(generation)` counts how many collections of at least that generation have happened since the process started ([GC.CollectionCount Method](https://learn.microsoft.com/en-us/dotnet/api/system.gc.collectioncount)), so subtracting two readings around a workload shows the split directly. The loop below allocates and immediately drops three million small arrays — nothing here is ever promoted on purpose, it just keeps generation 0 busy:
+The generation-0-only collections that dominate real programs are cheaper precisely because they never have to look at generations 1 or 2 at all. `GC.CollectionCount(generation)` counts how many collections have happened for that generation since the process started ([GC.CollectionCount Method](https://learn.microsoft.com/en-us/dotnet/api/system.gc.collectioncount)) — and because "collecting a generation means collecting objects in that generation and all its younger generations" ([Fundamentals](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/fundamentals)), a generation 2 collection bumps the generation 0 and 1 counts too, so each counter really tracks collections of *at least* that generation. Subtracting two readings around a workload shows the split directly. The loop below allocates and immediately drops three million small arrays — nothing here is ever promoted on purpose, it just keeps generation 0 busy:
 
 ```csharp run id=gen-split
 #:property Optimize=true
@@ -579,7 +579,7 @@ static class Cache
 cached item alive: True
 ```
 
-Nothing here is a bug in the collector. `_items` is exactly as reachable as `Cache` itself, which is reachable for as long as the process runs, so every element it ever accumulates is reachable too. A cache needs its own eviction policy — a size cap, a time-to-live, or `WeakReference` entries the way [Weak References](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/weak-references) shows for exactly this case — because the collector will not invent one for it.
+Nothing here is a bug in the collector. `_items` is exactly as reachable as `Cache` itself, which is reachable for as long as the process runs, so every element it ever accumulates is reachable too. A cache needs its own eviction policy — a size cap, a time-to-live, or, for a single object that is expensive to rebuild, a `WeakReference` the way [Weak References](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/weak-references) walks through for a tree view a user has switched away from. That page is explicit that this is not a substitute for the eviction policy itself: "avoid using weak references as an automatic solution to memory management problems," it says; "instead, develop an effective caching policy." The collector will not invent one for you either way.
 
 ### The subscription that outlives the object that made it
 
@@ -796,7 +796,7 @@ Everything measured on this page reduces to three tools. `GC.CollectionCount(gen
 For a running process you can't add `WeakReference` probes to, the `dotnet-counters` and `dotnet-trace` diagnostic tools read the same kind of collection counts and allocation events from outside, without changing the program. Neither is exercised on this page, because that measurement is external tooling, not C# you can read next to its output.
 :::
 
-::::exercise[Find the bug: a check that always passes]
+::::exercise[Prove it: make the check mean something]
 A test tries to confirm a cache entry is collectible by writing this, immediately after adding it:
 
 ```csharp run id=isalive-too-soon
@@ -810,9 +810,31 @@ Console.WriteLine(tracker.IsAlive);
 True
 ```
 
-An assertion built on this always passes, leak or no leak. Why, and what is missing before the check can mean anything?
+An assertion built on this always passes, leak or no leak, because no collection has happened yet and `cache` still holds the item. Prove that the check can be made to mean something: drop the item's only strong reference, force a real collection, and show `IsAlive` correctly reporting `False` once nothing keeps the object alive.
 
 :::solution
-No collection has happened yet, and `cache` still holds the item. An object that is still perfectly reachable reports `IsAlive: True` right up until something actually collects it — `WeakReference` reports whether the collector *has* reclaimed the object, not whether it *would* if given the chance. A meaningful check needs the probed item's other strong references dropped, then `GC.Collect()` and `GC.WaitForPendingFinalizers()`, before reading `IsAlive`, exactly as every measurement on this page does.
+```csharp run id=isalive-proven
+#:property Optimize=true
+var cache = new List<object>();
+object? item = new byte[10];
+cache.Add(item);
+
+var tracker = new WeakReference(item);
+Console.WriteLine($"before: {tracker.IsAlive}");
+
+cache.Clear();
+item = null;
+GC.Collect();
+GC.WaitForPendingFinalizers();
+
+Console.WriteLine($"after:  {tracker.IsAlive}");
+```
+
+```text output
+before: True
+after:  False
+```
+
+`WeakReference` reports whether the collector *has* reclaimed the object, not whether it *would* if given the chance, so a meaningful check needs every strong reference to the probed item dropped — both `cache.Clear()` and the local `item` set to `null` — then `GC.Collect()` and `GC.WaitForPendingFinalizers()`, before reading `IsAlive`, exactly as every measurement on this page does.
 :::
 ::::
