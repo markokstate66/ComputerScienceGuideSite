@@ -632,6 +632,43 @@ That gives a short, real decision procedure for "the lookup failed":
 - **RCODE 2, SERVFAIL** — the server tried and gave up: a broken delegation, an unreachable upstream on its own path, or (for a validating resolver) a signature it could not verify. The failure is at the server you asked or beyond it, not at the name itself.
 - **A stale answer instead of a failure** — not an error at all; see the TTL section above before assuming anything is broken.
 
+<figure class="diagram">
+<svg viewBox="0 0 360 496" role="img" aria-labelledby="dnsfail-title dnsfail-desc">
+<title id="dnsfail-title">Four signals on the wire, and the failure mode each one means</title>
+<desc id="dnsfail-desc">A vertical checklist of four rows. Each row pairs a signal you can actually observe with what it means: no response before your timeout means TIMEOUT; a response with RCODE 3 means NXDOMAIN; a response with RCODE 2 means SERVFAIL; and RCODE 0 with an answer that looks wrong means a stale cache entry, not a failure at all.</desc>
+<defs>
+<marker id="dnsfail-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="d-fill-stroke"/></marker>
+</defs>
+<text x="10" y="16" class="d-bold d-small">What you observe on the wire</text>
+<rect x="10" y="34" width="340" height="26" rx="5" class="d-box-2"/>
+<text x="180" y="51" text-anchor="middle" class="d-small">No response arrives before your timeout</text>
+<path d="M180 60 V80" class="d-line" marker-end="url(#dnsfail-arrow)"/>
+<rect x="10" y="80" width="340" height="48" rx="6" class="d-box-bad"/>
+<text x="180" y="98" text-anchor="middle" class="d-bold d-text-bad">TIMEOUT</text>
+<text x="180" y="116" text-anchor="middle" class="d-small">wrong address, unreachable, or packets dropped</text>
+<rect x="10" y="142" width="340" height="26" rx="5" class="d-box-2"/>
+<text x="180" y="159" text-anchor="middle" class="d-small">A response arrives with RCODE 3</text>
+<path d="M180 168 V188" class="d-line" marker-end="url(#dnsfail-arrow)"/>
+<rect x="10" y="188" width="340" height="48" rx="6" class="d-box-bad"/>
+<text x="180" y="206" text-anchor="middle" class="d-bold d-text-bad">NXDOMAIN</text>
+<text x="180" y="224" text-anchor="middle" class="d-small">the name doesn't exist under that parent</text>
+<rect x="10" y="250" width="340" height="26" rx="5" class="d-box-2"/>
+<text x="180" y="267" text-anchor="middle" class="d-small">A response arrives with RCODE 2</text>
+<path d="M180 276 V296" class="d-line" marker-end="url(#dnsfail-arrow)"/>
+<rect x="10" y="296" width="340" height="48" rx="6" class="d-box-bad"/>
+<text x="180" y="314" text-anchor="middle" class="d-bold d-text-bad">SERVFAIL</text>
+<text x="180" y="332" text-anchor="middle" class="d-small">the server tried and gave up on your behalf</text>
+<rect x="10" y="358" width="340" height="26" rx="5" class="d-box-2"/>
+<text x="180" y="375" text-anchor="middle" class="d-small">RCODE 0, but the answer looks wrong</text>
+<path d="M180 384 V404" class="d-line" marker-end="url(#dnsfail-arrow)"/>
+<rect x="10" y="404" width="340" height="48" rx="6" class="d-box-warn"/>
+<text x="180" y="422" text-anchor="middle" class="d-bold">STALE ANSWER</text>
+<text x="180" y="440" text-anchor="middle" class="d-small">not a failure — the TTL just hasn't expired yet</text>
+<text x="10" y="478" class="d-small d-muted">Only the first row has no RCODE at all to read.</text>
+</svg>
+<figcaption>Figure 2. What you actually see on the wire, mapped to the failure mode it means. The three RCODE-bearing rows share the negative colour because each is a real problem; the last is not an error at all.</figcaption>
+</figure>
+
 ::::exercise[Extend the negative-caching demo]
 RFC 2308 says the effective negative-cache TTL is "the minimum of the MINIMUM field of the SOA record and the TTL of the SOA itself" — two numbers, not one. The NXDOMAIN case above reads only the RCODE. Extend it to also parse the SOA record in the authority section (after the two domain names MNAME and RNAME come five 32-bit fields: SERIAL, REFRESH, RETRY, EXPIRE, MINIMUM) and print both the SOA's own TTL and its MINIMUM field.
 
