@@ -1,0 +1,78 @@
+{
+  "article": "complexity/big-o-notation",
+  "round": 1,
+  "role": "technical",
+  "score": 8.0,
+  "comparedAgainst": [
+    "https://en.wikipedia.org/wiki/Big_O_notation (read: formal definition, equals-sign caveat, o/Theta/Omega family, Knuth vs Hardy-Littlewood Omega)",
+    "https://www.freecodecamp.org/news/big-o-notation-why-it-matters-and-why-it-doesnt-1674cfa8a23c/ (read: definition with c and N0, selection sort proof, quicksort vs merge sort graphs)",
+    "C# Big-O results from search (Telerik, Simple Talk, Medium posts): seen in search results only, not fetched in full"
+  ],
+  "justification": "Every derivation I re-did is correct: n(n-1)/2 and the 499,500 / 31,996,000 counts, the (c=4, n0=40) witness, the not-O(n) proof, the exercise witnesses (61,1) and (3,13), the theta sandwich (1/4, 1/2, n0=2), the doubling-sum exercise (steps < 2n, >= n/2), the budget table (12! fits, 13! does not; 2^29 fits, 2^30 does not; 39 after a 1000x speedup) and the geometry of both figures (log-log slopes, dot positions, f(20)=100>80). Sources check out when opened: NIST states the c/k definition and the misuse-as-equality note; algs4 2.1 gives ~N^2/4 average, ~N^2/2 worst, N-1 best insertion-sort compares; algs4 2.2 gives 1/2 N lg N to N lg N compares for top-down mergesort and the 10-15 percent gain from an insertion-sort cutoff; algs4 1.4 uses array accesses as the 3-sum cost model and warns about caching, GC and JIT; the Array.Sort page gives introsort with insertion sort at <=16, heapsort past the depth limit, O(n log n); List.Contains is documented O(n), List.BinarySearch O(log n) and requires a sorted list, HashSet.Contains O(1); ArraySortHelper.cs does hard-code 2- and 3-element cases and falls to HeapSort at depthLimit == 0. run-code passes, and I re-ran the timing programs myself: the crossover table (optimized and unoptimized), the hybrid cutoff table, the List/HashSet table and the doubling table all reproduce the article's qualitative claims and numbers within noise. The angle promised in the plan row (formal definition with c and n0, plus a measured case where O(n^2) wins) is delivered better than freeCodeCamp and the C# blogs; it is careful, well-sourced work at roughly MDN-grade care but not above Wikipedia's breadth (little-o, limit definition, Omega conventions). What holds the score below 8.5: the headline timings (the 9 seconds hook and the doubling table) were taken from an unoptimized build while the article later teaches that Optimize=true moves constants about 4x, and never says the earlier programs are unoptimized; the hook (closest pair) is set up as a problem and never solved; a few complexity statements lack the case or qualifier the brief demands (HashSet Add per item, table rows treated as exact equalities); and the crosslinks file is missing.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Opening paragraph; 'The count predicts growth, not milliseconds' (programs id=doubling and id=hidden) and the measured-numbers paragraph after the doubling output",
+      "problem": "The 'about nine seconds' for 80,000 laps, the 33-40 ms and 2.2-2.4 s figures, and the List/HashSet timings come from programs without #:property Optimize=true, i.e. the default Debug build of a file-based app. I re-ran the doubling program both ways on the same machine: 5,000/10,000/20,000/40,000 laps took 32/130/612/2279 ms unoptimized and 7/32/126/512 ms with Optimize=true, so the hook figure would be about 2 s in an optimized build. The article itself later shows this exact switch changes the constants about fourfold and moves the crossover point, but never tells the reader the earlier measurements are unoptimized. The hook overstates the pain by roughly 4.5x for anyone thinking in release-build terms, and the reader is left to discover the inconsistency.",
+      "fixLooksLike": "Add #:property Optimize=true to the doubling and hidden programs (and explain the directive where it first appears, moving that explanation up from the crossover section), then re-measure and update the hook, the '33 to 40 ms / 2.2 to 2.4 s / 9.0 s' sentence and the List/HashSet sentence. Alternatively keep the programs as they are and say plainly at the first timing that this is an unoptimized default build, with a pointer to the later section. Either way the hook must say which build the nine seconds refers to.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Opening paragraph and the article as a whole",
+      "problem": "The hook poses a real problem (closest pair of laps, obvious O(n^2) way takes 9 s at 80,000) and never solves it. Sorting the laps and scanning adjacent differences is O(n log n), takes milliseconds at 80,000, and is exactly the payoff of Big-O reasoning. Rule 1 and the budget paragraph allude to 'sorting first' but the reader promised 'see that coming from the code' never sees the cheaper answer or its measured effect. A strong student will notice the gap.",
+      "fixLooksLike": "Add a short block (or an exercise with a collapsed solution) implementing sort-then-adjacent-gaps, checking it returns the same smallest gap as ClosestGap on the same data (handle duplicates and n < 2), and timing it at 40,000 and 80,000 laps next to the quadratic version, using the [...] wildcard output convention. One paragraph tying it back to the opening.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Paragraph after the 'hidden' program: 'The HashSet version does O(1) work per ID under the usual hashing assumption, O(n) in total'",
+      "problem": "The program calls HashSet<T>.Add, not Contains, and the cited page is HashSet.Contains. The Add page says O(1) only when Count is below capacity and O(n) when the set must resize (List<T>.Add says the same), so 'O(1) work per ID' is an amortized/expected claim, not a per-call worst case, and 'O(n) in total' needs that qualifier. The earlier sentence about hash lookups also does not say the O(1) is an expected bound (many colliding keys degrade it toward O(n)).",
+      "fixLooksLike": "Say 'expected O(1), amortized over resizes, per Add' and 'O(n) expected in total'; cite the HashSet<T>.Add page (add it to sources) for the resize clause; one clause noting that a lookup is O(n) in the worst case if every key collides.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The growth rates you will meet' table",
+      "problem": "The right-hand column treats each O(...) class as if the function were exactly g: 'O(log n) gains one step', 'O(2^n) is squared', 'O(n log n) just over doubles'. That contradicts the article's own point that O is an upper bound and hides constants ('one step' is true only for log2 n with coefficient 1). 'O(n!) grows faster still' is hand-waving.",
+      "fixLooksLike": "Retitle the column 'If n doubles, a function that is exactly this' or add one sentence saying the column describes the pure function g(n), not every function in O(g). For n!, give the actual ratio ((2n)!/n! grows without bound) or drop the vague phrase.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'When the dropped constant decides the winner', paragraph beginning 'The reason is the constants'",
+      "problem": "The explanation lists recursion, copying and a three-condition loop but omits two costs inside the timed region that matter at n = 8: MergeSort allocates a new int[n] buffer on every call, and the recursion goes all the way down to single elements. 'Each of its steps costs more' is asserted, not shown, and the crossover at about 256-512 is specific to this allocating, cutoff-free merge sort, though the text reads as if it were a property of the algorithms. (The hybrid exercise later partly repairs this.)",
+      "fixLooksLike": "One sentence naming the per-call buffer allocation and full-depth recursion as part of the constant, and scoping the crossover: 'for this implementation, this element type, on this machine'. Optionally point forward to the hybrid exercise as the fix.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The definition, with its two constants' and 'O, Omega and Theta'",
+      "problem": "The definition drops the 0 <= f(n) clause that NIST (cited for it) includes, without saying f is assumed non-negative. There is no mention that o(...) exists, nor that Omega has two conventions (Knuth/CLRS, used here, versus Hardy-Littlewood), which Wikipedia flags and readers meet in papers. The article claims to go where most pages do not, but stops one step short of the standard caveat.",
+      "fixLooksLike": "Add 'for non-negative f and g' to the definition, and a two-sentence note after the Theta bullets: little-o means strictly smaller order, and some number-theory texts use a different Omega; this page uses the CLRS/Knuth one.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Toolchain sentence after the doubling output; 'The factor of four belongs to the algorithm and travels with it everywhere'",
+      "problem": "The page says runtime 10.0.10; the machine now has 10.0.12 (my re-runs matched the numbers anyway). 'Every growth factor landed between 3.6 and 4.5' was contradicted by my single re-run (4.7 at 20,000 laps), and 'travels with it everywhere' is stronger than the article's own later admission that the factor drifts (3.4 to 5.2 for List, cache and timer effects).",
+      "fixLooksLike": "State '.NET 10.0.x' or the version of the final measurement run; soften the exact range ('close to 4, a little under or over'); replace 'everywhere' with 'roughly, on any machine, until cache effects or timer noise intrude'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "docs/crosslinks/complexity/big-o-notation.md",
+      "problem": "The file does not exist (only amortized-analysis.md is in docs/crosslinks/complexity). The body links to exactly one sibling article, so the brief's exemption for missing links to unpublished siblings does not apply. Natural links (binary search, sorting, collection operation costs, space complexity, recurrences) are recorded nowhere for the integrator.",
+      "fixLooksLike": "Create docs/crosslinks/complexity/big-o-notation.md with one line per intended link: anchor text, target route from CONTENT_PLAN.md section 7, and where in the article.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 'True, false, or not even a claim', solution 3; first program description; rule 3 in 'Reading a bound off C# code'",
+      "problem": "Solution 3 says the sorting table 'showed the opposite outcome at n = 8', but the table compares O(n^2) with O(n log n) while the exercise compares O(n) with O(n^2); the analogy holds but is not literal. The first section says the program 'answers both questions' yet it never prints the fastest lap or the closest gap. O(log n) is asserted for loops that multiply their variable (rule 3) and for BinarySearch (docs only) but is the one class in the table never counted in code, in an article whose method is 'count the steps'.",
+      "fixLooksLike": "Reword solution 3 to 'the sorting table showed an O(n^2) algorithm beating an O(n log n) one at n = 8, so the same can happen here'. Say 'counts the steps of both' or print the two answers. Optionally add a three-line counting loop (halve n until 1, print the count for n = 1,000 and 1,000,000) beside rule 3.",
+      "owner": "writer"
+    }
+  ],
+  "runCodePass": "true: node tools/run-code.mjs src/content/articles/complexity/big-o-notation.md printed 'PASS complexity/big-o-notation.md blocks=18 executed=8'. I also ran the timing programs by hand (doubling with and without Optimize, crossover with and without Optimize, ex-hybrid twice, hidden) and their numbers reproduce the article's claims within noise: crossover between 256 and 512 optimized (insertion ahead at 64, merge from 128 unoptimized), hybrid best about 82-83 percent of pure at cutoffs 16-64 and 102-104 percent at 256, List column 11.5/39.8/181/1056 ms against HashSet 0.5-4.3 ms."
+}
