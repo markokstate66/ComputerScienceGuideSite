@@ -1,0 +1,102 @@
+{
+  "article": "src/content/articles/oop-design/four-pillars-of-oop.md",
+  "route": "/oop-design/four-pillars-of-oop/",
+  "round": 2,
+  "role": "design",
+  "score": 8.8,
+  "lighthouse": { "performance": 97, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "verifyNotes": "One run of `node tools/verify-page.mjs --drafts /oop-design/four-pillars-of-oop/`. words=4280, codeBlocks=27, figures=2, h1=1, 27 internal links OK, none broken, consoleErrors=[] consoleWarnings=[], mobileOverflowPx=0. Only failure is the expected NEEDS_MARKUS placeholder. Performance 97 looks healthy and I saw no sign that machine load distorted it; the orchestrator re-measures serially anyway. Screenshots opened: desktop-light fold + all 15 parts, mobile-dark fold + all 22 parts, desktop-dark fold + parts 04 and 07, mobile-light fold + parts 06 and 10.",
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop (fetched: about 2,300 words, long unwrapped code lines, one stack-trace output, no figures, no exercises, no output panels for the samples)",
+    "https://www.freecodecamp.org/news/four-pillars-of-object-oriented-programming/ (fetched: 4 non-runnable JavaScript snippets, no outputs, one inheritance diagram, no exercises, about 2,500-3,000 words, bullet-and-bold layout)",
+    "Round-1 set carried for context, not re-fetched: c-sharpcorner.com/UploadFile/e6a07d/pillars-of-oop and backend.turing.edu/module1/lessons/four_pillars_of_oop"
+  ],
+  "justification": "Presentation is clearly ahead of what ranks for '4 pillars of oop'. The pages I re-read this round have no runnable output panels, at most one diagram, no exercises and no phone-aware code. This page has one consistent billing domain, every program paired with its output panel, two figures that fit a 390 px column at about 11 px text (viewBox 360 wide) and are correct in light and dark, a red 'Does not compile: CS0122' block, five exercises spread through the article with collapsed solutions and no output given away, three earned callouts (note, In .NET, exercise), one H1, question-style H2s with specific H3s, and a 15-item source list with inline numbered cites. Round 1 held the score at 8.2 for phone clipping and a three-column table. Both are fixed: the longest csharp line is now 41 columns (eight lines, and only a trailing semicolon or paren sits under the fade; the earlier operative clips `: Plan`, `12m, 5` and `- _paid` are gone), the opening table is two columns and fully visible at 390 px, the throws block now has an output panel, Figure 2's arrow leaves the pointer row and lands on the table with numbered badges 2 and 3 on the slot row, Figure 1's desc no longer promises a blocked-write drawing, and a lead-in sentence tells the phone reader to read three methods and skip the driver in the long Invoice listing. I found no blocker or major on this pass. What keeps it from 9: the closing section leans on text that lives only in a collapsed solution, one code block loses keyword highlighting, Figure 1's label sits against an arrowhead, the two longest listings are still several phone screens of unbroken code, and the beginner badge sits on a page that ends in JIT devirtualization and virtual stub dispatch. All are small, mostly one-line fixes. Round-1 technical blocker (invariant stated as 'exactly when' paid) is fixed: the prose now says a paid invoice owes nothing and an issued one still owes something, and Figure 1 says 'Paid owes nothing; Issued owes something'. The misquoted spec sentence is now a verbatim attributed quote, and the primary-constructor caveat is in the Note callout. The round-1 adsense major about level versus body is half resolved: each pillar now opens with a plain definition, but level stays beginner with empty prerequisites (minor here).",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "H2 'How do the four fit together?', first paragraph (md line ~928), which mentions Plan.PriceFor 'from the last exercise' and 'each plan fills in Compute'",
+      "problem": "Compute exists only inside the collapsed solution of Exercise 3 (md lines ~810-835). A reader who did not open the solution meets an undefined member name in the synthesis paragraph, and the shape that paragraph describes (a PriceFor that checks non-negativity, then calls a protected abstract member) is not visible on the page. The section that should tie the four together therefore depends on hidden content, and it is only two short paragraphs, so it reads thinner than the rest.",
+      "fixLooksLike": "Make the paragraph stand alone: say in one clause what the exercise-3 shape is ('a public non-virtual PriceFor that checks the result and calls a protected abstract member') or show the 8-10 line skeleton in a short visible block, then use the names from it. Optionally give the section one visible artifact (a small table: pillar | what it guards | where it appears in Invoice and Plan) so it is not only prose."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Code highlighting in the block that starts `Plan plan = new PromoPlan(price: 29m, credit: 40m);` (desktop-light part 12, mobile-dark part 17)",
+      "problem": "After the `record Usage(int Seats);` line, keywords in the same block lose their colour: `abstract class Plan`, `sealed`, `public abstract`, `public override` render in plain text colour while `decimal`, `record`, `static void`, `throw new` stay coloured. The same keywords colour correctly in the other blocks on the page (Invoice, plans), so this block looks half-styled in both themes.",
+      "fixLooksLike": "Find why the highlighter state drops there (possibly the record line followed by a class with a primary constructor) and fix it in the shell's C# grammar or code component so keyword modifiers colour uniformly. Append to docs/INTEGRATOR_REQUESTS.md."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Front matter `level: beginner`, `prerequisites: []`, versus the sections 'What the runtime does with plan.PriceFor(usage)', 'What does a virtual call cost?' and the 'In .NET' callout",
+      "problem": "The badge under the title says BEGINNER, but the page discusses the heap, method tables, slots, guarded devirtualization and virtual stub dispatch, and uses records, primary constructors and collection expressions. The round-1 adsense critic raised this as a major; the plain per-pillar definitions now cover the vocabulary half, but the badge and empty prerequisites are unchanged, and nothing tells a reader who trusts the badge that the runtime half is optional.",
+      "fixLooksLike": "Either set level to intermediate with a prerequisite on classes and objects basics, or keep beginner and add one sentence at the start of the runtime section saying it is optional on a first read and the argument continues at 'What does inheritance cost?'."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Figure 1 (invariant boundary), the 'Invoice' label at the top-left of the accent box next to the checkout arrow (desktop-light part 04, mobile part 06)",
+      "problem": "The 'Invoice' label sits on the same row as the arrowheads of the caller arrows and the checkout arrowhead touches the end of the word. It is legible but looks like a collision, and the box name is the first label a reader needs.",
+      "fixLooksLike": "Move 'Invoice' onto the accent box's top border as a small tab, or add 8-10 units of gap between the box top and the AddLine/Issue/RecordPayment row so the arrowheads land on the box edge clear of the label."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "csharp lines of exactly 41 columns: md lines 122, 179, 332 (`record Line(string Text, decimal Amount);`), 326, 356, 510 (the `\"Type        Body in     Slot from\");` header), 881, 956",
+      "problem": "About 41 columns are visible at 390 px, so the final semicolon or paren on these eight lines sits under the fade (mobile-dark parts 03, 04, 09, 18). Nothing operative is lost, but the brief's target is 40 and the faded punctuation reads as a clip.",
+      "fixLooksLike": "Drop one column on each: for example put `decimal Amount);` on its own indented line, or shorten the header string in the reflection demo by one space between columns (re-run run-code, since the output is compared)."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Listings Invoice (~90 lines) and plans (~70 lines), mobile-dark parts 03-05 and 07-08",
+      "problem": "Both remain three or more phone screens of unbroken code before their output panel. The new lead-in sentence for Invoice helps, but a phone reader has no landmark inside the block, and the driver statements at the top are far from the class they exercise.",
+      "fixLooksLike": "Add a comment banner such as `// --- the class ---` between driver and class in both listings (one line each, programs stay complete) and keep the lead-in sentences that name what to read."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Monospace digits in code and output (for example 344, 44, 245m in the first two listings and their outputs, all screenshots)",
+      "problem": "In the stack `ui-monospace, Cascadia Code, Cascadia Mono, Consolas...` the digit 4 renders with an open top on this machine, so 44 and 344 look like uu and 3uu at code size. The article's numbers carry the argument (245 vs 344 vs 44 owed), so this costs readability. It depends on the reader's installed font, so it is a shell decision, not an article defect.",
+      "fixLooksLike": "Consider listing a monospace with a closed 4 first (Consolas or Menlo before Cascadia), or ship one webfont for code so numerals look the same everywhere."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Code block component on desktop (carried from round 1; desktop-light parts 02-12)",
+      "problem": "The 40-column source wrapping leaves more than half of the roughly 735 px code column empty on desktop and makes long listings very tall. A consequence of one source serving the narrowest viewport, not an article defect.",
+      "fixLooksLike": "Optional: slightly larger code font on wide viewports, or an expand control on listings over about 60 lines. Low priority; append to docs/INTEGRATOR_REQUESTS.md if not already there."
+    }
+  ],
+  "round1Followup": {
+    "design": [
+      { "issue": "phone code clipping (major)", "status": "fixed", "evidence": "longest csharp line is 41 columns; previous operative clips gone; only trailing punctuation on 8 lines remains (minor above)" },
+      { "issue": "three-column summary table off-screen on phone", "status": "fixed", "evidence": "now two columns, fully visible in mobile-dark part 02" },
+      { "issue": "long uninterrupted listings", "status": "partly fixed", "evidence": "lead-in sentences added, listings still 70-90 lines; carried as minor" },
+      { "issue": "Figure 2 arrow and steps 2-3", "status": "fixed", "evidence": "arrow leaves pointer row and lands on the table; badges 2 and 3 on the PriceFor row" },
+      { "issue": "Figure 1 desc mismatch and label placement", "status": "desc fixed; label collision remains (minor)" },
+      { "issue": "throws block without output", "status": "fixed", "evidence": "output panel shows PriceFor: -11 and the exception message" },
+      { "issue": "desktop code column half empty (integrator)", "status": "still open, low priority" }
+    ],
+    "technical": [
+      { "issue": "blocker: invariant stated as 'exactly when' paid", "status": "fixed in prose and Figure 1" },
+      { "issue": "major: misquoted C# spec sentence", "status": "fixed, verbatim quote with cite [3]" },
+      { "issue": "major: primary-constructor caveat", "status": "fixed, Note callout explains captured parameters behave like initializers" }
+    ],
+    "adsense": [
+      { "issue": "major: beginner level versus body", "status": "partly fixed: plain definitions at each pillar's first use, but badge and prerequisites unchanged; carried as minor" }
+    ]
+  },
+  "crosslinksFile": "docs/crosslinks/oop-design/four-pillars-of-oop.md exists; missing body links to unpublished siblings are not an issue.",
+  "notIssues": [
+    "NEEDS_MARKUS byline, bio and footer placeholders (expected)",
+    "draft: true",
+    "Keep reading shows hub links only because siblings are unpublished",
+    "The title shows as Clich&Atilde;&copy;s only in PowerShell console encoding; screenshots show it correctly"
+  ]
+}
