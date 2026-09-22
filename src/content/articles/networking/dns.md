@@ -30,6 +30,10 @@ sources:
     url: "https://www.rfc-editor.org/rfc/rfc2606.html"
     publisher: "IETF"
     accessed: 2026-09-22
+  - title: "RFC 3596: DNS Extensions to Support IP Version 6"
+    url: "https://www.rfc-editor.org/rfc/rfc3596.html"
+    publisher: "IETF"
+    accessed: 2026-09-22
   - title: "RFC 5737: IPv4 Address Blocks Reserved for Documentation"
     url: "https://www.rfc-editor.org/rfc/rfc5737.html"
     publisher: "IETF"
@@ -49,11 +53,11 @@ sources:
 draft: true
 ---
 
-A DNS lookup is not one exchange with one server. It is a client asking a single question of a *recursive resolver*, and that resolver privately interrogating a chain of *authoritative* servers until it can hand back one finished answer. Those are two different resolution styles, layered, and mixing up which side does which is the single most common way people get DNS wrong.
+A DNS lookup is not one exchange with one server. It is a client asking a single question of a *recursive resolver*, and that resolver privately interrogating a chain of *authoritative* servers until it can hand back one finished answer. Those are two different resolution styles, layered rather than interchangeable, and the rest of this article keeps them distinct throughout.
 
-If you have followed one HTTPS request end to end, you have already seen a DNS lookup happen as the first of four exchanges ([What Happens When You Request a URL, Step by Step in C#](/networking/how-the-internet-works/)). This article stays inside that first exchange and takes it apart: the hierarchy behind it, the two resolution styles, what each record type actually stores, what a TTL controls, and how to tell DNS failure modes apart from the wire up. Measurements and captured output below were taken on Windows 11, x64, with the .NET 10 SDK (10.0.401), on 2026-09-22; DNS answers depend on the network and the date, so most of the values below are wildcarded and a few are quoted separately as one dated capture.
+If you have followed one HTTPS request end to end, you have already seen a DNS lookup happen as the first of four exchanges ([What Happens When You Request a URL, Step by Step in C#](/networking/how-the-internet-works/)). This article stays inside that first exchange and takes it apart: the hierarchy behind it, the two resolution styles, what each record type actually stores, what a TTL controls, and how to tell DNS failure modes apart from the wire up.
 
-## What is the hierarchy below the root?
+## The hierarchy below the root
 
 A domain name reads right to left as a path through a tree. `www.iana.org` is the node `www`, under `iana`, under `org`, under the root, written `.`. The tree is cut into *zones*: "'cuts' in the name space can be made between any two adjacent nodes. After all cuts are made, each group of connected name space is a separate zone" ([RFC 1034, section 4.2](https://www.rfc-editor.org/rfc/rfc1034.html#section-4.2)). Each zone is authoritative for its own piece and stores, at the cut, an NS record set naming the servers for the zone below it — RFC 8499 calls this act of adding that NS set in the parent *delegation* ([RFC 8499, section 7](https://www.rfc-editor.org/rfc/rfc8499.html#section-7)).
 
@@ -63,15 +67,15 @@ Three levels matter for almost every lookup:
 - **The TLD zone** (`org`) delegates each registered domain — `iana.org` — to the name servers its registrant chose.
 - **The authoritative zone** for that domain (`iana.org`) holds the actual records: the A, MX, TXT and other data a client is really after.
 
-Not every name that looks reserved is actually delegated. RFC 2606 reserves `.example`, `.test`, `.invalid` and `.localhost` as top-level domains "recommended for use in documentation" so nobody can register under them by accident ([RFC 2606, section 2](https://www.rfc-editor.org/rfc/rfc2606.html#section-2)); it does not say IANA created a working zone there. The failure-modes section below queries a name under `.example` directly and shows what actually comes back.
+Not every name that looks reserved is actually delegated. RFC 2606 reserves four top-level domains so nobody registers under them by accident, but each is reserved for a different purpose: `.example` "is recommended for use in documentation or as examples"; `.test` "is recommended for use in testing of current or new DNS related code", not for documentation; `.invalid` is for names "that are sure to be invalid and which it is obvious at a glance are invalid"; and `.localhost` "has traditionally been statically defined in host DNS implementations as having an A record pointing to the loop back IP address" ([RFC 2606, section 2](https://www.rfc-editor.org/rfc/rfc2606.html#section-2)). None of the four means IANA created a working zone there. The failure-modes section below queries a name under `.example` directly and shows what actually comes back.
 
 ## What's the difference between a recursive resolver and an iterative one?
 
-The program that runs on your machine is what RFC 8499 calls a *stub resolver*, and it does not walk the tree itself. It sends one query with the **RD** (recursion desired) bit set to a *recursive resolver* — your router, your ISP, or a public service such as `1.1.1.1` — and that single query is a *recursive query*: "the first server pursues the query for the client at another server" ([RFC 8499, section 6](https://www.rfc-editor.org/rfc/rfc8499.html#section-6)).
+The program that runs on your machine is what RFC 8499 calls a *stub resolver*, and it does not walk the tree itself. It sends one query with the **RD** (recursion desired) bit set to a *recursive resolver* — your router, your ISP, or a public service such as `1.1.1.1`. RFC 8499 calls that single query a *recursive query*, and calls what the resolver then does on the client's behalf *recursive mode*: "the first server pursues the query for the client at another server" ([RFC 8499, section 6](https://www.rfc-editor.org/rfc/rfc8499.html#section-6)).
 
 The recursive resolver is the one that does the walking, and it does not do it recursively. It performs *iterative resolution*: "the client repeatedly makes non-recursive queries and follows referrals and/or aliases" (same section). Concretely, it sends query after query with RD cleared to root, then to the TLD servers, then to the authoritative servers, following each *referral* — "a referral to name servers which have zones which are closer ancestors to the name than the server sending the reply" ([RFC 1034, section 4.3.1](https://www.rfc-editor.org/rfc/rfc1034.html#section-4.3.1)) — until one of them answers with authority. Only then does it turn that chain of iterative work into the single recursive answer it owes the stub resolver.
 
-So "recursive" and "iterative" describe two different legs of the same lookup, not two competing ways to do the same leg: your machine's query is recursive; the resolver's queries to the hierarchy are iterative. A server's **RA** (recursion available) bit, not the RD bit a client sends, is what tells you whether a server actually offers to do that work; root, TLD and authoritative servers all leave RA clear.
+So "recursive" and "iterative" describe two different legs of the same lookup, not two competing ways to do the same leg: your machine's query is recursive; the resolver's queries to the hierarchy are iterative. A server's **RA** (recursion available) bit, not the RD bit a client sends, is what tells you whether a server actually offers to do that work. The root server queried below leaves it clear, and TLD servers do too, by design: neither offers recursive service to a client. An authoritative server for an ordinary zone is normally no different, but RA is a per-server configuration flag, not a protocol guarantee that comes with being authoritative — nothing stops a misconfigured server that also acts as an open resolver from setting it.
 
 <figure class="diagram">
 <svg viewBox="0 0 360 380" role="img" aria-labelledby="dnswalk-title dnswalk-desc">
@@ -92,24 +96,28 @@ So "recursive" and "iterative" describe two different legs of the same lookup, n
 <text x="18" y="106" class="d-small d-bold">2 resolver iterates, RD=0</text>
 <path d="M290 128 C332 128 332 152 290 152" class="d-line" marker-end="url(#dnswalk-arrow)"/>
 <text x="335" y="124" text-anchor="end" class="d-small">root</text>
-<text x="20" y="168" class="d-muted d-small">referral: org's NS + glue</text>
+<text x="65" y="168" class="d-muted d-small">referral: org's NS + glue</text>
 <path d="M290 180 C332 180 332 204 290 204" class="d-line" marker-end="url(#dnswalk-arrow)"/>
 <text x="335" y="176" text-anchor="end" class="d-small">.org TLD</text>
-<text x="20" y="220" class="d-muted d-small">referral: iana.org's NS + glue</text>
-<path d="M290 232 C332 232 332 256 290 256" class="d-line" marker-end="url(#dnswalk-arrow)"/>
-<text x="335" y="228" text-anchor="end" class="d-small">iana.org auth</text>
-<text x="20" y="272" class="d-text-good d-small">answer, aa=1: a CNAME</text>
+<text x="65" y="220" class="d-muted d-small">referral: iana.org's NS + glue</text>
+<path d="M290 232 C324 232 324 256 290 256" class="d-line" marker-end="url(#dnswalk-arrow)"/>
+<text x="338" y="225" text-anchor="end" class="d-small">iana.org auth</text>
+<text x="65" y="272" class="d-text-good d-small">answer, aa=1: a CNAME</text>
 <rect x="10" y="286" width="340" height="20" rx="4" class="d-box-2"/>
 <text x="18" y="300" class="d-small d-bold">3 recursive answer</text>
 <path d="M286 330 H59" class="d-line" marker-end="url(#dnswalk-arrow)"/>
 <text x="172" y="324" text-anchor="middle" class="d-small">that CNAME, now cached</text>
-<text x="20" y="356" class="d-muted d-small">One RD=1 query out; three RD=0</text>
-<text x="20" y="370" class="d-muted d-small">queries the resolver runs, unseen.</text>
+<text x="65" y="356" class="d-muted d-small">One RD=1 query out; three RD=0</text>
+<text x="65" y="370" class="d-muted d-small">queries the resolver runs, unseen.</text>
 </svg>
 <figcaption>Figure 1. The stub resolver's one recursive query, and the three iterative queries the recursive resolver makes on its behalf before it can answer.</figcaption>
 </figure>
 
 This program reproduces exactly that walk by talking UDP port 53 directly, first to a root server, then to whichever server each referral names, with RD cleared every time — the same three iterative hops Figure 1 draws.
+
+:::note
+Measurements and captured output from here on were taken on Windows 11, x64, with the .NET 10 SDK (10.0.401), on 2026-09-22. DNS answers depend on the network and the date, so most of the values below are wildcarded, and a few are quoted separately as one dated capture.
+:::
 
 ```csharp run id=walk
 using System.Net;
@@ -242,6 +250,12 @@ try
                 ? $"answer={s.answer}"
                 : $"referral, {s.delegated.Count} NS"));
         if (s.answerCount > 0) break;
+        if (s.glueIp == "")
+        {
+            Console.WriteLine(
+                $"{hops[i]} referred us with no glue record");
+            break;
+        }
         server = s.glueIp;
     }
 }
@@ -327,18 +341,18 @@ The run used for this page: `ra=False answers=0 referral-ns=13` — still a bare
 :::
 ::::
 
-## What does each record type actually store?
+## The record types, and what each one actually stores
 
 RFC 1035 defines a fixed set of resource record types, each a 16-bit number carried in every query and answer: "A 1 a host address", "NS 2 an authoritative name server", "CNAME 5 the canonical name for an alias", "MX 15 mail exchange", "TXT 16 text strings" ([RFC 1035, section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)).
 
-| Type | # | Stores | RFC 1035 RDATA |
-|---|--:|---|---|
-| A | 1 | An IPv4 address | "ADDRESS A 32 bit Internet address" |
-| AAAA | 28 | An IPv6 address (RFC 3596, not RFC 1035) | 128-bit address |
-| CNAME | 5 | Another name to look up instead | "A `<domain-name>` which specifies the canonical ... name" |
-| NS | 2 | A name server authoritative for this zone | "A `<domain-name>` which specifies a host ... authoritative" |
-| MX | 15 | A mail server and its preference | "PREFERENCE", then "a host willing to act as a mail exchange" |
-| TXT | 16 | Free-form text | "One or more `<character-string>`s" |
+| Type | Stores | RFC 1035 RDATA |
+|---|---|---|
+| A (1) | IPv4 address | "32 bit Internet address" |
+| AAAA (28) | IPv6 address (RFC 3596) | 128-bit address |
+| CNAME (5) | Alias to another name | "specifies the canonical ... name" |
+| NS (2) | Authoritative server for the zone | "specifies a host ... authoritative" |
+| MX (15) | Mail server, with preference | "willing to act as a mail exchange" |
+| TXT (16) | Free-form text | "one or more `<character-string>`s" |
 
 `Dns.GetHostAddressesAsync` asks for A and AAAA and hides the wire format entirely; it calls the operating system's resolver rather than speaking DNS itself, and "IPv6 addresses are filtered from the results ... if the local computer does not have IPv6 installed" ([Microsoft Learn, Dns.GetHostAddresses, Remarks](https://learn.microsoft.com/en-us/dotnet/api/system.net.dns.gethostaddresses#remarks)). `Dns.GetHostEntryAsync` does the reverse: given an address, it looks up the PTR record and returns it as `HostName`.
 
@@ -481,7 +495,7 @@ These are direct answers from `iana.org`'s own authoritative server, not a cachi
 
 The CNAME case is already above: `www.iana.org` has no A record of its own in `iana.org`'s zone, only a CNAME into a name that belongs to a different zone entirely. A resolver chasing that answer has to start the walk over for the new name before it can hand back an address — CNAME is the one type whose value is itself a question, not an answer.
 
-## What does a TTL actually control?
+## A TTL controls caching, not propagation
 
 Every resource record carries its own TTL, and it means exactly one thing: "how long a RR can be cached before it should be discarded" ([RFC 1034, section 3.6](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.6)) by whatever holds a copy of it. That "whatever" is not one cache. A stub resolver's operating system keeps one, the recursive resolver you asked keeps another, and a browser can keep a third; each one starts its own countdown at the moment it first cached the record and serves that copy until its own countdown reaches zero, independently of what the other caches are doing. Two caches that fetched the same record ten seconds apart are ten seconds out of sync until both expire.
 
@@ -613,7 +627,7 @@ At the wire, NXDOMAIN and SERVFAIL are unambiguous, different numbers. `Dns.GetH
 
 That gives a short, real decision procedure for "the lookup failed":
 
-- **No response inside your timeout** — the server address is wrong, unreachable, or a firewall is dropping the packets, as the TEST-NET-1 case simulates. Some paths answer that with silence; others answer it faster, with an ICMP "unreachable" that turns into a `SocketException` on the receive, which is why the program above catches one around a plain timeout. Retrying the same server will not help; a different resolver, or a route to the same one, might.
+- **No response inside your timeout** — the server address is wrong, unreachable, or a firewall is dropping the packets, as the TEST-NET-1 case simulates: 192.0.2.0/24 is one of three blocks RFC 5737 sets aside "for use in documentation", specifically so that addresses "SHOULD NOT appear on the public Internet" and can never belong to a real, answering server ([RFC 5737, sections 3-4](https://www.rfc-editor.org/rfc/rfc5737.html#section-3)). Some paths answer that with silence; others answer it faster, with an ICMP "unreachable" that turns into a `SocketException` on the receive, which is why the program above catches one around a plain timeout. Retrying the same server will not help; a different resolver, or a route to the same one, might.
 - **RCODE 3, NXDOMAIN, from an authoritative answer** — the name genuinely does not exist under that parent. Check the spelling and the zone, not the network.
 - **RCODE 2, SERVFAIL** — the server tried and gave up: a broken delegation, an unreachable upstream on its own path, or (for a validating resolver) a signature it could not verify. The failure is at the server you asked or beyond it, not at the name itself.
 - **A stale answer instead of a failure** — not an error at all; see the TTL section above before assuming anything is broken.
