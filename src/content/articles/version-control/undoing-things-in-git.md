@@ -361,6 +361,8 @@ Add task: pay water bill (HEAD -> main, origin/main)
 Start the task list
 ```
 
+The `git config` lines are repeated because each `git init` starts a fresh `.git/config`, local to that repository. `GIT_AUTHOR_DATE` and `GIT_COMMITTER_DATE`, exported once for the planner repo near the top of this page, are shell environment variables, not repository config, so they carry forward for the rest of the session and apply here too — which is why the commit IDs below still reproduce exactly.
+
 ```bash run
 cd ..
 git init -q -b main bob
@@ -533,7 +535,7 @@ Add task: pay water bill
 [ ] Pay water bill
 ```
 
-An ordinary pull, no conflict, no warning that anything was rewritten — because nothing was. Once a commit is somewhere you don't control, that asymmetry (a fast-forwarding fix versus a history-rewriting one) is the entire reason to prefer revert.
+An ordinary pull, no conflict, no warning that anything was rewritten — because nothing was. Once a commit is somewhere you don't control, that asymmetry (a fast-forwarding fix versus a history-rewriting one) is one real reason to prefer revert — alongside protected-branch policies that block force-pushes outright and the audit trail a revert leaves that a rewritten history does not.
 
 ## "I think I lost a commit entirely"
 
@@ -602,7 +604,7 @@ A deleted branch is one way to misplace a commit; `git commit --amend` is anothe
 `git commit --amend` is often described as "editing the last commit." Given that [objects are immutable](/version-control/how-git-works/#git-commit-does-the-same-and-reuses-what-did-not-change) and a commit's ID is a hash of its own content, predict what actually happens to the *original* commit when you amend, and whether `git reflog` would find it — then verify.
 
 :::solution
-Nothing is edited in place; `--amend` writes a brand-new commit object and moves the branch to it, exactly like every other command on this page. The original becomes unreachable from any branch, but the reflog records the move, the same way it recorded the branch deletion above:
+Nothing is edited in place; like `revert` above, `--amend` writes a brand-new commit object and moves the branch to it — the two commands on this page that undo something by creating a new commit, rather than by repointing a branch (`reset`) or touching only the working tree and index (`restore`). The original becomes unreachable from any branch, but the reflog records the move, the same way it recorded the branch deletion above:
 
 ```bash run
 git switch -q main
