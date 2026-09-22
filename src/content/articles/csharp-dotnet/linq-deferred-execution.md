@@ -38,6 +38,10 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.linq.queryable.where"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
+  - title: "EnumerableQuery<T> Class"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerablequery-1"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-22
 draft: true
 ---
 
@@ -144,7 +148,7 @@ Microsoft's own classification splits the standard query operators into two grou
 
 Deferred operators split further by how much of the source they need before they can produce anything:
 
-- **Streaming**: reads source elements one at a time and can yield a result element after reading just one. `Where` and `Select` are streaming — each is written as a `foreach` with a single `yield return` inside it, so it never needs more than the current element in hand.
+- **Streaming**: doesn't have to read all the source data before it yields elements — it reads source elements one at a time until it has enough to produce a result, then yields, and that can take more than one element ([Introduction to LINQ Queries](https://learn.microsoft.com/en-us/dotnet/csharp/linq/get-started/introduction-to-linq-queries)). `Where` and `Select` are streaming and happen to need only the current element, since each is written as a `foreach` with a single `yield return` inside it; `SkipWhile` and `Distinct` are streaming too, even though each can read several source elements before its first result comes out.
 - **Nonstreaming**: must consume the whole source before yielding anything. `OrderBy` is the clearest example — it cannot know which element sorts first until it has seen all of them, so it reads everything into a buffer before the first result comes out.
 
 Both still defer: an unsorted `OrderBy` call runs no comparisons until enumerated. But a streaming operator can start producing output after touching one source element, and a nonstreaming one can't produce anything until it has touched all of them.
@@ -576,7 +580,7 @@ read from the tree:
   value:    server down
 ```
 
-Nothing in `IsSlaBreach`-style code ever ran; the field name and the comparison value came out of the tree structure alone. This is exactly what a real provider does with far more of the tree: Entity Framework Core walks an `IQueryable`'s expression the same way this program did, and turns it into SQL instead of a console line. The [`IQueryable`](https://learn.microsoft.com/en-us/dotnet/api/system.linq.iqueryable) documentation describes this in general terms — enumerating an `IQueryable` "causes the expression tree ... to be executed," and "the definition of 'executing an expression tree' is specific to a query provider," which "may involve translating the expression tree to an appropriate query language for the underlying data source." A `List<T>.AsQueryable()`, as used above, is not talking to a database: its provider is .NET's own `System.Linq.EnumerableQuery<T>`, which compiles the tree back into a delegate and runs it in-process — the same `IEnumerable` execution the whole rest of this page has been about. The difference between the two interfaces is not where code eventually runs; it's whether a provider gets a chance to look at the query before deciding.
+Nothing in `IsSlaBreach`-style code ever ran; the field name and the comparison value came out of the tree structure alone. This is exactly what a real provider does with far more of the tree: Entity Framework Core walks an `IQueryable`'s expression the same way this program did, and turns it into SQL instead of a console line. The [`IQueryable`](https://learn.microsoft.com/en-us/dotnet/api/system.linq.iqueryable) documentation describes this in general terms — enumerating an `IQueryable` "causes the expression tree ... to be executed," and "the definition of 'executing an expression tree' is specific to a query provider," which "may involve translating the expression tree to an appropriate query language for the underlying data source." A `List<T>.AsQueryable()`, as used above, is not talking to a database: its provider is .NET's own [`EnumerableQuery<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerablequery-1), whose `IQueryProvider` "executes an expression after rewriting it to call `Enumerable` methods instead of `Queryable` methods" — it compiles the tree back into a delegate and runs it in-process — the same `IEnumerable` execution the whole rest of this page has been about. The difference between the two interfaces is not where code eventually runs; it's whether a provider gets a chance to look at the query before deciding.
 
 ## Practice: keep it from running twice
 
