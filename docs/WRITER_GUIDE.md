@@ -55,6 +55,7 @@ The word(s) after the language are read by both the site and `tools/run-code.mjs
 | ` ```csharp snippet of=name ` | Excerpt: every non-blank line must appear, in order, in run block `name` of the same article. `// ...` lines are ignored. | "Excerpt" label |
 | ` ```csharp run error=CS0165 ` | Must fail to compile with that diagnostic. | Red "Does not compile: CS0165" label |
 | ` ```csharp run throws=InvalidOperationException ` | Must end with that unhandled exception. | Red "Throws ..." label |
+| ` ```csharp run fails ` | Must exit non-zero (a normal `run` block failing this way is a build failure; `fails` is the escape hatch). For a file-based **xUnit v3** test program with a deliberately-red test (a TDD red step); see below. | same |
 | `args="a b"`, `stdin="text"` | Extra options for a `csharp run` block. | nothing |
 | ` ```sql run ` / ` ```sql run error ` | Runs on one in-memory SQLite database per article, blocks in order. `error` means the statement must fail. | "SQL" / "Statement fails" |
 | ` ```bash run ` / `fails` / `stderr` | Runs in Git Bash in one scratch directory per article, fixed Git identity and date. | "Bash" / "Exits with an error" |
@@ -63,6 +64,68 @@ The word(s) after the language are read by both the site and `tools/run-code.mjs
 Rules the tools enforce: a `csharp`/`sql`/`bash` block with neither `run` nor `snippet of=` fails; a fence with no language fails; a language not in the lists above fails; a program that prints output with no `text output` block after it fails; a `text output` block not directly after a `run` block fails. Nothing may sit between a program and its output block except blank lines.
 
 SQL result sets must be written exactly as the tool renders them: columns padded with two spaces, a dashed rule under the header, `NULL` for nulls. Easiest: run the tool, copy the "actual" block from its failure message.
+
+**xUnit tests** are a plain `csharp run` block, no project file or `dotnet test` needed — put `#:package xunit.v3@1.*` on its own line at the top, then `[Fact]`/`[Theory]` methods same as a normal test project (`using Xunit;` or `Xunit.Assert`/`Xunit.Fact` inline both work). It really compiles and runs as a file-based app; xUnit's own in-process runner prints a summary to stdout and the process exits 0 if every test passed. For a red/green TDD step where a test is meant to fail, add the `fails` flag so the (otherwise build-breaking) non-zero exit is expected instead. Wildcard the version banner and the `Time:` value with `[...]`, since both vary run to run; everything else — including the `Total`/`Failed` counts, which is what actually proves the test ran — is exact, and the run's assembly name is always the block's `id`, so it never needs wildcarding:
+
+```csharp run id=stack-tests
+#:package xunit.v3@1.*
+using Xunit;
+
+public class StackTests
+{
+    [Fact]
+    public void Push_ThenPop_ReturnsLastPushed()
+    {
+        var stack = new Stack<int>();
+        stack.Push(1);
+        stack.Push(2);
+        Assert.Equal(2, stack.Pop());
+    }
+}
+```
+
+```text output
+xUnit.net v3 In-Process Runner [...]
+  Discovering: stack-tests
+  Discovered:  stack-tests
+  Starting:    stack-tests
+  Finished:    stack-tests
+=== TEST EXECUTION SUMMARY ===
+   stack-tests  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: [...]
+```
+
+A deliberately-red test for a TDD red step looks the same but adds `fails` to the fence and its `Failed` count is non-zero:
+
+```csharp run id=red-step fails
+#:package xunit.v3@1.*
+using Xunit;
+
+public class StackTests
+{
+    [Fact]
+    public void Pop_OnEmptyStack_Throws()
+    {
+        var stack = new Stack<int>();
+        Assert.Throws<InvalidOperationException>(() => stack.Pop());
+    }
+}
+```
+
+```text output
+xUnit.net v3 In-Process Runner [...]
+  Discovering: red-step
+  Discovered:  red-step
+  Starting:    red-step
+    StackTests.Pop_OnEmptyStack_Throws [FAIL]
+      Assert.Throws() Failure: No exception was thrown
+      Expected: typeof(System.InvalidOperationException)
+[...]
+  Finished:    red-step
+=== TEST EXECUTION SUMMARY ===
+   red-step  Total: 1, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: [...]
+```
+
+There is no multi-file mode (a `project=`/`file=` tag scheme) yet — one `csharp run` block is one compiled program, so put the system-under-test and its tests in the same file, same as any other `csharp run` block.
 
 Long listings for snippet-heavy articles go in a collapsible block (keep the blank lines exactly as shown):
 

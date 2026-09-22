@@ -104,6 +104,67 @@ basename "$(pwd)"
 demo
 ```
 
+File-based xUnit test, all passing:
+
+```csharp run id=xunit-pass
+#:package xunit.v3@1.*
+using Xunit;
+
+public class StackTests
+{
+    [Fact]
+    public void Push_ThenPop_ReturnsLastPushed()
+    {
+        var stack = new Stack<int>();
+        stack.Push(1);
+        stack.Push(2);
+        Assert.Equal(2, stack.Pop());
+    }
+}
+```
+
+```text output
+xUnit.net v3 In-Process Runner [...]
+  Discovering: xunit-pass
+  Discovered:  xunit-pass
+  Starting:    xunit-pass
+  Finished:    xunit-pass
+=== TEST EXECUTION SUMMARY ===
+   xunit-pass  Total: 1, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: [...]
+```
+
+File-based xUnit test with a deliberately-red test (`fails` allows the non-zero exit):
+
+```csharp run id=xunit-fail fails
+#:package xunit.v3@1.*
+using Xunit;
+
+public class StackTests
+{
+    [Fact]
+    public void Pop_ReturnsMostRecentlyPushed()
+    {
+        Assert.Fail("not implemented yet");
+    }
+}
+```
+
+```text output
+xUnit.net v3 In-Process Runner [...]
+  Discovering: xunit-fail
+  Discovered:  xunit-fail
+  Starting:    xunit-fail
+    StackTests.Pop_ReturnsMostRecentlyPushed [FAIL]
+      not implemented yet
+      Stack Trace:
+[...]
+[...]
+[...]
+  Finished:    xunit-fail
+=== TEST EXECUTION SUMMARY ===
+   xunit-fail  Total: 1, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: [...]
+```
+
 The blocks below MUST be reported as failures.
 
 ```csharp run
