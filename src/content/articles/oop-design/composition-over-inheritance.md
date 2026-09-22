@@ -30,7 +30,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.argumentoutofrangeexception"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A small dungeon game has an `Enemy` hierarchy. `Goblin` walks and hits with melee. `Archer` walks and shoots at range. Both inherit hit points and hazard damage from `Enemy` and supply only their own attack. It compiles, it runs, and it is exactly the kind of reuse inheritance is sold on: write the shared part once, vary only what differs. Then a design ticket asks for a `Wyvern` — it flies, and it attacks at range — and the hierarchy has no clean place to put it.
