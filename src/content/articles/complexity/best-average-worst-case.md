@@ -124,7 +124,7 @@ static int[] Shuffle(int[] source, Random random)
   8,000       126,318    31,996,000
 ```
 
-These figures are from .NET 10 (SDK 10.0.401, runtime 10.0.12) on Windows 11, x64; only the shape — sorted growing far faster than random — is guaranteed, not the exact digits. The random column roughly doubles each time *n* doubles, then a bit more: consistent with the O(*n* log *n*) this page will derive below. The sorted column quadruples almost exactly: 31,996,000 is sixteen times 1,999,000. It also matches a closed form. On sorted input the pivot `items[lo]` is always the smallest remaining value, so nothing is ever less than it: `Partition` moves nothing, and the recursive call on the left half gets zero elements every time. Comparisons follow
+These figures are from .NET 10 (SDK 10.0.401, runtime 10.0.12) on Windows 11, x64; only the shape — sorted growing far faster than random — is guaranteed, not the exact digits. The program above also fixes the current culture to invariant once, so its `N0`-formatted output uses a comma thousands separator regardless of the reader's own regional settings; later programs on this page format numbers the same way but skip repeating those two lines, since the environment used to verify this page already defaults to the same formatting. The random column roughly doubles each time *n* doubles, then a bit more: consistent with the O(*n* log *n*) this page will derive below. The sorted column quadruples almost exactly: 31,996,000 is sixteen times 1,999,000. It also matches a closed form. On sorted input the pivot `items[lo]` is always the smallest remaining value, so nothing is ever less than it: `Partition` moves nothing, and the recursive call on the left half gets zero elements every time. Comparisons follow
 
 ```text
 T(n) = T(n-1) + (n-1),  T(0) = 0
@@ -132,17 +132,13 @@ T(n) = T(n-1) + (n-1),  T(0) = 0
      = n(n-1)/2
 ```
 
-500 · 499 / 2 is 124,750, matching the first row exactly, and 8,000 · 7,999 / 2 is 31,996,000. Reversing the array gives the same total: the first element is then the largest, so again nothing is less than it and every partition is still `0 : n-1`. Either way, the pivot rule turns the input's own order against the algorithm.
+500 · 499 / 2 is 124,750, matching the first row exactly, and 8,000 · 7,999 / 2 is 31,996,000. Reversing the array gives the same total: the first element is then the largest, so every other element is less than it, and every partition is instead `(n-1) : 0` — the pivot lands at the far end instead of staying put, but the cost is identical, one element peeled off per call either way. Either way, the pivot rule turns the input's own order against the algorithm.
 
 ## When it does not just get slow
 
 A `0 : n-1` split every time means the recursion is `n` calls deep, not log₂ *n*. The program below drops the comparison counter and instead records the deepest a run's own recursion goes, using the same partition scheme.
 
 ```csharp run id=recursion-depth
-using System.Globalization;
-
-CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
 Console.WriteLine($"{"n",7}{"random depth",14}{"sorted depth",14}");
 int[] sizes = [500, 1_000, 2_000, 4_000, 8_000];
 foreach (int n in sizes)
@@ -290,13 +286,13 @@ Here is the fact that makes the sum tractable: *z*ᵢ and *z*ⱼ are compared if
 E[comparisons] = sum(i=1..n-1) sum(j=i+1..n) 2/(j-i+1)
 ```
 
-Substituting *k* = *j* − *i* turns the inner sum into a piece of the harmonic series, and the whole double sum is bounded by 2*n* times the *n*-th harmonic number, which is Θ(log *n*). The result — Θ(*n* log *n*), worked out in full in CLRS chapter 7 and stated as "~2 *N* ln *N*" by Sedgewick and Wayne — matches the random column measured earlier: 2 · 8,000 · ln(8,000) ≈ 143,800, and the single random run above found 126,318, the right order of magnitude for one instance of a quantity whose exact value depends on which permutation was drawn.
+Substituting *k* = *j* − *i* turns the inner sum into a piece of the harmonic series, and the whole double sum is bounded by 2*n* times the *n*-th harmonic number, which is Θ(log *n*). The result — Θ(*n* log *n*), worked out in full in CLRS chapter 7 and stated as "~2 *N* ln *N*" by Sedgewick and Wayne — matches the random column measured earlier. Evaluating the exact double sum above at *n* = 8,000 gives ≈121,051, within about 4% of the single random run's 126,318; the simpler asymptotic shorthand 2 · 8,000 · ln(8,000) ≈ 143,800 is about 14% off at this *n* — not because of which permutation happened to be drawn, but because the "~2 *N* ln *N*" shorthand drops lower-order terms that the exact sum keeps.
 
 ::::exercise[Prove it: a lopsided split is still fast enough]
 Suppose every partition splits its range 1 : (*m* − 2) instead of perfectly evenly — one element peeled off the small side, not zero. Using the recurrence *T*(*n*) = *T*(*n* − 2) + (*n* − 1), show that this is still Θ(*n*²) despite not being the exact `0 : n-1` worst case, by finding the closed form. Then explain in one sentence why the average-case argument above does not contradict this: which splits are rare under a uniform random permutation?
 
 :::solution
-*T*(*n*) = *T*(*n* − 2) + (*n* − 1) unrolls to (*n* − 1) + (*n* − 3) + (*n* − 5) + ... down to a base case, roughly *n*/2 terms averaging just under *n*, so *T*(*n*) is Θ(*n*²) — dropping one element per level instead of zero does not change the order, only the constant (the leading coefficient becomes about ¼ instead of ½).
+*T*(*n*) = *T*(*n* − 2) + (*n* − 1) unrolls to (*n* − 1) + (*n* − 3) + (*n* − 5) + ... down to a base case: roughly *n*/2 terms, each about *n*/2 on average (they range from 1 up to *n* − 1), for a sum of about (*n*/2)·(*n*/2) = *n*²/4, so *T*(*n*) is Θ(*n*²) — dropping one element per level instead of zero does not change the order, only the constant (the leading coefficient becomes about ¼ instead of ½, matching that sum).
 
 The average-case sum weights every one of the *n*! orderings equally, and only two of the *j* − *i* + 1 possible "first pivots" in a range make that range's split `0 : m-1` or `m-1 : 0`-like at the extreme; the other *j* − *i* − 1 choices give some more balanced split. Extreme splits are not impossible under a random ordering, just rare enough that they do not dominate the sum: a single unlucky split costs at most a constant factor, and the argument above already accounts for every possible split, weighted by how often it actually occurs.
 :::
@@ -307,10 +303,6 @@ The average-case sum weights every one of the *n*! orderings equally, and only t
 The average-case argument assumed the *input* was a uniformly random permutation. Most inputs are not — log files, imports and already-sorted lists are exactly the case that breaks the deterministic version. Randomized quicksort keeps the input fixed and instead makes the *algorithm's own choice* random: swap a uniformly chosen element into the front of the range before partitioning around it. The program below runs both versions, sharing the identical `Partition`, against the pathological inputs from the first section plus two more:
 
 ```csharp run id=randomized-fix
-using System.Globalization;
-
-CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
 const int N = 8000;
 var rnd = new Random(7);
 int[] sorted = Enumerable.Range(1, N).ToArray();
@@ -407,7 +399,7 @@ if (randomized)
 
 ## What randomization doesn't fix: duplicate keys
 
-`duplicates` fills the array with only four distinct values, repeated 2,000 times each, in random positions — and both versions cost about 8 million comparisons, barely different from `sorted`'s naive worst case. Randomizing *which* element becomes the pivot cannot help when most of the array is equal to whatever gets picked: `Partition` puts every value equal to the pivot on the "not less than" side, so a pivot value that appears 2,000 times produces a split close to `0 : (m-1)` almost every time, no matter which of the equal copies was chosen. Sedgewick and Wayne name this directly: stopping each scan on keys equal to the pivot "might seem to create unnecessary exchanges," but "it is crucial to avoiding quadratic running time in certain typical applications" that have many repeated keys, and their fix is a different partitioning scheme — three-way partitioning, splitting each range into *less than*, *equal to* and *greater than* the pivot, so every element equal to the pivot is placed once and never scanned again by either recursive call.
+`duplicates` fills the array with only four distinct values, each appearing roughly 2,000 times (2,073, 1,942, 2,032 and 1,953 in this run), in random positions — and both versions cost about 8 million comparisons: a quarter of `sorted`'s naive worst case of 31,996,000, but still Θ(*n*²)-shaped, nowhere near the near-linear count three-way partitioning reaches below. Randomizing *which* element becomes the pivot cannot help when most of the array is equal to whatever gets picked: `Partition` puts every value equal to the pivot on the "not less than" side, so a pivot value that appears 2,000 times produces a split close to `0 : (m-1)` almost every time, no matter which of the equal copies was chosen. Sedgewick and Wayne name this directly: stopping each scan on keys equal to the pivot "might seem to create unnecessary exchanges," but "it is crucial to avoiding quadratic running time in certain typical applications" that have many repeated keys, and their fix is a different partitioning scheme — three-way partitioning, splitting each range into *less than*, *equal to* and *greater than* the pivot, so every element equal to the pivot is placed once and never scanned again by either recursive call.
 
 ::::exercise[Extend the code: fix the duplicates case]
 Rewrite `Partition` (call it `PartitionThreeWay`) to produce three regions in one pass: `items[lo..lt-1]` less than the pivot, `items[lt..gt]` equal to it, `items[gt+1..hi]` greater. Recurse only on the outer two regions. Run it against the same `duplicates` array from above and compare the comparison count with the two-way version's.
@@ -416,9 +408,6 @@ Rewrite `Partition` (call it `PartitionThreeWay`) to produce three regions in on
 Sedgewick and Wayne's three-way scheme keeps three pointers moving toward each other:
 
 ```csharp run id=ex-threeway
-using System.Globalization;
-CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
 const int N = 8000;
 var rnd = new Random(7);
 int[] duplicates = Enumerable.Repeat(0, N)
@@ -509,10 +498,6 @@ Crosby and Wallach's 2003 USENIX Security paper, "Denial of Service via Algorith
 The program below builds the mechanism in miniature. All permutations of the same eight letters share the same character sum, so a hash function that just adds character codes sends every one of them to the same bucket — a free collision, no cryptanalysis required. `s.GetHashCode()`, .NET's real string hash, does not:
 
 ```csharp run id=hash-flood
-using System.Globalization;
-
-CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
 const int Keys = 4000;
 const int Buckets = 4096;
 
@@ -611,12 +596,12 @@ Persist a hash code from one run and compare it against a fresh run's, though, a
 
 Four sentences, each true only under its own stated condition, cover this whole page:
 
-| Case | Holds for | Quicksort's bound |
+| Case | Quicksort's bound | Holds for |
 |---|---|---|
-| Worst case | Some input exists that triggers it | Θ(*n*²) |
-| Best case | Some input exists that triggers it | Θ(*n* log *n*) |
-| Average case | Every ordering of the input equally likely | Θ(*n* log *n*) |
-| Expected case | Any fixed input, averaged over the algorithm's own random pivots | O(*n* log *n*) |
+| Worst case | Θ(*n*²) | Some input triggers it |
+| Best case | Θ(*n* log *n*) | Some input triggers it |
+| Average case | Θ(*n* log *n*) | All orderings equally likely |
+| Expected case | O(*n* log *n*) | Any input, pivots randomized |
 
 "Quicksort is O(*n*²)" is defensible only as shorthand for the first row, and misleading read as a summary of the whole table. The honest version names the case: the deterministic, first-element-pivot version measured at the top of this page is Θ(*n*²) on adversarial input — including the unremarkable case of data that arrived pre-sorted — and Θ(*n* log *n*) on a random ordering; the randomized version is O(*n* log *n*) expected on every input, which is a guarantee about the algorithm rather than a hope about the data, but is not a defense against an adversary who can force many equal keys through a two-way partition, or, in a different data structure entirely, against one who can predict a hash function that was never given a secret to predict.
 
