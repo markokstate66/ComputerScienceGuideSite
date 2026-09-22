@@ -507,6 +507,44 @@ A missing answer is cached exactly like a present one. When a name genuinely doe
 
 That is the real mechanism behind "I fixed the record and I'm still seeing the old value": there is no separate propagation delay to wait out. There is only whichever TTL governs the copy you happen to be hitting — a positive one if the old answer is still cached, or a negative one, bounded by the zone's SOA, if you deleted a record and are now getting a cached "doesn't exist" for the name you meant to add.
 
+<figure class="diagram">
+<svg viewBox="0 0 360 512" role="img" aria-labelledby="dnsttl-title dnsttl-desc">
+<title id="dnsttl-title">One cached record's TTL, counted down from 3600s to zero</title>
+<desc id="dnsttl-desc">A vertical timeline for one cached record with a 3600-second TTL. At t=0 a resolver answers a query and caches the answer, starting its own countdown. At t=1800s another query for the same name is a cache hit, same answer, 1800s left. The record then changes at the authoritative source, but this cache does not know. At t=3599s, one second before expiry, the cache is still a hit and still returns the old answer. At t=3600s the countdown reaches zero and the entry is discarded, so the next query is a cache miss that triggers a fresh lookup and starts a new TTL.</desc>
+<defs>
+<marker id="dnsttl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="d-fill-stroke"/></marker>
+</defs>
+<text x="10" y="16" class="d-bold d-small">One cached record's TTL, start to finish</text>
+<rect x="10" y="34" width="340" height="26" rx="5" class="d-box-2"/>
+<text x="180" y="51" text-anchor="middle" class="d-small">t = 0s — a resolver answers a query</text>
+<path d="M180 60 V80" class="d-line" marker-end="url(#dnsttl-arrow)"/>
+<rect x="10" y="80" width="340" height="48" rx="6" class="d-box-accent"/>
+<text x="180" y="98" text-anchor="middle" class="d-bold">CACHED: TTL = 3600s</text>
+<text x="180" y="116" text-anchor="middle" class="d-small">this cache's countdown starts now, alone</text>
+<rect x="10" y="142" width="340" height="26" rx="5" class="d-box-2"/>
+<text x="180" y="159" text-anchor="middle" class="d-small">t = 1800s — same name queried again</text>
+<path d="M180 168 V188" class="d-line" marker-end="url(#dnsttl-arrow)"/>
+<rect x="10" y="188" width="340" height="48" rx="6" class="d-box-2"/>
+<text x="180" y="206" text-anchor="middle" class="d-bold">CACHE HIT</text>
+<text x="180" y="224" text-anchor="middle" class="d-small">same answer, instantly — 1800s left</text>
+<text x="180" y="254" text-anchor="middle" class="d-muted d-small">meanwhile, the record changes upstream</text>
+<rect x="10" y="270" width="340" height="26" rx="5" class="d-box-2"/>
+<text x="180" y="287" text-anchor="middle" class="d-small">t = 3599s — one more query, 1s left</text>
+<path d="M180 296 V316" class="d-line" marker-end="url(#dnsttl-arrow)"/>
+<rect x="10" y="316" width="340" height="48" rx="6" class="d-box-warn"/>
+<text x="180" y="334" text-anchor="middle" class="d-bold">STILL A CACHE HIT</text>
+<text x="180" y="352" text-anchor="middle" class="d-small">old answer, looks fine, but isn't current</text>
+<rect x="10" y="378" width="340" height="26" rx="5" class="d-box-2"/>
+<text x="180" y="395" text-anchor="middle" class="d-small">t = 3600s — the countdown reaches zero</text>
+<path d="M180 404 V424" class="d-line" marker-end="url(#dnsttl-arrow)"/>
+<rect x="10" y="424" width="340" height="48" rx="6" class="d-box-good"/>
+<text x="180" y="442" text-anchor="middle" class="d-bold">ENTRY DISCARDED</text>
+<text x="180" y="460" text-anchor="middle" class="d-small">next query misses; fresh lookup, new TTL</text>
+<text x="10" y="492" class="d-small d-muted">No propagation delay: just the TTL you hit.</text>
+</svg>
+<figcaption>Figure 2. One cached record's TTL counting down: the record can change upstream long before this cache's own countdown reaches zero, and only that countdown decides when the next query goes back out.</figcaption>
+</figure>
+
 ## What do DNS failure modes look like, and how do you tell them apart?
 
 A DNS query fails in exactly a few distinguishable ways, and RFC 1035 gives each one a number in the response header's RCODE field: `0` no error, `1` format error, `2` "the name server was unable to process this query due to a problem with the name server" (SERVFAIL), `3` "the domain name referenced in the query does not exist" (NXDOMAIN, meaningful only from an authoritative server), `4` not implemented, `5` refused ([RFC 1035, section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)). A query that gets no response at all is a fourth case the header can't carry, because there is no header — it is a timeout.
@@ -666,7 +704,7 @@ That gives a short, real decision procedure for "the lookup failed":
 <text x="180" y="440" text-anchor="middle" class="d-small">not a failure — the TTL just hasn't expired yet</text>
 <text x="10" y="478" class="d-small d-muted">Only the first row has no RCODE at all to read.</text>
 </svg>
-<figcaption>Figure 2. What you actually see on the wire, mapped to the failure mode it means. The three RCODE-bearing rows share the negative colour because each is a real problem; the last is not an error at all.</figcaption>
+<figcaption>Figure 3. What you actually see on the wire, mapped to the failure mode it means. The three RCODE-bearing rows share the negative colour because each is a real problem; the last is not an error at all.</figcaption>
 </figure>
 
 ::::exercise[Extend the negative-caching demo]
