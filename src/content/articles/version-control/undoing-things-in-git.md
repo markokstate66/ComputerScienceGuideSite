@@ -38,7 +38,7 @@ sources:
     url: "https://git-scm.com/docs/git-branch"
     publisher: "Git documentation"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 An edited file, a staged change, a commit you haven't pushed, a commit you have pushed, and a branch you deleted are five different problems. "How do I undo this" does not say which one you have, and the four commands that undo things in Git are not interchangeable. Git's own manual draws the line for you, in one paragraph that names a *place* for each command: [git-revert](https://git-scm.com/docs/git-revert) "is about making a new commit that reverts the changes made by other commits"; [git-restore](https://git-scm.com/docs/git-restore) "is about restoring files in the working tree from either the index or another commit... This command does not update your branch"; and [git-reset](https://git-scm.com/docs/git-reset) "is about updating your branch, moving the tip in order to add or remove commits from the branch. This operation changes the commit history" ([git, "Reset, restore and revert"](https://git-scm.com/docs/git#_reset_restore_and_revert)). Which command is right depends on where the change is sitting when you notice it, not on how bad the mistake feels.
