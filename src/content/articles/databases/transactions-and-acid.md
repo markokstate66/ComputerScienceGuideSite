@@ -58,7 +58,7 @@ sources:
     url: "https://www.sqlite.org/lang_conflict.html"
     publisher: "SQLite"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A library lets members keep prepaid printing credit in a wallet. Moving credit from one member's wallet to another touches two rows: debit one, credit the other. If the program crashes, the network drops, or a rule is violated after the debit but before the credit, one member has lost money that nobody else received. Whether that can happen — and what a database connection can and cannot observe while it is happening — is what [ACID](/glossary/#transaction) is actually about.

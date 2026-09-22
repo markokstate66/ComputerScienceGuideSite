@@ -1,0 +1,46 @@
+{
+  "article": "src/content/articles/databases/transactions-and-acid.md",
+  "route": "/databases/transactions-and-acid/",
+  "round": 2,
+  "role": "design",
+  "score": 9.3,
+  "lighthouse": { "performance": 98, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "command": "node tools/verify-page.mjs --drafts /databases/transactions-and-acid/",
+    "runs": 1,
+    "checkedAt": "2026-09-22T23:10:55.809Z",
+    "words": 3564,
+    "codeBlocks": 26,
+    "figures": 2,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, owner-supplied byline/legal name)"],
+    "lighthouseNotes": "Single serial run, nothing else building concurrently. Performance 98/100/100/100, same shell-level friction as round 1 (FCP, unused CSS, bf-cache, document-latency) -- none article-specific, none threaten the >=90 gate.",
+    "screenshotsOpened": "desktop-light part04 and part09 (dark), mobile-light fold + parts 01-05,06,07-10,11,12-15,16,17,18-20 (all), mobile-dark parts 06,08,11,16,17,18 spot-checked for color/contrast parity, plus 2x-upscaled crops of the isolation table (mobile-light/dark part06) to verify per-glyph legibility of the Phantom column",
+    "note": "report.json: broken=[], consoleErrors=[], consoleWarnings=[], mobileOverflowPx=0. Only failure is the expected NEEDS_MARKUS byline placeholder. Screenshot count grew from 19 to 20 mobile parts (3411->3564 words) from the writer's SqliteErrorCode/table-header rework; no new pages of content beyond the fix diffs were spot-checked as unrelated additions."
+  },
+  "comparedAgainst": [
+    "docs/reviews/databases/transactions-and-acid.round-1.design.json (this article's own prior round; both flagged defects re-checked directly against their fixes)",
+    "https://www.postgresql.org/docs/current/transaction-iso.html (the article's own primary source for the anomaly table)",
+    "https://use-the-index-luke.com/sql/transaction-isolation (developer-facing isolation-level explainer, for table/prose density comparison)"
+  ],
+  "justification": "Both round-1 blockers are fixed and verified directly against pixels, not just source diffs. (1) Both OUTPUT panels that previously printed the full SqliteException text now print only `ex.SqliteErrorCode` ('A's COMMIT: failed (code 5)', 'B's UPDATE: failed (code 5)'); checked mobile-light/dark part11 (blocked-write demo) and mobile-light/dark part16 (lock-cycle demo) -- both OUTPUT panels are now short enough to render with zero right-edge fade, fully legible in both themes, with no scrolling needed. The prose that follows still explains SQLITE_BUSY and quotes 'database is locked' in running text (mobile-light/dark part15), which is exactly the fix the round-1 review suggested (shorten what's printed, keep the explanation in prose). (2) The isolation-level table's header row was shortened to 'Level | Dirty | Non-repeat | Phantom' and every cell to Yes/No. Checked at 2x-upscaled native resolution (mobile-light/dark part06, plus a cropped/upscaled close-up of the table specifically): the Dirty, Non-repeat and Phantom column *values* (Yes/Yes/Yes/No down the Phantom column) are now all fully visible inside the initial 390px viewport in both themes, un-faded -- this is the exact information Exercise 2's solution depends on ('Repeatable Read still allows phantom reads'), and it no longer requires scrolling to check. This is a substantial improvement over round 1, where the entire fourth column -- header and all four values -- was scrolled off past the right edge with no visible content at all. A residual, much smaller cosmetic issue remains: the header word 'Phantom' itself is still one character short of fitting ('Phanto' visible, fading into 'm') because header cells are left-aligned at full column width while the short Yes/No values sit flush left within that same column and clear the fold first. This does not hide any data -- the reader has already read 'Phantom read' by name three times in the prose and the exercise directly above the table before reaching it -- so I score it a minor polish item, not a blocker. Beyond the two targeted fixes, a fresh full pass found no regressions: Figure 1 (dirty-read timeline) and Figure 2 (lock-cycle) both still render correctly in light and dark with proper accent/bad color swaps and no scrolling of the diagram canvas itself (checked mobile-light/dark parts 06, 16-17 and desktop-light part04, desktop-dark part09); heading hierarchy remains a clean flat H2 list with correctly nested TOC; all three exercises are embedded at point of use and collapse correctly ('Show solution' triangle, checked light and dark); every SQL RESULT and C# OUTPUT panel elsewhere in the article (parts 05, 08-10, 12-15) remains fully legible with no new clipping; prose/code/output rhythm is unchanged and still tight. Lighthouse is a clean 98/100/100/100 on this serial run, 0 console errors, 0 console warnings, 0 broken links, 0px mobile overflow; the only verify failure is the expected NEEDS_MARKUS owner-supplied byline placeholder. This clears the >=8.5 design bar.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "SQL-standard isolation-level table header row, 'Phantom' header cell only (article line 276). Seen at mobile-light/dark part06 (2x crop confirms it is exactly the header text, not the Yes/No values below it, that is affected).",
+      "problem": "The header word 'Phantom' still renders as 'Phanto' with the standard right-edge fade on a 390px phone -- one character short of fitting -- even though the round-1 fix already shortened it from 'Phantom read'. The column's four data values (Yes/Yes/Yes/No) are fully visible and un-faded, so no information is actually hidden; this is purely the header label's last glyph.",
+      "fixLooksLike": "Optional: shorten the header one step further ('Phantom' -> 'Phantm' or 'Phant.') or narrow the 'Non-repeat' column (currently the widest header) by a character or two to give 'Phantom' the room it needs. Given the values are already fully legible and the term is named repeatedly in surrounding prose, this is a nice-to-have, not a re-review blocker."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Lighthouse detail (same shell-level friction as round 1): first-contentful-paint, unused-css-rules, bf-cache blocked, document-latency-insight.",
+      "problem": "Unchanged from round 1 -- same category of shell-level Lighthouse friction seen across other articles' reviews. None threaten the 90 threshold (performance scored 98 again), none are specific to this article's content.",
+      "fixLooksLike": "No writer action. Already noted as a candidate for a consolidated docs/INTEGRATOR_REQUESTS.md entry in the round-1 review; no new information to add here."
+    }
+  ]
+}
