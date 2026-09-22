@@ -1,0 +1,51 @@
+{
+  "article": "src/content/articles/databases/indexes.md",
+  "route": "/databases/indexes/",
+  "round": 1,
+  "role": "design",
+  "score": 8.2,
+  "lighthouse": { "performance": 97, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "command": "node tools/verify-page.mjs --drafts /databases/indexes/",
+    "runs": 1,
+    "checkedAt": "2026-09-22T18:56:14.091Z",
+    "words": 3339,
+    "codeBlocks": 40,
+    "figures": 2,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, owner-supplied)"],
+    "lighthouseNotes": "FCP 2.1 s (score 0.81), ~13 KiB unused CSS, bf-cache blocked by 2 reasons, ~135 KiB document-latency savings, forced reflow and network-dependency-tree insights flagged at 0 — all shell-level (same pattern noted on sibling databases articles), none article-level; no other heavy job was running during the measured run so the 97 is a real single-run number, not re-run to fish for a better score",
+    "screenshotsOpened": "desktop-light fold + parts 01-13 (all), mobile-dark fold + parts 01-20 (all), desktop-dark fold + parts 05, 09 (Figure 1, covering-index panels), mobile-light fold + parts 06, 11 (Figure 1, Figure 2)"
+  },
+  "comparedAgainst": [
+    "https://use-the-index-luke.com/sql/anatomy/the-tree (fetched via WebFetch)",
+    "https://use-the-index-luke.com/sql/where-clause/the-equals-operator/concatenated-keys (fetched via WebFetch)"
+  ],
+  "justification": "Real numbers from node tools/verify-page.mjs --drafts /databases/indexes/ (single run, nothing else heavy running): lighthouse performance=97, accessibility=100, best-practices=100, seo=100; consoleErrors=0, consoleWarnings=0; brokenLinks=0; mobileOverflowPx=0; 3339 words, 40 code blocks, 2 figures, 13 desktop parts, 20 mobile parts. The only verify-page failure is the expected NEEDS_MARKUS placeholder. Against Use The Index, Luke's B-tree page and its concatenated-keys page (the two closest real-world treatments of this article's core claims, both fetched and read in full), this article holds up well and is deeper in places UTIL is not: it backs every structural claim with a live dbstat query showing the article's own table's real page counts (UTIL's tree figures are illustrative only), it measures wall-clock scan-vs-seek and write-overhead with a repeatable C# harness rather than asserting the difference qualitatively, and it adds a documented gotcha (LIKE's BINARY/NOCASE collation pairing) that UTIL covers in a different, longer article. Rhythm is good for a 40-code-block article: three exercises are placed at the natural end of the section they test (after the B-tree page-count section, after composite-index reordering, after the LIKE scan) rather than stacked at the end, the closing section is a content-specific synthesis ('Deciding whether an index earns its keep'), not a generic 'Exercises'/'Conclusion' heading, and every exercise's :::solution correctly hides its query/output pair in all screenshots checked (desktop-light, mobile-dark full pass, mobile-light and desktop-dark spot checks). Both diagrams are technically correct per WRITER_GUIDE section 5 (figure/role=img/title+desc/theme classes, no blank lines, viewBox <= 360 wide so neither scrolls) and read cleanly at 390px in both themes: Figure 1's B-tree and Figure 2's two side-by-side sort orders are legible with no clipped labels in desktop-light, desktop-dark, mobile-light and mobile-dark. Headings are a clean single H1 plus eight content-specific ## sections with no skipped levels, and the one dark-mode :::note callout renders with correct contrast and a distinct left-accent bar. It falls short of 8.5 on one real, repeated phone defect described below (major) plus two minor nits; nothing here is a shell/integrator problem.",
+  "issues": [
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "Every EXPLAIN QUERY PLAN 'RESULT' panel after the first (article lines ~311-315, 439-442, 470-473, 528-532, 552-555, 576-579, 589-592, 739-743), seen in mobile-dark parts 07, 10, 11, 12, 13 and confirmed in mobile-light part11 and desktop-dark parts 05, 09 (light/dark theme makes no difference; it is a viewport-width issue).",
+      "problem": "The article's own prose says 'From here on, only detail is worth reading' — id/parent/notused are explicitly waved off as noise. But the four-column table format means id/parent/notused still consume about 21 of the ~40 visible mobile columns before detail even starts, so on every panel after the first plain SCAN, the visible text stops around 'SEARCH hit USING IN...' and fades before the index name or the WHERE condition appears. That is precisely the content each example exists to show: which index fired and on which column(s) — the article's central teaching device, EQP's SCAN-vs-SEARCH contrast, is unreadable on a phone for roughly 8 of its ~11 SEARCH panels (idx_visitor, idx_visitor_date, idx_date_visitor x2, idx_status_path x3 inside Exercise 2's solution, idx_cover x2, idx_path_ci inside Exercise 3's solution). WRITER_GUIDE section 7 is explicit: 'If the last column is the evidence for a claim, it must not be the one that is cut off.'",
+      "fixLooksLike": "The id/parent/notused/detail column layout can't change (it is SQLite's exact EXPLAIN QUERY PLAN output and WRITER_GUIDE requires exact tool output), so claw back width from the identifiers instead: shorten the index names used from this point on (e.g. idx_visitor_date -> idx_vd, idx_date_visitor -> idx_dv, idx_status_path -> idx_sp, idx_cover -> idx_c, idx_path_ci -> idx_pci). That alone won't get every condition fully on-screen, so also consider, for the two or three panels where the condition is the whole point (idx_visitor_date's two-column SEARCH, the LIKE-range SEARCH in Exercise 3's solution), calling out the exact detail text in the surrounding prose as a short quoted fragment so a phone reader gets it without scrolling, the way the article already does for the dbstat table. Re-run verify-page and check the mobile parts listed above."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Front matter sources list, item 5 ('SQLite: CREATE INDEX', lang_createindex.html) versus the body; desktop-light part13 / mobile-dark part19.",
+      "problem": "Every CREATE INDEX statement in the article is used without any inline citation of the CREATE INDEX reference page itself — the body cites fileformat2.html, queryplanner.html, eqp.html, optoverview.html and expridx.html, but never lang_createindex.html, even though CREATE INDEX syntax and behavior (e.g. the ability to index an expression, or COLLATE NOCASE in an index definition, both used in this article) is exactly what that page documents.",
+      "fixLooksLike": "Add one clause citing it where CREATE INDEX first appears ('A full CREATE INDEX statement can also name a collation or an expression, not just a column name') or where idx_path_ci's COLLATE NOCASE index is introduced, or drop the source from front matter if it is truly redundant with expridx.html."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "The three near-identical C# timing programs (scan-timing ~lines 117-213, seek-timing ~lines 319-414, write-cost ~lines 600-688).",
+      "problem": "Each is 80-100 lines and the first ~70 of each (connection setup, the CREATE TABLE, the WITH RECURSIVE data generator, the Exec/Scalar/TimeQuery helpers) are exact or near-exact repeats of the previous program, differing only in the last handful of lines. On mobile this means scrolling through the same boilerplate three separate times before reaching the one or two lines that changed (CREATE INDEX added, or the indexes parameter), which is the kind of code-heavy stretch the editorial brief's pacing guidance is aimed at trimming, even though the rhythm of prose/code/output at the macro level is otherwise good.",
+      "fixLooksLike": "WRITER_GUIDE section 3 supports exactly this case: wrap the repeated setup in each of the second and third programs' <details><summary>Full program</summary> (keeping run-code's requirement that the full program still compiles and runs), so the collapsed default view shows only the new statement (CREATE INDEX idx_visitor ...; or the indexes: 0/3 branch) plus the timing call and output, and a curious reader can still expand to see the whole thing."
+    }
+  ]
+}
