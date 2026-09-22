@@ -1,0 +1,5 @@
+# Cross-links wanted for testing/test-doubles
+
+- Anchor: "dependency injection" — target: `/oop-design/dependency-injection/` — where: "One exit gate, three collaborators" section, the sentence "...passing dependencies in like this (dependency injection) is the usual way to create one". The planned article (`oop-design` #7) builds a hand-rolled container and covers composition roots and lifetimes, which this article only touches in passing.
+- Anchor: "integration test" — target: `/testing/testing-pyramid-and-integration-tests/` — where: final paragraph of the article ("That is the job of an integration test, and it is the one check no double can replace."). The planned article (`testing` #4) is exactly the pyramid/integration-test piece this sentence gestures at.
+- Prerequisite `testing/unit-testing-fundamentals` is already declared in front matter `prerequisites`; per `docs/WRITER_GUIDE.md` §2 it will surface automatically as "Before you read" once that article publishes, so no manual body link is needed for it.

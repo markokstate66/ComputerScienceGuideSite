@@ -1,0 +1,24 @@
+{
+  "article": "src/content/articles/testing/test-doubles.md",
+  "route": "/testing/test-doubles/",
+  "round": 1,
+  "reviewer": "adsense",
+  "targetQuery": "mocks vs stubs vs fakes",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://enterprisecraftsmanship.com/posts/stubs-vs-mocks/ (Khorikov, \"Stubs vs Mocks\") — well-ranked, C#-first, has real code, but covers only two of the five kinds (stub, mock) and never demonstrates over-mocking with a working regression example",
+    "https://blog.nimblepros.com/blogs/understanding-test-doubles/ — C#/NSubstitute-first sibling in spirit, but covers only four kinds (no dummy), one framework only, no hand-rolled-first pedagogy, no contract-testing or over-mocking sections",
+    "https://keploy.io/blog/community/mock-vs-stub-vs-fake-understand-the-difference — top organic result for the 3-term query; zero code samples, a comparison table plus vendor CTA, thin by comparison",
+    "https://martinfowler.com/articles/mocksArentStubs.html and https://martinfowler.com/bliki/TestDouble.html (Fowler, cited sources) — read to confirm the article's paraphrase of state/behavior verification and the five-double taxonomy is accurate and not closely copied; no matching phrasing found"
+  ],
+  "justification": "This clearly exceeds the best-ranking pages for 'mocks vs stubs vs fakes'. Every competitor found either skips code entirely (Keploy: a comparison table and an embedded product pitch, no runnable examples) or covers 2-4 of the five Meszaros kinds with one library and no worked failure mode (Enterprise Craftsmanship covers only stub/mock; NimblePros covers four kinds with NSubstitute only). This article hand-rolls all five kinds against one running example, then shows what a mocking library (NSubstitute) actually generates and where it falls short (no fake), then demonstrates over-mocking empirically: the same behavior-preserving refactor (Gate B) breaks a strict-mock test but not a state-based one, with real PASS/FAIL output from an executed program, not an assertion. It closes with a decision procedure ('Choosing a double') and a contract-testing exercise tied to .NET's TimeProvider/FakeTimeProvider — value-add no competitor offers. Structure is not templated against other published articles in the site (opens with a two-sentence direct definition rather than the scenario-first opening used in oop-design/four-pillars-of-oop.md and databases/sql-joins.md; heading set and exercise placement are specific to this content, four different exercise forms are used, and the article does not end on an 'Exercises' section). All ten front-matter sources are cited at the point of the claim they support, and spot-checking Fowler's two cited pages found no close paraphrase — the article's definitions are independently worded and its account of the state-vs-behavior-verification argument matches Fowler's own framing. No filler intro/outro, no keyword stuffing, no invented statistics or asserted personal experience, no dead-end links (the one internal link resolves to an existing glossary entry, and docs/crosslinks/testing/test-doubles.md correctly accounts for the two links to unpublished siblings). The only defect found is one minor unsourced generalization about developer jargon usage. Held to 9.0 rather than 10 for that nit and because, per role, a perfect score is reserved for a review that turns up nothing at all.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "\"Why .NET code calls everything a mock\" section, the sentence beginning \"So 'we mock the repository' in conversation usually means...\"",
+      "problem": "Asserts what a common phrase 'usually means' in developer conversation without a source. This is the same shape of claim the editorial brief's pilot-round lessons flag ('No \"what most people think\" claims unless sourced'): it is plausible but not verified, unlike the rest of the section, which grounds the same point in three cited pages (Microsoft Learn, Moq, NSubstitute).",
+      "fixLooksLike": "Either cite a source for the claim about how the phrase is used (e.g. a survey, a widely-cited blog post making the same observation) or rephrase as the article's own working definition rather than a claim about how others talk: e.g. 'Read loosely, \"we mock the repository\" just means \"we replace it with a double of some kind.\"'",
+      "owner": "writer"
+    }
+  ]
+}
