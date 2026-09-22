@@ -46,7 +46,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1.insert"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Five separate principles share one mnemonic. Each one below gets a real violation, a real consequence you can watch happen by running the program, and a fix. Robert C. Martin, who described all five, put the point behind Single Responsibility this way: "Gather together the things that change for the same reasons. Separate things that change for different reasons" [[2]](https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html). That sentence, more than the five-letter acronym, is what the rest of this page is about: where change pressure comes from, and what happens when code that should be separate is fused together.
