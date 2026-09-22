@@ -146,6 +146,10 @@ counter == expected: True
 
 `gate` exists for no other reason than to be locked; that's the guidance behind the example, which uses one dedicated instance and warns specifically against locking on `this`, a `Type` object or a string, because code you don't control might lock the same value for an unrelated reason and serialize against you by accident ([The lock statement](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/lock)). Under the hood, `lock (gate) { counter++; }` compiles to a `Monitor.Enter`/`Monitor.Exit` pair wrapped in `try`/`finally`, so the lock is released even if the guarded code throws.
 
+:::dotnet
+Since .NET 9 and C# 13, that same guidance recommends a `System.Threading.Lock` instead of `object` for the dedicated instance, "for best performance": `gate` could be declared `Lock gate = new();` in place of `object gate = new();`. When the compiler can see that a locked expression's static type is `Lock`, `lock (gate)` compiles to `gate.EnterScope()` rather than `Monitor.Enter`/`Monitor.Exit`. Plain `lock (object)`, the form used throughout this article, still compiles and still works; it just doesn't take that faster path ([The lock statement](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/lock)).
+:::
+
 ## Making the increment atomic: `Interlocked`
 
 `Interlocked.Increment` gets the same result a different way: it performs the load, add and store as a single hardware-level atomic operation rather than serializing threads through a lock. The `Interlocked` class also has `Add`, `Decrement`, `Exchange` and `CompareExchange`, all described as atomic operations for variables shared by multiple threads ([Interlocked Class](https://learn.microsoft.com/en-us/dotnet/api/system.threading.interlocked)):
@@ -518,7 +522,7 @@ On the test machine, limit 1 took roughly 360-375 ms (six 50 ms turns run one af
 
 ## Collections that do their own locking
 
-The counter demos all protect a single value; a server tallying hits per page has many. Locking a plain `Dictionary<TKey,TValue>` by hand works but serializes every key behind one lock, even keys no two threads are touching at the same time. `System.Collections.Concurrent` types manage their own synchronization: `ConcurrentQueue<T>` and `ConcurrentStack<T>` use `Interlocked` operations internally and never take a lock at all, while `ConcurrentDictionary<TKey,TValue>` uses fine-grained locking so that unrelated keys don't contend with each other ([Thread-Safe Collections](https://learn.microsoft.com/en-us/dotnet/standard/collections/thread-safe/)):
+The counter demos all protect a single value; a server tallying hits per page has many. Locking a plain `Dictionary<TKey,TValue>` by hand works but serializes every key behind one lock, even keys no two threads are touching at the same time. `System.Collections.Concurrent` types manage their own synchronization: `ConcurrentQueue<T>` and `ConcurrentStack<T>` use `Interlocked` operations internally and never take a lock at all ([Thread-Safe Collections](https://learn.microsoft.com/en-us/dotnet/standard/collections/thread-safe/)), while `ConcurrentDictionary<TKey,TValue>` uses fine-grained locking so that unrelated keys don't contend with each other ([AddOrUpdate Method](https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.concurrentdictionary-2.addorupdate)):
 
 ```csharp run id=concurrent-dictionary
 using System.Collections.Concurrent;
@@ -563,10 +567,10 @@ bool stalled = false;
 // Locks `from` before `to`, in whichever order the caller passes.
 void Transfer(Account from, Account to, decimal amount)
 {
-    bothStarted.Signal();
-    bothStarted.Wait();
     lock (from.Gate)
     {
+        bothStarted.Signal();
+        bothStarted.Wait();
         if (!Monitor.TryEnter(to.Gate, TimeSpan.FromSeconds(1)))
         {
             stalled = true;
