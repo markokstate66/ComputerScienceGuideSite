@@ -100,7 +100,7 @@ fi
 EOF
 git add flags.txt discount.sh
 git commit -q -m \
-  'feat: add discounts behind a flag'
+  'feat: add discounts flag'
 git switch -q main
 git merge -q --no-ff --no-edit discounts
 git branch -d discounts
@@ -108,15 +108,15 @@ git log --oneline --graph
 ```
 
 ```text output
-Deleted branch discounts (was 48dff02).
-*   16d315e Merge branch 'discounts'
+Deleted branch discounts (was 0162249).
+*   0231e49 Merge branch 'discounts'
 |\  
-| * 48dff02 feat: add discounts behind a flag
+| * 0162249 feat: add discounts flag
 |/  
 * fb7d5a7 feat: initial cart operations
 ```
 
-`discount.sh` is real, runnable code, not a comment saying "TODO: discounts"; `ENABLE_DISCOUNTS=false` is what makes it safe to sit on `main` unfinished. The trunk-based source names this directly: teams "employ feature flags in day to day development to allow for hedging on the order of releases," which is exactly what happened here — the feature merged before it was ready to ship, and shipping is a separate decision from merging.
+`discount.sh` is real, runnable code, not a comment saying "TODO: discounts"; `ENABLE_DISCOUNTS=false` is what makes it safe to sit on `main` unfinished. The trunk-based source names this directly: teams "use feature flags in day to day development to allow for hedging on the order of releases," which is exactly what happened here — the feature merged before it was ready to ship, and shipping is a separate decision from merging.
 
 A second short branch, this time a plain fix, merges the same way:
 
@@ -133,15 +133,15 @@ git log --oneline --graph --all
 ```
 
 ```text output
-Deleted branch cart-guard (was 17355af).
+Deleted branch cart-guard (was c4ae26e).
 discounts not enabled
-*   d5e9cb4 Merge branch 'cart-guard'
+*   9a8e1dd Merge branch 'cart-guard'
 |\  
-| * 17355af fix: guard against empty cart
+| * c4ae26e fix: guard against empty cart
 |/  
-*   16d315e Merge branch 'discounts'
+*   0231e49 Merge branch 'discounts'
 |\  
-| * 48dff02 feat: add discounts behind a flag
+| * 0162249 feat: add discounts flag
 |/  
 * fb7d5a7 feat: initial cart operations
 ```
@@ -149,39 +149,40 @@ discounts not enabled
 `main` is a straight line with two small bumps, one per branch, and `discount.sh` still prints "discounts not enabled": the flag, not the merge, controls what ships.
 
 <figure class="diagram">
-<svg viewBox="0 0 320 300" role="img" aria-labelledby="tbd-title tbd-desc">
-<title id="tbd-title">Trunk-based development: short branches that merge back the same day</title>
-<desc id="tbd-desc">A single vertical main line with two small loops, one for the discounts branch and one for the cart-guard branch, each peeling off and rejoining within the same box. Below them a third loop for a just-in-time release branch is dashed, showing it gets deleted once tagged.</desc>
+<svg viewBox="0 0 320 300" role="img" aria-labelledby="trunk-title trunk-desc">
+<title id="trunk-title">Trunk-based development: short branches that merge back the same day</title>
+<desc id="trunk-desc">A single vertical main line with two small loops, one for the discounts branch and one for the cart-guard branch, each peeling off and rejoining within the same box. Below them a third loop for a just-in-time release branch is dashed, showing it gets deleted once tagged.</desc>
 <defs>
-<marker id="tbd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="d-fill-accent"/></marker>
+<marker id="trunk-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="d-fill-accent"/></marker>
 </defs>
 <rect x="20" y="8" width="140" height="30" rx="6" class="d-box"/>
 <text x="90" y="28" text-anchor="middle" class="d-small">initial commit</text>
-<path d="M90 38 V64" class="d-line" marker-end="url(#tbd-arrow)"/>
-<path d="M90 64 L220 64" class="d-accent d-dashed" marker-end="url(#tbd-arrow)"/>
+<path d="M90 38 V64" class="d-line" marker-end="url(#trunk-arrow)"/>
+<path d="M90 64 L220 64" class="d-accent d-dashed" marker-end="url(#trunk-arrow)"/>
 <rect x="180" y="46" width="130" height="36" rx="6" class="d-box-2"/>
 <text x="245" y="68" text-anchor="middle" class="d-small">discounts, 1 commit</text>
-<path d="M220 82 L90 100" class="d-accent" marker-end="url(#tbd-arrow)"/>
+<path d="M220 82 L90 100" class="d-accent" marker-end="url(#trunk-arrow)"/>
 <rect x="20" y="90" width="140" height="30" rx="6" class="d-box-accent"/>
 <text x="90" y="110" text-anchor="middle" class="d-small">merge discounts</text>
-<path d="M90 120 V146" class="d-line" marker-end="url(#tbd-arrow)"/>
-<path d="M90 146 L220 146" class="d-accent d-dashed" marker-end="url(#tbd-arrow)"/>
+<path d="M90 120 V146" class="d-line" marker-end="url(#trunk-arrow)"/>
+<path d="M90 146 L220 146" class="d-accent d-dashed" marker-end="url(#trunk-arrow)"/>
 <rect x="180" y="128" width="130" height="36" rx="6" class="d-box-2"/>
 <text x="245" y="150" text-anchor="middle" class="d-small">cart-guard, 1 commit</text>
-<path d="M220 164 L90 182" class="d-accent" marker-end="url(#tbd-arrow)"/>
+<path d="M220 164 L90 182" class="d-accent" marker-end="url(#trunk-arrow)"/>
 <rect x="20" y="172" width="140" height="30" rx="6" class="d-box-accent"/>
 <text x="90" y="192" text-anchor="middle" class="d-small">merge cart-guard</text>
-<path d="M90 202 V228" class="d-line" marker-end="url(#tbd-arrow)"/>
+<path d="M90 202 V228" class="d-line" marker-end="url(#trunk-arrow)"/>
 <rect x="20" y="226" width="140" height="30" rx="6" class="d-box"/>
 <text x="90" y="246" text-anchor="middle" class="d-small">gift-wrap merged</text>
 <path d="M90 256 L90 268" class="d-line d-dashed"/>
-<rect x="20" y="270" width="140" height="26" rx="6" class="d-box-warn d-dashed"/>
-<text x="90" y="288" text-anchor="middle" class="d-small">release-0.2, tagged, deleted</text>
+<rect x="20" y="268" width="160" height="30" rx="6" class="d-box-warn d-dashed"/>
+<text x="100" y="284" text-anchor="middle" class="d-small">release-0.2</text>
+<text x="100" y="296" text-anchor="middle" class="d-small">tagged, deleted</text>
 </svg>
 <figcaption>Figure 1. Every side trip off <code>main</code> is small and short: one commit, one merge, same day. The release branch at the bottom exists only long enough to be tagged.</figcaption>
 </figure>
 
-Once a change is worth shipping, trunk-based development leaves the timing to a separate step: "release branches are created on a just-in-time basis, are 'hardened' before a release ... and those branches are deleted some time after release." The rest of this section builds that step as a real script, reusing the `feat:`/`fix:` prefixes already on every commit above.
+Once a change is worth shipping, trunk-based development leaves the timing to a separate step: there may be "release branches that are cut from the trunk on a just-in-time basis, are 'hardened' before a release ... and those branches are deleted some time after release." The rest of this section builds that step as a real script, reusing the `feat:`/`fix:` prefixes already on every commit above.
 
 ```bash run
 cat > next-version.sh <<'SCRIPT'
@@ -221,7 +222,7 @@ chmod +x next-version.sh
 v0.1.0
 ```
 
-The rule the script encodes — `fix` bumps the patch number, `feat` bumps minor, a `!` or a `BREAKING CHANGE` bumps major — is [Conventional Commits](#commit-messages-conventional-commits)' own mapping to [semantic versioning](https://semver.org/), read straight from the log instead of decided by hand. With no prior tag, every commit counts from the start, the highest bump found is `feat` (minor), and `0.0.0` becomes `0.1.0` — a version under `1.0.0`, which [semver's own rule](https://semver.org/) marks as fair warning: "the API SHOULD NOT be considered stable." Tagging makes it official:
+The rule the script encodes — `fix` bumps the patch number, `feat` bumps minor, a `!` or a `BREAKING CHANGE` bumps major — is [Conventional Commits](#commit-messages-conventional-commits)' own mapping to [semantic versioning](https://semver.org/), read straight from the log instead of decided by hand. With no prior tag, every commit counts from the start, the highest bump found is `feat` (minor), and `0.0.0` becomes `0.1.0` — a version under `1.0.0`, which [semver's own rule](https://semver.org/) marks as fair warning: "the public API SHOULD NOT be considered stable." Tagging makes it official:
 
 ```bash run
 ver=$(./next-version.sh)
@@ -233,7 +234,7 @@ git tag -l -n1
 v0.1.0          Release v0.1.0
 ```
 
-`-a` makes this an *annotated* tag, a real object with its own message and date rather than a bare pointer; [git-tag](https://git-scm.com/docs/git-tag) recommends it for exactly this case, "to release a software version." One more feature, one just-in-time release branch to harden it, and the script runs again to prove it is not a one-off:
+`-a` makes this an *annotated* tag, a real object with its own message and date rather than a bare pointer; [git-tag](https://git-scm.com/docs/git-tag) draws the same line: "annotated tags are meant for release while lightweight tags are meant for private or temporary object labels." One more feature, one just-in-time release branch to harden it, and the script runs again to prove it is not a one-off:
 
 ```bash run
 git switch -q -c gift-wrap
@@ -253,7 +254,7 @@ git commit -q -a -m \
 ```
 
 ```text output
-Deleted branch gift-wrap (was 5eac31e).
+Deleted branch gift-wrap (was 2b9a5d6).
 v0.2.0
 ```
 
@@ -269,21 +270,21 @@ git log --oneline --graph --all
 ```
 
 ```text output
-Deleted branch release-0.2 (was b94b490).
+Deleted branch release-0.2 (was ea4e212).
 v0.1.0          Release v0.1.0
 v0.2.0          Release v0.2.0
-* b94b490 chore: freeze flag for release
-*   82563da Merge branch 'gift-wrap'
+* ea4e212 chore: freeze flag for release
+*   a9efec3 Merge branch 'gift-wrap'
 |\  
-| * 5eac31e feat: add gift wrap option
+| * 2b9a5d6 feat: add gift wrap option
 |/  
-*   d5e9cb4 Merge branch 'cart-guard'
+*   9a8e1dd Merge branch 'cart-guard'
 |\  
-| * 17355af fix: guard against empty cart
+| * c4ae26e fix: guard against empty cart
 |/  
-*   16d315e Merge branch 'discounts'
+*   0231e49 Merge branch 'discounts'
 |\  
-| * 48dff02 feat: add discounts behind a flag
+| * 0162249 feat: add discounts flag
 |/  
 * fb7d5a7 feat: initial cart operations
 ```
@@ -505,7 +506,7 @@ Deleted branch seats (was 5a7eca4).
 * 1f19068 chore: seed the production branch
 ```
 
-Git names these merge commits "into develop" on its own, because `develop` is not the branch this repository started on; `main` still gets the plain "Merge branch 'x'" message, as it did in the two sections above. Neither feature has reached `main` yet — it is still exactly the one seed commit. A release branch cuts from `develop`, bumps the version, and takes one last-minute confirmation the original post calls out by name: "new small bugfixes ... other than that, no new features"; the version bump is the same kind of `chore:` commit the trunk-based release used, and the fix stays a `fix:`:
+Git names these merge commits "into develop" on its own, because `develop` is not the branch this repository started on; `main` still gets the plain "Merge branch 'x'" message, as it did in the two sections above. Neither feature has reached `main` yet — it is still exactly the one seed commit. A release branch cuts from `develop`, bumps the version, and takes one last-minute confirmation the original post calls out by name: it "allow[s] for minor bug fixes and preparing meta-data for a release," while "adding large new features here is strictly prohibited"; the version bump is the same kind of `chore:` commit the trunk-based release used, and the fix stays a `fix:`:
 
 ```bash run
 git switch -q -c release-1.0.0 develop
@@ -554,7 +555,7 @@ git commit -q -a -m \
   'chore: bump version to 1.0.1'
 sed -i 's/rows: 20/rows: 22/' seats.txt
 git commit -q -a -m \
-  'fix: correct main hall row count'
+  'fix: correct row count'
 git switch -q main
 git merge -q --no-ff --no-edit hotfix-1.0.1
 git tag -a v1.0.1 -m 'Release v1.0.1'
@@ -565,10 +566,10 @@ git log --oneline --graph main
 ```
 
 ```text output
-Deleted branch hotfix-1.0.1 (was 2e564fc).
-*   48c484d Merge branch 'hotfix-1.0.1'
+Deleted branch hotfix-1.0.1 (was bc59002).
+*   c5414f7 Merge branch 'hotfix-1.0.1'
 |\  
-| * 2e564fc fix: correct main hall row count
+| * bc59002 fix: correct row count
 | * faf0c75 chore: bump version to 1.0.1
 |/  
 *   fcf1bf3 Merge branch 'release-1.0.0'
@@ -646,7 +647,7 @@ git merge-base --is-ancestor \
 ```
 
 ```text output
-2e564fc fix: correct main hall row count
+bc59002 fix: correct row count
 ```
 
 The branch name `hotfix-1.0.1` no longer exists to check against directly, so the search falls back to finding the commit by message; either way, it is on `develop`, one merge away from the tip, not buried inside a release branch.
@@ -693,7 +694,7 @@ A team adds a third feature to each of the two repositories above, following the
 
 ## Commit messages: Conventional Commits
 
-Every commit message on this page follows one convention: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) defines `type: description`, optionally `type(scope): description`, where "the type `feat` MUST be used when a commit adds a new feature" and "the type `fix` MUST be used when a commit represents a bug fix." `chore` is not part of the required set — the specification defines only `feat` and `fix` and leaves the rest, `chore` among them, as an open convention — but it is a common way to mark a commit like a version bump that is neither. A breaking change is marked one of two ways: "a `!` immediately before the `:`" in the header (`feat!:`), or "the uppercase text `BREAKING CHANGE`, followed by a colon, space, and description" in the footer. `next-version.sh`, [built earlier on this page](#trunk-based-development-one-branch-and-short-trips-off-it), implements the specification's own mapping to semver directly: `fix` → `PATCH`, `feat` → `MINOR`, a breaking change → `MAJOR` "regardless of what type is used."
+Every commit message on this page follows one convention: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) defines `type: description`, optionally `type(scope): description`, where "the type `feat` MUST be used when a commit adds a new feature" and "the type `fix` MUST be used when a commit represents a bug fix." `chore` is not part of the required set — the specification defines only `feat` and `fix` and leaves the rest, `chore` among them, as an open convention — but it is a common way to mark a commit like a version bump that is neither. A breaking change is marked one of two ways: "a `!` immediately before the `:`" in the header (`feat!:`), or "the uppercase text `BREAKING CHANGE`, followed by a colon, space, and description" in the footer. `next-version.sh`, [built earlier on this page](#trunk-based-development-one-branch-and-short-trips-off-it), implements the specification's own mapping to semver directly: `fix` → `PATCH`, `feat` → `MINOR`, a breaking change → `MAJOR` "regardless of type."
 
 That script has a real gap, though, and the two forms of breaking change above are exactly where it shows:
 
@@ -742,10 +743,10 @@ The merge method is a related, separate choice. This page used `--no-ff` merge c
 
 | Situation | Fits | Why |
 |---|---|---|
-| One thing in production, deployed on every merge | Trunk-based or GitHub Flow | No release branch to maintain; Driessen's own 2020 note steers continuously-delivered apps toward "a much simpler workflow (like GitHub flow)" |
-| Every change needs a review gate, enforced by the host | GitHub Flow | Branch protection blocks a merge that lacks it; trunk-based development leaves review optional and short |
-| Merging and releasing are different decisions | Trunk-based, with feature flags | "Hedging on the order of releases" is the source's own phrase for what a flag buys |
-| Several versions supported in the field at once | Git Flow | `hotfix` branches patch `main` without pulling in whatever `develop` holds; nothing in the other two models separates "in production" from "in progress" the same way |
-| Small team, low process overhead wanted | Trunk-based or GitHub Flow | Fewer branch types, fewer merge commits — measured above as 3 merges versus Git Flow's 4 into `main` plus 5 into `develop` for comparable work |
+| One thing in production, deployed on every merge | Trunk-based or GitHub Flow | No release branch to maintain |
+| Every change needs a review gate, enforced by the host | GitHub Flow | Branch protection enforces the gate |
+| Merging and releasing are different decisions | Trunk-based, with feature flags | Flags decouple "merged" from "released" |
+| Several versions supported in the field at once | Git Flow | `hotfix` patches `main` without `develop` |
+| Small team, low process overhead wanted | Trunk-based or GitHub Flow | Fewest branch types, fewest merge commits |
 
 None of the three is a personality. A team can run GitHub Flow with feature flags, or Git Flow with every feature branch reviewed through a pull request before it merges into `develop` — the choice above is about which structural guarantee the release process actually needs, not which one looks more disciplined on a diagram.
