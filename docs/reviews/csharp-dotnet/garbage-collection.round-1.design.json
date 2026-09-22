@@ -1,0 +1,29 @@
+{
+  "article": "src/content/articles/csharp-dotnet/garbage-collection.md",
+  "route": "/csharp-dotnet/garbage-collection/",
+  "round": 1,
+  "critic": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/fundamentals",
+    "https://learn.microsoft.com/en-us/dotnet/standard/automatic-memory-management"
+  ],
+  "justification": "Both compared pages (the top two results for \"'.net garbage collector explained'\" once you exclude API reference pages) are unbroken prose: Fundamentals of garbage collection is ~2,900 words with one static screenshot illustration and zero runnable code; Automatic Memory Management is ~1,450 words with no illustration at all. Neither has a dark theme to get right, a mobile-specific layout to break, or any interactive element. This article has four hand-drawn diagrams that all follow the phone-width rules (viewBox <=360, portrait/stacked, annotations under the shape, no fill/stroke literals) and read correctly in both themes on both breakpoints; 33 runnable code blocks with real output; and six exercises whose solutions stay collapsed on every screenshot checked (desktop-light, mobile-dark, mobile-light, desktop-dark), so nothing is given away. Lighthouse is 94/100/100/100 (performance headroom over the 90 floor was ample enough that a re-run wasn't needed), console errors 0, broken links 0, and mobileOverflowPx 0 -- the page never breaks its column. That is a materially better reading and comprehension experience than either competitor, on both desktop and phone. It falls short of a 10 for one concrete, reproducible defect: the `promotion` example's output panel pads its label to 30 columns before printing `generation N`, so on a 390px phone the panel is cut off exactly before the digit that is the entire point of the example (0, 1, then 2) -- the precise failure mode WRITER_GUIDE section 7 warns against (\"if the last column is the evidence for a claim, it must not be the one that is cut off\"). It's an isolated, trivially fixable formatting issue in one of 33 code blocks, not a structural or comprehension problem elsewhere on the page, so it costs a fraction of a point rather than more.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "\"Why sort objects into generations instead of collecting everything at once?\" section, the `id=promotion` code example and its output panel (`$\"{when,-30}generation {GC.GetGeneration(o)}\"`)",
+      "problem": "The output panel right-pads `when` to 30 characters before printing `generation {N}`. At the ~40-visible-character budget on a 390px phone (confirmed in mobile-dark and mobile-light screenshots), all three output lines are cut off right after the word \"generation\", so the actual generation number (0, then 1, then 2) -- the one piece of evidence the example exists to show -- is hidden past the fade on the majority-phone audience. Desktop is unaffected because the wider column shows the full line.",
+      "fixLooksLike": "Narrow the padding so the number stays inside the visible column, e.g. `{when,-16}generation {GC.GetGeneration(o)}` (or shorten the labels to \"just allocated\" / \"after gen 0\" / \"after gen 1\", which are already short enough), and re-check with `node tools/verify-page.mjs --drafts --no-lighthouse /csharp-dotnet/garbage-collection/` that the digit is visible in the mobile-*-partNN screenshot before the fade.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 94,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
