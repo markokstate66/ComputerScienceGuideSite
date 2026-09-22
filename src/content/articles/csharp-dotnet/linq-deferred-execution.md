@@ -42,7 +42,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerablequery-1"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A help-desk queue is a `List<Ticket>`. One LINQ query is supposed to find the tickets that breach their service-level agreement, log each one, and report how many there were. It reads like a single operation. It is not: it runs the SLA check once per ticket for every place the query is used, and nothing in the code says so.
