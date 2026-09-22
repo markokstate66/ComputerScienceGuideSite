@@ -1,0 +1,36 @@
+{
+  "article": "src/content/articles/version-control/rebase-vs-merge.md",
+  "route": "/version-control/rebase-vs-merge/",
+  "round": 2,
+  "role": "adsense",
+  "score": 9.1,
+  "comparedAgainst": [
+    "https://git-scm.com/docs/git-merge-base (read in full, live fetch; used to re-verify the --is-ancestor quote word for word)",
+    "https://git-scm.com/docs/git-rebase (spot-checked against the reworded golden-rule paragraph and the earlier 'What git rebase writes instead' section)",
+    "src/content/articles/version-control/how-git-works.md (read the identity/date-pinning section in full to confirm the new cross-link target is real and that it actually does what the parenthetical claims)",
+    "src/content/articles/version-control/branching-and-merging.md (re-checked against the reproducibility standard: never prints a raw hash)",
+    "docs/reviews/version-control/rebase-vs-merge.round-1.adsense.json (the three findings this round verifies)",
+    "git diff 10e04da..07dcdcc -- src/content/articles/version-control/rebase-vs-merge.md (the writer's actual round-2 patch, read in full to confirm the fix matches the claim and nothing else moved)"
+  ],
+  "runCodePass": true,
+  "runCodeResult": "PASS version-control/rebase-vs-merge.md blocks=22 executed=11 (ran node tools/run-code.mjs from PowerShell directly; matches the writer's claim exactly)",
+  "consoleErrors": null,
+  "brokenLinks": null,
+  "justification": "All three round-1 findings are genuinely fixed, and the patch that fixed them is small and surgical (confirmed by diffing 10e04da..07dcdcc: only the --is-ancestor quote, the annotate~1/annotate-for-rebase~1 paragraph and its code block, and the golden-rule sentence changed; nothing else in the article moved). (1) Self-contradiction: the golden-rule paragraph now reads 'writes a new one with a new tree as well as a new parent — replaying a commit onto a different base changes what it contains, not only where it sits — so the old and new versions are unrelated objects that happen to carry the same edit.' Read against 'What git rebase writes instead' two sections earlier ('Their full trees are not equal either... every tree is a complete snapshot, not a diff... a commit ID is a function of where it sits in the graph as well as what it contains'), the two sections now make the identical claim in near-mirrored language (tree changes because of content/position, parent changes too) instead of contradicting it. Genuinely consistent, not a superficial reword. (2) Reproducibility gap: I grepped the whole file for any 7-40 char hex-looking token and found none — the one spot that used to print raw hashes (`git rev-parse annotate~1` / `annotate-for-rebase~1`) now computes and prints only a same/different boolean ('same object: no'), matching the pattern the article already used one code block earlier ('tip is the same commit: no'). The added parenthetical links to how-git-works.md's identity/date-pinning section (`#a-new-repository-no-objects-and-a-head-that-points-at-nothing`), which I read in full: it does pin user.name/user.email/GIT_AUTHOR_DATE/GIT_COMMITTER_DATE specifically because commit and tag IDs hash those values, and the anchor slug matches the site's actual slugging rule (confirmed against another already-working in-article link, '#a-branch-is-a-41-byte-file-and-a-log-line', which strips the same punctuation the same way) — the cross-link target is real and on point. This now matches the reproducibility standard set by both siblings and closes the exact gap the editorial brief's pilot-round lesson names. (3) Citation fidelity: I fetched git-merge-base live myself. The doc's exact text is 'Check if the first <commit> is an ancestor of the second <commit>, and exit with status 0 if true, or with status 1 if not.' The article's quote is now 'Check if the first commit is an ancestor of the second, and exit with status 0 if true, or with status 1 if not' — the imperative mood/verb forms the round-1 issue flagged ('checks'/'exits' vs 'Check'/'exit') are fixed exactly as claimed. Run-code verified independently from PowerShell: PASS, blocks=22, executed=11, matching the writer's claim. Independent sanity pass on the changed areas found no new filler or fabrication, and originality is undisturbed since the changes are confined to rewording an existing sentence and swapping one output block's content, not adding new claims. Two very minor things kept this off a higher score and are reported for completeness, neither blocking: first, the new parenthetical has a small grammatical gap — '...the way [How Git Works Inside](...) pinned them to make reproducible' is missing an object after 'make reproducible' (reads as 'make reproducible' rather than 'make them reproducible' or similar); it's understandable in context but not fully natural prose. Second, the --is-ancestor quote, now verbatim in mood, still silently drops the source's `<commit>` placeholder markers (source: 'the first <commit>... the second <commit>'; article: 'the first commit... the second'), which is a pre-existing normalization that predates this round (round 1 only flagged the verb tense, not this) and is inconsistent with how the article treats the same kind of placeholder elsewhere — the --fixup quote two sections later preserves `<commit>` literally in backticks ('changes the content of `<commit>` but leaves its log message untouched'). Neither issue is a fabrication, a policy risk, or a reintroduction of anything round 1 flagged; both are small enough for a writer to fix in one sentence each, and I'm listing them as low-severity notes rather than blockers.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "'What git rebase writes instead' section, parenthetical added in the round-2 fix: 'the way [How Git Works Inside](...) pinned them to make reproducible'",
+      "problem": "Missing an object after 'make reproducible' — reads as an incomplete verb phrase (make reproducible *what*?). Meaning is recoverable from context but the sentence is not fully grammatical.",
+      "fixLooksLike": "'...the way How Git Works Inside pinned them to make commit IDs reproducible' or '...pinned them to make those IDs reproducible'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 'Rule out the easy case first', quote of git-merge-base's --is-ancestor description",
+      "problem": "Now verbatim in mood/verb form (matches the live doc's 'Check'/'exit'), but still silently drops the source's `<commit>` placeholder markers ('the first <commit>... the second <commit>' becomes 'the first commit... the second'). This is a pre-existing normalization not touched by the round-2 fix, and it is inconsistent with how the article handles the same kind of placeholder elsewhere: the --fixup quote later in the article preserves `<commit>` literally in backticks.",
+      "fixLooksLike": "Either keep `<commit>` literally as the --fixup quote does ('...ancestor of the second `<commit>`...') or bracket the substitution ('the first [commit]... the second [commit]') for consistency with the article's own convention.",
+      "owner": "writer"
+    }
+  ]
+}
