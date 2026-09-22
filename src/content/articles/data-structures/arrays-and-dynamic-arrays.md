@@ -67,7 +67,10 @@ Two loops add up the same 16 million integers. They execute the same number of a
 
 The program builds a square grid of `int` values at six sizes and sums each grid twice. `SumRowFirst` moves along a row before going to the next row. `SumColumnFirst` runs down a column before going to the next column. Each sum is repeated and the best time is reported as nanoseconds per element, so that grids of different sizes can be compared.
 
-All measurements on this page come from .NET 10 (runtime 10.0.10) on Windows 11, on an 8-core x64 desktop processor that reports 16 MB of last-level cache. The first line of the program turns on compiler optimizations. Without it, `dotnet run` on a single file produced unoptimized code here, and the row-first loop ran almost three times slower.
+All measurements on this page come from .NET 10 (runtime 10.0.10) on Windows 11, on an 8-core x64 desktop processor that reports 16 MB of last-level cache. The first line of the program turns on compiler optimizations. Without it, `dotnet run` on a single file produced unoptimized code here, and every timing on this page was noticeably slower and noisier, which is why the property is on in every measured program below.
+
+<details>
+<summary>Full program: the traversal timing harness</summary>
 
 ```csharp run id=traversal
 #:property Optimize=true
@@ -79,7 +82,8 @@ CultureInfo.CurrentCulture =
 
 int[] sizes =
     [100, 500, 1000, 2000, 4000, 4096];
-Console.WriteLine("size    row     col  ratio");
+Console.WriteLine(
+    "size    row     col  ratio");
 foreach (int n in sizes)
 {
     var grid = new int[n, n];
@@ -151,7 +155,37 @@ size    row     col  ratio
 4096 [...] [...] [...]
 ```
 
-The timings differ on every run and every machine, so the output panel shows only the shape. These are the numbers from one run here, with the size of each grid added; a second run agreed to within about 15 percent in every cell.
+</details>
+
+The two functions inside it that actually differ are the loop nesting around the same read:
+
+```csharp snippet of=traversal
+static long SumRowFirst(int[,] g)
+{
+    int rows = g.GetLength(0);
+    int cols = g.GetLength(1);
+    long sum = 0;
+    for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++)
+            sum += g[r, c];
+    return sum;
+}
+
+static long SumColumnFirst(int[,] g)
+{
+    int rows = g.GetLength(0);
+    int cols = g.GetLength(1);
+    long sum = 0;
+    for (int c = 0; c < cols; c++)
+        for (int r = 0; r < rows; r++)
+            sum += g[r, c];
+    return sum;
+}
+```
+
+Everything else in the program above is instrumentation: building six grids, warming the JIT up with one throwaway call per size, and keeping the best of five timed repetitions so one slow run does not skew the result.
+
+The timings differ on every run and every machine, so the output panel above shows only the shape. These are the numbers from one run here, with the size of each grid added; a second run agreed to within about 15 percent in every cell.
 
 | Size | Ratio | Grid MB | Row ns | Col ns |
 |---:|---:|---:|---:|---:|
@@ -221,14 +255,16 @@ You can observe these distances from safe code. `Unsafe.ByteOffset` reports how 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-Console.WriteLine("bytes from [0] to:   [1]  [3]");
+Console.WriteLine(
+    "bytes from [0] to:   [1]  [3]");
 Show("int[]", new int[8]);
 Show("long[]", new long[8]);
 Show("Sample[]", new Sample[8]);
 Show("string[]", new string[8]);
 
 var grid = new int[3, 5];
-Console.WriteLine("int[3,5], bytes from [0,0] to:");
+Console.WriteLine(
+    "int[3,5], bytes from [0,0] to:");
 Console.WriteLine(
     $"  [0,1] {Gap(ref grid[0, 0], ref grid[0, 1])}" +
     $"  [1,0] {Gap(ref grid[0, 0], ref grid[1, 0])}" +
@@ -366,7 +402,7 @@ Neither mechanism was measured in isolation here, so treat this as the more defe
 
 At *n* = 4,096 the reuse distance is barely bigger than at 4,000, about 256 KB against 250 KB, yet the ratio nearly triples, from around 6 to around 18. Size alone does not explain that; alignment might. A cache does not choose freely where to place a line: which of its sets a line can go in comes from some of the address bits (Drepper, section 3.3.1). With 4,096 columns of 4-byte values, consecutive column-first reads are exactly 16,384 = 2¹⁴ bytes apart, so every address in a column agrees in its low 14 bits and all of them compete for the same narrow group of sets instead of spreading across the cache.
 
-This page did not measure cache misses directly, so that account is a hypothesis, not a finding. It is testable, though: if the problem is the power-of-two stride and not the size, padding the row so the stride is no longer a power of two should remove most of the anomaly while leaving a grid of nearly the same size. The next program checks that, and also checks the reuse-distance story above directly, by summing the columns in narrow bands instead of one column at a time. A band of 16 columns keeps the working set for that band to about 16 lines instead of *n*, without reading a single byte more.
+This page did not measure cache misses directly, so that account is a hypothesis, not a finding. It is testable, though: if the problem is the power-of-two stride and not the size, padding the row so the stride is no longer a power of two should remove most of the anomaly while leaving a grid of nearly the same size. The next program checks that, and also checks the reuse-distance story above directly, by summing the columns in narrow bands instead of one column at a time. A band of 16 `int` columns is exactly one 64-byte cache line, so each row's slice of a band is read in full the moment it is touched, with nothing left to reuse a whole pass later: the reuse distance drops from about *n* lines to essentially none, without reading a single byte more.
 
 ```csharp run id=tiled
 #:property Optimize=true
@@ -387,8 +423,10 @@ static void Report(int n, int band)
         for (int c = 0; c < n; c++)
             g[r, c] = (r + c) & 7;
 
-    double row = Best(n, () => SumRows(g, n));
-    double col = Best(n, () => SumCols(g, n));
+    double row = Best(
+        n, () => SumRows(g, n));
+    double col = Best(
+        n, () => SumCols(g, n));
     double tiled = Best(
         n, () => SumTiled(g, n, band));
     Console.WriteLine(
@@ -544,7 +582,36 @@ laps[6]: a slot, not an element
 
 `CheckIndex` exists because the array and the list disagree about what is valid. After five appends the backing array has eight slots, and the array would hand over slot 6 without complaint: it holds `default(T)`, not a lap time. The list has to check against its own count first. The cast to `uint` folds the two tests `index >= 0` and `index < _count` into one comparison, because a negative `int` reinterpreted as unsigned is larger than any valid count. `List<T>`'s indexer in `List.cs` does exactly this, with a comment saying so.
 
+That indexer returns `T` by value, not by reference, and that has a consequence a reader only meets once `T` is a mutable struct: you cannot assign into a field through it.
+
+```csharp run error=CS1612
+List<Reading> readings = [new(20.0)];
+readings[0].Celsius = 21.0;
+
+struct Reading(double celsius)
+{
+    public double Celsius = celsius;
+}
+```
+
+The same line compiles against an array, because `T[]`'s indexer does return by reference: `Reading[] readings = [new(20.0)]; readings[0].Celsius = 21.0;` builds and runs. `List<T>` cannot offer that without handing out a reference into its backing array, which is exactly what `CollectionsMarshal.AsSpan`, further down this page, does on purpose.
+
 `Grow` doubles. Why doubling, and not adding a fixed number of slots, makes `Add` cost O(1) [amortized](/glossary/#amortized-analysis) is the subject of [Amortized Analysis: Why List&lt;T&gt;.Add Is O(1)](/complexity/amortized-analysis/), which traces the real `List<T>` doing it. The starting size of 4 and the factor of 2 mirror what `List.cs` does today; neither is documented behavior.
+
+### The third field: catching edits during a loop
+
+`_version` is incremented by the methods that change the list: `Add`, `Insert`, `RemoveAt`, `Clear`, the indexer's setter and the rest. An enumerator remembers the version it started with, and `MoveNext` in `List.cs` throws if the number has moved. That is where this failure comes from:
+
+```csharp run throws=InvalidOperationException
+List<int> jobs = [3, 8, 12, 15];
+foreach (int job in jobs)
+{
+    if (job % 2 == 0)
+        jobs.Remove(job);
+}
+```
+
+The exception ("Collection was modified; enumeration operation may not execute") is the list protecting you: after a removal, every later element has a new index, and an enumerator that carried on would skip one. The check is there to catch this bug in single-threaded code. It is a plain integer comparison with no locking, so it is not a thread-safety mechanism.
 
 ### Does the wrapper make a list slower than an array?
 
@@ -627,21 +694,6 @@ Over half a dozen runs here, the array, the list and the span each took between 
 
 So for reading, the choice between `T[]` and `List<T>` is not a performance decision in code like this. What separates them is whether the length may change, and what the list's extra operations cost.
 
-### The third field: catching edits during a loop
-
-`_version` is incremented by the methods that change the list: `Add`, `Insert`, `RemoveAt`, `Clear`, the indexer's setter and the rest. An enumerator remembers the version it started with, and `MoveNext` in `List.cs` throws if the number has moved. That is where this failure comes from:
-
-```csharp run throws=InvalidOperationException
-List<int> jobs = [3, 8, 12, 15];
-foreach (int job in jobs)
-{
-    if (job % 2 == 0)
-        jobs.Remove(job);
-}
-```
-
-The exception ("Collection was modified; enumeration operation may not execute") is the list protecting you: after a removal, every later element has a new index, and an enumerator that carried on would skip one. The check is there to catch this bug in single-threaded code. It is a plain integer comparison with no locking, so it is not a thread-safety mechanism.
-
 ## What Insert and RemoveAt really move
 
 Contiguity has a price. There are no gaps, so putting a new element anywhere but the end means making room, and taking one out means closing the hole.
@@ -707,7 +759,8 @@ CultureInfo.CurrentCulture =
 
 int[] sizes =
     [25_000, 50_000, 100_000, 200_000];
-Console.WriteLine("n         Add   Insert(0)");
+Console.WriteLine(
+    "n         Add   Insert(0)");
 foreach (int n in sizes)
 {
     double back = Time(() =>
@@ -769,7 +822,8 @@ Console.WriteLine(
 static void DropEvens(
     List<int> nums)
 {
-    for (int i = 0; i < nums.Count; i++)
+    for (int i = 0;
+         i < nums.Count; i++)
         if (nums[i] % 2 == 0)
             nums.RemoveAt(i);
 }
@@ -1030,6 +1084,9 @@ C# gives you two ways to write a two-dimensional table, and after the sections a
 
 Which is faster is not something to guess. The next program sums a 4000 × 4000 grid stored three ways (rectangular, jagged, and a plain `int[]` indexed as `r * N + c`) in both loop orders.
 
+<details>
+<summary>Full program: three layouts, two loop orders</summary>
+
 ```csharp run id=grids
 #:property Optimize=true
 using System.Diagnostics;
@@ -1054,7 +1111,8 @@ for (int r = 0; r < N; r++)
     }
 }
 
-Console.WriteLine("layout        rows     cols");
+Console.WriteLine(
+    "layout        rows     cols");
 Report("int[,]", rowsFirst =>
     RectSum(rect, rowsFirst));
 Report("int[][]", rowsFirst =>
@@ -1065,8 +1123,10 @@ Report("flat int[]", rowsFirst =>
 static void Report(
     string name, Func<bool, long> sum)
 {
-    double rows = Best(() => sum(true));
-    double cols = Best(() => sum(false));
+    double rows = Best(
+        () => sum(true));
+    double cols = Best(
+        () => sum(false));
     Console.WriteLine(
         $"{name,-10} {rows,7:F1}  {cols,6:F1}");
 }
@@ -1138,6 +1198,42 @@ int[][]    [...]  [...]
 flat int[] [...]  [...]
 ```
 
+</details>
+
+Inside it, only the indexing expression changes between the three layouts:
+
+```csharp snippet of=grids
+static long RectSum(
+    int[,] g, bool rowsFirst)
+{
+    long s = 0;
+    if (rowsFirst)
+        for (int r = 0; r < N; r++)
+            for (int c = 0; c < N; c++)
+                s += g[r, c];
+```
+
+```csharp snippet of=grids
+static long JagSum(
+    int[][] g, bool rowsFirst)
+{
+    long s = 0;
+    if (rowsFirst)
+        foreach (int[] row in g)
+            foreach (int v in row) s += v;
+```
+
+```csharp snippet of=grids
+static long FlatSum(
+    int[] g, bool rowsFirst)
+{
+    long s = 0;
+    if (rowsFirst)
+        foreach (int v in g) s += v;
+```
+
+`RectSum` reads `g[r, c]` on one rectangular block, `JagSum` walks the outer array of row references and sums each row array, and `FlatSum` reads a single-dimension array through a hand-computed offset. The rest of each function, and the `Report`/`Best` timing wrapper above, is the same shape as the traversal harness earlier: warm up once, then keep the best of five runs.
+
 The ranges over five runs on this machine:
 
 | Layout | Rows ms | Cols ms |
@@ -1172,7 +1268,8 @@ for (int r = 0; r < N; r++)
         jagged[r][c] = (r + c) & 7;
 }
 
-double plain = Best(() => Cols(jagged));
+double plain = Best(
+    () => Cols(jagged));
 double banded = Best(
     () => Banded(jagged, band: 16));
 Console.WriteLine(
@@ -1234,13 +1331,11 @@ Two runs here gave column-first around 168 ms and banded-by-16 around 17 to 18 m
 
 The measurements above reframe the "array or list" question. Reading is equally fast in both. The choice is about what may change, and who is allowed to change it.
 
-| Operation | `T[]` | `List<T>` |
-|---|---|---|
-| Read/write by index | O(1) | O(1) |
-| Append at the end | not supported | O(1) amortized |
-| Insert/remove at index *i* | replace the array | O(Count − *i*), roughly |
-| `Contains`/`IndexOf` | O(*n*), unsorted | O(*n*), unsorted |
-| `BinarySearch` | O(log *n*), sorted only | O(log *n*), sorted only |
+- **Read or write by index.** `T[]`: O(1). `List<T>`: O(1) too, an index check against `Count` on top of the array's own.
+- **Append at the end.** `T[]`: not supported; the length is fixed for the life of the instance. `List<T>`: O(1) amortized, via `Add`.
+- **Insert or remove at index *i*.** `T[]`: not supported without allocating a new, larger or smaller array and copying into it. `List<T>`: O(Count − *i*), roughly, the shift measured above.
+- **`Contains` / `IndexOf` on unsorted data.** `T[]` and `List<T>`: both O(*n*); `List<T>` calls straight through to `Array.IndexOf` on its backing array.
+- **`BinarySearch`.** `T[]` and `List<T>`: both O(log *n*), and both require the data to already be sorted by the comparison `BinarySearch` uses.
 
 - **Length known and fixed:** `T[]`. Least overhead, and the length cannot drift.
 - **Length unknown, growth at the end:** `List<T>`. `Add` is O(1) amortized.
