@@ -1,0 +1,78 @@
+{
+  "article": "src/content/articles/networking/how-the-internet-works.md",
+  "route": "/networking/how-the-internet-works/",
+  "role": "design",
+  "round": 2,
+  "score": 8.4,
+  "comparedAgainst": [
+    "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview (MDN, fetched: diagrams and a request/response sample, no runnable code, no measurement)",
+    "A second page (https://aws.amazon.com/what-is/dns/) returned 404 and was not used as evidence; the comparison rests on one successful fetch plus the site's own WRITER_GUIDE phone rules"
+  ],
+  "justification": "Presentation is close to MDN quality and the concept is better illustrated than in MDN's overview: three figures that each carry information (Figure 1 sequence bands with RTT labels, Figure 2 chunked-body byte accounting, Figure 3 layer wrapping with byte counts), all correct in dark theme with the accent color still separating encrypted arrows, all drawn at 360 units so nothing is faded or cut at 390 px. Reading rhythm is good for 5,750 words and 32 minutes: prose, one program, an output panel, then interpretation, with only three callouts (In .NET, Common pitfall, Info) that each carry content, five collapsed exercises of different forms placed mid-flow, a compact timing table that fits at 390 px, and a 27-item dated Sources list. Heading hierarchy is clean (one H1, specific H2s, H3s only under the long TCP and TLS sections), no boilerplate headings, output panels are 40 columns or less. The round-1 major on the three-column layer-model table is fixed (now a four-item list). Held below 8.5 because the round-1 major on phone clipping is only partly fixed: in the SNI experiment the host-name argument that the prose calls 'the only thing that differed' is under the fade at 390 px. Smaller nits: British spellings on an American-spelling site (one of them inside Figure 1), a three-line H2 on phones, and the phone hero pushing the first paragraph to the bottom of the first screen (shell). Real numbers from report.json and lighthouse.json: Lighthouse 95/100/100/100, zero console errors, zero broken links, mobileOverflowPx 0; the only failure is the expected NEEDS_MARKUS placeholder. Performance 95 comes from FCP/LCP/Speed Index of 2.4 s on the simulated mobile profile with TBT 0 and CLS 0; the audit also flagged 'document latency, est. savings of 170 KiB', likely compression on the local preview server, so performance may be understated or vary; the orchestrator should still re-measure serially.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Section 'One address, several certificates', program id=names (article lines 606 and 632; mobile-dark part13, mobile-light equivalent)",
+      "problem": "At 390 px the operative parts of the SNI experiment are under the fade: the array shows only '[\"example.com\", \"example.org\", \"wrong' so the third name, the one that produces 'refused', is not visible; 'await Ask(found[' loses the name argument; and 'tls.AuthenticateAsClientAsy' is cut before '(name)', the very argument the paragraph below identifies as 'the only thing that differed between the three attempts'. A phone reader cannot see in the code what the prose says the experiment turns on. This is the round-1 clipping major, still open for this block; other blocks named in round 1 are improved (both 443 arguments, the Http11 array, LocalEndPoint/RemoteEndPoint, blankLine and PingOptions are now visible).",
+      "fixLooksLike": "Put the array one name per line, break after 'await tls.AuthenticateAsClientAsync(' so '(name)' starts a new line under 40 columns, and break 'await Ask(' so found[0] and name are both inside the first 40 columns. Re-check mobile-dark part13 for no fade on those lines.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Programs id=lookup, id=secure (timing loop) and id=capture on a phone (mobile-dark parts 04-05, 10-11): '{found.Length} found, first {fo', '{name,-12} {ms,6:', 'GetHostAddressesAsync(hos', '$\"{round,5}{dns,6:F1}{connect', 'tls.NegotiatedCipherSuite}', 'new SslClientAuthenticatio'",
+      "problem": "Format specifiers and interpolated tails that produce the printed columns are cut, so a phone reader cannot connect the code to the four-column output panel; 'GetHostAddressesAsync(hos' loses 'host'. Mostly decoration, hence minor, but the timing row is the centre of the article.",
+      "fixLooksLike": "Break the timing WriteLine into one interpolation per line, break after 'GetHostAddressesAsync(' in the TLS loop, and break after 'new' for SslClientAuthenticationOptions.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure 1 legend text (article line 170), its <desc> (line 129) and prose line 298 ('initialising')",
+      "problem": "British spellings ('accent colour', 'initialising') on a site whose brief requires American spelling. The Figure 1 one is drawn inside the SVG and visible on every device.",
+      "fixLooksLike": "'accent color', 'initializing', and 'color' in the SVG desc.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "H2 'Bands 2 and 4 first: TCP and HTTP with the encryption left out' (mobile-dark part06; desktop sidebar TOC)",
+      "problem": "Wraps to three lines at 390 px and two lines in the sidebar, and leans on band numbers before the prose has introduced them (Figure 1 does introduce them).",
+      "fixLooksLike": "A shorter heading such as 'TCP and HTTP first, without TLS'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Where the time went', timing table (mobile-dark part20)",
+      "problem": "Cells carry 'ms' but the table has no label saying they are min-to-max ranges over six runs; that is only in the sentence above. Read on its own the table is ambiguous.",
+      "fixLooksLike": "A one-line label directly above the table or headers such as 'Round 1 (ms, range of 6)'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Article hero at phone width (mobile-dark-fold, mobile-light-fold)",
+      "problem": "The metadata block stacks to four lines and the collapsed 'On this page' box follows, so the article's first sentence starts in the last 15% of the first screen. The placeholder byline makes it taller than it will be in production.",
+      "fixLooksLike": "Shell: put published, updated and read time on one or two lines at phone width. Re-check after the byline placeholder is filled.",
+      "owner": "integrator"
+    }
+  ],
+  "roundOneFollowUp": {
+    "design_major_layer_table": "Fixed: the three-column table is now a four-item list (mobile-dark part19), nothing cut.",
+    "design_major_code_clipping": "Partly fixed: see the open major (SNI experiment) and the minor on timing format strings.",
+    "technical_and_adsense_majors": "Outside this role. Visible from the rendered page: a throwaway localhost lookup now precedes the timing, round 1 is reported separately from rounds 2 and 3, and NAT and firewalls are named as exceptions to 'routers read only IP'. Their own critics should confirm the analysis."
+  },
+  "lighthouse": {
+    "performance": 95,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "lighthouseDetail": "FCP/LCP/Speed Index 2.4 s (simulated mobile), TBT 0 ms, CLS 0. Flagged but not blocking: unused CSS 13 KiB, document latency 170 KiB, bfcache, forced reflow. Re-measure serially to confirm.",
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "verifyPage": {
+    "words": 5753,
+    "codeBlocks": 24,
+    "figures": 3,
+    "internalLinks": 26,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected)"]
+  }
+}

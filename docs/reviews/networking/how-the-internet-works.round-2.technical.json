@@ -1,0 +1,72 @@
+{
+  "article": "src/content/articles/networking/how-the-internet-works.md",
+  "route": "/networking/how-the-internet-works/",
+  "round": 2,
+  "role": "technical",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://github.com/alex/what-happens-when (opened: no runnable code, no sources, no measurements; TLS reduced to six bullets, certificate verification oversimplified, ISN described as client-chosen only)",
+    "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work (opened: says TLS needs 5 extra round trips and 8 in total before the request, which is wrong for TLS 1.3; no code, no measurements)"
+  ],
+  "justification": "No factual error found, so the 7.0 cap does not apply and code is green. I opened the primary sources: RFC 9293 3.4.1 (connection = pair of sockets), 3.5, 3.5.2, 3.7 (TCP guarantees no correlation between segment and write boundaries), 3.7.4 (Nagle), 3.8.6.3 (delayed ACK under 0.5 s); RFC 9112 2.1, 3.2 (Host MUST, 400 MUST), 6.3, 7.1, 9.3; RFC 9110 1.2, 4.2.1/4.2.2, 4.3.4, 7.1 (target URI excludes fragment), 15; RFC 6797 8.3; RFC 791 1.4 (no acks, no retransmissions), 3.1/3.2 (TTL); RFC 1122 1.1.2 (gateways stateless) and 1.1.3 (application layer = OSI top two); RFC 5116 5.2 (16-octet tag); RFC 3022 (NAPT); RFC 9114 1.2 (QUIC incorporates TLS 1.3); RFC 9000 s1/s7; and the Microsoft Learn TcpClient.NoDelay remarks. Each cited section supports its clause. dotnet/runtime HttpConnectionPool.cs really creates its socket with NoDelay = true (line 702). Arithmetic holds: 0x22f = 559, 5+559+7 = 571, 56+1+16+5 = 78, 78+20+20 = 118, 10 x 1460 = 14,600. run-code passes (blocks=24 executed=11). I re-ran the programs on Windows 11 with SDK 10.0.401: secure program rounds gave dns 15.9/18.9 cold then 0.6-1.0, tcp 9.8-22.9, tls 50.0/51.4 cold then 20.0-29.5, http 17.1-37.6, with ping at 8-15 ms. NoDelay false gave 67.9 and 73.0 ms against 18-25 ms for true, with one false sample at 23.9 ms, matching the article's intermittent shape. Reuse exercise: 140.8, 26.6, 23.1, new client 60.0 ms. Get-DnsClientCache confirmed example.com was held locally (supporting 'stored on this machine'), and the wrong-name.test failure is a server TLS alert 'HandshakeFailure'. All round-1 blockers and majors are genuinely fixed (see round1Recheck). Remaining problems are small: a few causal statements a notch stronger than the evidence, two code idiom nits, and some unmeasured or unscoped generalisations. It is clearly better than MDN (wrong on TLS round trips) and alex/what-happens-when, and nothing else I know of reproduces every step from C#. Not a 10 because of the nits below.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Band 1, paragraph after the lookup output: 'A run that follows a long enough pause finds no stored answer, and then the first lookup has to leave the machine and costs roughly a round trip to the recursive server.' Also 'Where the time went': 'a cold lookup would add a round trip to the resolver'.",
+      "problem": "Stated as fact but never measured in the article. A truly uncached name needs the recursive server to fetch the answer too unless that server already has it, so the cost is one round trip to the resolver at least, more if the resolver misses. On this machine, after a localhost warm-up, four names not in the local cache took 17.7 to 31.7 ms, above the 8-20 ms ping to example.com, so 'roughly a round trip' is unsupported without knowing the resolver's RTT.",
+      "fixLooksLike": "Scope it: 'costs at least a round trip to the recursive server, and more if that server does not have the record either', or add one measured cold lookup of a different name after the warm-up and report its range.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Program id=plain: IsFraming (line.StartsWith(\"Content-Length:\")), reply.IndexOf(\"\\r\\n\\r\\n\"); capture program: $\"{seen}\".EndsWith(blankLine)",
+      "problem": "Two idiom/correctness flaws in an article about parsing HTTP exactly. (1) Header field names are case-insensitive (RFC 9110 5.1) but IsFraming matches case-sensitively, so a server sending 'transfer-encoding: chunked' would make the program print 'neither framing header', a wrong statement about the response. (2) IndexOf, StartsWith and EndsWith with a string use culture-sensitive comparison by default; for protocol text use StringComparison.Ordinal (CRLF is a known trouble case under ICU comparison). The capture loop also allocates a string per iteration by interpolating a StringBuilder where seen.ToString() is the idiom.",
+      "fixLooksLike": "StringComparison.OrdinalIgnoreCase in IsFraming, StringComparison.Ordinal in IndexOf/EndsWith, seen.ToString() in the capture loop. Optionally half a sentence that header names are case-insensitive.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'One address, several certificates', paragraph after the output: 'ended the handshake for a name it does not'",
+      "problem": "The program prints only 'refused' for any AuthenticationException, so it cannot tell a server TLS alert from the client rejecting a default certificate with a mismatched name; the sentence asserts the first. I checked: here it is a server 'HandshakeFailure' alert, so it is true on this server, but the page shows no evidence and other servers answer an unknown name with a default certificate that the client rejects. The exercise answer for symptom 2 lists both cases; the main text does not.",
+      "fixLooksLike": "Say 'and the handshake failed for a name it does not serve', or print e.Message once so the reader sees the alert text, and note other servers may present a default certificate that fails name validation instead.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Where the time went': 'TCP, TLS and HTTP each cost roughly one round trip'",
+      "problem": "The article's own ranges do not all fit. With ping at 12-20 ms, the last column shows TLS at 21-31 ms and HTTP at 19-36 ms, up to about two times the ping (my reruns: http 17-38 ms against ping 8-15 ms). TLS's excess is explained (certificate and key work); HTTP's is not (server think time, response spanning packets, delayed ACK). 'Roughly' hides a factor of up to two.",
+      "fixLooksLike": "Say TCP is the clean round trip and TLS and HTTP are between one and two round-trip times here, with the excess unexplained or attributed without claiming a split.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "NoDelay exercise solution: 'Here the client's TLS Finished message is small and still unacknowledged when the small request is written, so the request waits.'",
+      "problem": "An assertion about packet-level state that was not observed, followed only afterwards by the caveat. The delayed-ACK story is also not the only fit: if the server sends its TLS 1.3 NewSessionTicket promptly it carries the ACK and the wait would be about one extra round trip, not the 40-90 ms extra measured; only a delayed ACK explains the larger figure. The later paragraph is well hedged; this sentence should carry the same hedge.",
+      "fixLooksLike": "Start it 'If the client's small TLS Finished message is still unacknowledged when the request is written, Nagle holds the request back', and keep the 'not captured' sentence.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'If you type a bare example.com' paragraph (RFC 6797 section 8.3)",
+      "problem": "Says the browser 'has to pick a scheme' and 'one rule for that is written down', then cites HSTS. HSTS 8.3 does not choose a scheme for a bare name; it upgrades a URL that already says http for a known HSTS host. How a bare name gets a scheme is browser policy, not in that RFC.",
+      "fixLooksLike": "Reword: 'A browser given a bare name applies its own policy to pick a scheme. Once it has an http URL, HSTS is the one written rule that can change it: ...'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'After the last byte of HTML': 'Those on the same host skip to band 4 on the connection that is already open; each new host name starts again at band 1.'",
+      "problem": "Unscoped generalisation. Browsers open several parallel HTTP/1.1 connections to one host and the extra ones pay bands 2 and 3; HTTP/2 and HTTP/3 connections can be reused for another host name the certificate covers (RFC 9113 section 9.1.1), so a new host name does not always start at band 1.",
+      "fixLooksLike": "Add 'usually': a host with an idle open connection can skip to band 4; a new host name normally needs its own lookup and, unless an existing HTTP/2 connection can be reused, its own connection.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Program id=hops: new PingOptions(ttl: ttl, dontFragment: true) and new byte[32]",
+      "problem": "dontFragment: true and the 32-byte payload are unexplained and irrelevant to the TTL point; a reader will ask what they are for.",
+      "fixLooksLike": "Drop dontFragment, or add a half sentence saying they mirror tracert's defaults.",
+      "owner": "writer"
+    }
+  ],
+  "round1Recheck": "Technical round 1 blocker (first-call DNS start-up misattributed to the network) fixed for real: localhost warm-up, three rounds in one process, table by round, mechanism labelled as not profiled. I confirmed round 1 stays about 50 ms TLS and 16-19 ms DNS in fresh processes while later rounds drop, so the process-start-up reading is supported. Major (reuse exercise credited whole drop to skipped bands) fixed: solution names one-time start-up and adds a new-client fourth request. Major (unscoped router claim) fixed: figure note and layer section scoped, NAT paragraph with RFC 3022 added. Minors fixed: RFC 9114 1.2 and RFC 9000 cited, exceptions handled with FirstOrDefault and clamped slice, specific catch messages, TLS suite stated, resolver-versus-server RTT wording, Windows-only ping caveat. AdSense round 1 major (time attribution) fixed the same way; its unsourced prevalence claims were removed or cited. Design round 1 majors are outside my role; I noted the layer table is now a list and connect calls are broken across lines.",
+  "runCodePass": "PASS networking/how-the-internet-works.md  blocks=24 executed=11 (exit 0), run 2026-09-21. I also re-ran the lookup, secure, names, NoDelay and reuse programs directly with dotnet 10.0.401; all completed and their shapes match the article."
+}

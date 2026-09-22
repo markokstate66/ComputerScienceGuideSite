@@ -1,0 +1,58 @@
+{
+  "article": "src/content/articles/networking/how-the-internet-works.md",
+  "route": "/networking/how-the-internet-works/",
+  "round": 2,
+  "role": "adsense",
+  "score": 8.8,
+  "comparedAgainst": [
+    "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work",
+    "https://github.com/alex/what-happens-when",
+    "https://dev.to/syed_anzar/what-actually-happens-when-you-run-curl-httpsexamplecom-29g9",
+    "https://www.educative.io/blog/what-happens-when-we-type-a-url"
+  ],
+  "justification": "Read fresh against pages that rank for 'what happens when you type a url'. MDN 'How browsers work' has one illustrative HTML sample, a round-trip table (DNS 1, TCP 3, TLS 5, 8 before the request) that is wrong for TLS 1.3, no measurements and no RFC citations. alex/what-happens-when is exhaustive prose with no runnable code, timings or per-claim sources. The listicle-style results (Educative, DesignGurus, Medium, DEV) are generic five-step summaries. This article does something none of them do: it reproduces each step from C# (hand-typed HTTP over TcpClient with chunked framing, the same request through SslStream, a one-IP/three-names SNI experiment, a loopback capture of what HttpClient sends, a TTL hop counter, Nagle/NoDelay and connection-reuse measurements), derives the 56 -> 78 -> 118 byte encapsulation arithmetic from cited RFC sections, and corrects the outdated TLS story. Originality and value-add are clearly high. Copy check: I searched distinctive sentences (the opening 'four separate conversations' line, the fragment sentence, the silent-router passage) in quotes and found no matching page; the running example, band framing and figures are the site's own. I verified two RFC 1122 claims against the RFC text (application layer combines OSI presentation and application, section 1.1.3; gateways are stateless, section 1.1.2) and both are stated accurately. Structure is not templated: nine headings that name content, compared with sql-joins, binary-search and how-git-works, whose heading sets, openings and exercise forms differ from this page's (plan-from-URL, delete-a-header, take-NoDelay-away, measure-reuse, find-the-failed-band). No filler intro or outro; the page ends on a diagnostic exercise rather than a summary. No keyword stuffing. Measured numbers are presented honestly and as machine-specific: toolchain and ping RTT stated once where measurements begin, output panels use [...] wildcards, ranges rather than single values, the 13-of-15 NoDelay result is reported with its two exceptions, the earlier-run hop-count difference (8/2 vs 9/1) is disclosed, and the Nagle mechanism is explicitly labelled as the standard explanation and not observed. Round 1 findings: the technical blocker (first lookup misread as a network round trip) is genuinely fixed: a localhost warm-up now isolates start-up cost and the text says a cold-cache lookup would cost a resolver round trip. The major timing contradiction is largely fixed: start-up cost is separated (round 1 vs 2-3), the unexplained 40 ms HTTP excess is gone, the reuse exercise now agrees with the table, and the page states plainly what was not profiled. Unsourced DoH/h2/'frequently shared' claims are rescoped or cited to what the page demonstrates. The 'routers read only IP' generalisation is scoped with a NAT/firewall paragraph. The browser-side dead end now has an HTTP-cache paragraph (RFC 9111) and an MDN pointer. The three-column mobile table is gone. Remaining reasons it is not higher: a few small unsupported behaviour claims, first-person 'I' statements in a piece whose brief asks for a neutral voice, one residual softness in the 'each band is roughly one round trip' reading of the HTTP row, glossary terms not yet requested, and an 8,000-word code-heavy page for a query where a beginner may want the map before eight programs. None is a policy risk; a reviewer looking for low-value content would not flag this page.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "'Where the time went': 'TCP, TLS and HTTP each cost roughly one round trip', versus the table (HTTP rounds 2 and 3: 19 to 36 ms, ping 12 to 20 ms)",
+      "problem": "The HTTP band's upper range (36 ms) is nearly two ping RTTs, yet the text says it cost roughly one round trip, and unlike TLS it gets no explanation for sitting above TCP. The reuse exercise reports 23 to 34 ms for the same band and calls it 'about one round trip'. The claim is hedged and the 'fair column' framing is honest, but the article's central original asset is its measurements, so a residual gap is worth one sentence.",
+      "fixLooksLike": "Add one clause: HTTP ran 1 to 2 times the ping RTT on this machine, the surplus being server processing and the response bytes, which this program did not separate; or narrow the claim to 'TCP is the clean one-round-trip measurement; TLS and HTTP were within about two round trips'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Where the time went' ('I did not profile which part of the runtime is responsible'); NoDelay solution ('I did not capture packets')",
+      "problem": "First-person statements attribute work to the named byline. EDITORIAL_BRIEF hard rule 1 asks for a direct or neutral voice and forbids putting words in the byline's mouth. The content is an honest disclosure, but 'I' is the form the rule exists to avoid, and no other sentence in the article uses it, so it stands out.",
+      "fixLooksLike": "Recast neutrally: 'This program does not show which part of the runtime is responsible.' and 'No packets were captured, so the timing effect is measured and the mechanism is the standard explanation, not something observed.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Band 1 .NET callout ('Systems differ in whether they keep a cache at all'); 'Underneath' ('On a typical home network the first device your packets meet is a router doing network address port translation'; 'Firewalls that filter by port also read above the IP header')",
+      "problem": "Prevalence and behaviour claims with no source. RFC 3022 supports what NAPT does, not that it is typical or first on the path; nothing is cited for firewalls reading ports or for resolver caching differing between systems. Minor and hedged, but the brief requires a primary source for non-obvious claims and round 1 flagged the same class.",
+      "fixLooksLike": "Rescope to what is cited (drop 'typical' or cite a source for home-router NAPT), cite a firewall/NAT-behaviour RFC (for example RFC 4787) for port-based handling, and either cite the OS resolver documentation for caching or delete the sentence.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Whole article, first uses of DNS, TCP, TLS, round-trip time (RTT), port, packet; docs/INTEGRATOR_REQUESTS.md",
+      "problem": "Round-1 finding still open: src/content/glossary/ has no networking terms and docs/INTEGRATOR_REQUESTS.md holds no request for them. The crosslinks file lists the wanted terms, but nothing asks the integrator to write the definitions, so the pillar entry page has no glossary ties unlike the sibling pillars.",
+      "fixLooksLike": "Append a request to docs/INTEGRATOR_REQUESTS.md for six glossary entries (DNS, TCP, TLS, round-trip time, port, packet) with own-words definitions, and wire the first-use links.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Overall shape: eight full programs between Figure 1 and 'Where the time went'; 'Counting the hops' and the exercise 'Take NoDelay away'",
+      "problem": "For a beginner-level page answering 'what happens when you type a URL', about 8,000 words with eight multi-screen programs is dense. Nothing is padding: each program earns its place and the hop counter and NoDelay exercise are original. But a searcher wanting the map first meets all the detail at once, and the hop counter and NoDelay exercise stretch beyond the four-band question.",
+      "fixLooksLike": "Keep the content, but add one line after Figure 1 saying which sections are the core path (URL, bands 1 to 4) and which are extensions (packets and hops, timing exercises), so a skimmer knows where the core ends.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'That is the price of the first name lookup in a process' (Band 1); 'This matters more than it may seem' (TargetHost paragraph); 'NoDelay = true is not decoration' (after the secure program)",
+      "problem": "A few mild rhetorical tics of the kind a reviewer associates with machine text (an emphatic aside, an 'is not X' opener). Far fewer than round 1 and not a pattern, so no penalty beyond a nit.",
+      "fixLooksLike": "Rewrite the two emphatic openers as plain statements, for example 'The certificate check is what ties the answering machine to the name.'",
+      "owner": "writer"
+    }
+  ]
+}

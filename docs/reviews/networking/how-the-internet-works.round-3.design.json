@@ -1,0 +1,99 @@
+{
+  "article": "src/content/articles/networking/how-the-internet-works.md",
+  "route": "/networking/how-the-internet-works/",
+  "role": "design",
+  "round": 3,
+  "score": 8.4,
+  "comparedAgainst": [
+    "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work (MDN, fetched: ~3,500 words, three diagrams, one HTML sample, no runnable code; TLS and DNS covered in a few lines each)",
+    "https://aws.amazon.com/blogs/mobile/what-happens-when-you-type-a-url-into-your-browser/ (AWS blog, fetched: ~2,500 words, screenshots, defers TCP/TLS to future posts)"
+  ],
+  "justification": "Presentation is at MDN level and the subject is better illustrated and better evidenced than in either comparison page: three figures that each carry information (Figure 1 sequence bands with RTT tags and an accent color for the encrypted flights, Figure 2 chunked-body byte accounting, Figure 3 layer wrapping with byte counts), all correct in dark theme and legible at 390 px (drawn on a 360-unit viewBox, annotations under the drawing). Rhythm for 5,850 words is good: prose, one program, an output panel, interpretation; three content-bearing callouts (In .NET, Note, Common pitfall), five exercises of different forms placed mid-flow with collapsed solutions, a compact timing table that fits at 390 px and is now labelled, one H1, specific H2s, H3s only under the long TCP and TLS sections, a 27-item dated Sources list. Output panels are 40 columns or less. Round-2 findings: the SNI-program clipping major is fixed (names array one per line, 'name' and 'options' arguments now on their own visible lines), British spellings fixed, the long H2 shortened, the table now has a label. Held below 8.5 for one visible copy defect and one unfinished job: the sentence about case-insensitive header names appears twice back to back in 'Where the response ends' (desktop-light part06, mobile-dark part09), and code-block tails are still under the phone fade on about eight blocks (details in issues; the operative token is visible in nearly every case, but IsFraming's '||' and the timing-table header row are not). Real numbers from report.json and lighthouse.json: Lighthouse 96/100/100/100 (FCP 2.3 s on the simulated mobile profile; flagged but non-blocking: unused CSS 13 KiB, document latency 173 KiB, bfcache), zero console errors, zero console warnings, zero broken links, mobileOverflowPx 0; the only failure is the expected NEEDS_MARKUS placeholder. Performance may be affected by other agents loading the machine at the time of the run; the orchestrator should re-measure serially. Not reviewable from screenshots: code inside the five collapsed exercise solutions.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "'Where the response ends', last sentences of the first paragraph (article line 432; desktop-light part06, mobile-dark part09)",
+      "problem": "'Header names are case-insensitive (RFC 9110, section 5.1), which is why IsFraming ignores case.' is written twice in a row, link and all. Visible on every viewport; reads as a copy-paste defect in an article whose selling point is precision.",
+      "fixLooksLike": "Delete one of the two identical sentences (line 432). Re-run the build and check the paragraph ends once after 'which is why IsFraming ignores case.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Program id=plain, helper IsFraming (article lines 387-391; mobile-dark part07)",
+      "problem": "At 390 px the line 'StringComparison.OrdinalIgnoreCas' is cut and the '||' joining the two StartsWith tests is off-screen, so the phone reader sees two stacked calls and cannot see that Content-Length OR Transfer-Encoding is the rule the prose describes. Same block: 'GetStrin(', 'new CancellationTokenSo', 'GetStream(' and 'throw new IOException(\"no blank l' end under the fade, and '?? \"neither framing header\"' has its '??' faded.",
+      "fixLooksLike": "Hoist the comparison into a short local (for example 'var ic = StringComparison.OrdinalIgnoreCase;' as a top-level statement or an expression-bodied helper with two short lines), so each line, including the '||', is under about 40 columns.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Program id=secure (article lines 528, 531, 546, 552, 557-565; mobile-dark parts 11-12)",
+      "problem": "The column-header string Console.WriteLine(\"round   dns   tcp   tls  http\") is cut after 'tl', so the four column names that the output panel and table refer to are not all visible next to the code that prints them. Also cut: 'round++)', 'new StreamRead', 'tls.AuthenticateAsClientAsy' (its 'options' argument is visible on the next line), '{host}\\r\\n\"' and 'tls.NegotiatedCipherSuite}'.",
+      "fixLooksLike": "Print the header from a shorter literal split over two concatenated lines, break after 'new' for StreamReader, and put the interpolated tails on their own lines.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Programs id=lookup, id=parts, id=names, id=capture, id=hops (mobile-dark parts 03-04, 13-14, 16, 18-19)",
+      "problem": "Remaining tails under the fade, operative token still visible in most: 'Lookup(hos' + ');', '{e.SocketErrorCo', 'Lookup(str' (the parameter), 'TotalMillis'; 'object valu' and '{value}' in Show; '.Sub' cut off 'Subject' in 'return tls.RemoteCertificate!.Subject', which is the value the output panel prints; 'LocalEnd', 'AcceptTcpClientAsy', 'StringComparison.Ordin', '{body.Length}\\r'; 'IPStatus.TtlExpire' and 'IPStatus.Timed' (TimedOut is what the prose calls silence), 'ttl = 0'. Round 2 raised the same family as a minor; it is unchanged for these blocks.",
+      "fixLooksLike": "Break these statements after '(' or '=' so the last identifier sits inside about 40 columns; for the hops block break the two comparisons onto a shorter form, e.g. 'if (status is IPStatus.TtlExpired)'. Not urgent.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What the 56 bytes were' (article line 428; mobile-dark parts 08-09)",
+      "problem": "`failed: OperationCanceledException` is inline code and breaks in the middle of the identifier at 390 px ('failed: Operation / CanceledException'). The phone rules say long expansions do not belong in inline code.",
+      "fixLooksLike": "Reword to 'the program prints only the failure line for OperationCanceledException' with the type name alone in inline code (it is short enough to sit on one line), or move the output line into a two-line text block.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Heading set: 'Band 1: ...', 'TCP and HTTP first, without TLS', 'Band 3: ...' (H2s) versus Figure 1's numbered bands",
+      "problem": "The prose and Figure 1 number the four bands, but only bands 1 and 3 get headings that say so; the TCP and HTTP section (bands 2 and 4) has none, so 'band 2' and 'band 4' in later text and exercises have no heading to scroll back to, and the sidebar TOC reads as a skipped number.",
+      "fixLooksLike": "Retitle the section 'Bands 2 and 4: TCP and HTTP without TLS' (keep it to two lines at 390 px), or add a sentence at its start that ties it to bands 2 and 4.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Underneath: every message above was cut into packets' after Figure 3 (mobile-dark parts 17-18) and 'Where the time went' (parts 20-21)",
+      "problem": "Four consecutive dense paragraphs (numbers from the specs, IP with RFC 791/1122, NAT, then TTL) run roughly 55 phone lines with no visual break, each 12 to 17 lines at 390 px. Content is good; the rhythm sags. The exercises are also stacked in pairs (3 and 4 back to back), so the last third of the page is text, text, exercise, exercise.",
+      "fixLooksLike": "Split the NAT paragraph into its own small sub-block or callout (Note) and give the byte-count arithmetic a small table or list; consider moving exercise 3 next to the NoDelay measurement it refers to. Optional.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Article hero at phone width (mobile-dark-fold, mobile-light-fold)",
+      "problem": "Unchanged from round 2: the metadata stacks to four lines, then a collapsed 'On this page' box, so the first sentence starts in the last 15% of the first screen. The placeholder byline makes it taller than in production.",
+      "fixLooksLike": "Shell: put Published, Updated and read time on one or two lines at phone width. Recheck after the byline placeholder is filled. Belongs in docs/INTEGRATOR_REQUESTS.md if not already there.",
+      "owner": "integrator"
+    }
+  ],
+  "roundTwoFollowUp": {
+    "design_major_sni_clipping": "Fixed. names array is one entry per line ('wrong-name.test' visible), 'found[0],' and 'name);' on their own lines, 'options);' visible for the SslStream call. Only 'AuthenticateAsClientAsy' and '.Sub' (of Subject) remain faded (kept as minor).",
+    "british_spellings": "Fixed: the Figure 1 legend now reads 'accent color'.",
+    "long_h2": "Fixed: now 'TCP and HTTP first, without TLS' (two lines at 390 px).",
+    "table_label": "Fixed: bold label 'Time per band, minimum to maximum over six runs' directly above the table.",
+    "timing_format_strings": "Partly fixed: the timing WriteLine is split one interpolation per line and 'host);' is visible, but the header literal and some tails are still faded (minor above).",
+    "hero_phone": "Still open, shell-level, minor."
+  },
+  "lighthouse": {
+    "performance": 96,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "lighthouseDetail": "FCP 2.3 s (simulated mobile). Flagged, non-blocking: unused CSS 13 KiB, document latency 173 KiB, bfcache (2 reasons), network dependency tree. Other agents may have been loading the machine; orchestrator should re-measure serially.",
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "verifyPage": {
+    "words": 5856,
+    "codeBlocks": 24,
+    "figures": 3,
+    "h1": 1,
+    "internalLinks": 26,
+    "screenshotParts": { "desktop-light": 16, "desktop-dark": 16, "mobile-light": 26, "mobile-dark": 26 },
+    "failures": ["placeholder text: NEEDS_MARKUS (expected)"]
+  },
+  "screenshotsRead": "desktop-light fold + parts 01-16; mobile-dark fold + parts 01-26; desktop-dark fold + parts 01, 07; mobile-light fold + parts 02, 16. Collapsed exercise solutions were not visible in any screenshot."
+}

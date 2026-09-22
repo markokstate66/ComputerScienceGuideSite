@@ -1,0 +1,57 @@
+{
+  "article": "src/content/articles/networking/how-the-internet-works.md",
+  "route": "/networking/how-the-internet-works/",
+  "round": 3,
+  "role": "adsense",
+  "score": 8.6,
+  "comparedAgainst": [
+    "https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work",
+    "https://gec.dev/articles/how-web-requests-work/",
+    "search results for 'what happens when you type a url' (dev.to, Medium, adevguide.com, networkacademy.io listicles; snippets read)"
+  ],
+  "justification": "Judged fresh before opening earlier reviews. MDN's navigation section is a short prose explanation with a round-trip count (DNS, 3 for TCP, 5 for TLS, 8 before the request) that describes pre-1.3 TLS, no code, no measurements, no RFC citations. gec.dev is a well-organised conceptual guide with diagrams but no runnable code, no measurements and no RFC citations. The listicle results (Medium, DEV, adevguide, networkacademy) are five-step summaries with generic latency figures (about 30/20/20 ms) that are unsourced. This article does what none of them do: it reproduces each step from C# (Uri parsing, hand-typed HTTP over TcpClient with chunked framing, the same request via SslStream with per-band timings, a one-IP/three-names SNI experiment, a loopback capture of what HttpClient sends, a TTL hop counter, NoDelay and connection-reuse measurements), derives the 56 -> 78 -> 118 byte encapsulation arithmetic from cited RFC sections (the arithmetic and several section citations were re-checked: RFC 9110 7.1 fragment exclusion, RFC 9112 3.2 Host/400, RFC 9293 3.8.6.3 delayed ACK, RFC 6928 ten segments), and corrects the outdated TLS story explicitly. Copy check: the opening 'four separate conversations' sentence and two other distinctive passages were searched in quotes and no matching page was found; the sentences are original prose grounded in RFCs, not paraphrases of the competitors read. Structure is not templated: headings name content and differ from sql-joins, how-git-works, binary-search and processes-and-threads, and the exercise forms (plan-from-URL, delete-a-header, take-NoDelay-away, measure-reuse, find-the-failed-band) are varied; no filler intro (it opens with the four conversations and a cost claim) and no summary outro; no keyword stuffing. Measurements are honest: toolchain, ping RTT and date are stated once where timings begin, every timing is labelled machine-specific, output panels use [...] wildcards, ranges rather than single values, the 13-of-15 NoDelay result is reported with its exceptions, the 8/2 versus 9/1 hop-count discrepancy is disclosed, and the Nagle mechanism is labelled the standard explanation, not observed. Round-2 findings: fixed are the HTTP 'roughly one round trip' softness (now 'between one and two of those round trips', surplus attributed), the first-person 'I' statements (recast neutrally), the core-path/extensions signpost (added after Figure 1), and the emphatic-opener tics (gone). Still open: the glossary request (nothing in docs/INTEGRATOR_REQUESTS.md mentions networking terms and src/content/glossary has no DNS/TCP/TLS/RTT/port/packet entries) and the unsourced 'commonly' NAPT prevalence claim. New: one sentence is pasted twice in a row in 'Where the response ends' (a visible defect that reads like a machine glitch), and the explanation of why the first example.com lookup was fast is stated as fact while the callout beside it says the page cannot tell which layer answered. The crosslinks file exists and is sensible, so missing links to dns, tcp-vs-udp, http-explained, tls-and-https and ip-addresses-and-subnets are not penalised. Not a policy risk: a reviewer looking for low-value content would not flag this page; the score is held below 9 by the small defects and by the length and density for a beginner-level query (about 8,000 words, eight programs), not by any thinness.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "'Where the response ends', last sentence of the paragraph: 'Header names are case-insensitive (RFC 9110, section 5.1), which is why `IsFraming` ignores case.' appears twice in a row",
+      "problem": "The same sentence, citation included, is duplicated verbatim. It is a visible editing glitch and exactly the kind of repetition a reviewer associates with mass-produced text.",
+      "fixLooksLike": "Delete one copy of the sentence.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Band 1', paragraph 'After that, `example.com` took 1 to 3 ms on its first lookup...' versus the :::dotnet callout ('Which layer answered a fast lookup, the operating system or a cache further along the path, is something this program cannot tell you.')",
+      "problem": "The paragraph asserts 'The first was fast because something on this machine had asked for the same name within the last few minutes'. The callout then says the program cannot tell which layer answered, and the stated cause is an unverified inference (a cache in the router or resolver would fit equally). A claim about this machine is stated as fact.",
+      "fixLooksLike": "Hedge the cause: 'The first was fast, which points to a stored answer, either on this machine or in a resolver on the path; this program cannot tell which.' Keep the cold-cache explanation that follows.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Underneath', NAPT paragraph: 'Where a network address port translator sits on the path, as it commonly does between a home network and the internet'",
+      "problem": "Round 2 flagged the prevalence claim. It was softened from 'typical' to 'commonly' but still has no source; RFC 3022 supports what NAPT does, not how common it is or where it sits.",
+      "fixLooksLike": "Drop 'as it commonly does between a home network and the internet' and keep the cited RFC 3022 behaviour, or cite a primary source that states the deployment fact.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Whole article, first uses of DNS, TCP, TLS, round-trip time, port, packet; docs/INTEGRATOR_REQUESTS.md; src/content/glossary/",
+      "problem": "Round-1 and round-2 finding still open: no networking glossary entries exist and INTEGRATOR_REQUESTS.md contains no request for them, so the pillar's first article has no glossary ties while sibling pillars do. The crosslinks file lists the wanted terms but does not ask for the definitions to be written.",
+      "fixLooksLike": "Append a request to docs/INTEGRATOR_REQUESTS.md for glossary entries DNS, TCP, TLS, round-trip time, port and packet (own-words definitions), then wire the first-use links.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Headings 'Band 1: the name becomes an address', 'TCP and HTTP first, without TLS', 'Band 3: the same request, inside TLS'; intro sentence 'Each band gets its own C# program'",
+      "problem": "The band numbering in headings skips bands 2 and 4 (they are folded into the plain-HTTP section), and the intro says each band gets its own program, which is not true for bands 2 and 4. A skimmer following the 'Band N' scheme sees gaps.",
+      "fixLooksLike": "Retitle the middle section to name its bands ('Bands 2 and 4 first, without TLS') and say in the intro that bands 2 and 4 share a program.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Overall shape: about 8,000 words and eight multi-screen programs for a beginner-level query",
+      "problem": "Nothing is padding and the core-path signpost now helps, but a searcher wanting the map first still meets a very long code-heavy page, and the hop counter and NoDelay exercise stretch beyond the four-band question. Not a policy problem; a value-density nit.",
+      "fixLooksLike": "Optional: keep as is, or move the hop counter and the NoDelay exercise behind a clearly marked 'extensions' subsection so the beginner path stays short.",
+      "owner": "writer"
+    }
+  ]
+}
