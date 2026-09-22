@@ -1,0 +1,29 @@
+{
+  "article": "src/content/articles/databases/relational-model-and-keys.md",
+  "route": "/databases/relational-model-and-keys/",
+  "round": 1,
+  "critic": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://www.ibm.com/think/topics/relational-databases",
+    "https://www.freecodecamp.org/news/learn-relational-database-basics-key-concepts-for-beginners/"
+  ],
+  "justification": "Real numbers from node tools/verify-page.mjs --drafts /databases/relational-model-and-keys/ (single run, no re-run needed: performance already well above 90 and no other heavy job was contending): lighthouse performance=97, accessibility=100, best-practices=100, seo=100; consoleErrors=0; brokenLinks=0; mobileOverflowPx=0; 4934 words, 70 code blocks, 3 figures, 16 desktop-light/desktop-dark parts and 24 mobile-light/mobile-dark parts (all opened for desktop-light and mobile-dark per instructions; fold+2 spot-checked for desktop-dark and mobile-light). The only verify-page failure is the expected NEEDS_MARKUS placeholder. Against the actual top-ranking pages for 'relational database explained' (IBM, freeCodeCamp -- checked by fetching both; also surveyed Oracle/Google Cloud/Databricks/Airtable in search results), this article is clearly ahead on design/UX, not just parity: IBM's page has no technical diagrams (only decorative hero art) and only briefly names primary/foreign keys with no candidate-key or referential-integrity treatment; freeCodeCamp has screenshots instead of diagrams and code that is illustrative, not verified-executable, with 'notably limited' key/constraint coverage per a direct fetch of its content. This article instead has three original, theme-correct, caption-carrying SVG diagrams (superkey/candidate-key nesting, book_author junction, full ER diagram in crow's-foot notation) that stayed legible and unclipped in both mobile-dark and mobile-light screenshots, 70 SQL blocks that are all machine-verified with exact SQL/result panels, four collapsed exercises correctly hiding their output panels until opened (no giveaways), consistent heading hierarchy (##/### only, single H1, correct 'On this page' nesting), and callouts (one pitfall, one warning) used sparingly rather than as decoration. Reading rhythm alternates prose / SQL / result / prose without any code block running more than a few statements, and every long CREATE TABLE / INSERT was pre-wrapped by the writer (one column or VALUES row per line) so the operative text sits inside the ~40-column phone window; this was confirmed by reading every desktop-light part (01-16) and every mobile-dark part (fold + 01-24) plus spot-checked desktop-dark and mobile-light parts. A few SQL error-message 'text output' panels (e.g. the composite-key UNIQUE constraint failure in the book_author section, and NOT NULL constraint failed: loan.member_id) run past the visible phone width and fade before the full column list is shown; per the review brief this is treated as expected/accepted because the output text must match SQLite's exact wording, and in every case the surrounding prose already states the fact the output is illustrating, so nothing essential is lost. Docs/crosslinks/databases/relational-model-and-keys.md exists and lists three sensible planned-sibling links (indexes, normalization, transactions-and-acid), so the three body mentions that stop short of linking are not penalized. Net: this is very close to a flawless design pass; the only deduction is one soft, non-blocking style nit below and the fact that no page is perfect at this thoroughness/length. It is not deflated for length or code density because the rhythm and phone-width discipline hold up throughout a genuinely long, comprehensive Shape-B article.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Exercise 1 ('Which column sets are keys?'), the desk_shift roster table",
+      "problem": "The sample table has 4 columns (day, slot, librarian, desk), one more than the 'prefer at most three columns' guidance in docs/WRITER_GUIDE.md section 7. In practice it renders cleanly at 390px in both mobile-light and mobile-dark (every cell is a single short word, no wrapping or overflow observed in the screenshots), so this is a style nit rather than a rendering defect.",
+      "fixLooksLike": "Optional: drop or merge a column (e.g. combine day+slot into one 'shift' column) if the writer wants strict compliance with the 3-column guidance; otherwise leave as-is since it does not break mobile rendering.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
