@@ -61,7 +61,7 @@ sources:
 draft: true
 ---
 
-Two loops add up the same 16 million integers. They execute the same number of additions, and any [Big-O](/glossary/#big-o-notation) analysis calls them identical: Θ(*n*) for *n* elements. On the machine used for this page one of them takes six times as long as the other, and with an unlucky grid size, eighteen times. The only difference is the order in which they visit the elements. Explaining that gap takes in everything that matters about an [array](/glossary/#array): how it is laid out in memory, how an index becomes an address, and why a `List<T>`, which is an array with a counter on top, inherits both the speed and the costs.
+Two loops add up the same 16 million integers. They execute the same number of additions, and any [Big-O](/complexity/big-o-notation/) analysis calls them identical: Θ(*n*) for *n* elements. On the machine used for this page one of them takes six times as long as the other, and with an unlucky grid size, eighteen times. The only difference is the order in which they visit the elements. Explaining that gap takes in everything that matters about an [array](/glossary/#array): how it is laid out in memory, how an index becomes an address, and why a `List<T>`, which is an array with a counter on top, inherits both the speed and the costs.
 
 ## Same sum, two loop orders
 
@@ -265,10 +265,15 @@ Show("string[]", new string[8]);
 var grid = new int[3, 5];
 Console.WriteLine(
     "int[3,5], bytes from [0,0] to:");
+long g01 = Gap(
+    ref grid[0, 0], ref grid[0, 1]);
+long g10 = Gap(
+    ref grid[0, 0], ref grid[1, 0]);
+long g23 = Gap(
+    ref grid[0, 0], ref grid[2, 3]);
 Console.WriteLine(
-    $"  [0,1] {Gap(ref grid[0, 0], ref grid[0, 1])}" +
-    $"  [1,0] {Gap(ref grid[0, 0], ref grid[1, 0])}" +
-    $"  [2,3] {Gap(ref grid[0, 0], ref grid[2, 3])}");
+    $"  [0,1] {g01}  [1,0] {g10}" +
+    $"  [2,3] {g23}");
 
 // View the same 15 slots as one flat run of ints.
 Span<int> flat = MemoryMarshal.CreateSpan(
@@ -353,10 +358,10 @@ Now the two loops can be described by their memory access pattern instead of the
 
 That matters because main memory is slow compared with the processor, and the hardware hides this with caches: small, fast memories that keep copies of recently used data. Ulrich Drepper's paper [*What Every Programmer Should Know About Memory*](https://lwn.net/Articles/252125/) is the standard detailed description of how they behave.
 
-1. **Caches load whole lines, not single values.** A cache line is 64 bytes on current processors (Drepper, section 3.2), so a miss on one `int` brings in the 15 after it too. Walking a row, at most one read in 16 can miss.
-2. **Sequential access is predicted, and costs a few cycles.** When a program moves steadily through memory, the processor fetches the next line before it is asked for (Drepper, section 3.3.2). On the Pentium 4 he measured, sequential reads over data far larger than the cache cost about 4 to 9 cycles per element; random reads over the same data cost over 450.
-3. **The penalty for leaving the cache is large.** The figures often quoted for this, 3 cycles for the first-level cache, 14 for the second level, 240 for main memory, are what "Intel lists for a Pentium M" (Drepper, section 3.2), not a measurement of the processor above. They are two hardware generations old. What still holds is the shape: each level out is roughly an order of magnitude slower.
-4. **A stride bigger than a page thrashes the TLB too.** Every read is translated from a virtual to a physical address through the TLB, a small cache of that translation, one entry per 4 KB page. Drepper calls TLB misses "another big reason for the slowdown" of exactly this kind of strided access (section 3.3.2).
+1. **Caches load whole lines, not single values.** A cache line is 64 bytes on current processors, as Drepper's paper explains in section 3.2, so a miss on one `int` brings in the 15 after it too. Walking a row, at most one read in 16 can miss.
+2. **Sequential access is predicted, and costs a few cycles.** When a program moves steadily through memory, the processor fetches the next line before it is asked for, as Drepper's paper explains in section 3.3.2. On the Pentium 4 he measured, sequential reads over data far larger than the cache cost about 4 to 9 cycles per element; random reads over the same data cost over 450.
+3. **The penalty for leaving the cache is large.** The figures often quoted for this, 3 cycles for the first-level cache, 14 for the second level, 240 for main memory, are what Drepper's paper, in section 3.2, says "Intel lists for a Pentium M", not a measurement of the processor above. They are two hardware generations old. What still holds is the shape: each level out is roughly an order of magnitude slower.
+4. **A stride bigger than a page thrashes the TLB too.** Every read is translated from a virtual to a physical address through the TLB, a small cache of that translation, one entry per 4 KB page. Drepper's paper calls TLB misses "another big reason for the slowdown" of exactly this kind of strided access, in section 3.3.2.
 
 ### What actually explains the 2,000-to-4,000 range
 
@@ -400,7 +405,7 @@ Neither mechanism was measured in isolation here, so treat this as the more defe
 
 #### The 4096 row
 
-At *n* = 4,096 the reuse distance is barely bigger than at 4,000, about 256 KB against 250 KB, yet the ratio nearly triples, from around 6 to around 18. Size alone does not explain that; alignment might. A cache does not choose freely where to place a line: which of its sets a line can go in comes from some of the address bits (Drepper, section 3.3.1). With 4,096 columns of 4-byte values, consecutive column-first reads are exactly 16,384 = 2¹⁴ bytes apart, so every address in a column agrees in its low 14 bits and all of them compete for the same narrow group of sets instead of spreading across the cache.
+At *n* = 4,096 the reuse distance is barely bigger than at 4,000, about 256 KB against 250 KB, yet the ratio nearly triples, from around 6 to around 18. Size alone does not explain that; alignment might. A cache does not choose freely where to place a line: which of its sets a line can go in comes from some of the address bits, as Drepper's paper explains in section 3.3.1. With 4,096 columns of 4-byte values, consecutive column-first reads are exactly 16,384 = 2¹⁴ bytes apart, so every address in a column agrees in its low 14 bits and all of them compete for the same narrow group of sets instead of spreading across the cache.
 
 This page did not measure cache misses directly, so that account is a hypothesis, not a finding. It is testable, though: if the problem is the power-of-two stride and not the size, padding the row so the stride is no longer a power of two should remove most of the anomaly while leaving a grid of nearly the same size. The next program checks that, and also checks the reuse-distance story above directly, by summing the columns in narrow bands instead of one column at a time. A band of 16 `int` columns is exactly one 64-byte cache line, so each row's slice of a band is read in full the moment it is touched, with nothing left to reuse a whole pass later: the reuse distance drops from about *n* lines to essentially none, without reading a single byte more.
 
@@ -430,8 +435,10 @@ static void Report(int n, int band)
     double tiled = Best(
         n, () => SumTiled(g, n, band));
     Console.WriteLine(
-        $"n={n,4}  col/row {col / row,5:F1}" +
-        $"  tiled/row {tiled / row,5:F1}");
+        $"n={n,4}  col/row" +
+        $" {col / row,5:F1}" +
+        $"  tiled/row" +
+        $" {tiled / row,5:F1}");
 }
 
 static double Best(int n, Func<long> sum)
@@ -594,7 +601,7 @@ struct Reading(double celsius)
 }
 ```
 
-The same line compiles against an array, because `T[]`'s indexer does return by reference: `Reading[] readings = [new(20.0)]; readings[0].Celsius = 21.0;` builds and runs. `List<T>` cannot offer that without handing out a reference into its backing array, which is exactly what `CollectionsMarshal.AsSpan`, further down this page, does on purpose.
+The same line compiles against an array, because `a[i]` is not an indexer at all: the compiler treats array element access as a variable, the same as a field, so it can be assigned into directly, unlike `List<T>`'s indexer, which is a method call that returns a copy. `Reading[] readings = [new(20.0)]; readings[0].Celsius = 21.0;` builds and runs. `List<T>` cannot offer that without handing out a reference into its backing array, which is exactly what `CollectionsMarshal.AsSpan`, further down this page, does on purpose.
 
 `Grow` doubles. Why doubling, and not adding a fixed number of slots, makes `Add` cost O(1) [amortized](/glossary/#amortized-analysis) is the subject of [Amortized Analysis: Why List&lt;T&gt;.Add Is O(1)](/complexity/amortized-analysis/), which traces the real `List<T>` doing it. The starting size of 4 and the factor of 2 mirror what `List.cs` does today; neither is documented behavior.
 

@@ -1,0 +1,68 @@
+{
+  "article": "src/content/articles/data-structures/arrays-and-dynamic-arrays.md",
+  "route": "/data-structures/arrays-and-dynamic-arrays/",
+  "round": 4,
+  "role": "design",
+  "score": 8.3,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/arrays (fetched fresh this round: 2,594-word C# language-reference article on array syntax — single-dimensional, multidimensional, jagged, implicitly typed. Pure declaration/initialization code samples with console output; no memory layout, no address arithmetic, no cache locality, no complexity claims, no measured performance, no diagrams anywhere on the page)",
+    "https://learn.microsoft.com/en-us/dotnet/standard/collections/selecting-a-collection-class (fetched fresh this round: a 788-word bulleted decision checklist by API shape/interface for the whole System.Collections family, not specifically arrays vs. List<T>; no memory model, no measured performance, no diagrams, no runnable code at all)"
+  ],
+  "justification": "Formed a fresh read of the current build before opening any prior round's file. Against the target query ('array vs list c#', 'dynamic array'), the best-ranking existing results are pure syntax/API references with no memory model, no measurements and no diagrams; this article's traversal-order benchmark, byte-offset arithmetic verified with Unsafe.ByteOffset, four hand-drawn figures, and the Insert/RemoveAt shift diagram put it well ahead of them on depth and illustration, which is why the score sits above 'decent personal blog' territory. It is held below 8.5 by one persistent, verified-worse shell defect and a short tail of real but minor rendering nits, not by effort. Ran `node tools/verify-page.mjs --drafts /data-structures/arrays-and-dynamic-arrays/` three times as instructed: performance scored 87, 79, and 78 (accessibility/best-practices/SEO were 100 in all three). Median 79, best 87 — both still below the pass gate's 90, and this is not an improvement on round 3's single measurement of 87: two of three runs this round were markedly worse. The failing/borderline Lighthouse items on the last run were First Contentful Paint 3.0s, Largest Contentful Paint 3.1s, Total Blocking Time 400ms, Max Potential FID 310ms, main-thread work 2.1s, ~11 KiB unused CSS, blocked back/forward-cache restoration, ~255 KiB document-request latency, a failing forced-reflow insight and a failing network-dependency-tree insight — the same shape of failure as round 3, just landing lower this run. I cannot attribute this swing to article content changes (word count and code-block count grew only marginally, 5902→5954 words, 35→35 code blocks, 4 figures unchanged) rather than machine load, but three runs is what the brief calls for and the real numbers are what they are. Checked the two specific fixes named for this round directly against the current source and confirmed both are genuine, not cosmetic: (1) the 'offsets' program (id=offsets) no longer inlines three long Gap(...) calls into one WriteLine; it now assigns each to a short-named variable (g01, g10, g23) on its own line and the final WriteLine reduces to `$\" [0,1] {g01} [1,0] {g10}\" + $\" [2,3] {g23}\"` — verified fully visible with no fade-clip on mobile-dark part04 and mobile-light part04, where round 3 had flagged exactly this line clipping after 'ref gr'. (2) The tiled program's (id=tiled) closing Console.WriteLine, previously two long interpolated lines that clipped, is now four short lines (`$\"n={n,4}  col/row\"`, `$\" {col / row,5:F1}\"`, `$\"  tiled/row\"`, `$\" {tiled / row,5:F1}\"`) — verified fully visible with no clipping on mobile-dark part09 and mobile-light part09. Also spot-checked the indexer-terminology paragraph ('That indexer returns T by value, not by reference...' through the a[i]-is-not-an-indexer explanation) on mobile-dark part13: it is ordinary prose, wraps normally, nothing clips. One new, previously unflagged clipping instance turned up while re-reading every mobile-dark part fresh: in the same 'offsets' program, the `Show<T>` helper's own `Console.WriteLine($\"{type,-20}{one,4}{three,5}\");` line (used to print the int[]/long[]/Sample[]/string[] step sizes) was not touched by the round-3 fix and clips at 390px (mobile-dark part04) — low-impact since the output panel directly below shows the actual numbers, but the same class of bug the round-3 fix addressed one line above it. Read every desktop-light part (fold + 01-18) and every mobile-dark part (fold + 01-28); spot-checked desktop-dark (fold, parts 09, 16) and mobile-light (fold, parts 09, 19) for theme correctness — all four figures render with correct colors, dashed/solid states and legible labels in both themes at both widths, mobileOverflowPx is 0, consoleErrors and brokenLinks are both 0. Not fixed, carried from rounds 1-3, unaddressed: inline citations to Drepper's paper ('Drepper's paper explains in section 3.2', etc.) remain plain unlinked text, not tied to the numbered Sources list; the mobile hero (title, description, byline, date row, chip, collapsed TOC, prerequisite card) still consumes essentially the entire first 844px screen; and overflowing code blocks/tables at phone width still signal only via edge fade, no visible scroll affordance. This is round 4, the article's last round: the real, reproducible Lighthouse shortfall — which the pass gate treats as an unconditional requirement, not a critic's judgment call — is the dominant reason this cannot score at the 8.5 pass line, regardless of the genuine article-level polish achieved since round 3.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Lighthouse performance category, three serial runs this round: .verify/data-structures__arrays-and-dynamic-arrays/lighthouse.json and report.json",
+      "problem": "Performance scored 87, 79, and 78 across three serial runs (median 79, best 87), all below the pass gate's required 90. Accessibility, best-practices and SEO were 100 in every run. This is not an improvement on round 3's single measurement of 87 — two of three runs this round were clearly worse. Failing/borderline items on the last run: First Contentful Paint 3.0s (score 0.51), Largest Contentful Paint 3.1s (score 0.75), Total Blocking Time 400ms (score 0.67), Max Potential FID 310ms (score 0.33), main-thread work 2.1s (score 0), ~11 KiB unused CSS, back/forward-cache restoration blocked (score 0), ~255 KiB document-request-latency savings, a failing forced-reflow insight, and a failing network-dependency-tree insight.",
+      "fixLooksLike": "Re-measure in isolation with nothing else running on the machine to separate real regression from load noise, then investigate the document-latency, forced-reflow and network-dependency-tree findings and the back/forward-cache blockers directly — these are shell/bundle/asset-loading concerns, not something the writer's Markdown controls. Since this is the article's last round, this is the deciding blocker for a clean pass and needs the integrator's attention before any further round is considered.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "The 'offsets' program (id=offsets), the `Show<T>` helper's `Console.WriteLine($\"{type,-20}{one,4}{three,5}\");` line, at 390px (mobile-dark part04, mobile-light part04)",
+      "problem": "This line was not touched by the round-3 fix to the same program (which corrected the three Gap(...) call sites a few lines above it) and still clips at the fade on a 390px viewport. Low impact: the output panel immediately below states the actual byte counts for int[], long[], Sample[] and string[], so no claim is left unsupported.",
+      "fixLooksLike": "Split the interpolated string the same way the fixed lines above it now are, e.g. `Console.WriteLine(\\n    $\"{type,-20}{one,4}\" +\\n    $\"{three,5}\");`.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Inline citations throughout 'Why the column-first loop falls off a cliff' and 'The 4096 row' (e.g. 'Drepper's paper explains in section 3.2', 'section 3.3.2', 'section 3.3.1'), carried from rounds 1-3, unaddressed",
+      "problem": "Citations are still plain text, not linked or numbered to the Sources list at the end of the article. A reader cannot jump from 'section 3.2' to source #3 without scrolling to the bottom and matching by author name.",
+      "fixLooksLike": "Add a bracketed number or superscript at each claim that links to the corresponding numbered Sources entry, e.g. '... 64 bytes on current processors [3, section 3.2]'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Mobile hero block (title, description, byline, published/updated, INTERMEDIATE chip, collapsed 'On this page', 'Before you read' card) — mobile-dark-fold and mobile-light-fold, carried from rounds 1-3, unaddressed",
+      "problem": "The hero still consumes essentially the whole first screen on a 390x844 viewport; the first sentence of the hook is still not reached before the fold.",
+      "fixLooksLike": "Shell-level: put the level chip on the same row as the reading time, or tighten spacing between the TOC card and the prerequisite card, so the hook's first sentence is visible higher on a 390x844 screen.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Shell: overflowing code blocks and tables on mobile (all parts), carried from rounds 1-3, unaddressed",
+      "problem": "Wide code blocks and tables still only signal overflow with a faint right-edge fade; there is no scrollbar or 'scroll for more' cue.",
+      "fixLooksLike": "Confirm this is already logged in docs/INTEGRATOR_REQUESTS.md from earlier rounds; if not, append a request for a visible thin horizontal scrollbar or small 'scroll →' affordance on code blocks and tables that overflow at phone width.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 79,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "note": "Median of three serial runs this round (87, 79, 78); best of the three was 87. All three runs remain below the pass gate's required 90 for performance; the other three categories were 100 in every run. Failing/borderline items are consistent across runs: FCP ~3.0-3.1s, LCP ~3.1s, TBT/main-thread work, blocked back/forward-cache restoration, document-request latency, unused CSS, forced-reflow and network-dependency-tree insights."
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "allLighthouseRuns": [87, 79, 78],
+  "verifyPage": {
+    "words": 5954,
+    "codeBlocks": 35,
+    "figures": 4,
+    "internalLinks": 33,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected: byline, bio and footer placeholders)", "lighthouse performance 78 < 90 (worst of three runs; best run 87, also < 90)"]
+  },
+  "screenshotsReviewed": "desktop-light fold + parts 01-18 (all); mobile-dark fold + parts 01-28 (all); desktop-dark fold, parts 09, 16; mobile-light fold, parts 09, 19"
+}
