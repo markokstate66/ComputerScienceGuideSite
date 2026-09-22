@@ -50,8 +50,8 @@ sources:
     url: "https://www.rfc-editor.org/rfc/rfc5789.html"
     publisher: "IETF"
     accessed: 2026-09-22
-  - title: "TcpListener.AcceptTcpClientAsync Method"
-    url: "https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener.accepttcpclientasync"
+  - title: "TcpListener.Start Method"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener.start"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
 draft: true
@@ -89,7 +89,7 @@ HTTP is a text-based, line-oriented protocol: a message is a start line, then he
 <figcaption>Figure 1. A request and its response are the same four-part shape: a start line, header lines, a blank line, then an optional body. Only the first line differs between the two.</figcaption>
 </figure>
 
-That shared shape means one parser handles both directions. The server below listens on a loopback port the operating system assigns (port 0 means "pick one"), reads whatever arrives until it has seen a header block, and replies. `TcpListener.Start` puts the socket into a listening state immediately, so the client below can connect as soon as `Start` returns without waiting for the server's `AcceptTcpClientAsync` call to begin; the connection queues until then ([Microsoft Learn, TcpListener.AcceptTcpClientAsync](https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener.accepttcpclientasync)).
+That shared shape means one parser handles both directions. The server below listens on a loopback port the operating system assigns (port 0 means "pick one"), reads whatever arrives until it has seen a header block, and replies. `TcpListener.Start` puts the socket into a listening state immediately: it "initializes the underlying Socket, binds it to a local endpoint, and listens for incoming connection attempts," queuing any connection request that arrives "until you call the Stop method" ([Microsoft Learn, TcpListener.Start](https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener.start)). So the client below can connect as soon as `Start` returns, without waiting for the server's `AcceptTcpClientAsync` call to begin; the connection sits in that queue until then.
 
 ```csharp run id=wire
 using System.Net;
@@ -214,19 +214,31 @@ Stopping at the first `\r\n\r\n` found with `EndsWith` instead of `IndexOf` brea
 
 An HTTP method is not just a verb; it is a promise about what repeating the request does. RFC 9110 calls a method **idempotent** when "the intended effect on the server of multiple identical requests with that method is the same as the effect for a single such request" ([section 9.2.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.2)). That is a claim about server-side effect, not about the bytes of the response.
 
-| Method | Safe | Idempotent | Typical use |
-|---|---|---|---|
-| `GET` | yes | yes | Retrieve a representation |
-| `HEAD` | yes | yes | Retrieve headers only |
-| `OPTIONS` | yes | yes | Discover allowed methods |
-| `TRACE` | yes | yes | Loopback test message |
-| `PUT` | no | yes | Replace a resource |
-| `DELETE` | no | yes | Remove a resource |
-| `POST` | no | no | Create or act; effect varies |
-| `PATCH` | no | no | Apply a partial change |
-| `CONNECT` | no | no | Open a tunnel (proxies) |
+| Method | Safe | Idempotent |
+|---|---|---|
+| `GET` | yes | yes |
+| `HEAD` | yes | yes |
+| `OPTIONS` | yes | yes |
+| `TRACE` | yes | yes |
+| `PUT` | no | yes |
+| `DELETE` | no | yes |
+| `POST` | no | no |
+| `PATCH` | no | no |
+| `CONNECT` | no | no |
 
-Safe methods (the ones that should not change server state at all) are idempotent by construction ([RFC 9110, section 9.2.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.1)); `PUT` and `DELETE` add nothing new but are idempotent anyway, each defined that way in its own section ([9.3.4](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.4), [9.3.5](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.5)). `PATCH` was added after the method table was already settled, by a separate RFC, which is explicit that it "is neither safe nor idempotent" by default ([RFC 5789, section 2](https://www.rfc-editor.org/rfc/rfc5789.html#section-2)): a patch document that says "append one row" or "increment the counter" has a different effect every time it is replayed, even though `PUT`'s "replace with exactly this representation" does not.
+What each one is typically for:
+
+- **`GET`** — retrieve a representation.
+- **`HEAD`** — retrieve headers only.
+- **`OPTIONS`** — discover allowed methods.
+- **`TRACE`** — send a loopback test message.
+- **`PUT`** — replace a resource.
+- **`DELETE`** — remove a resource.
+- **`POST`** — create a resource, or act; effect varies.
+- **`PATCH`** — apply a partial change.
+- **`CONNECT`** — open a tunnel (used by proxies).
+
+Safe methods (the ones that should not change server state at all) are idempotent by construction ([RFC 9110, section 9.2.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.2)); `PUT` and `DELETE` add nothing new but are idempotent anyway, each defined that way in its own section ([9.3.4](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.4), [9.3.5](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.5)). `PATCH` was added after the method table was already settled, by a separate RFC, which is explicit that it "is neither safe nor idempotent" by default ([RFC 5789, section 2](https://www.rfc-editor.org/rfc/rfc5789.html#section-2)): a patch document that says "append one row" or "increment the counter" has a different effect every time it is replayed, even though `PUT`'s "replace with exactly this representation" does not.
 
 This server keeps one resource collection in memory and reacts to `PUT`, `POST` and `GET` differently enough to show the difference in stored state, not just in status code:
 
@@ -435,15 +447,26 @@ No. RFC 9110's definition is about what the method's own semantics guarantee, no
 
 A status code's first digit puts it in one of five classes, each with a distinct role ([RFC 9110, section 15](https://www.rfc-editor.org/rfc/rfc9110.html#section-15)):
 
-| Class | Name | Meaning |
-|---|---|---|
-| 1xx | Informational | Interim; more is coming on this exchange |
-| 2xx | Successful | The request was received, understood and accepted |
-| 3xx | Redirection | Further action is needed to complete the request |
-| 4xx | Client Error | The server believes the request itself is at fault |
-| 5xx | Server Error | The request was valid; the server failed anyway |
+| Class | Name |
+|---|---|
+| 1xx | Informational |
+| 2xx | Successful |
+| 3xx | Redirection |
+| 4xx | Client Error |
+| 5xx | Server Error |
 
-1xx responses are the least visible in day-to-day work because most client libraries handle them invisibly, so this server produces one for real. `Expect: 100-continue` lets a client ask "are you willing to accept this body?" before sending it, and a server that is willing answers with an interim `100 Continue` and keeps the connection open for the body that follows ([RFC 9110, section 10.1.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-10.1.1), [section 15.2.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.2.1)). Reading the headers and reading the body have to be two separate steps here, or the server would block waiting for bytes the client is deliberately withholding:
+What each class means:
+
+- **1xx Informational** — interim; more is coming on this exchange.
+- **2xx Successful** — the request was received, understood and accepted.
+- **3xx Redirection** — further action is needed to complete the request.
+- **4xx Client Error** — the server believes the request itself is at fault.
+- **5xx Server Error** — the request was valid; the server failed anyway.
+
+1xx responses are the least visible in day-to-day work because most client libraries handle them invisibly, so this server produces one for real. `Expect: 100-continue` lets a client ask "are you willing to accept this body?" before sending it, and a server that is willing answers with an interim `100 Continue` and keeps the connection open for the body that follows ([RFC 9110, section 10.1.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-10.1.1), [section 15.2.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.2.1)). Reading the headers and reading the body have to be two separate steps here, or the server would block waiting for bytes the client is deliberately withholding. The rest of the plumbing — the `TcpListener` setup, and a `Get`/`Show` pair of client helpers — is the same shape as before, so the full program is collapsed here; the new part follows it.
+
+<details>
+<summary>Full program</summary>
 
 ```csharp run id=families
 using System.Net;
@@ -665,6 +688,44 @@ interim  100 Continue
 submit   201 Created stored 12b
 ```
 
+</details>
+
+The part of `Handle` that is new: it waits for `Expect: 100-continue` before reading `/submit`'s body, then maps each target to a status code.
+
+```csharp snippet of=families
+if (target == "/submit")
+{
+    if (headers.TryGetValue(
+        "Expect", out string? exp)
+        && exp.Equals(
+        "100-continue",
+        OrdinalIgnoreCase))
+        await net.WriteAsync(
+            Encoding.ASCII.GetBytes(
+            "HTTP/1.1 100 " +
+            "Continue\r\n\r\n"));
+    body = await ReadBody(
+        net, headers, prefix);
+}
+
+(int code, string reason,
+    string text) = target switch
+{
+    "/redirect" => (302, "Found",
+        "see /target"),
+    "/submit" => (201, "Created",
+        $"stored {body.Length}b"),
+    "/missing" => (404,
+        "Not Found",
+        "no such page"),
+    "/boom" => (500,
+        "Internal Server Error",
+        "handler threw"),
+    _ => (404, "Not Found",
+        "no route"),
+};
+```
+
 Every family but one came from a request that named a route; `500` came from the server just choosing to answer that way for `/boom`, standing in for what a real handler does when it throws: the request was fine, the server was not. `100 Continue` is the only response here with no body and no final meaning of its own — the client keeps reading, because RFC 9110 requires exactly one more response to follow it on the same exchange ([section 15.2.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.2.1)).
 
 ::::exercise[Give `/items/1` a `HEAD`]
@@ -744,7 +805,7 @@ Content-Length: 5\r\n
 
 ## Telling a client its copy is still good
 
-A cache saves a round trip only if it can trust what it already has. RFC 9111 splits that trust into two mechanisms: freshness, a lifetime the server hands out so the cache does not have to ask again for a while, and validation, a way to ask cheaply once that lifetime is up ([RFC 9111, section 1](https://www.rfc-editor.org/rfc/rfc9111.html#section-1)). `Cache-Control: max-age=N` sets the freshness lifetime in seconds ([section 5.2.2.1](https://www.rfc-editor.org/rfc/rfc9111.html#section-5.2.2.1)). `ETag` supplies a validator: an opaque token the server can recompute later and compare, defined once in RFC 9110 as identifying "one or more stored responses" ([section 8.8.3](https://www.rfc-editor.org/rfc/rfc9110.html#section-8.8.3)). A client that still has a stored response sends that token back in `If-None-Match`; if the server's current token matches, the stored response is still good and it says so without resending it ([RFC 9111, section 4.3.2](https://www.rfc-editor.org/rfc/rfc9111.html#section-4.3.2)), with status `304 Not Modified` ([section 4.3.3](https://www.rfc-editor.org/rfc/rfc9111.html#section-4.3.3)).
+A cache saves a round trip only if it can trust what it already has. RFC 9111 splits that trust into two mechanisms: freshness, a lifetime the server hands out so the cache does not have to ask again for a while, and validation, a way to ask cheaply once that lifetime is up ([RFC 9111, section 1](https://www.rfc-editor.org/rfc/rfc9111.html#section-1)). `Cache-Control: max-age=N` sets the freshness lifetime in seconds ([section 5.2.2.1](https://www.rfc-editor.org/rfc/rfc9111.html#section-5.2.2.1)). `ETag` supplies a validator: RFC 9110 defines an entity tag as "an opaque validator for differentiating between multiple representations of the same resource" ([section 8.8.3](https://www.rfc-editor.org/rfc/rfc9110.html#section-8.8.3)). A client that still has a stored response sends that token back in `If-None-Match` — RFC 9111 describes exactly this: "one or more entity tags, indicating one or more stored responses, can be used in an If-None-Match header field for response validation" ([RFC 9111, section 4.3.1](https://www.rfc-editor.org/rfc/rfc9111.html#section-4.3.1)). If the server's current token matches, the stored response is still good and it says so without resending it ([section 4.3.2](https://www.rfc-editor.org/rfc/rfc9111.html#section-4.3.2)), with status `304 Not Modified` ([section 4.3.3](https://www.rfc-editor.org/rfc/rfc9111.html#section-4.3.3)).
 
 <figure class="diagram">
 <svg viewBox="0 0 360 262" role="img" aria-labelledby="cache-title cache-desc">
@@ -777,6 +838,15 @@ A cache saves a round trip only if it can trust what it already has. RFC 9111 sp
 </figure>
 
 The server below computes each `ETag` from a SHA-256 hash of the current content, which makes it a **strong** validator: it changes whenever the bytes do, byte for byte ([RFC 9110, section 8.8.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-8.8.1)). The third request reuses the *first* response's `ETag` on purpose, after the content has changed underneath it, the way a client that has not talked to the server in a while would:
+
+:::note[Why the tag is only 8 hex characters]
+`Etag` below keeps just the first 8 hex characters (32 bits) of the SHA-256 digest so the output stays short enough to read at a glance. That is fine for this demo's three requests, but 32 bits collides far too often for a real deployment; a production implementation should send the full 64-character digest (256 bits) and let clients treat it as an opaque string, which is all RFC 9110 requires of an entity tag anyway.
+:::
+
+The rest of the plumbing — the `TcpListener` setup and the `ReadHead`/`ReadBody` split used above — is unchanged, so the full program is collapsed here; `Handle` and `Etag`, the new part, follow it.
+
+<details>
+<summary>Full program</summary>
 
 ```csharp run id=caching
 using System.Net;
@@ -955,6 +1025,52 @@ static async Task<string> ReadBody(
 3rd GET  200 etag "31DB2273"
 ```
 
+</details>
+
+`Handle` and `Etag` are what is new here:
+
+```csharp snippet of=caching
+async Task Handle(NetworkStream net)
+{
+    var (_, headers, _) =
+        await ReadHead(net);
+    string etag = Etag(report);
+    headers.TryGetValue(
+        "If-None-Match",
+        out string? sent);
+
+    if (sent == etag)
+    {
+        await net.WriteAsync(
+            Encoding.ASCII.GetBytes(
+            "HTTP/1.1 304 Not " +
+            "Modified\r\n" +
+            $"ETag: {etag}\r\n" +
+            "Cache-Control: " +
+            "max-age=60\r\n\r\n"));
+        return;
+    }
+
+    byte[] payload = Encoding.ASCII
+        .GetBytes(report);
+    await net.WriteAsync(
+        Encoding.ASCII.GetBytes(
+        "HTTP/1.1 200 OK\r\n" +
+        $"ETag: {etag}\r\n" +
+        "Cache-Control: " +
+        "max-age=60\r\n" +
+        "Content-Length: " +
+        $"{payload.Length}\r\n\r\n"));
+    await net.WriteAsync(payload);
+}
+
+static string Etag(string content) =>
+    '"' + Convert.ToHexString(
+        SHA256.HashData(
+        Encoding.ASCII.GetBytes(
+        content)))[..8] + '"';
+```
+
 The second request sends the same `If-None-Match` value the server just handed out and gets `304` with zero body bytes back. The third request sends that *same, now-stale* value again, but the report changed underneath it in between, so the hash the server computes no longer matches, and it falls back to a full `200` with a new tag. Nothing here trusts the client's memory of when it last asked; the server recomputes and compares every time.
 
 ::::exercise[What `no-store` rules out]
@@ -968,6 +1084,11 @@ No. A `304` response only makes sense as an instruction to *reuse a stored copy*
 ## Remembering a client between requests
 
 HTTP is, by design, "a family of stateless, application-level, request/response protocols" ([RFC 9110, section 1.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-1.1)): nothing about one request is remembered for the next unless something carries it across. A cookie is that something. A server hands one out with `Set-Cookie`, whose value is a name and a value plus optional attributes ([RFC 6265, section 4.1.1](https://www.rfc-editor.org/rfc/rfc6265.html#section-4.1.1)); a client that keeps it sends only the name and value back on later requests to a matching host, in a `Cookie` header, with every attribute stripped ([section 4.2.1](https://www.rfc-editor.org/rfc/rfc6265.html#section-4.2.1)). Three attributes worth reading on sight: `Path` narrows which requests get the cookie back ([section 4.1.2.4](https://www.rfc-editor.org/rfc/rfc6265.html#section-4.1.2.4)); `HttpOnly` tells the browser to withhold the cookie from JavaScript entirely ([section 4.1.2.6](https://www.rfc-editor.org/rfc/rfc6265.html#section-4.1.2.6)); `Secure` tells it never to send the cookie over plain HTTP ([section 4.1.2.5](https://www.rfc-editor.org/rfc/rfc6265.html#section-4.1.2.5)).
+
+The rest of the plumbing is the same shape used above, so the full program is collapsed here; `Handle`, the only new part, follows it.
+
+<details>
+<summary>Full program</summary>
 
 ```csharp run id=cookies
 using System.Net;
@@ -1142,6 +1263,51 @@ known    welcome back
 anon     who are you?
 ```
 
+</details>
+
+`Handle` is the only new part: it sets the cookie on `/login` and checks for it on every other request.
+
+```csharp snippet of=cookies
+async Task Handle(NetworkStream net)
+{
+    var (first, headers, _) =
+        await ReadHead(net);
+    string target =
+        first.Split(' ')[1];
+    string setCookie = "";
+    string body;
+
+    if (target == "/login")
+    {
+        setCookie = "Set-Cookie: " +
+            "sid=demo42; Path=/; " +
+            "HttpOnly\r\n";
+        body = "logged in";
+    }
+    else if (headers.TryGetValue(
+        "Cookie", out string? cookie)
+        && cookie.Contains(
+            "sid=demo42"))
+    {
+        body = "welcome back";
+    }
+    else
+    {
+        body = "who are you?";
+    }
+
+    byte[] payload = Encoding.ASCII
+        .GetBytes(body);
+    await net.WriteAsync(
+        Encoding.ASCII.GetBytes(
+        "HTTP/1.1 200 OK\r\n" +
+        setCookie +
+        "Content-Length: " +
+        $"{payload.Length}\r\n\r\n"));
+    await net.WriteAsync(payload);
+}
+```
+
 `jar` keeps only `login.Cookie!.Split(';')[0]`, the `sid=demo42` pair, and throws the `Path` and `HttpOnly` attributes away before the next request — a real client does the same, because the `Cookie` header's grammar has no room for attributes at all ([RFC 6265, section 4.2.1](https://www.rfc-editor.org/rfc/rfc6265.html#section-4.2.1)). The third request, `anon`, deliberately sends no `Cookie` header, and the server has no way to tell it apart from a first-time visitor: the "memory" lives entirely in the header the client chooses to resend, not in the TCP connection or in any state the server keeps tied to a particular socket.
 
 :::note[What a session id is standing in for]
@@ -1169,13 +1335,19 @@ Nothing breaks the substring check in this particular server, because `"sid=demo
 
 Every method, status code and header used above means the same thing on any version; RFC 9110 defines that meaning once, and the version-specific RFCs only define how it is written onto a connection ([RFC 9110, section 1.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-1.2)). What changed across versions is framing and transport, not semantics.
 
-| Version | Connection model | Header encoding | Where head-of-line blocking is left |
-|---|---|---|---|
-| HTTP/1.1 | One response in flight at a time per connection, reused across requests | Plain text | A slow response blocks everything already queued behind it on that connection ([RFC 9112, section 9.3](https://www.rfc-editor.org/rfc/rfc9112.html#section-9.3)) |
-| HTTP/2 | Many streams multiplexed on one TCP connection ([RFC 9113, section 5](https://www.rfc-editor.org/rfc/rfc9113.html#section-5)) | HPACK-compressed ([RFC 7541](https://www.rfc-editor.org/rfc/rfc7541.html)) | A lost TCP segment stalls every stream, because TCP delivers to the application strictly in order ([RFC 9114, section 1.1](https://www.rfc-editor.org/rfc/rfc9114.html#section-1.1)) |
-| HTTP/3 | Many streams on one QUIC connection, over UDP ([RFC 9000, section 1](https://www.rfc-editor.org/rfc/rfc9000.html#section-1)) | QPACK-compressed ([RFC 9204](https://www.rfc-editor.org/rfc/rfc9204.html)) | Gone at the transport layer: QUIC gives reliability per stream, so one stream's loss does not stall the others ([RFC 9114, section 1.2](https://www.rfc-editor.org/rfc/rfc9114.html#section-1.2)) |
+| Version | Header encoding |
+|---|---|
+| HTTP/1.1 | Plain text |
+| HTTP/2 | HPACK-compressed |
+| HTTP/3 | QPACK-compressed |
 
-The move from HTTP/1.1 to HTTP/2 solved queuing at the *application* layer: instead of six-ish parallel TCP connections each serializing its own queue of requests, one connection interleaves many streams, and HPACK avoids resending the same header names on every one of them. What HTTP/2 could not fix is the layer underneath it — a single TCP connection still delivers bytes to the application in one strict order, so one lost packet stalls every multiplexed stream until it is retransmitted, even the streams whose data already arrived. HTTP/3 replaces that transport instead of working around it: QUIC multiplexes streams itself, over UDP, so a lost packet only stalls the stream it belonged to.
+Connections and head-of-line blocking, version by version:
+
+- **HTTP/1.1** — one response in flight per connection. A slow response blocks everything already queued behind it: a server may process pipelined requests in parallel, but it "MUST send the corresponding responses in the same order that the requests were received" ([RFC 9112, section 9.3.2](https://www.rfc-editor.org/rfc/rfc9112.html#section-9.3.2)).
+- **HTTP/2** — many streams, one TCP connection. A lost TCP segment stalls every stream, because TCP delivers to the application strictly in order ([RFC 9114, section 1.1](https://www.rfc-editor.org/rfc/rfc9114.html#section-1.1)).
+- **HTTP/3** — many streams, one QUIC connection, over UDP. Head-of-line blocking is gone at the transport layer: QUIC gives reliability per stream, so one stream's loss does not stall the others ([RFC 9114, section 1.2](https://www.rfc-editor.org/rfc/rfc9114.html#section-1.2)).
+
+The move from HTTP/1.1 to HTTP/2 solved queuing at the *application* layer: instead of six-ish parallel TCP connections each serializing its own queue of requests, one connection multiplexes many streams ([RFC 9113, section 5](https://www.rfc-editor.org/rfc/rfc9113.html#section-5)), and HPACK compression ([RFC 7541](https://www.rfc-editor.org/rfc/rfc7541.html)) avoids resending the same header names on every one of them. What HTTP/2 could not fix is the layer underneath it — a single TCP connection still delivers bytes to the application in one strict order, so one lost packet stalls every multiplexed stream until it is retransmitted, even the streams whose data already arrived. HTTP/3 replaces that transport instead of working around it: QUIC multiplexes streams itself, over UDP ([RFC 9000, section 1](https://www.rfc-editor.org/rfc/rfc9000.html#section-1)), using QPACK for headers ([RFC 9204](https://www.rfc-editor.org/rfc/rfc9204.html)), so a lost packet only stalls the stream it belonged to.
 
 ::::exercise[Count what changes, not just what's better]
 A page loads 30 small images from one origin. Over HTTP/1.1 with six connections open to that origin, requests queue five deep on average before every image starts downloading. Over HTTP/2, how many of those 30 need to queue behind another one on the same connection? Does moving to HTTP/3 change that count again, or does it change something else?
