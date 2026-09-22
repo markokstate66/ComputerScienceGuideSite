@@ -41,8 +41,8 @@
   },
   "totals": {
     "planned": 67,
-    "passed": 5,
-    "inReview": 2,
+    "passed": 6,
+    "inReview": 1,
     "drafted": 6,
     "notStarted": 54,
     "cut": 0
@@ -843,17 +843,24 @@
       "wave": "A",
       "shape": "W",
       "title": "What Happens When You Request a URL",
-      "state": "in-review",
-      "round": 1,
+      "state": "passed",
+      "round": 4,
       "scores": {
-        "technical": 7,
-        "adsense": 8.6,
-        "design": 8.3
+        "technical": 9.2,
+        "adsense": 8.8,
+        "design": 8.7
       },
       "codePass": true,
-      "lighthouse": null,
+      "lighthouse": [
+        95,
+        100,
+        100,
+        100
+      ],
       "openIssues": [
-        "round-1 issues in docs/reviews/networking/how-the-internet-works.round-1.*.json"
+        "byline NEEDS_MARKUS placeholder (owner input)",
+        "wave-3 cross-links in docs/crosslinks/",
+        "networking glossary terms (DNS, TCP, TLS, RTT, port, packet) requested since round 1, still unfilled"
       ],
       "history": [
         {
@@ -864,9 +871,36 @@
           "design": 8.3,
           "pass": false,
           "note": "reviews in docs/reviews/"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-21",
+          "technical": 9.0,
+          "adsense": 8.8,
+          "design": 8.4,
+          "pass": false
+        },
+        {
+          "round": 3,
+          "date": "2026-09-21",
+          "technical": 8.8,
+          "adsense": 8.6,
+          "design": 8.4,
+          "pass": false
+        },
+        {
+          "round": 4,
+          "date": "2026-09-21",
+          "technical": 9.2,
+          "adsense": 8.8,
+          "design": 8.7,
+          "pass": true,
+          "note": "last round before a mandatory cut"
         }
       ],
-      "batch": 1
+      "batch": 1,
+      "lighthouseNote": "serial run by orchestrator, 2026-09-21",
+      "published": "2026-09-21"
     },
     {
       "pillar": "networking",

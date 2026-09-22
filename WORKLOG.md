@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-21 — `/ship 18`: networking/how-the-internet-works merged
+
+- PR #18 squash-merged into `adsense-rebuild`, branch deleted, issue #3 closed. Round 4 gauntlet result (its last round before a mandatory cut): technical 9.2 / AdSense 8.8 / design 8.7, all ≥ the 8.5 bar.
+- Verified before merge: `npm run build` green (24 pages), `node tools/run-code.mjs src/content/articles/networking/how-the-internet-works.md` PASS (blocks=24, executed=11).
+- Serial `verify-page` Lighthouse (owner-facing, run earlier by the consumer with nothing else running): 95/100/100/100. Only failure was the expected `NEEDS_MARKUS` byline placeholder.
+- `docs/STATUS.json` totals: passed 5 → 6, inReview 2 → 1.
+
 ## 2026-09-21 — `/ship 17`: version-control/branching-and-merging merged
 
 - PR #17 squash-merged into `adsense-rebuild`, branch deleted, issue #4 closed. Round 2 gauntlet result: technical 8.8 / AdSense 9.2 / design 8.5, all ≥ the 8.5 bar.
