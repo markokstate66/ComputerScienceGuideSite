@@ -1,0 +1,25 @@
+{
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://code-maze.com/csharp-value-vs-reference-types/",
+    "https://www.albahari.com/valuevsreftypes.aspx"
+  ],
+  "justification": "Design/UX round 1 for /csharp-dotnet/value-types-vs-reference-types/, judged against the two top-ranking pages for 'value type vs reference type c#' that were actually opened: Code Maze's guide and Albahari's C# in a Nutshell excerpt. Both comparison pages are plain single-theme blog layouts with a couple of static stack/heap diagrams, no measured data, no primary-source citations, and no interactive/collapsible elements. This article clearly exceeds them on presentation: three custom inline-SVG diagrams (copy semantics, struct-vs-class array layout, boxing) that are legible and correctly themed in both light and dark mode at both desktop and phone width, styled dark 'Output' panels showing real measured byte counts and timings next to the code that produced them, four exercises with solutions genuinely collapsed until opened (verified: the predict-the-output exercise shows no output under the question; the find-the-bug exercise legitimately shows the buggy '40 60' output as the symptom to diagnose, which is not the same failure mode), a working 'On this page' TOC with correct two-level nesting, and a full numbered source list with real Microsoft Learn/archived-MSDN links. Verified with `node tools/verify-page.mjs --drafts /csharp-dotnet/value-types-vs-reference-types/`: Lighthouse 95/100/100/100 (performance re-run not needed, already >=90 in all four categories), 0 console errors, 0 broken links (internal and the 21 external Microsoft Learn URLs all resolved), 0 px of horizontal overflow at 390px. Read every desktop-light part (01-15), every mobile-dark part (01-22), plus the fold and two interior parts each of desktop-dark and mobile-light. Reading rhythm throughout is prose -> code -> output -> explanation -> (periodic) diagram, with no wall-of-text stretch longer than about 6 sentences and code blocks broken so operative lines stay near the left edge on phone. Heading hierarchy is clean (single h1, h2 sections, h3 subsections only, bold lead-in sentences used correctly where a heading would be excessive). The only defect found is cosmetic and minor: the ref/out/in/ref-readonly comparison table's third column ('Method assigns', holding the actual may/must/cannot answers) is pushed off the initial 390px viewport by the header text width, so a phone reader sees only 'Modifier' and 'Set before call' before having to swipe right to reach the column that is the table's actual point. Everything else inspected was clean. This is not a 10 only because that one table forces an extra, non-obvious swipe to reach the payoff data on first view; absent that it would be indistinguishable from a 10.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "\"Arguments are assignments: ref, out and in\" section, the four-row Modifier/Set before call/Method assigns table, mobile width (390px, both themes)",
+      "problem": "The table's own header text ('Method assigns') is wider than any of its data cells, so at phone width the third column -- which holds the actual may/must/cannot answers the table exists to convey -- sits past the fold with only a faded edge as a cue. A phone reader sees Modifier and Set before call first and has to know to swipe right to see what each modifier lets the method do.",
+      "fixLooksLike": "Shorten the header to something that fits within the data column's width (e.g. 'Assigns' instead of 'Method assigns'), or drop to two columns by folding 'Set before call' into the modifier's own row as a short parenthetical, so all three pieces of information are visible without scrolling on a 358px text column.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 95,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

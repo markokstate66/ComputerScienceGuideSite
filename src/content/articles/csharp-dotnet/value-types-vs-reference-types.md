@@ -4,8 +4,8 @@ description: "Run the copy experiments that separate C# structs from classes, me
 pillar: csharp-dotnet
 order: 1
 author: markus
-published: 2026-09-18
-updated: 2026-09-18
+published: 2026-09-21
+updated: 2026-09-21
 level: intermediate
 tags: [value-types, reference-types, structs, boxing, memory-allocation]
 prerequisites: []
@@ -13,52 +13,56 @@ sources:
   - title: "Value types (C# reference)"
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Structure types (C# reference)"
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/struct"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Method parameters and modifiers (C# reference)"
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Boxing and Unboxing (C# programming guide)"
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
+  - title: "ref struct types (C# reference)"
+    url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/ref-struct"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-21
   - title: "Records (C# reference)"
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Compiler Error CS1612"
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1612"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "What's new in the .NET 10 runtime: stack allocation and escape analysis"
     url: "https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-10/runtime"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "What's new in the .NET 9 runtime: object stack allocation for boxes"
     url: "https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9/runtime"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "GC.GetAllocatedBytesForCurrentThread Method"
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.gc.getallocatedbytesforcurrentthread"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Explore C# string interpolation handlers"
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/performance/interpolated-string-handler"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Choosing Between Class and Struct (Framework Design Guidelines)"
     url: "https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/choosing-between-class-and-struct"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Eric Lippert, The Stack Is An Implementation Detail, Part One (archived MSDN blog)"
     url: "https://learn.microsoft.com/en-us/archive/blogs/ericlippert/the-stack-is-an-implementation-detail-part-one"
     publisher: "Microsoft Learn archive"
-    accessed: 2026-09-18
-draft: true
+    accessed: 2026-09-21
+draft: false
 ---
 
 A variable of a [value type](/glossary/#value-type) contains the data itself. A variable of a [reference type](/glossary/#reference-type) contains a reference to an object that lives somewhere else. C# copies *what the variable contains* on every assignment, every argument pass and every return, so a struct gets duplicated and a class instance gets a second reference pointing at it. That is the whole definition in the [C# reference](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types), and it says nothing about stacks or heaps.
@@ -457,7 +461,9 @@ The older design guidelines say the same in fewer words: value types are allocat
 
 ## Boxing: a value gets an object of its own
 
-Every type in C# converts to `object`, and a struct can implement interfaces. But an `object` or interface variable holds a reference, and a struct value is not a thing a reference can point to. *Boxing* closes the gap: the runtime allocates an object, copies the value into it, and hands back a reference to that object. *Unboxing*, written as a cast, checks the type and copies the value back out ([Boxing and Unboxing](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing)). Boxing happens implicitly, which is why it is easy to overlook.
+Every ordinary type in C# converts to `object`, and a struct can implement interfaces. But an `object` or interface variable holds a reference, and a struct value is not a thing a reference can point to. *Boxing* closes the gap: the runtime allocates an object, copies the value into it, and hands back a reference to that object. *Unboxing*, written as a cast, checks the type and copies the value back out ([Boxing and Unboxing](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing)). Boxing happens implicitly, which is why it is easy to overlook.
+
+One family opts out entirely: a `ref struct` such as `Span<T>` is built to guarantee it never reaches the heap, so the compiler refuses to box it to `object`, to `System.ValueType`, or to an interface it implements ([ref struct types](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/ref-struct)). That restriction is what makes `Span<T>` safe to point at stack memory in the first place.
 
 <figure class="diagram">
 <svg viewBox="0 0 360 306" role="img" aria-labelledby="vr-box-title vr-box-desc">
