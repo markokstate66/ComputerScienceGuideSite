@@ -42,16 +42,20 @@ sources:
     url: "https://martinfowler.com/bliki/Yagni.html"
     publisher: "Martin Fowler"
     accessed: 2026-09-22
+  - title: "IList<T>.Insert(Int32, T) Method"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1.insert"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-22
 draft: true
 ---
 
-Five separate principles share one mnemonic. Each one below gets a real violation, a real consequence you can watch happen by running the program, and a fix. Robert C. Martin, who described all five, put the point behind Single Responsibility this way: "Gather together the things that change for the same reasons. Separate those things that change for different reasons" [[2]](https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html). That sentence, more than the five-letter acronym, is what the rest of this page is about: where change pressure comes from, and what happens when code that should be separate is fused together.
+Five separate principles share one mnemonic. Each one below gets a real violation, a real consequence you can watch happen by running the program, and a fix. Robert C. Martin, who described all five, put the point behind Single Responsibility this way: "Gather together the things that change for the same reasons. Separate things that change for different reasons" [[2]](https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html). That sentence, more than the five-letter acronym, is what the rest of this page is about: where change pressure comes from, and what happens when code that should be separate is fused together.
 
 Every program below is a complete, file-based .NET 10 console app; `[[n]]` links go to the source that makes the claim next to it.
 
 ## Single responsibility: whose reason to change is this?
 
-A class has a single responsibility when there is exactly one kind of change that would require editing it. The usual failure looks harmless: two things that happen to sit next to each other get written as one method, because at the time nothing seems to depend on keeping them apart.
+A class has a single responsibility when there is exactly one kind of change that would require editing it — in Martin's own words, "each software module should have one and only one reason to change" [[1]](https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html). The usual failure looks harmless: two things that happen to sit next to each other get written as one method, because at the time nothing seems to depend on keeping them apart.
 
 A library's overdue-notice class computes a fine and writes the message a member sees. Both live in `BuildNotice`.
 
@@ -235,7 +239,7 @@ A waiver is a rule about *which rate applies*, which is a different concern from
 
 ## Open/closed: extend by adding, not by editing what shipped
 
-Bertrand Meyer's original phrasing, quoted in Martin's own summary, is that "a module should be open for extension but closed for modification" [[2]](https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html). The violation is not "using an `if` chain" — a short chain is fine. It's a chain that a later change has to be *inserted into*, at a specific place, for the right answer to come out.
+The open/closed principle is commonly traced to Bertrand Meyer; the phrasing this page uses is Martin's own summary of it: "a module should be open for extension but closed for modification" [[2]](https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html). The violation is not "using an `if` chain" — a short chain is fine. It's a chain that a later change has to be *inserted into*, at a specific place, for the right answer to come out.
 
 A shipping calculator prices a package from its method name:
 
@@ -389,7 +393,7 @@ static void AppendAuditEntry(
 
 It doesn't: the call throws `System.NotSupportedException: Collection is read-only`. Microsoft's own reference documents this precisely: `ReadOnlyCollection<T>`'s explicit implementation of `ICollection<T>.Add` "always throws `NotSupportedException`", and the same is true of `Clear`, `Remove`, `IList<T>.Insert`, and `IList<T>.RemoveAt` [[4]](https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlycollection-1). This is exactly what Liskov substitution forbids: a type that satisfies the interface's *shape* while breaking a behavior every caller of that interface is entitled to assume. The compiler has no rule against it, because signatures are all it checks.
 
-`IList<T>` itself anticipates this: it inherits an `IsReadOnly` property from `ICollection<T>`, documented as meaning that "these mutation methods should throw" when it is `true` [[5]](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1). A caller that checks it first degrades instead of crashing:
+`IList<T>` itself anticipates this: it inherits an `IsReadOnly` property from `ICollection<T>` [[5]](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1), and the consequence of ignoring that flag is documented on the mutating members themselves — `IList<T>.Insert`'s Exceptions list states that it throws `NotSupportedException` when "the `IList<T>` is read-only" [[9]](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1.insert). A caller that checks `IsReadOnly` first degrades instead of crashing:
 
 ```csharp run id=lsp-fixed
 using System.Collections.ObjectModel;
@@ -576,7 +580,7 @@ Nothing else changes. `SalesReport` and `QuickSummaryReport` never mention `IJso
 
 ## Dependency inversion: point dependencies at the abstraction, not the detail
 
-Martin's summary: "Depend in the direction of abstraction. High level modules should not depend upon low level details" [[2]](https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html). Microsoft's architecture guide states the same shape more mechanically: ordinarily, "if class A calls a method of class B and class B calls a method of class C, then at compile time class A will depend on class B, and class B will depend on class C" — a straight line, high level to low. Applying dependency inversion lets "A call methods on an abstraction that B implements... thus *inverting* the typical compile-time dependency" [[6]](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/architectural-principles).
+Martin's summary: "Depend in the direction of abstraction. High level modules should not depend upon low level details" [[2]](https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html). Microsoft's architecture guide states the same shape more mechanically: ordinarily, "if class A calls a method of class B and class B calls a method of class C, then at compile time class A will depend on class B, and class B will depend on class C" — a straight line, high level to low. Applying dependency inversion, in the guide's own words, "allows A to call methods on an abstraction that B implements... thus *inverting* the typical compile-time dependency" [[6]](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/architectural-principles).
 
 An order processor that prints receipts by naming the concrete printer class directly:
 
