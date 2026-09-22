@@ -2,6 +2,14 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-22 — `/ship 22`: csharp-dotnet/value-types-vs-reference-types merged
+
+- PR #22 squash-merged into `adsense-rebuild`, branch deleted, issue #7 closed. Round 1 gauntlet result: technical 9.3 / AdSense 9.0 / design 9.0, all ≥ the 8.5 bar. First published article in the csharp-dotnet pillar.
+- Verified before merge: `npm run build` green (29 pages), `node tools/run-code.mjs src/content/articles/csharp-dotnet/value-types-vs-reference-types.md` PASS (blocks=34, executed=19).
+- Serial `verify-page` Lighthouse (owner-facing, run earlier by the consumer with nothing else running): 96/100/100/100. Only failure was the expected `NEEDS_MARKUS` byline placeholder.
+- `docs/STATUS.json` totals: passed 8 → 9, drafted 5 → 4.
+- Known open issue, not a merge blocker: the "Find the lost update" exercise prints its output before the collapsed solution, unlike the article's other three exercises.
+
 ## 2026-09-22 — `/ship 26`: verify-page compression fix merged
 
 - PR #26 squash-merged into `adsense-rebuild`, branch deleted. Not an article; no issue closed (related to #6, does not resolve it alone).

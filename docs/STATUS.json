@@ -41,9 +41,9 @@
   },
   "totals": {
     "planned": 67,
-    "passed": 8,
+    "passed": 9,
     "inReview": 0,
-    "drafted": 5,
+    "drafted": 4,
     "notStarted": 54,
     "cut": 0
   },
@@ -644,16 +644,38 @@
       "wave": "A",
       "shape": "I",
       "title": "Value Types vs Reference Types: What Really Gets Copied",
-      "state": "drafted",
+      "state": "passed",
       "round": 1,
-      "scores": null,
+      "scores": {
+        "technical": 9.3,
+        "adsense": 9.0,
+        "design": 9.0
+      },
       "codePass": true,
-      "lighthouse": null,
-      "openIssues": [
-        "round-1 draft written, run-code green (orchestrator run 2026-09-18), NOT yet reviewed by any critic"
+      "lighthouse": [
+        96,
+        100,
+        100,
+        100
       ],
-      "history": [],
-      "batch": 1
+      "openIssues": [
+        "byline NEEDS_MARKUS placeholder (owner input)",
+        "wave-3 cross-links in docs/crosslinks/",
+        "an exercise ('Find the lost update') prints its output before the collapsed solution, unlike the article's other three exercises"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-22",
+          "technical": 9.3,
+          "adsense": 9.0,
+          "design": 9.0,
+          "pass": true
+        }
+      ],
+      "batch": 1,
+      "lighthouseNote": "serial run by orchestrator, 2026-09-22",
+      "published": "2026-09-22"
     },
     {
       "pillar": "csharp-dotnet",
