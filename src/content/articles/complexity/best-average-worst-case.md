@@ -42,7 +42,7 @@ sources:
     url: "https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/String.Comparison.cs"
     publisher: "GitHub, dotnet/runtime"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Quicksort's first-element pivot is the version most courses teach first: partition around `items[lo]`, recurse on both halves, done in a dozen lines. It also has a specific, reproducible way of falling over, and the fastest way to understand best, average and worst case is to watch it happen.
