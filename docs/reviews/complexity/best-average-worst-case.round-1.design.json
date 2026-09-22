@@ -1,0 +1,49 @@
+{
+  "article": "src/content/articles/complexity/best-average-worst-case.md",
+  "route": "/complexity/best-average-worst-case/",
+  "round": 1,
+  "role": "design",
+  "score": 8.1,
+  "comparedAgainst": [
+    "This session's WebSearch budget (200/200) was exhausted before this review started, so no external competitor pages could be fetched or compared. This review judges the page against the site's own binding design rules instead: docs/WRITER_GUIDE.md section 5 (diagram phone rules) and section 7 (phone width), docs/EDITORIAL_BRIEF.md's design bullets, and the pattern of findings from the most recent design review in this pillar (docs/reviews/complexity/amortized-analysis.round-1.design.json), which is the closest available baseline for what 'good' and 'not yet good enough' look like on this site."
+  ],
+  "lighthouse": { "performance": 98, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-22T22:43:22.983Z",
+    "runs": 3,
+    "words": 3271,
+    "codeBlocks": 17,
+    "figures": 1,
+    "h1": 1,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, not an issue)"],
+    "lighthouseFailingAudits": ["first-contentful-paint 2.0 s (0.85)", "max-potential-fid 320 ms (0.32)", "unused-css-rules 12 KiB", "bf-cache", "document-latency-insight", "network-dependency-tree-insight"],
+    "note": "Lighthouse performance was noisy across the three serial runs required for this review: 85, then 98, then 98 (the first run's failing set additionally showed total-blocking-time 470 ms and forced-reflow-insight, both absent from the two repeat runs). Reporting 98/100/100/100 as the real, reproduced score; the 85 looks like first-run/cold-cache noise rather than a property of the page, since accessibility/best-practices/SEO stayed pinned at 100 across all three runs and nothing in the page changed between runs."
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold, parts 09 (table)",
+    "desktop-dark": "fold, parts 04 (figure)",
+    "mobile-dark": "fold + parts 01-16 (all)",
+    "mobile-light": "fold, parts 06, 14, 16"
+  },
+  "justification": "Lighthouse 98/100/100/100 on the reproduced (2-of-3) run, 0 console errors, 0 console warnings, 0 broken links, mobileOverflowPx 0; the only failure is the expected NEEDS_MARKUS placeholder (byline, bio, one avatar-adjacent tag). This is a shorter, more tightly scoped page than the amortized-analysis round reviewed previously (3271 words, 17 code blocks, 1 figure, flat 8-item H2 table of contents with no nesting needed), and on both desktop and phone, in both themes, it mostly reads like a page that already knows the site's mobile rules: the single figure (two partition trees, viewBox 360x622) is portrait, stacked top/bottom exactly as WRITER_GUIDE prescribes, its 'empty left' annotation sits above its own dashed line rather than beside the tree, every node label is legible at 390 px in both themes, and the caption's claim is fully verifiable from what a phone shows without scrolling. Every output panel (five of them, including the deliberately-blank GetHashCode row) keeps its columns inside about 40 characters with real separation between them ('hash / total probes / per key', 'input / naive / randomized'), which is a clear improvement over the fused- and clipped-column output panels flagged in the prior pillar review. The four exercises are spread through the body at the point each proof or fix becomes possible (after the average-case argument, after the duplicates section, after the .NET hash-randomization callout, and one closing 'find the bug' exercise integrated into the final section) rather than stacked at the end, use four different verb forms (Prove it / Extend the code / Predict the output / Find the bug), and none give away their output panel above the fold of the collapsed solution. What keeps this below 8.5 is the article's one table, under 'Stating the bound so it survives a code review': on desktop all three columns (Case, Holds for, Quicksort's bound) are fully visible and the table does exactly the summarizing job the prose says it does. On a phone, the two-word 'Case' column and part of the sentence-length 'Holds for' column are all that fit before the fade; the entire 'Quicksort's bound' column, i.e. the four Θ/O results that are the actual payout of a section literally about stating results precisely, is off-screen with no visual cue that a third column exists. A reader on the majority device for this site closes the page's summary table having read four case names and four half-sentences, but not one of the four complexity bounds the table exists to state. This is a single occurrence rather than the three-figure, one-table spread found in the prior pillar review, and everything else on the page already clears the bar, so the fix is small and contained; I would expect a pass on round 2.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Table under 'Stating the bound so it survives a code review' at 390 px; mobile-dark-part14, mobile-light-part14 (desktop-light-part09 for contrast: all three columns fully legible there)",
+      "problem": "Three columns (Case, Holds for, Quicksort's bound) but the middle column is sentence-length ('Every ordering of the input equally likely', 'Any fixed input, averaged over the algorithm's own random pivots' — well over the guide's 40-character phrase budget), so on a phone only 'Case' and part of 'Holds for' fit before the fade and the third column, which holds the four Θ(n²)/Θ(n log n)/O(n log n) results the whole section is building to, is entirely off-screen with no scroll affordance visible in the screenshot. The table's actual content — the bound itself — is the one thing a phone reader cannot see.",
+      "fixLooksLike": "Shorten 'Holds for' to phrases that fit under about 30 characters (e.g. 'Adversarial input exists', 'Every ordering equally likely', 'Any input, algorithm's own coin flips') so all three columns fit inside 390 px without scrolling, or move 'Quicksort's bound' to be the second column (it is short: Θ(n²), Θ(n log n), O(n log n)) so it survives the fade even if 'Holds for' still needs to scroll. Either way, re-check at 390 px that the bound value is visible for all four rows without horizontal scrolling.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Repeated preamble `using System.Globalization; CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;` in five programs (quadratic-quicksort, recursion-depth, randomized-fix, hash-flood, ex-threeway); every mobile code screenshot of those blocks",
+      "problem": "This two-line boilerplate is the first thing visible in five of the article's `csharp run` blocks and is clipped by the fade on every one of them at 390 px, pushing the interesting code (the actual sort/partition logic the prose is discussing) down and making the code block's first screen look like a clipped, half-explained setup line five separate times.",
+      "fixLooksLike": "Same fix as flagged in the amortized-analysis review for the identical pattern: keep the culture-invariant line only where output formatting genuinely depends on it, mention it once in prose at first use, and drop or fold it (e.g. `using System.Globalization; CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;` on one line after the first mention) in the remaining four programs so the first visible line of each block is code the prose is actually about.",
+      "owner": "writer"
+    }
+  ]
+}

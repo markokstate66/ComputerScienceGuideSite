@@ -1,0 +1,65 @@
+{
+  "article": "src/content/articles/complexity/best-average-worst-case.md",
+  "route": "/complexity/best-average-worst-case/",
+  "round": 1,
+  "role": "technical",
+  "score": 7.0,
+  "runCodePass": true,
+  "runCodeResult": "PASS complexity/best-average-worst-case.md  blocks=17 executed=6 (run 3x for determinism, identical PASS each time)",
+  "comparedAgainst": [
+    "https://algs4.cs.princeton.edu/23quicksort/",
+    "https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/",
+    "https://www.usenix.org/conference/12th-usenix-security-symposium/denial-service-algorithmic-complexity-attacks",
+    "https://learn.microsoft.com/en-us/security-updates/securityadvisories/2011/2659883",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.string.gethashcode",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.stackoverflowexception",
+    "https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Marvin.cs",
+    "https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/String.Comparison.cs",
+    "https://www.geeksforgeeks.org/dsa/quick-sort-algorithm/"
+  ],
+  "justification": "run-code is green 3/3 runs with identical block/executed counts. I independently re-implemented every runnable block (quadratic-quicksort, recursion-depth, randomized-fix, ex-threeway, hash-flood, ex-dictionary) in a scratch .NET 10 console project from the article's own listed source and reproduced every printed number exactly with the same seeds: comparisons {4584,10535,24172,52775,126318} random / {124750,499500,1999000,7998000,31996000} sorted; the n(n-1)/2 closed form matches to the last digit at n=500 and n=8000; recursion depth {21,19,25,26,30} random / {500,1000,2000,4000,8000} sorted; randomized-fix table {31996000/123746, 31996000/122896, 8013935/8017980, 126318/120958}; three-way partition {8017980, 19959}; the Dictionary lookup output 'found: True, value: 1'. Hash-flood: additive hash gave exactly 7,998,000 (= 4000*3999/2) on every run as claimed, and GetHashCode gave 1,987 and then 1,943 probes on two separate process launches (both in the 'under 2,000, about 0.5/key' range the article claims), consistent with a per-process Marvin seed. I fetched every source in front matter and checked every quotation character-for-character: Sedgewick & Wayne's '~2 N ln N', the lightning-strike probability line, and the three-way-partitioning 'might seem to create unnecessary exchanges ... crucial to avoiding quadratic running time' are all verbatim from algs4.cs.princeton.edu/23quicksort/. StackOverflowException's 'is thrown when the execution stack exceeds the stack size' and 'you can't catch a StackOverflowException object with a try/catch block, and the corresponding process is terminated by default' are verbatim from the current Learn page. String.GetHashCode's 'the hash code itself is not guaranteed to be stable' and 'two subsequent runs of the same program may return different hash codes' are verbatim. The dotnet/runtime source quote 'Use if and only if Denial of Service attacks are not a concern...' is verbatim from String.Comparison.cs, and Marvin.cs does seed DefaultSeed once per process from the OS CSRNG as described. CVE-2011-3414, MS11-100 and the December 2011 date on Microsoft Security Advisory 2659883 are all correct, and the Crosby/Wallach quote is verbatim from the USENIX page. I built and ran the naive Quicksort on a 200,000-element sorted array myself: it does NOT stack overflow under `dotnet run -c Release` (RyuJIT's self-recursive tail-call-to-loop optimization eliminates the frame growth for the true tail call), but it does reproduce the article's exact claim -- 'Stack overflow.' plus a stack trace thousands of frames deep -- under plain `dotnet run` (Debug), which is the configuration tools/run-code.mjs and the site's own instructions actually use, so the claim is genuine and reproducible as written, not cherry-picked. Compared with the current top-ranking competitor (GeeksforGeeks' Quick Sort Algorithm page), which states the three cases with no recurrence derivation, no average-case proof, no randomized-pivot discussion, and no duplicate-key or adversarial-input treatment, this article is unambiguously deeper: exact recurrences for all three cases, a from-scratch indicator-variable average-case argument, a self-contained randomized-pivot fix with measured before/after, three-way partitioning for duplicates with a worked exercise, and a genuinely novel (for this genre) connection to hash-flooding DoS with a real CVE and .NET's own per-process hash randomization. That said, I found one real, self-contradictory error in a worked exercise solution and two places where a numeric 'check' is looser than it reads, which is why I did not score this higher despite the exceptional research discipline everywhere else.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Exercise 'Prove it: a lopsided split is still fast enough', solution: \"unrolls to (n − 1) + (n − 3) + (n − 5) + ... down to a base case, roughly n/2 terms averaging just under n, so T(n) is Θ(n²) ... the leading coefficient becomes about ¼ instead of ½\"",
+      "problem": "The description of the unrolled sum is internally inconsistent with its own conclusion. I re-derived T(n) = T(n-2) + (n-1) directly: for n = 8000 there are exactly 4,000 terms (7999, 7997, ..., 1) summing to 16,000,000 = n²/4, so the average term value is 4,000 = n/2, not 'just under n' (~8000). 'n/2 terms averaging just under n' multiplies out to roughly n²/2 -- the ½ coefficient the article is explicitly trying to rule out -- not the ¼ it states one clause later. A strong student working through this solution would stop exactly here: the arithmetic in the sentence contradicts its own next clause.",
+      "fixLooksLike": "Replace 'roughly n/2 terms averaging just under n' with 'roughly n/2 terms, ranging from just under n down to near 0 and averaging about n/2 (the terms are an arithmetic sequence with first term ≈ n and last term ≈ 0)', which correctly yields sum ≈ (n/2)·(n/2) = n²/4 and matches the stated ¼ coefficient.",
+      "owner": "writer"
+    },
+    {
+      "severity": "moderate",
+      "location": "'The average case, counted', final paragraph: \"2 · 8,000 · ln(8,000) ≈ 143,800, and the single random run above found 126,318, the right order of magnitude for one instance of a quantity whose exact value depends on which permutation was drawn\"",
+      "problem": "I evaluated the article's own double sum, E[comparisons] = sum_{i<j} 2/(j-i+1), exactly for n = 8,000 (brute-force double loop, 32 million terms): it comes to ≈121,051, matching the closed form 2(n+1)H_n − 4n from the same CLRS/Sedgewick derivation the article is following. That true expected value is only 4.3% from the measured 126,318 -- much closer than the ~13.8%-high 2n·ln(n) ≈ 143,800 figure the article prints. 2n ln n is a valid leading-order asymptotic (consistent with Sedgewick's own tilde notation '~2N ln N', which only claims the ratio approaches 1 as N → ∞), but presenting it next to a single finite-n measurement and attributing essentially all of the ~12.2% gap to 'which permutation was drawn' overstates how much of that gap is sampling noise versus a systematic approximation bias baked into dropping the O(n) correction terms.",
+      "fixLooksLike": "Either compute/quote the exact expectation (2(n+1)H_n − 4n ≈ 121,000 for n = 8,000) as the anchor number, or explicitly flag 2n ln n as a leading-order approximation that runs high at finite n ('the leading term overstates the true expectation by roughly 15% at n = 8,000; the measured 126,318 is in fact closer to the exact 2(n+1)H_n − 4n ≈ 121,000 than to this rough figure').",
+      "owner": "writer"
+    },
+    {
+      "severity": "moderate",
+      "location": "'Best, average and worst case, defined', bullet 'Best case': \"the same recurrence merge sort satisfies (see [the O(n log n) argument for merge sort](/complexity/big-o-notation/#the-pair-search-does-not-have-to-be-quadratic))\"",
+      "problem": "I read the linked section in big-o-notation.md: 'The pair search does not have to be quadratic' proves a *different* algorithm (closest-pair-of-laps via sort-then-scan) is O(n log n) by composing Array.Sort (cited as O(n log n)) with an O(n) linear scan; it never derives or even states merge sort's own recurrence. Searching the rest of that article, merge sort's Θ(n log n) bound is only asserted with a citation ('Merge sort sorts each half recursively and merges the two... Θ(n log n) in every case'), never derived via a T(n) = 2T(n/2) + n-style recurrence anywhere on that page. The anchor text 'the O(n log n) argument for merge sort' promises something the target does not contain.",
+      "fixLooksLike": "Either link to wherever merge sort's recurrence actually is derived (if it exists on another planned page) or reword the anchor text to describe what's actually there, e.g. 'see the same halve-and-combine pattern applied to a search problem' linking to the pair-search section, or drop the link and just cite Sedgewick and Wayne's merge sort chapter for the Θ(n log n) bound.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The pivot that always loses', paragraph after the T(n) derivation: \"Reversing the array gives the same total: the first element is then the largest, so again nothing is less than it and every partition is still 0 : n-1\"",
+      "problem": "I traced Partition on a reversed array by hand and confirmed in code: when the pivot is the maximum, every remaining element is less than it, so the scan pointer i walks all the way to hi and the final swap puts the pivot at index hi -- the split is (n-1) : 0, the mirror image of the sorted case's 0 : (n-1), not literally '0 : n-1' again. The total comparisons and recursion depth are unaffected (same n-1-long chain either way), so the surrounding conclusion is correct, but the specific split notation given is backwards for the reversed case.",
+      "fixLooksLike": "\"...so again nothing is less than it, and the split is (n-1) : 0 this time -- the same lopsided shape, mirrored -- giving the identical n(n-1)/2 total.\"",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What randomization doesn't fix: duplicate keys', opening sentence: \"duplicates fills the array with only four distinct values, repeated 2,000 times each, in random positions\"",
+      "problem": "I ran DistinctPermutations/the article's own generator with its stated seed (new Random(7)) and counted occurrences: 2,073 / 1,942 / 2,032 / 1,953 for the four values, not exactly 2,000 each -- rnd.Next(1,5) only makes 2,000 the *expected* count per value, not the actual one.",
+      "fixLooksLike": "\"...fills the array with only four distinct values, each appearing roughly 2,000 times, in random positions\"",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What randomization doesn't fix: duplicate keys', after the table: \"both versions cost about 8 million comparisons, barely different from sorted's naive worst case\"",
+      "problem": "The measured duplicates figures (8,013,935 / 8,017,980) are about a quarter of sorted's naive worst case (31,996,000) -- a 4x gap, not 'barely different'. The point being made (both are quadratic-shaped, both far above the ~126,000 healthy case) is correct; the specific comparison to the sorted number overstates how close the two are.",
+      "fixLooksLike": "\"...both versions cost about 8 million comparisons -- an order of magnitude above the ~126,000 a healthy partition needs, though still well short of sorted's full 32 million.\"",
+      "owner": "writer"
+    }
+  ]
+}
