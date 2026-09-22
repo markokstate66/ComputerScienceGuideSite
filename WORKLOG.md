@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-22 — `/ship 26`: verify-page compression fix merged
+
+- PR #26 squash-merged into `adsense-rebuild`, branch deleted. Not an article; no issue closed (related to #6, does not resolve it alone).
+- `tools/verify-page.mjs` served its private preview build uncompressed via `sirv({ dev: true })`; wrapped it with gzip/brotli negotiation (`node:zlib`, no new dependency).
+- Verified before merge: `npm run build` green (27 pages), run-code self-test still reports exactly its three planted failures.
+- Re-measured `data-structures/arrays-and-dynamic-arrays` (the article whose round-4 gauntlet failed on Lighthouse) with the fix: 90, 88, 91 across three runs, versus 87/79/78 before. Real improvement, still borderline for that specific article — not re-scored or republished.
+
 ## 2026-09-21 — `/ship 20`: complexity/big-o-notation merged
 
 - PR #20 squash-merged into `adsense-rebuild`, branch deleted, issue #5 closed. Round 3 gauntlet result: technical 9.4 / AdSense 9.3 / design 8.7, all ≥ the 8.5 bar.

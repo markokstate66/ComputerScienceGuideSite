@@ -21,6 +21,7 @@ User-visible and repo-visible changes. Newest first.
 
 ### Changed
 - `staticwebapp.config.json` is now written into `dist/` at build time (it was never deployed before), without the SPA `navigationFallback`.
+- `tools/verify-page.mjs` now compresses its private preview responses (gzip/brotli), matching how the production host actually serves static assets; the private-build dev server previously understated Lighthouse performance for content-heavy pages.
 - GA4 loads only on the production hostname, with consent defaulted to denied and not at all under GPC/DNT.
 - Reading time is computed (220 wpm prose + 2 s per code line, capped per block).
 
