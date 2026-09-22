@@ -1,0 +1,33 @@
+{
+  "article": "src/content/articles/networking/dns.md",
+  "route": "/networking/dns/",
+  "round": 2,
+  "role": "design",
+  "score": 8.3,
+  "lighthouse": { "performance": 94, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "node tools/verify-page.mjs --drafts /networking/dns/ run from PowerShell on the issue-75-dns worktree (branch verified via `git branch --show-current`). Printed summary: FAIL /networking/dns/ words=2997 code=14 fig=1 lh(p/a/bp/seo)=94/100/100/100, single failure 'placeholder text: NEEDS_MARKUS' (expected per the gauntlet note until the owner supplies a byline/legal name - three NEEDS_MARKUS hits confirmed in the footer/author-bio screenshots, all owner-input placeholders, not new). report.json confirms: words 2997, codeBlocks 14, figures 1, h1 1, internalLinks 27, mobileOverflowPx 0, consoleErrors [], consoleWarnings [], broken []. lighthouse.json shows all four categories >=90 with performance the closest margin (94; failing sub-audits are generic dev-server ones - first-contentful-paint, bf-cache, network-dependency-tree - not article-specific). Screenshots read in full: all 17 mobile-light + 17 mobile-dark parts, desktop-light parts 1-2, desktop-dark parts 1-2. Used a PowerShell System.Drawing crop of mobile-light/dark part07-08's right edge to confirm the table's fade mask (the shell's shared .fade-r class) is actually rendering, not just theoretically present.",
+  "comparedAgainst": [
+    "docs/reviews/networking/dns.round-1.design.json (round 1, score 7.6)",
+    "https://www.rfc-editor.org/rfc/rfc1035.html",
+    "https://www.cloudflare.com/learning/dns/what-is-dns/"
+  ],
+  "justification": "All three round-1 blocking defects are verifiably fixed and none regressed. (1) Figure 1: the SVG source now starts every left-side annotation at x=65 ('referral: org's NS + glue' x2, 'answer, aa=1: a CNAME', the two-line closing caption), clear of the 'you' lifeline at x=55 by a 10-unit gap; confirmed visually in mobile-light part04 and mobile-dark part04 and in desktop-light part02 - no dashed line crosses any label in either theme at either width. (2) The record-type table is now three columns (Type, Stores, RFC 1035 RDATA merged/paraphrased into Type+Stores, with the RFC-quote column still present but scrolled off on a 390px phone); every visible Stores cell is a complete phrase ('IPv6 address (RFC 3596)', 'Alias to another name', 'Authoritative server for the zone', 'Mail server, with preference', 'Free-form text') with no mid-word truncation, a real change from round 1's 'not F...'/'instead...' clipping. A pixel-level crop of the table's right edge in both themes (mobile-light/dark part07-08) shows the shell's fade mask genuinely rendering - the table border and background visibly fade to transparent before the viewport edge - so a phone reader gets the 'there's more here' cue WRITER_GUIDE section 7 requires, not a hard clip. (3) The 'iana.org auth' loop was nudged from x=332 to x=324 and its label's right anchor moved from x=335 to x=338, opening an 11-unit-wider gap; confirmed in both mobile themes and on desktop that the loop curve no longer touches the label. A fresh full pass over headings (five plain H2s matching the on-page TOC, no skipped levels), the two exercise/solution collapses (both render collapsed with a working 'Show solution' toggle, no leaked answers, correct accent coloring in both themes), the sources/footer/related-articles block, and the remaining prose/code sections turned up no new issues. The one substantive gap still open is the one this round was explicitly told not to touch: the BuildQuery/ReadName pair is still retyped in full four times (id=walk at ~139 lines, the exercise-1 solution, id=records, and the exercise-2 solution), and the article's only figure still sits at roughly the 20% mark, leaving the record-type, TTL and failure-mode sections - most of the page - as unbroken text and code. That is unchanged from round 1, was flagged there as a writer-owned major, and remains the reason this article is not yet at the pass bar: it is a real, still-uncorrected cost to reading rhythm on a 2997-word, 14-code-block page, independent of the three defects this round fixed. The round-1 minor about Figure 1 being visually undersized on wide desktop viewports (a ~410px drawing inside a ~735px frame) is also unchanged, confirmed present in desktop-light part02; it remains shared shell CSS (`.diagram-scroll > svg` sizing), owner integrator, not a writer defect and not blocking on its own.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "id=walk (~139 lines), exercise-1 solution, id=records, exercise-2 solution",
+      "problem": "Carried over from round 1, unresolved: the same ~30-40 line BuildQuery/ReadName pair is still reproduced in full four separate times, and the article's only figure (Figure 1, ~20% through) is still the sole diagram for a 2997-word, 14-code-block page - the record-type, TTL and failure-mode sections have no visual break at all. This was explicitly out of scope for this round's writer pass (round 2 targeted only the three layout defects below), so it is not a new finding and is not held against the round's stated goal, but it is still the largest open cost to this article's reading rhythm and the main reason the design score is not yet at the 8.5 pass bar.",
+      "fixLooksLike": "Unchanged from round 1: show later BuildQuery/ReadName occurrences as new-logic-only with a one-line 'unchanged from the walk above' comment, and add one small figure (e.g. a 12-byte DNS header bit layout) around the failure-modes section.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure 1 at desktop width (desktop-light/dark part02, the figure block under 'What's the difference between a recursive resolver and an iterative one?')",
+      "problem": "Carried over from round 1, unresolved: the 360-unit viewBox still renders well under the width of its figure frame on desktop, leaving visible empty margin on both sides and diagram text noticeably smaller than body text. Confirmed present in desktop-light part02.",
+      "fixLooksLike": "Unchanged from round 1: shared shell CSS request (`.diagram-scroll > svg` sizing on wide viewports), not article-specific - confirm whether it is already tracked in docs/INTEGRATOR_REQUESTS.md before filing a duplicate.",
+      "owner": "integrator"
+    }
+  ]
+}
