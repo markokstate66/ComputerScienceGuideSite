@@ -26,7 +26,7 @@ sources:
     url: "https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/profiling/davbr-blog-archive/Tail%20call%20JIT%20conditions.md"
     publisher: "dotnet/runtime on GitHub"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A directory's size is the size of its own files, plus the size of everything inside its subdirectories — and each of those subdirectories is defined the same way. "Plus everything inside" is already a recursive definition; the code only has to say it directly.
