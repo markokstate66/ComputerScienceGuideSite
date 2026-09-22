@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-21 — `/ship 17`: version-control/branching-and-merging merged
+
+- PR #17 squash-merged into `adsense-rebuild`, branch deleted, issue #4 closed. Round 2 gauntlet result: technical 8.8 / AdSense 9.2 / design 8.5, all ≥ the 8.5 bar.
+- Verified before merge: `npm run build` green (22 pages), `node tools/run-code.mjs src/content/articles/version-control/branching-and-merging.md` PASS (blocks=55, executed=28).
+- Serial `verify-page` Lighthouse (owner-facing, run earlier by the consumer with nothing else running): 97/100/100/100. Only failure was the expected `NEEDS_MARKUS` byline placeholder.
+- `docs/STATUS.json` totals: passed 4 → 5, inReview 3 → 2.
+
 ## 2026-09-21 — `/ship 16`: algorithms/binary-search merged
 
 - PR #16 squash-merged into `adsense-rebuild`, branch deleted, issue #1 closed. Round 2 gauntlet result: technical 8.7 / AdSense 8.6 / design 8.7, all ≥ the 8.5 bar.

@@ -41,8 +41,8 @@
   },
   "totals": {
     "planned": 67,
-    "passed": 4,
-    "inReview": 3,
+    "passed": 5,
+    "inReview": 2,
     "drafted": 6,
     "notStarted": 54,
     "cut": 0
@@ -1100,18 +1100,23 @@
       "wave": "A",
       "shape": "W",
       "title": "Branching and Merging, Including Conflicts",
-      "state": "in-review",
-      "round": 1,
+      "state": "passed",
+      "round": 2,
       "scores": {
-        "technical": 7,
-        "adsense": 9,
-        "design": 8.3
+        "technical": 8.8,
+        "adsense": 9.2,
+        "design": 8.5
       },
-      "codePass": false,
-      "lighthouse": null,
+      "codePass": true,
+      "lighthouse": [
+        97,
+        100,
+        100,
+        100
+      ],
       "openIssues": [
-        "round-1 issues in docs/reviews/version-control/branching-and-merging.round-1.*.json",
-        "round-2 writer was interrupted mid-edit: an output block near line 624 contains the literal text PLACEHOLDER and run-code FAILS; finish the revision before review"
+        "byline NEEDS_MARKUS placeholder (owner input)",
+        "wave-3 cross-links in docs/crosslinks/"
       ],
       "history": [
         {
@@ -1121,10 +1126,20 @@
           "adsense": 9,
           "design": 8.3,
           "pass": false,
-          "note": "reviews in docs/reviews/"
+          "note": "reviews in docs/reviews/; round-2 writer initially interrupted mid-edit (PLACEHOLDER output block, run-code FAILS), later completed"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-21",
+          "technical": 8.8,
+          "adsense": 9.2,
+          "design": 8.5,
+          "pass": true
         }
       ],
-      "batch": 1
+      "batch": 1,
+      "lighthouseNote": "serial run by orchestrator, 2026-09-21",
+      "published": "2026-09-21"
     },
     {
       "pillar": "version-control",

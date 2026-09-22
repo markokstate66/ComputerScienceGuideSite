@@ -9,6 +9,7 @@ User-visible and repo-visible changes. Newest first.
 - Pages: Start here, Topics, Glossary (29 seed terms), Search, Editorial Policy, Corrections, Styleguide (noindex). About, Contact, Privacy and Terms rewritten.
 - Three published articles, each passed by three independent critics with all code machine-verified: `complexity/amortized-analysis`, `databases/sql-joins`, `version-control/how-git-works`.
 - Published article: `algorithms/binary-search` (passed round 2: technical 8.7 / AdSense 8.6 / design 8.7).
+- Published article: `version-control/branching-and-merging` (passed round 2: technical 8.8 / AdSense 9.2 / design 8.5).
 - Ten draft articles (`draft: true`, excluded from the build): see `docs/STATUS.json`.
 - Technical SEO: own `sitemap.xml` with real `lastmod`, corrected `robots.txt`, JSON-LD (Article with Person author, BreadcrumbList, WebSite, Organization), per-pillar OG images under 15 KB, `apple-touch-icon.png`, `logo.png`, 301s for every legacy URL, real 404.
 - Tools: `tools/verify-page.mjs`, `tools/run-code.mjs`, `tools/make-images.mjs`.
