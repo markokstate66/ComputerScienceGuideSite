@@ -1,0 +1,36 @@
+{
+  "article": "src/content/articles/databases/relational-model-and-keys.md",
+  "route": "/databases/relational-model-and-keys/",
+  "round": 2,
+  "critic": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://www.ibm.com/think/topics/relational-databases",
+    "https://www.freecodecamp.org/news/learn-relational-database-basics-key-concepts-for-beginners/"
+  ],
+  "justification": "Fresh run of node tools/verify-page.mjs --drafts /databases/relational-model-and-keys/ (single run; no other heavy job appeared to be contending, and performance came back well clear of the 90 floor, so no re-measurement was needed, but flagging per instructions that this machine can be shared with other agents and performance in particular can be noisy): lighthouse performance=97, accessibility=100, best-practices=100, seo=100; consoleErrors=0; consoleWarnings=0; broken=0; mobileOverflowPx=0; 5246 words, 72 code blocks, 3 figures, h1=1. The only verify-page failure is the expected NEEDS_MARKUS placeholder (3 occurrences: byline, bio, footer legal name), which is not counted against the article. I opened every desktop-light part (01-17) and every mobile-dark part (01-26, plus fold), and spot-checked desktop-dark (fold, part07, part15) and mobile-light (fold, part10, part18-19) as instructed. I re-fetched two of the pages that currently rank for 'relational database explained' myself rather than reuse round 1's read: IBM's overview (no diagrams/tables/exercises, one illustrative and unverified SQL join, no candidate-key or junction-table treatment, no constraint demonstrations) and freeCodeCamp's basics article (screenshots of a GUI tool instead of original diagrams, no candidate keys, no junction tables, only cursory constraint mentions, no exercises). Both are materially thinner in exactly the dimensions a design/UX critic weighs: this article has three original, theme-correct, caption-carrying inline SVG diagrams (superkey/candidate-key nesting, the book_author junction with row-level detail, and the full six-table ER diagram in crow's-foot notation) that all render at their intended 360-wide viewBox with no fade/clipping and legible labels in both mobile-light and mobile-dark; four collapsed exercises that correctly hide their output/solution until opened; consistent heading hierarchy (## and ### only, one H1, 'On this page' correctly nested); sparing, well-targeted callout use (one pitfall, one warning); and reading rhythm that alternates prose/SQL/result/prose without any block running long enough to become a wall of code. Round 2's specific focus items both check out: the desk_shift table in Exercise 1 (round-1's noted minor, 4 columns against the 'prefer at most three' guidance) still renders with zero wrapping or overflow in every theme/width combination I opened -- every cell is one short word, so the guidance is a soft style nit, not a rendering defect, exactly as round 1 found; and the new STRICT-table loan schema (added since round 1 to close the technical critic's rule-7 gap) renders cleanly at phone width across all four theme/device combinations -- the CREATE TABLE's three named CONSTRAINT/CHECK lines wrap the same disciplined way as every other long statement on the page (one clause per line), and nothing essential is cut off. Net effect: nothing regressed and the one thing round 2 was asked to check came back clean, so the score is unchanged from round 1's 9.3 -- not raised for the effort of adding STRICT, and not lowered for the two pre-existing, non-blocking minors below.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "'One open loan per copy' and 'Rule 7 has a second half...' sections, the text output panels 'cannot store REAL value in INTEGER column loan.late_fee' and (in the many-to-many section) 'UNIQUE constraint failed: book_author.book_id, book_author.author_id'",
+      "problem": "These are single-line SQL error messages of 55+ characters, well past the ~40-column phone guidance in docs/WRITER_GUIDE.md section 7. On mobile (checked in both mobile-light-part18/19 and mobile-dark-part18/19, and the equivalent book_author output in mobile-dark-part15), the tail of the line -- the specific column/constraint name -- sits under the fade and is not visible without scrolling. The surrounding prose already states the fact each error is illustrating (that late_fee's INTEGER type is now binding, and that the composite key blocks the duplicate pair), so no claim is left unsupported, but a reader skimming the output panel alone does not see the full identifier.",
+      "fixLooksLike": "Likely not worth changing: these are SQLite's own exact error strings, which the article must reproduce verbatim per the 'SQL result sets must be written exactly as the tool renders them' rule, so shortening the message is not an option without picking shorter table/column names, which would cost clarity elsewhere. If the writer wants to close the gap anyway, the only real lever is shorter aliases in this one demo (e.g. a shorter constraint name than fee_min_zero would not help here since the table.column part is what overflows) -- otherwise, accept as an inherent trade-off of showing real engine output, same as round 1 concluded.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 1 ('Which column sets are keys?'), the desk_shift roster table (day, slot, librarian, desk)",
+      "problem": "Unchanged from round 1: 4 columns, one more than the 'prefer at most three columns' guidance in docs/WRITER_GUIDE.md section 7. Confirmed again this round in both mobile-light-part09-ish and mobile-dark-part08 screenshots that every cell is a single short word (Mon/am/Noor/front) with no wrapping or horizontal scroll, so this remains a style nit rather than a rendering defect.",
+      "fixLooksLike": "Optional: merge day+slot into one 'shift' column if the writer wants strict compliance with the 3-column guidance; not required, since mobile rendering is unaffected.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

@@ -4,8 +4,8 @@ description: "Design a small library database from its requirements: relations, 
 pillar: databases
 order: 1
 author: markus
-published: 2026-09-21
-updated: 2026-09-21
+published: 2026-09-22
+updated: 2026-09-22
 level: beginner
 tags: [sql, relational-model, keys, constraints, sqlite]
 prerequisites: []
@@ -70,7 +70,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/sql/relational-databases/tables/unique-constraints-and-check-constraints"
     publisher: "Microsoft Learn"
     accessed: 2026-09-18
-draft: true
+draft: false
 ---
 
 A small public library is moving its records out of a spreadsheet. Asked how the place works, the librarian gives seven sentences:
@@ -166,7 +166,7 @@ VALUES ('twelve');
 cannot store TEXT value
 ```
 
-The tables on this page are ordinary ones, so the same `CREATE TABLE` statements work unchanged in other engines.
+The `loose` and `tight` tables just shown are ordinary ones, so those two `CREATE TABLE` statements work unchanged in other engines. That does not extend to the whole schema built on this page: later on, `loan` is declared `STRICT` to close this same gap for a real column, and `STRICT` is SQLite-specific syntax with no keyword equivalent in PostgreSQL or SQL Server, which bind a declared type this way all the time and need no opt-in.
 :::
 
 ```sql run
@@ -592,7 +592,7 @@ NOT NULL constraint failed: copy.book_id
 
 Rule 3 runs in both directions: a book can have several authors and an author several books. That is a **many-to-many** relationship (M:N), and a foreign key cannot express it directly, because a foreign key column holds one value per row. Put `author_id` in `book` and a book has one author; put `book_id` in `author` and an author has one book.
 
-Two workarounds suggest themselves, and both fail. A text column holding `'William Gibson, Bruce Sterling'` hides two values inside one, so the database can neither check them against anything nor find all of Sterling's books without string matching; the textbook model asks for attribute values to be **atomic**, indivisible, for this reason. Columns `author1_id` and `author2_id` fail on the first book with three authors, and make "all books by author 6" a query over every numbered column.
+Two workarounds suggest themselves, and both fail. A text column holding `'William Gibson, Bruce Sterling'` hides two values inside one, so the database can neither check them against anything nor find all of Sterling's books without string matching; the textbook model asks for attribute values to be **atomic**, indivisible, for this reason. Codd's paper says so directly: an ordinary relation is defined on "simple domains," meaning "domains whose elements are atomic (nondecomposable) values" (section 1.3); anything else is what he calls a "nonsimple domain" and needs different handling. Columns `author1_id` and `author2_id` fail on the first book with three authors, and make "all books by author 6" a query over every numbered column.
 
 The relational answer is that the relationship is itself a relation. Each fact of the form "this author wrote this book" is a tuple, so give those tuples a table:
 
@@ -744,7 +744,7 @@ CREATE TABLE loan (
     CHECK (due_on >= loaned_on),
   CONSTRAINT back_after_loan
     CHECK (returned_on >= loaned_on)
-);
+) STRICT;
 
 INSERT INTO loan
   (loan_id, member_id, copy_id,
@@ -786,6 +786,23 @@ VALUES
 ```text output
 CHECK constraint failed: due_after_loan
 ```
+
+Rule 7 has a second half no `CHECK` can enforce: whole dollars. A `CHECK` only judges the value a column already holds; it cannot stop the wrong *kind* of value from being stored in the first place, and on an ordinary SQLite table nothing else does either, as the "SQLite column types are a suggestion" pitfall showed earlier: `INTEGER` is a suggestion, and a fractional value is stored as-is. `loan` is declared `STRICT` for exactly that reason, so `late_fee`'s `INTEGER` type is binding the same way the pitfall's `tight` table was:
+
+```sql run error
+INSERT INTO loan
+  (member_id, copy_id, loaned_on,
+   due_on, late_fee)
+VALUES
+  (2, 4, '2026-09-19',
+   '2026-10-10', 3.50);
+```
+
+```text output
+cannot store REAL value in INTEGER column loan.late_fee
+```
+
+A whole-dollar amount is still accepted even when it is written with a decimal point: SQLite converts a `REAL` literal with no fractional part to `INTEGER` before it reaches the column, so `3.0` goes in and is stored as the integer `3`; only a genuine fraction is refused. `STRICT` changes nothing else about `loan`. Every other value this page ever inserts into the table is already the column's declared type (`member_id` and `copy_id` are whole numbers, the three date columns are text), so no earlier or later statement on this page behaves differently because of it.
 
 The third check compares `returned_on`, which is `NULL` in all four rows, and yet all four were accepted. A `CHECK` rejects a row only when its expression is *false*. `NULL >= '2026-08-03'` is `NULL`, not false, so the row passes. [SQLite](https://www.sqlite.org/lang_createtable.html#check_constraints), [PostgreSQL](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS) and [SQL Server](https://learn.microsoft.com/en-us/sql/relational-databases/tables/unique-constraints-and-check-constraints#limitations-of-check-constraints) all document this. Here it is what you want ("if there is a return date, it is not before the loan date"). On a column that must have a value it is a trap: `CHECK (late_fee >= 0)` alone would let a `NULL` fee through, and it is the separate `NOT NULL` that stops it.
 
@@ -990,7 +1007,7 @@ Here are the seven rules next to what enforces each:
 4. Copies of a book: a `NOT NULL` foreign key in `copy`, and a unique `barcode`.
 5. A loan has a member and a copy: two `NOT NULL` foreign keys in `loan`.
 6. One open loan per copy: a partial unique index.
-7. Fees never negative: a `CHECK`, backed by `NOT NULL`.
+7. Fees never negative and are whole dollars: a `CHECK` (backed by `NOT NULL`) for non-negativity, and a `STRICT` table so a fractional value is refused by `late_fee`'s `INTEGER` type.
 
 ## What declarations cannot say
 
