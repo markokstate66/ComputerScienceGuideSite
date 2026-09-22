@@ -662,9 +662,7 @@ static void Show(string? name, int seats)
     catch (ArgumentException e)
     {
         Console.WriteLine(
-            $"{name ?? "<null>"}, " +
-            $"{seats}: rejected " +
-            $"({e.GetType().Name})");
+            $"rejected: {e.GetType().Name}");
     }
 }
 
@@ -679,8 +677,8 @@ static void Validate(
 ```
 
 ```text output
-<null>, 5: rejected (ArgumentNullException)
-Team plan, -2: rejected (ArgumentOutOfRangeException)
+rejected: ArgumentNullException
+rejected: ArgumentOutOfRangeException
 Team plan, 5: ok
 ```
 
