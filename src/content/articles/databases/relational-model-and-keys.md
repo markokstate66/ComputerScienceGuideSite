@@ -4,8 +4,8 @@ description: "Design a small library database from its requirements: relations, 
 pillar: databases
 order: 1
 author: markus
-published: 2026-09-18
-updated: 2026-09-18
+published: 2026-09-21
+updated: 2026-09-21
 level: beginner
 tags: [sql, relational-model, keys, constraints, sqlite]
 prerequisites: []
