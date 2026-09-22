@@ -5,7 +5,7 @@ pillar: operating-systems
 order: 1
 author: markus
 published: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-22
 level: intermediate
 tags: [processes, threads, thread-pool, concurrency, context-switch]
 prerequisites: []
@@ -13,11 +13,15 @@ sources:
   - title: "About Processes and Threads"
     url: "https://learn.microsoft.com/en-us/windows/win32/procthread/about-processes-and-threads"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-21
+    accessed: 2026-09-22
   - title: "Context Switches"
     url: "https://learn.microsoft.com/en-us/windows/win32/procthread/context-switches"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-21
+    accessed: 2026-09-22
+  - title: "AutoResetEvent Class"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-22
   - title: "Thread Stack Size"
     url: "https://learn.microsoft.com/en-us/windows/win32/procthread/thread-stack-size"
     publisher: "Microsoft Learn"
@@ -89,7 +93,7 @@ sources:
   - title: "Chromium design documents: Multi-process Architecture"
     url: "https://www.chromium.org/developers/design-documents/multi-process-architecture/"
     publisher: "The Chromium Projects"
-    accessed: 2026-09-21
+    accessed: 2026-09-22
 draft: true
 ---
 
@@ -156,7 +160,7 @@ The child saw 100, not 101, because `Process.Start` runs a program from its begi
 
 ## What belongs to the process and what belongs to each thread
 
-Microsoft's description of the Windows model lists the two sets precisely. A process has a virtual address space, executable code, open handles to system objects, a security context, a process identifier, environment variables, a priority class and at least one thread. All threads of the process share that address space and those system resources, and each thread additionally keeps its own scheduling priority, thread-local storage, thread identifier and *thread context*: the machine registers, a kernel stack and a user-mode stack that lives inside the process's address space ([About Processes and Threads](https://learn.microsoft.com/en-us/windows/win32/procthread/about-processes-and-threads)). POSIX draws the line in almost the same place: process ID, open file descriptors, current directory, user and group IDs and signal dispositions are process-wide, while thread ID, signal mask and `errno` are per thread ([pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html)).
+Windows treats a process as a container the system hands resources to, and a thread as what actually runs inside that container ([About Processes and Threads](https://learn.microsoft.com/en-us/windows/win32/procthread/about-processes-and-threads)). What the container holds splits into two kinds. One kind is about who the process is to the rest of the system: its process identifier, the security context that decides what it is allowed to touch, and the priority class the scheduler treats it with. The other kind is what the process has open: the virtual address space itself, the executable code mapped into it, a block of environment variables, and handles to files, sockets and other kernel objects. A thread reaches into all of that but keeps a small set of things to itself: a thread identifier, a scheduling priority that can differ from its siblings', thread-local storage, and the *thread context* — the machine's registers plus a kernel stack and a user-mode stack, the last of which still lives inside the process's own address space. POSIX draws a nearly identical line under different names: a process owns its process ID, its table of open file descriptors, its working directory, its user and group IDs and how it has set up each signal; a thread keeps only a thread ID, a signal mask and its own `errno` ([pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html)).
 
 <figure class="diagram">
 <svg viewBox="0 0 360 430" role="img" aria-labelledby="pt-as-title pt-as-desc">
@@ -256,13 +260,13 @@ reserved per thread:  [...] KB
 committed per thread: [...] KB
 ```
 
-On the test machine (.NET 10.0.401, Windows 11, x64) the three lines were `8 -> 108`, 1536 to 1537 KB and 38 KB, stable across repeated runs.
+On the test machine (.NET 10.0.401, Windows 11, x64) the three lines were `8 -> 108`, 1536 to 1537 KB and 37 to 38 KB, with the last figure moving by a single kilobyte between otherwise identical runs.
 
 `8 -> 108` says that each `Thread` object became a real operating-system thread, and that the process already had eight before the program asked for any: the main thread plus helpers the runtime started for itself.
 
 The other two numbers show the difference between *reserving* address space and *committing* memory. Windows reserves the whole stack up front so that it can grow contiguously, commits a few pages, and commits more as the stack deepens; the size of the reservation comes from the executable's header, and the linker's default is 1 MB ([Thread Stack Size](https://learn.microsoft.com/en-us/windows/win32/procthread/thread-stack-size)). The 1536 KB measured here means the executable that `dotnet run` produced asks for 1.5 MB. The `Thread` constructor has an overload with a `maxStackSize` argument that overrides the header value, although its documentation recommends leaving the default alone ([Thread constructors](https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread.-ctor)); passing `256 * 1024` brought the reserved figure down to 257 KB on the same machine.
 
-Reserved address space costs almost nothing on a 64-bit system. The 37 KB of committed memory per parked thread is the real charge, and it covers the first stack pages plus the bookkeeping the OS and the runtime keep for each thread. These are Windows figures; expect different ones on Linux or macOS.
+Reserved address space costs almost nothing on a 64-bit system. The 37-to-38 KB of committed memory per parked thread is the real charge, and it covers the first stack pages plus the bookkeeping the OS and the runtime keep for each thread. These are Windows figures; expect different ones on Linux or macOS.
 
 ::::exercise[A local that is not local]
 Both threads below run `Tally`, and the output shows that each had its own `local` but that they shared `captured`. Both are declared as local variables. Explain where each one lives in memory and why, then say what could change in the output if the `Interlocked.Increment` call were replaced by `captured++`.
@@ -359,7 +363,7 @@ parent: still running
 
 The child's main thread never printed its line. It had done nothing wrong; it was in the same process as a thread that failed, and the runtime tore the process down around it. The parent lost nothing except the result it was waiting for, and it found out through the two channels a process boundary leaves open: an exit code and a stream of text.
 
-That asymmetry is the main engineering reason to pay for a process. Chromium's design documents state it as the premise of the browser's architecture: it is close to impossible to build a rendering engine that never crashes or hangs, so each renderer runs in its own process, where a crash takes out a tab and leaves the browser up, and where the renderer's access to the network and the file system can be restricted separately from the browser's ([Multi-process Architecture](https://www.chromium.org/developers/design-documents/multi-process-architecture/)). A thread cannot be given fewer rights to the rest of its process's memory than its siblings have.
+That asymmetry is the main engineering reason to pay for a process. A browser is a good place to see it at scale: a rendering engine has to parse and execute whatever a web page throws at it, from malformed markup to hostile script, and Chromium's own design documents treat occasional crashes and hangs in that code as a given to design around, not a bug backlog to clear before shipping ([Multi-process Architecture](https://www.chromium.org/developers/design-documents/multi-process-architecture/)). Putting each tab's renderer in its own process turns that acceptance into a bounded loss: one tab's process can die without taking the browser window or any other tab with it, and the network and file-system access granted to that renderer can be restricted independently of what the browser process itself can reach. None of that isolation is available at the thread level; a thread cannot be given fewer rights to the rest of its process's memory than its siblings have.
 
 :::pitfall
 The exit code differs by platform: an unhandled .NET exception produces a large negative number on Windows and a signal-style code on Linux. Test for "not zero", as the program does, and define your own small exit codes for failures you expect.
@@ -367,7 +371,7 @@ The exit code differs by platform: an unhandled .NET exception produces a large 
 
 ## What a context switch costs
 
-There are usually more runnable threads than cores, so the scheduler time-slices. A *context switch* is the act of taking one thread off a core and putting another on. Windows documents the steps: save the context of the outgoing thread, put it at the back of the queue for its priority if it is still runnable, find the highest-priority queue that has a ready thread, restore that thread's context and resume it.
+There are usually more runnable threads than cores, so the scheduler time-slices. A *context switch* is the act of taking one thread off a core and putting another on, and it is really a decision wrapped in bookkeeping. The decision is which thread runs next: among every thread the scheduler currently considers ready, it is whichever one sits at the head of the highest-priority queue that has one waiting. The bookkeeping is what keeps that decision working over time: the thread being removed has its registers and other execution state saved so it can resume later, and if it was preempted rather than blocked, it rejoins its priority's queue instead of vanishing from scheduling entirely; the thread chosen to run next has its saved state loaded back into the core and continues from wherever it left off ([Context Switches](https://learn.microsoft.com/en-us/windows/win32/procthread/context-switches)).
 
 A switch happens when a thread's time slice (its *quantum*) runs out and an equal-priority thread is ready, when a higher-priority thread becomes ready, or when the running thread has to wait for something, in which case it gives up the rest of its slice ([Context Switches](https://learn.microsoft.com/en-us/windows/win32/procthread/context-switches)). On Windows the thread, not the process, is the entity that gets scheduled, and on Linux each thread is likewise its own kernel scheduling entity ([pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html)). A process with 50 ready threads competes as 50 entries.
 
@@ -451,7 +455,7 @@ two threads, one core: [...] ns
 
 Six runs on the test machine (Core i7-11700K, 8 cores and 16 logical processors, with other work sharing the machine while these numbers were taken) gave 13 to 20 ns for the single thread, roughly 7,600 to 22,000 ns for two threads on any core, and roughly 3,000 to 8,500 ns for two threads on one core.
 
-The single-core figure is the cleanest, because pinning both threads to one core removes the cost of waking a second, possibly idle, core. A round there contains two switches and four calls into the kernel (two `Set`, two `WaitOne`), so one switch between threads of the same process, with almost no data to evict from the caches, cost roughly 1.5 to 4 microseconds on these runs. Even the low end is one to two orders of magnitude above the cost of doing the same work as two method calls. A quieter machine should sit nearer the low end; a busier one pushes it higher, because a "switch" here also has to wait its turn for the one core.
+The single-core figure is the cleanest, because pinning both threads to one core removes the cost of waking a second, possibly idle, core. A round there contains two switches, and on Windows each `Set` and each `WaitOne` reaches into the kernel, because `AutoResetEvent` is a thin wrapper over a native OS handle rather than something the runtime can resolve in user mode alone ([AutoResetEvent Class](https://learn.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent)); a round is therefore four such calls plus the two switches. So one switch between threads of the same process, with almost no data to evict from the caches, cost roughly 1.5 to 4 microseconds on these runs. Even the low end is one to two orders of magnitude above the cost of doing the same work as two method calls. A quieter machine should sit nearer the low end; a busier one pushes it higher, because a "switch" here also has to wait its turn for the one core.
 
 The any-core figure did not show the earlier, cleaner gap that a quiet machine produces: run over run, letting the OS place each thread on any of the 16 processors was between about 1.2 and 4.7 times slower than pinning both to one core, not a single fixed multiple. The likely mechanism, which this program cannot confirm, is the same one that applies on a quiet machine: the woken thread tends to land on a different, possibly idle, core, which pays for waking that core as well as the thread. What changes under load is that the one-core baseline is no longer clean either, since it is now competing with everything else for that one core, so the gap between the two configurations narrows and jitters.
 
@@ -526,9 +530,9 @@ new thread          [...] us
 new process         [...] us
 ```
 
-Three runs on the test machine gave 9 to 23 microseconds per pool job, 97 to 149 per dedicated thread, and about 29,900 to 32,600 (roughly 30 to 33 ms) per child process. Each step up is roughly one to two orders of magnitude.
+Eleven runs on the test machine gave 8 to 11 microseconds per pool job, roughly 85 to 165 per dedicated thread, and roughly 24,000 to 28,000 (24 to 28 ms) per child process. Each step up is roughly one to two orders of magnitude.
 
-The process figure needs a caveat: the child is another .NET program, so the 30-plus ms includes starting the runtime in the new process, not only the operating system's work to create it. For a .NET developer that is the honest price, because it is the one you pay. It also explains a design you see everywhere in server software: processes are started rarely and kept, threads are pooled, and the unit of work that is created and destroyed thousands of times a second is something lighter than either.
+The process figure needs a caveat: the child is another .NET program, so those 24-to-28 ms include starting the runtime in the new process, not only the operating system's work to create it. For a .NET developer that is the honest price, because it is the one you pay. It also explains a design you see everywhere in server software: processes are started rarely and kept, threads are pooled, and the unit of work that is created and destroyed thousands of times a second is something lighter than either.
 
 ::::exercise[The audit line that never appears]
 This program is supposed to write an audit line in the background. The line is missing every time. Find out why, and fix it.
@@ -573,7 +577,7 @@ Running the job on a `new Thread` would also make the line appear, because a for
 
 ## The thread pool, and how to starve it
 
-The pool exists because of the 90-microsecond line in the last output and the memory figures before it: creating a thread per small job wastes time, and thousands of threads waste memory and scheduler effort. The pool keeps a modest number of workers, starting from the number of processors, and feeds them from a queue. `Task.Run`, the Task Parallel Library, timer callbacks and the continuations of `await` all run there, and there is one pool per process ([The managed thread pool](https://learn.microsoft.com/en-us/dotnet/standard/threading/the-managed-thread-pool)).
+The pool exists because of the roughly-100-microsecond dedicated-thread line in the last output and the memory figures before it: creating a thread per small job wastes time, and thousands of threads waste memory and scheduler effort. The pool keeps a modest number of workers, starting from the number of processors, and feeds them from a queue. `Task.Run`, the Task Parallel Library, timer callbacks and the continuations of `await` all run there, and there is one pool per process ([The managed thread pool](https://learn.microsoft.com/en-us/dotnet/standard/threading/the-managed-thread-pool)).
 
 A small, fixed set of workers is the right shape for CPU-bound work, where more threads than cores only adds context switches. It is the wrong shape for jobs that spend their time waiting, and the pool's defence against those is deliberately slow. It creates workers on demand up to a minimum, which defaults to the processor count; past that it may add a thread or wait for jobs to finish, guided by measured throughput ([ThreadPool.SetMinThreads](https://learn.microsoft.com/en-us/dotnet/api/system.threading.threadpool.setminthreads)). Microsoft's diagnostics guide puts a number on it: under starvation the count climbs by one or two threads per second ([Debug ThreadPool starvation](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/debug-threadpool-starvation)).
 
@@ -769,7 +773,7 @@ For each situation, decide between a separate process, a dedicated thread, pool 
 4. A service reads commands from a serial port with a blocking `ReadLine()` call, for as long as it runs.
 
 :::solution
-1. **Pool jobs** (`Parallel.ForEach` or `Task.Run` per batch). The work is CPU-bound and short per item, there is nothing to wait for, and a worker per core is what the pool provides. Creating 2,000 threads would reserve 2,000 stacks and make the scheduler rotate through them for no gain; at about 90 microseconds each on the test machine, creating them would by itself take close to 0.2 s.
+1. **Pool jobs** (`Parallel.ForEach` or `Task.Run` per batch). The work is CPU-bound and short per item, there is nothing to wait for, and a worker per core is what the pool provides. Creating 2,000 threads would reserve 2,000 stacks and make the scheduler rotate through them for no gain; at roughly 100 microseconds each on the test machine, creating them would by itself take close to 0.2 s.
 2. **`async` with no thread.** The handler spends nearly all of its time waiting for the network. Blocking a pool thread per outbound call is the starvation pass of the demo: low CPU, a queue that stops moving, unrelated requests delayed by seconds. Start the three calls, then `await Task.WhenAll`.
 3. **A separate process per plugin, or one host process for all plugins.** An unhandled exception on any thread ends the process, as the crash demo showed, and a thread cannot be given fewer rights than its siblings. Only a process boundary keeps a plugin's crash or stray write away from the user's unsaved document. The price is the start-up time and a byte-stream protocol between editor and plugin host.
 4. **A dedicated thread**, marked as a background thread if the service should be able to exit while the read is pending. The call blocks for long periods, which is first on the documentation's list of reasons not to use a pool thread, and it lasts for the life of the program, so the creation cost is paid once. If the serial API offers a true asynchronous read, awaiting it is equally good and saves the stack.
