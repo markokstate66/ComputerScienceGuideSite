@@ -1,0 +1,21 @@
+{
+  "article": "src/content/articles/networking/tcp-vs-udp.md",
+  "route": "/networking/tcp-vs-udp/",
+  "round": 2,
+  "critic": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://en.wikipedia.org/wiki/Transmission_Control_Protocol",
+    "https://en.wikipedia.org/wiki/User_Datagram_Protocol"
+  ],
+  "justification": "Fresh judgement, formed before reopening the round-1 review: this article alternates prose / runnable C# / real measured output / hand-drawn diagram cleanly for its full 22-minute length, heading hierarchy is correct and specific (no boilerplate Introduction/Conclusion, 'On this page' matches h2s), all three figures (datagram-vs-stream shape, three-way handshake, lost-segment retransmission) are legible and theme-correct in both light and dark at both desktop and 390px-mobile width, code blocks and output panels keep their operative content inside the visible ~40-column window (only boilerplate tails, e.g. a captured 'serverEnd' argument, sit under the fade), the four exercises are correctly built (question above the fold, worked solution collapsed, nothing given away), the pitfall callout is used at the one place a reader is likely to misread a correct result as a bug, and the sources list is complete and well-formatted. Re-fetched both comparison pages fresh for this round: Wikipedia's TCP and UDP articles have no runnable code, no measured output, and diagrams that are static reference figures rather than phone-tuned drawings, so on depth, illustration and mobile usability this article is clearly ahead of the best-ranking pages for 'tcp vs udp', consistent with anchor 10 on that axis. What round 1 held against the article -- both comparison tables losing an entire column off-screen by default at 390px, the query's central content device -- is genuinely fixed, not merely attempted: the writer split 'What each one actually promises' and 'What the guarantees cost in bytes' into four 2-column tables (Guarantee/TCP, Guarantee/UDP, blank/UDP, blank/TCP). I verified this independently at 390px in every mobile-dark part (19 of 19) and in mobile-light fold+part01+part02, which cover both tables: every row's Guarantee/label cell and its value cell are both fully visible with no fade on either edge, in both themes. As a side effect, Lighthouse's td-has-header audit (a genuine minor gap in round 1, table cells lacking scope=\"row\") no longer applies at all, because a 2-column table falls under axe's 'large table' (3+ columns) threshold -- confirmed in lighthouse-full.json, scoreDisplayMode 'notApplicable'. No new defects were introduced by the restructuring: reading rhythm is unaffected, the tables still sit directly under their 'What TCP/UDP promises:' and 'UDP's/TCP's cost:' lead-ins, and nothing scrolls that shouldn't. Lighthouse is 97/100/100/100 (performance eased one point from round 1's 98; with other agents active on this machine during the run, treat that single point as measurement noise rather than a regression -- nothing about the markup change should cost render time, and the orchestrator's serial re-measurement is the authority here), zero console errors, zero broken links, mobileOverflowPx 0. This lands at 9.0 rather than a full 10: the fix is real and thorough, but the composite score should not jump to a maximum on the strength of one round's remediation alone without a second, independent pass finding truly nothing to note, and the practice of never inflating applies here as much as never deflating.",
+  "issues": [],
+  "lighthouse": {
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

@@ -14,6 +14,10 @@ sources:
     url: "https://www.rfc-editor.org/rfc/rfc9293.html"
     publisher: "IETF"
     accessed: 2026-09-22
+  - title: "RFC 5681: TCP Congestion Control"
+    url: "https://www.rfc-editor.org/rfc/rfc5681.html"
+    publisher: "IETF"
+    accessed: 2026-09-22
   - title: "RFC 768: User Datagram Protocol"
     url: "https://www.rfc-editor.org/rfc/rfc768.html"
     publisher: "IETF"
@@ -42,24 +46,36 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.udpclient"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
-TCP and UDP sit at the same layer and share the same job, handing bytes from one program to another across an IP network, and they disagree about almost everything else. TCP turns an unreliable network into what looks like a single ordered stream of bytes; UDP hands over one packet at a time and promises nothing about any of them. Neither choice is free. This article builds a loopback client and server for each protocol, watches where TCP's guarantees come from and what they cost when a receiver falls behind, and watches what happens to UDP when nobody is listening. .NET 10.0.401 on Windows 11, x64, is what ran every program below.
+TCP and UDP sit at the same layer and share the same job, handing bytes from one program to another across an IP network, and they disagree about almost everything else. TCP turns an unreliable network into what looks like a single ordered stream of bytes; UDP hands over one packet at a time and promises nothing about any of them. Neither choice is free. This article builds a loopback client and server for each protocol, watches where TCP's guarantees come from and what they cost when a receiver falls behind, and watches what happens to UDP when nobody is listening.
 
 ## What each one actually promises
 
 RFC 9293 states TCP's job in one line: "TCP provides a reliable, in-order, byte-stream service to applications" ([RFC 9293, section 2.2](https://www.rfc-editor.org/rfc/rfc9293.html#section-2.2)). Three separate words are doing work there, and UDP fails all three on purpose. RFC 768 is even shorter about it: UDP "provides a procedure for application programs to send messages to other programs with a minimum of protocol mechanism. The protocol is transaction oriented, and delivery and duplicate protection are not guaranteed" ([RFC 768](https://www.rfc-editor.org/rfc/rfc768.html)).
 
-| Guarantee | TCP | UDP |
-|---|---|---|
-| Delivery | Retransmits until acknowledged or the connection gives up | None: a lost datagram is just gone |
-| Order | Byte stream arrives in the order it was sent | Each datagram is independent; none |
-| Duplicates | Removed | Not removed |
-| Structure | None: a continuous stream of bytes | Each send is one discrete datagram |
-| Pace | Flow and congestion control slow the sender down | None: a receiver that cannot keep up gets nothing extra |
+**What TCP promises:**
 
-The last two rows are where most confusion starts, because they cut in opposite directions: TCP gives you delivery but takes away your message boundaries, and UDP gives you message boundaries but takes away delivery. The rest of this article is a handful of small loopback programs that make each row concrete.
+| Guarantee | TCP |
+|---|---|
+| Delivery | Retransmits until acked |
+| Order | Stream stays in order |
+| Duplicates | Removed |
+| Structure | None: one continuous stream |
+| Pace | Flow + congestion control |
+
+**What UDP promises:**
+
+| Guarantee | UDP |
+|---|---|
+| Delivery | Lost datagram just gone |
+| Order | Independent; no order |
+| Duplicates | Not removed |
+| Structure | One datagram per send |
+| Pace | None: no slow-down |
+
+The last two rows in each table are where most confusion starts, because they cut in opposite directions: TCP gives you delivery but takes away your message boundaries, and UDP gives you message boundaries but takes away delivery. The rest of this article is a handful of small loopback programs that make each row concrete.
 
 ## Datagrams keep their shape; a stream does not
 
@@ -547,11 +563,21 @@ write [...] was still pending after 150 ms; [...] bytes had gone through before 
 receiver drained everything sent: True
 ```
 
-On this machine the stall showed up consistently around 560 writes, roughly 2.3&nbsp;MB, well past the 4&nbsp;KB the program never actually configures as a window size: nothing here changes any buffer, so the number reflects whatever this operating system negotiates by default, and it will differ on another machine or another Windows build. The behavior it demonstrates does not: the client's `WriteAsync` calls succeed instantly at first, then suddenly stop completing, because the accepted connection's advertised window has closed while its owner is asleep. Once the server wakes up and starts reading, the pending write completes and the connection finishes normally; `received == sent` came back `True` on every run, which is the point. Nothing already accepted by the network was lost, it was only delayed exactly as long as the slow reader took to become fast again. That delay is the price flow control charges to keep a fast sender from overrunning a slow receiver's buffer.
+Measurements from here on were taken on .NET 10.0.401, on Windows 11, x64; the exact counts below are specific to that machine and this loopback network on 2026-09-22, and it is the shape of the result, not the digits, that would repeat elsewhere. The stall showed up consistently around 560 writes, roughly 2.3&nbsp;MB, well past the 4&nbsp;KB the program never actually configures as a window size: nothing here changes any buffer, so the number reflects whatever this operating system negotiates by default, and it will differ on another machine or another Windows build. The behavior it demonstrates does not: the client's `WriteAsync` calls succeed instantly at first, then suddenly stop completing, because the accepted connection's advertised window has closed while its owner is asleep. Once the server wakes up and starts reading, the pending write completes and the connection finishes normally; `received == sent` came back `True` on every run, which is the point. Nothing already accepted by the network was lost, it was only delayed exactly as long as the slow reader took to become fast again. That delay is the price flow control charges to keep a fast sender from overrunning a slow receiver's buffer.
 
 :::pitfall
 Do not read the stalled write above as "TCP was slow here." It was correct: the client asked to send more than the receiver had agreed to hold, and TCP made it wait rather than dropping data on the floor or silently overflowing the receiver's memory. A protocol without this mechanism would need the application to build its own, the same way [framing](#framing-a-stream-yourself) has to be built for message boundaries.
 :::
+
+## Congestion control: TCP's other brake
+
+The stall above came from the receiver's advertised window, the limit covered in the last section. TCP has a second, independent brake with a different job: stopping a sender from overrunning the *network* between the two ends, since a router queue that fills up and starts dropping packets hurts every connection sharing that link, not just this one. RFC 9293 treats this as a hard requirement rather than an optional tuning knob: "implementing congestion control (e.g., [RFC 5681]) is a TCP requirement, but it is a complex topic on its own and not described in detail in this document" ([RFC 9293, section 2](https://www.rfc-editor.org/rfc/rfc9293.html#section-2)), and points to RFC 5681 for the actual algorithm.
+
+Flow control is governed by the receiver's advertised window (the `Window` field from the last section, commonly written `rwnd`). Congestion control is governed by a second number the *sender* keeps for itself, the congestion window (`cwnd`), and a connection may only have the smaller of the two in flight at once. `rwnd` reflects what the receiver's buffer can hold; `cwnd` reflects what the sender believes the network path between them can carry right now, a number nothing on the wire states directly and that the sender has to infer from how its own segments are treated.
+
+RFC 5681 defines two phases for how `cwnd` grows. In slow start, "a TCP increments cwnd by at most SMSS bytes for each ACK received that cumulatively acknowledges new data" ([RFC 5681, section 3.1](https://www.rfc-editor.org/rfc/rfc5681.html#section-3.1)), which roughly doubles the window every round trip; once `cwnd` passes a threshold called `ssthresh`, the connection switches to congestion avoidance, where "cwnd is incremented by roughly 1 full-sized segment per round-trip time" ([RFC 5681, section 3.1](https://www.rfc-editor.org/rfc/rfc5681.html#section-3.1)) instead, a far more cautious climb. Either way, growth only ever happens on evidence the network is coping: RFC 5681 is explicit that "the algorithms specified in this document work in terms of using loss as the signal of congestion" ([RFC 5681, section 3](https://www.rfc-editor.org/rfc/rfc5681.html#section-3)). A dropped segment, detected the same way the retransmission timeout earlier detects one, tells the sender it pushed too hard, and `cwnd` is cut back, not merely paused.
+
+None of the loopback programs on this page can show `cwnd` changing, and that is not an oversight: loopback traffic never leaves the machine, crosses no shared or queued link, and essentially never drops a packet, so the one signal congestion control reacts to, loss, never occurs here. Every stall this article demonstrates comes from the receiver's advertised window, not from the sender's own congestion window. `cwnd` growing after a slow start and shrinking after a loss is real and observable on an actual network path (a packet capture on a congested link shows the segment spacing widen and then narrow again), just not on the loopback interface every program on this page runs against.
 
 ## No pace-setting: UDP keeps sending
 
@@ -654,14 +680,25 @@ Nobody was listening on port 59999, yet the send that went nowhere raised nothin
 
 ## What the guarantees cost in bytes
 
-None of the above is free even when it works perfectly. A UDP header is four 16-bit fields, source port, destination port, length and checksum, for a fixed 8 bytes ([RFC 768](https://www.rfc-editor.org/rfc/rfc768.html)). A TCP header starts at 20 bytes and grows with options ([RFC 9293, section 3.1](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.1)); it carries a 32-bit sequence number and acknowledgment number that UDP has no use for, because UDP tracks neither order nor receipt.
+None of the above is free even when it works perfectly. A UDP header is four 16-bit fields, source port, destination port, length and checksum, for a fixed 8 bytes ([RFC 768](https://www.rfc-editor.org/rfc/rfc768.html)). A TCP header starts at 20 bytes and grows with options ([RFC 9293, section 3.1](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.1)); it carries a 32-bit sequence number and acknowledgment number that UDP has no use for, because UDP tracks neither order nor receipt. Opening a connection costs the round-trip handshake shown earlier, and closing one costs a four-way FIN exchange followed by a TIME-WAIT period before either side discards the connection's state ([RFC 9293, section 3.6](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.6)). UDP has neither cost, because it has no connection state to open or close.
 
-| | UDP | TCP |
-|---|---:|---:|
-| Header | 8 bytes, fixed | 20+ bytes |
-| Setup before data | none | 1 round trip (handshake) |
-| Per-segment bookkeeping | none | sequence numbers, timers, buffered unacked data |
-| Close | none | 4-way FIN exchange, then TIME-WAIT ([RFC 9293, section 3.6](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.6)) |
+**UDP's cost:**
+
+| | UDP |
+|---|---|
+| Header | 8 bytes |
+| Setup | none |
+| Bookkeeping | none |
+| Close | none |
+
+**TCP's cost:**
+
+| | TCP |
+|---|---|
+| Header | 20+ bytes |
+| Setup | 1 RTT handshake |
+| Bookkeeping | seq numbers, timers, buffers |
+| Close | 4-way FIN, then TIME-WAIT |
 
 That overhead buys the delivery, order and pacing described earlier for every byte an application writes, whether or not the application actually needs all three for that particular byte. A single DNS query is the clearest case in the other direction: RFC 1035 recommends UDP for ordinary lookups specifically because a query and its answer are short and few, so a handshake would cost more than the query itself is worth. The same document caps a plain UDP DNS message at 512 bytes: "longer messages are truncated and the TC bit is set in the header" ([RFC 1035, section 4.2.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.2.1)), and TCP is defined on the same port 53 precisely so a resolver that gets a truncated answer can repeat the query there and receive the complete one, because past that size TCP's bookkeeping stops being the more expensive option.
 
@@ -680,7 +717,7 @@ For each case, name TCP, plain UDP, or a UDP-based protocol like QUIC that adds 
 4. A resolver's first attempt at looking up a short domain name.
 
 :::solution
-1. **TCP.** A payment must arrive exactly once, in full, with the application told if it did not; TCP's delivery guarantee and its natural retry-on-failure connection model exist for exactly this.
+1. **TCP.** TCP guarantees the request's bytes arrive complete and in order on one connection, and it tells the application if the connection fails instead of silently losing data; that is what makes it the right transport for a payment. It does not by itself guarantee the payment happens exactly once: a client that times out after the request was actually processed has no way to learn that from TCP, and a naive retry can double-submit. Exactly-once still needs an idempotency key, or an equivalent, at the application layer on top of TCP's byte-level guarantee.
 2. **Plain UDP**, usually with a small custom sequence number of the application's own so a receiver can tell an old position update from the current one. A position from 100 ms ago is worse than no update at all, so TCP's insistence on delivering everything, in order, before letting newer data through is actively harmful here.
 3. **Plain UDP** for the same reason as the game: a late audio frame is useless once its moment has passed, and re-sending it only delays the frames after it. Real-time voice and video protocols build their own light error concealment instead of TCP's exhaustive retransmission.
 4. **Plain UDP**, per RFC 1035's recommendation above; it is one small request and one small answer, cheap enough to just retry outright if it is lost, and a handshake would roughly double the cost of every lookup.
