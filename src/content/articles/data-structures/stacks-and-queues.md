@@ -175,7 +175,7 @@ leave 1
 
 A stack's operations only ever touch one end, so the shifting that made inserting at the front of a growable array expensive elsewhere does not apply here: `Push` and `Pop` work at the same end every time, and neither has to move any other element to make room.
 
-An array-backed stack keeps its elements packed from index 0 up, exactly like a growable array elsewhere on this site: when the backing array is full, allocate a bigger one — usually double the size — and copy across. A linked-node stack instead allocates one small object per element and links each new node to the previous top, so `Push` and `Pop` are O(1) worst case, never O(*n*), because there is no doubling pause; the price is an extra reference per element, a separate heap allocation for each one, and no contiguous memory to walk quickly.
+An array-backed stack keeps its elements packed from index 0 up, exactly like a growable array elsewhere on this site: when the backing array is full, allocate a bigger one — usually double the size — and copy across. A linked-node stack instead allocates one small object per element and links each new node to the previous top, so `Push` and `Pop` are O(1) worst case, never O(*n*), because there is no doubling pause; the price is an extra reference per element, a separate heap allocation for each one, and no contiguous memory to walk quickly. [Sedgewick and Wayne's *Algorithms*](https://algs4.cs.princeton.edu/13stacks/) walks through both implementations side by side for exactly this reason: the array and linked-list versions of a stack (and a queue) make the same underlying tradeoff.
 
 General-purpose libraries mostly pick the array, because a doubling pause that happens once every few thousand pushes on average costs less overall than an allocation on every single one. .NET's own `Stack<T>` is one of them — the section on what it does inside makes that concrete.
 
@@ -436,7 +436,7 @@ After four enqueues into a capacity-4 buffer, `_tail` has wrapped all the way ar
 
 ## The other end: turning the ring buffer into a deque
 
-A double-ended queue (deque) adds `AddFirst`/`RemoveFirst` to the queue's `AddLast`/`RemoveFirst`, so either end can grow or shrink. As of this writing, `System.Collections.Generic` has no public `Deque<T>`: the namespace lists `List<T>`, `LinkedList<T>`, `Stack<T>`, `Queue<T>`, `PriorityQueue<TElement,TPriority>` and the rest, and a double-ended queue is not among them. A `List<T>` can stand in, but `Insert(0, x)` and `RemoveAt(0)` are exactly the O(*n*) shifts from the section above — a `List<T>` deque is a slow deque.
+A double-ended queue (deque) adds `AddFirst`/`RemoveFirst` to the queue's `AddLast`/`RemoveFirst`, so either end can grow or shrink. As of this writing, [`System.Collections.Generic`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic) has no public `Deque<T>`: the namespace lists `List<T>`, `LinkedList<T>`, `Stack<T>`, `Queue<T>`, `PriorityQueue<TElement,TPriority>` and the rest, and a double-ended queue is not among them. A `List<T>` can stand in, but `Insert(0, x)` and `RemoveAt(0)` are exactly the O(*n*) shifts from the section above — a `List<T>` deque is a slow deque.
 
 Extending `RingQueue<T>` costs one method. Adding at the front means moving `head` backward instead of forward, with the same wraparound arithmetic pointed the other way:
 
@@ -605,7 +605,7 @@ Six enqueues push capacity past 4 to 8 (the same doubling `Stack<T>` uses), and 
 
 ## A next-greater-element with a monotonic stack
 
-A different use for a stack has nothing to do with undoing actions: keeping it in *sorted* order as you scan a sequence once, left to right, so each element can answer a question about the elements after it in O(1) amortized work. Structures kept sorted this way by removing anything that would break the order before inserting are called monotonic; cp-algorithms describes the same idea for a minimum-tracking structure, "maintain[ing] a deque in a state, where they are monotonically increasing (or decreasing)" by removing disqualified elements before adding a new one.
+A different use for a stack has nothing to do with undoing actions: keeping it in *sorted* order as you scan a sequence once, left to right, so each element can answer a question about the elements after it in O(1) amortized work. Structures kept sorted this way by removing anything that would break the order before inserting are called monotonic; cp-algorithms describes the same technique for a minimum-tracking structure, explaining that it will "keep the queue in nondecreasing order" by removing trailing elements larger than the new one before adding it.
 
 The classic use is next-greater-element: for each value, find the first value to its right that is strictly greater, or report none. Applied to a week of temperatures, it answers "for each day, what is the next temperature that beats it?":
 
