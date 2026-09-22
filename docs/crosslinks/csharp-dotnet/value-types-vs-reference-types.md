@@ -1,0 +1,13 @@
+# Cross-links wanted by /csharp-dotnet/value-types-vs-reference-types/
+
+One line each: anchor text | target route | where in the article. All targets are planned in CONTENT_PLAN.md section 7 and were unpublished when this round was written (2026-09-21), so the body does not link them yet; it links the glossary instead where a term needs a definition today. Each sentence reads correctly with or without the extra link.
+
+- "garbage collector" | /csharp-dotnet/garbage-collection/ | "Are structs 'on the stack'? Measure it", first paragraph ("the managed heap, the memory the garbage collector looks after"). Currently links only to /glossary/#garbage-collection; once the GC article is published, point the same words at it instead (it is the more specific treatment: generations, roots, `IDisposable` vs finalizers) and keep the glossary link for the one-line definition on first use elsewhere if needed.
+- "generics" | /csharp-dotnet/generics/ | "What a million boxes cost", last sentence ("Avoiding this is a large part of what generics are for"). That article owns constraints, variance and why generics avoid boxing in depth; this page only needs the one sentence tying the measured boxing cost back to the reason generics exist.
+- "generic method with an interface constraint" | /csharp-dotnet/generics/ | "Boxing: a value gets an object of its own", the paragraph introducing the `Read<T>` constrained-generic example, second-to-last paragraph before the `constraint` code block. The generics article covers constraints in full; this page uses exactly one to avoid a box.
+
+## Boundaries with planned siblings
+
+- /csharp-dotnet/garbage-collection/ owns generations, roots/reachability, the LOH, and the `IDisposable`-vs-finalizer distinction. This article only uses `GC.GetAllocatedBytesForCurrentThread` as a measuring instrument for where a value ends up; it does not explain how collection itself works.
+- /csharp-dotnet/generics/ owns constraints, covariance/contravariance and generic math. This article shows exactly one constrained generic method (to avoid a box) and states the one-line reason (`List<int>` has an `int[]` inside it); it does not re-derive variance or reified generics.
+- /csharp-dotnet/async-await/ and /csharp-dotnet/linq-deferred-execution/ have no natural link from this article; nothing here overlaps their material.
