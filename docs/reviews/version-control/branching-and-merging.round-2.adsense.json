@@ -1,0 +1,58 @@
+{
+  "article": "src/content/articles/version-control/branching-and-merging.md",
+  "route": "/version-control/branching-and-merging/",
+  "round": 2,
+  "role": "adsense",
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging (read; fast-forward, three-way merge, one conflict, mergetool; 7 figures; no index stages, no diff3, no combined diff)",
+    "https://dotgit.dev/git-merge (read; fast-forward vs three-way, .git internals, stage 1/2/3, --abort, --squash/--no-ff/--ff-only, revert of a merge; no diff3, octopus, combined diff, semantic conflicts, or -s ours)",
+    "https://www.atlassian.com/git/tutorials/using-branches/git-merge (top-ranked; body did not load in the fetcher, only the search excerpt was seen, so not counted as one of the two)",
+    "https://git-scm.com/docs/git-merge (used to verify quotes and claims)"
+  ],
+  "justification": "Fresh read first. Value over the top results is high and mostly original. The pages that rank for 'git merge explained' stop at fast-forward, three-way merge and a single conflict; the closest (dotgit.dev) adds index stages and revert. This article adds the merge base as a computed thing with an ancestor-test command, the per-file/per-region rule, stages 1/2/3 with a diagram, diff3 markers used to derive a resolution neither branch contains, the non-line conflicts (modify/delete, add/add, binary) with git status codes mapped to stages, the combined diff and --remerge-diff with an honest account of what they cannot show, a clean merge that is semantically wrong (check.sh passes on both parents, fails on the merge), the adjacent-line merge-file experiment, octopus, and -X ours vs -s ours ending in 'Already up to date'. The running example (coffee kiosk) is its own and shares nothing with Pro Git's hello.rb/iss53. Diagrams are its own. Copying: I searched two distinctive sentences (the --squash 'second parent' sentence and the 'clean merge can still be wrong'/kiosk passage) and found no match; the quotes taken from git-merge ('a new commit is not needed to store the combined history', 'will in some cases be unable to reconstruct', 'supersede', ort/recursive v2.50, resolve does not handle renames, octopus, zdiff3, squash/MERGE_HEAD) were confirmed against the live page and are marked and attributed. The round-1 strategy table, which tracked the doc wording, is now a list written from the reader's side. Round-1 findings from all three critics: the technical blocker (empty combined diff read as 'Git did all the work') is really fixed, with the dense --cc filter explained, the lossy-resolution caveat stated and --remerge-diff added; the diff3 warning that it discards edits appears twice; the 'merge by lines' over-generalisation is fixed by a table scoped to text files present in all three versions plus the new non-line-conflicts section; --check vs --cached --check is explained; the opening and the 'always' heading are scoped or renamed; the asserted frequencies ('rarely', 'usually', 'the usual causes') are gone; --squash and mergetool are covered; the documented-purpose sentence is now cited. Nothing from round 1 was papered over. Sourcing: 15 primary sources, each cited inline where used, none orphaned. No filler: the first sentence makes a claim, there is no conclusion boilerplate, and the closing symptom list adds new diagnostics. Not templated: openings, heading sets and exercise forms differ from how-git-works (which opens on a file count and ends on exercises); the only shared trait is a concrete-fact opening, which is a virtue. No keyword stuffing. No invented experience or statistics; 'checked in Git 2.52' claims are the author's own runs and are stated as such. It reads as someone working through a design, not as boilerplate. Navigation: prerequisite link present, crosslinks file exists and is sensible; the body ends without a forward link, which is the planned integrator wiring. What keeps it below 9.5: a few residual unsourced or untested statements, one citation that covers only half its sentence, one line of layout commentary inside the prose, and length and density (about 7,500 words) that a casual searcher will find heavy. No policy risk.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Section 'When both branches have moved', paragraph 'Finding it means walking parent links back from both tips until the walks meet, so the work grows with ... at worst, with the size of the whole history'",
+      "problem": "A complexity claim about merge-base with no citation and no stated algorithm. The brief asks that every named algorithm state its cost with conditions and that non-obvious claims be sourced. git-merge-base is cited in the previous paragraph but does not state this cost.",
+      "fixLooksLike": "Either attribute it to a source that says it, or scope it as reasoning ('Conceptually, finding it means ...') and drop 'at worst'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 'How close can two edits get?' solution: 'and so do neighboring entries in the same block of imports'",
+      "problem": "Only the append-to-end case is stated as tried in Git 2.52; the imports case is an untested illustration presented as fact, in the same sentence as a tested claim.",
+      "fixLooksLike": "Delete the imports clause, mark it as inference ('the same shape as ...'), or test it and mark it 'tried in Git 2.52'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise '-X ours versus -s ours' solution: 'both commands resolve silently, so nobody reviews the choice'",
+      "problem": "Asserts what people do. Git does print no conflict prompt, but 'nobody reviews' is a generalisation about humans, the kind the pilot lessons say to avoid.",
+      "fixLooksLike": "'both commands resolve without stopping, so no conflict prompt gives anyone a chance to review the choice.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Merge strategies...', paragraph beginning 'ort also covers a case ...'",
+      "problem": "The inline link is to git-merge-base, which supports 'more than one best common ancestor' but not the second clause, that ort first merges those ancestors and uses the result as the base. That clause is in git-merge under the ort description (confirmed on the live page).",
+      "fixLooksLike": "Add the git-merge link after the 'uses the result as the base' clause; keep git-merge-base for the criss-cross clause.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Conflicts with no lines to edit', paragraph after the merge output: 'The first line is cut short on a phone: it reads ...'",
+      "problem": "Prose commenting on the page's own rendering. It reads oddly to a desktop reader or in a printout, and the exact CONFLICT wording is left out of the checked block. A reviewer scanning for unfinished or machine-made text may notice it.",
+      "fixLooksLike": "Word it neutrally, for example: 'Git's first line reads \"check.sh deleted in right and modified in HEAD. Version HEAD of check.sh left in tree.\" and is abbreviated in the panel above.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Whole article: structure and length (about 7,500 words, 3 exercises, 4 diagrams)",
+      "problem": "Not a policy problem. The article covers merge, conflicts, non-line conflicts, combined diff, strategies, octopus and undo in one page, so a first-time reader searching 'git merge explained' reaches the essentials only after a long scroll.",
+      "fixLooksLike": "Nothing required. The integrator may add a table of contents or a short orientation line naming where fast-forward, conflicts and strategies begin.",
+      "owner": "integrator"
+    }
+  ]
+}

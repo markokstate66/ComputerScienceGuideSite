@@ -1,0 +1,80 @@
+{
+  "role": "technical",
+  "round": 2,
+  "article": "src/content/articles/version-control/branching-and-merging.md",
+  "score": 8.8,
+  "comparedAgainst": [
+    "Pro Git 2nd ed. 3.2 Basic Branching and Merging (git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging)",
+    "Pro Git 2nd ed. 7.8 Advanced Merging (git-scm.com/book/en/v2/Git-Tools-Advanced-Merging)",
+    "dotgit.dev: git merge Explained: Fast-Forward vs Three-Way, Inside .git/ (dotgit.dev/git-merge)",
+    "git-scm.com reference pages: git-merge, git-branch, git-show, git-mergetool (used as primary sources)",
+    "Atlassian git merge tutorial (search hit; the fetch returned only site navigation, so not used for judgement)"
+  ],
+  "justification": "run-code passes (blocks=55 executed=28) under Git 2.52.0. I opened the primary sources and checked the load-bearing claims. git-merge: --squash records no MERGE_HEAD; the --abort caveat; octopus, ours, resolve and subtree descriptions; ort as default since 2.34 (recursive default until 2.33.0) and recursive as an ort synonym since 2.50.0; the --no-commit quote; the ignore-space-change 'mixed changes' sentence; --continue; --allow-unrelated-histories. git-branch: -d merged into upstream, else HEAD; the reflog is deleted with the branch. git-show: dense-combined omits hunks whose parent contents have two variants where the result picks one. Pro Git 3.2: the 'special in that it has more than one parent' sentence. Pro Git 7.8: revert -m 1, revert the revert, --conflict=diff3, stages 1/2/3. I also reproduced in scratch repos: git diff --check reports leftover markers while unstaged and exits 0 after git add, while git diff --cached --check catches them (both as the pitfall says); git show on a merge where both sides touched the file in separate regions prints an empty combined diff (as the article says); --squash then branch -d gives 'not fully merged'; and --remerge-diff labels the conflict sides with abbreviated ID plus subject. I found no factual error. The round-1 blocker (empty combined diff means Git did all the work) is properly fixed: both --cc filters are explained, the consequence is stated correctly, and a runnable --remerge-diff example shows what the resolver changed. Every other round-1 major and minor is genuinely addressed: the destructive checkout --conflict warning, the non-text and path-level conflict section with a scripted UD/UU/AA merge, the scoped 'three outcomes' opening, the --squash and mergetool coverage, the extra octopus figure, the strategies table replaced by a list, the merge-base wording, the zdiff3 scoping and the --cached --check clause. Against the competition, this page is clearly deeper and more verifiable: Pro Git 3.2 does not cover merge base, stages, diff3, --abort or strategies, and dotgit.dev covers stages but not diff3, and its output cannot be checked. It matches Pro Git 7.8 on the advanced half and adds the combined-diff and remerge material, the adjacent-line experiment, the semantically broken clean merge and -X ours versus -s ours. It is not a 9+ because of a handful of small precision problems, none of them errors: one citation attached to a clause its page does not support, a few uncited or slightly loose generalisations (the merge-base cost, the 'added files' wording, add/add markers), and unexplained label changes in the diff3 output. All are cheap fixes.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Section 'Merge strategies, and the options that look like them', paragraph beginning 'ort also covers a case the single-base description above skips'",
+      "problem": "The sentence says ort first merges multiple best common ancestors and uses the result as the base, and cites git-merge-base. That page supports only 'histories with criss-cross merges can have more than one best common ancestor'. The 'ort merges them first' clause comes from the ort description in git-merge, so the citation does not cover the clause it sits on.",
+      "fixLooksLike": "Split the attribution: cite git-merge-base for 'more than one best common ancestor' and git-merge (the ort strategy entry) for 'ort first merges those ancestors and uses the result as the reference tree'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'When both branches have moved', paragraph 'Finding it means walking parent links back from both tips until the walks meet, so the work grows with ...'",
+      "problem": "The brief says every algorithm named gets its cost and its conditions. The cost claim is uncited and hand-waved. 'Until the walks meet' also describes a common ancestor, not a best one: finding all best common ancestors keeps walking past the first meeting point to discard the ones that turn out to be redundant. 'Grows with the number of commits since the branches diverged' is not sourced either.",
+      "fixLooksLike": "Either cite a source for the traversal, or scope the sentence as a description of the idea ('conceptually, walk both histories back; Git's implementation is an optimized walk over commit dates') and drop the quantitative claim. Alternatively, state that the cost depends on the history shape and stop there.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'The rule Git applies to every file, then to every region', last sentence of the second paragraph ('Files that were deleted, added or are not text cannot be handled this way ...')",
+      "problem": "Over-broad. A file added on one side only, or deleted on one side and unchanged on the other, merges cleanly under table row 2 with no conflict; only add/add, modify/delete and non-text files produce path-level conflicts. The sentence as written implies any added or deleted file is a conflict, which the article's own table contradicts, and the pilot-round lesson warns against exactly this kind of unscoped generalisation.",
+      "fixLooksLike": "Say 'A file added or deleted on only one side is simply taken (row 2). A file that both sides added differently, that one side modified and the other deleted, or that is not text cannot be merged by lines, and those produce conflicts of another kind further down.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'The base version turns a guess into a decision', output panel with '<<<<<<< ours' / '>>>>>>> theirs', and the later 'replace the seven lines of the conflict block'",
+      "problem": "The first conflict showed the labels HEAD and rename-latte and a five-line block. The regenerated block shows ours and theirs and grows to seven lines. The article never says that checkout --conflict uses generic labels (Pro Git 7.8 shows the same 'ours/theirs' labels), or that the block is now seven lines because of the base section. A reader who compares the two panels sees a change nobody explains, and 'the seven lines' looks like a typo next to the earlier five.",
+      "fixLooksLike": "Add one clause after the panel: 'git checkout --conflict labels the sides ours and theirs rather than HEAD and the branch name; the block is two lines longer because of the base section.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Pitfall callout in 'Resolve, stage, commit' ('git diff --check is the guard: it warns about leftover conflict markers and exits non-zero when it finds any')",
+      "problem": "git-diff documents --check as warning about conflict markers or whitespace errors. In a repository with trailing whitespace in the resolved lines, or a whitespace-related core.whitespace setting, it also exits non-zero for reasons unrelated to markers. A reader who wires it in as a guard will meet false positives without warning. The 'exits non-zero when it finds any' clause covers markers only. The verified behaviour itself (works while unstaged, silent once staged, --cached afterwards) is correct.",
+      "fixLooksLike": "Change to 'it warns about leftover conflict markers (and about whitespace errors) and exits non-zero when it finds either', or add a clause that a non-zero exit on a resolved file can also be a whitespace warning.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Conflicts with no lines to edit', bullet 'AA (add/add)' ('Git still writes markers ... with the two whole files in place of the changed regions')",
+      "problem": "Overgeneralised from the one example. Git merges an add/add against an empty base, so if the two added files share lines the markers can bracket only the differing parts. The 'two whole files' description is true only when the files have no lines in common at the same position.",
+      "fixLooksLike": "Say 'with the two files' differing content between the markers (here, the whole of each file, since they share no lines)'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'What Git leaves behind when it stops', sentence 'git mergetool hands the configured program the base, the current branch's file and the other branch's file as three temporary files'",
+      "problem": "The git-mergetool page lists four: BASE, LOCAL and REMOTE are temporary files, and MERGED is the real working file the tool must write the result into. 'Three temporary files' omits where the result goes, which is the part a reader configuring a tool needs.",
+      "fixLooksLike": "'... as three temporary files, and the tool writes its result into the working-tree file itself.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Backing out with git merge --abort', last sentence ('Git already refuses to start a merge when your uncommitted changes overlap with files the merge needs to update')",
+      "problem": "A behavioural claim with no citation, in a sentence that follows a cited one. It is true in practice, but the git-merge page also says merging with non-trivial uncommitted changes is discouraged even where Git allows it. The article states the refusal as complete, so a reader may take non-overlapping uncommitted changes as safe, which is the case where --abort can fail to restore them.",
+      "fixLooksLike": "Attribute to git-merge and scope: 'Git refuses to start when uncommitted changes overlap files the merge must touch, but changes elsewhere are allowed, and those are exactly the ones --abort may not restore.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Resolve, stage, commit', paragraph 'Two filters decide what reaches this output' ('leaves out every hunk where the result is simply one parent's version')",
+      "problem": "Slightly looser than the git-show text, which omits hunks whose contents in the parents have only two variants and where the result picks one unmodified. For two-parent merges the difference is invisible, but the article says 'every hunk' without the two-variants condition, and the same passage is used to conclude what an empty combined diff proves.",
+      "fixLooksLike": "Mirror the documented condition: 'hunks where the parents differ from each other in only two ways and the result picks one of them unchanged'.",
+      "owner": "writer"
+    }
+  ],
+  "runCodePass": "PASS: node tools/run-code.mjs src/content/articles/version-control/branching-and-merging.md printed 'PASS version-control/branching-and-merging.md  blocks=55 executed=28' (Git 2.52.0.windows.1, PowerShell, run by the critic this round)."
+}
