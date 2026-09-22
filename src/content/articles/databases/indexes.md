@@ -38,7 +38,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Add one `CREATE INDEX` statement to the table this page builds, and finding one visitor's hits in it stops being a sweep of 300,000 rows and becomes a lookup so fast it barely registers on a stopwatch. This page builds that table, measures both, and then opens the query plans and the on-disk B-tree pages that explain the gap, so "index" stops being a word you trust and starts being a structure you can reason about.
