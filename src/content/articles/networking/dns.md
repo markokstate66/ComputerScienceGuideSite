@@ -50,7 +50,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.net.dns.gethostentry"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A DNS lookup is not one exchange with one server. It is a client asking a single question of a *recursive resolver*, and that resolver privately interrogating a chain of *authoritative* servers until it can hand back one finished answer. Those are two different resolution styles, layered rather than interchangeable, and the rest of this article keeps them distinct throughout.
