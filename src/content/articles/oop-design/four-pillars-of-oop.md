@@ -4,7 +4,7 @@ description: "What encapsulation, polymorphism, inheritance and abstraction each
 pillar: oop-design
 order: 1
 author: markus
-published: 2026-09-18
+published: 2026-09-21
 updated: 2026-09-21
 level: beginner
 tags: [oop, encapsulation, polymorphism, inheritance, virtual-dispatch]
@@ -78,7 +78,7 @@ sources:
     url: "https://www.cs.cmu.edu/~wing/publications/LiskovWing94.pdf"
     publisher: "Carnegie Mellon University"
     accessed: 2026-09-21
-draft: true
+draft: false
 ---
 
 Each of the four words answers a different question about code that has to keep changing. Encapsulation: who is able to put this object into a state that makes no sense? Polymorphism: how many places must be edited when a new variant arrives? Inheritance: where does shared code live, and what does sharing it tie together? Abstraction: what is a caller allowed to rely on?
