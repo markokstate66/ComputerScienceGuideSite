@@ -34,7 +34,7 @@ sources:
     url: "https://git-scm.com/book/en/v2/Git-Branching-Rebasing"
     publisher: "git-scm.com"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 `git merge` and `git rebase` can both bring one branch's work onto another, and for a change that does not conflict, the file you end up with can be identical either way. What differs is what each one writes to the commit graph. Merge adds one new commit that names both parents and leaves every existing commit exactly where it was. Rebase writes a new set of commits with new hashes and moves a branch pointer to them; the commits it copied from stay behind, no longer reachable from that branch. This page builds one small repository, brings the same two diverged branches together first with merge and then, from an untouched copy of the same starting point, with rebase, and reads the difference straight off `git log --graph`. It builds on [How Git Works Inside](/version-control/how-git-works/), which shows that [objects are immutable and that rebase writes new commits rather than editing old ones](/version-control/how-git-works/#git-commit-does-the-same-and-reuses-what-did-not-change), and on [Branching and Merging](/version-control/branching-and-merging/), which covers merge bases, conflicts and merge strategies in depth; none of that is repeated here.
