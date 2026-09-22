@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-22 — `/ship 47`: run-code xUnit support merged
+
+- PR #47 squash-merged into `adsense-rebuild`, branch deleted, issue #12 closed. Tooling change, not an article — no gauntlet round.
+- `tools/run-code.mjs` now runs file-based xUnit v3 test programs (`#:package xunit.v3@1.*`, no project/`dotnet test`). The `fails` flag (previously bash-only) now also applies to `csharp run` blocks, so a deliberately-red test (a TDD red step) can exit non-zero without failing the check.
+- Verified before merge: `npm run build` green (32 pages), `node tools/run-code.mjs tools/fixtures/run-code-selftest.md` reports exactly its 3 planted failures (two new xUnit blocks — one passing, one deliberately-red via `fails` — both verify correctly), `node tools/run-code.mjs --all` green across all 14 published articles.
+- Unblocks issue #29 (`testing/unit-testing-fundamentals`), which was the only `todo` item waiting on this.
+
 ## 2026-09-22 — `/ship 25`: testing/test-doubles merged
 
 - PR #25 squash-merged into `adsense-rebuild`, branch deleted, issue #10 closed. Round 1 gauntlet result: technical 9.0 / AdSense 9.0 / design 9.0, all ≥ the 8.5 bar. First published article in the testing pillar.

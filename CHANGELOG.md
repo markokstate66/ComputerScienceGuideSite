@@ -27,6 +27,7 @@ User-visible and repo-visible changes. Newest first.
 - `tools/verify-page.mjs` now compresses its private preview responses (gzip/brotli), matching how the production host actually serves static assets; the private-build dev server previously understated Lighthouse performance for content-heavy pages.
 - GA4 loads only on the production hostname, with consent defaulted to denied and not at all under GPC/DNT.
 - Reading time is computed (220 wpm prose + 2 s per code line, capped per block).
+- `tools/run-code.mjs` now runs file-based xUnit v3 test programs (`#:package xunit.v3@1.*`, no project or `dotnet test` needed); the `fails` flag (previously bash-only) now also applies to `csharp run` blocks, for a deliberately-red test in a TDD red/green step.
 
 ### Removed
 - The 17 legacy `/guides/*` pages, `/resources/` (undisclosed affiliate links, hot-linked images), `/roadmap/`, `500.astro`, `SETUP.md`.
