@@ -147,25 +147,44 @@ function withCompression(handler) {
   return (req, res) => {
     const acceptEncoding = req.headers['accept-encoding'] || '';
     const encoding = /\bbr\b/.test(acceptEncoding) ? 'br' : /\bgzip\b/.test(acceptEncoding) ? 'gzip' : null;
-    // sirv sets headers (via the real res.setHeader, untouched below) before it writes the body, so by
-    // the time res.end() runs here every header it set is already on the real response — we only need
-    // to buffer the body ourselves so we can decide, once we know the Content-Type, whether to compress it.
+    // sirv's `send()` sets headers by calling the raw res.writeHead(code, headers) directly, not
+    // res.setHeader() — so res.getHeader() is never populated by the time res.end() runs here, and this
+    // wrapper's compression check always saw an empty Content-Type and silently skipped compressing
+    // every response. Intercept writeHead itself, hold the code/headers instead of sending them, and
+    // decide whether to compress once we also know the body — then send whichever headers actually match.
+    const originalWriteHead = res.writeHead.bind(res);
+    let pendingCode = null;
+    let pendingHeaders = null;
+    res.writeHead = (code, headers) => {
+      pendingCode = code;
+      pendingHeaders = { ...(headers || {}) };
+      return res;
+    };
     const chunks = [];
     const originalEnd = res.end.bind(res);
     res.write = (chunk) => { if (chunk) chunks.push(Buffer.from(chunk)); return true; };
     res.end = (chunk) => {
       if (chunk) chunks.push(Buffer.from(chunk));
       const body = Buffer.concat(chunks);
-      const contentType = String(res.getHeader('Content-Type') || '');
+      const headers = pendingHeaders || {};
+      const contentType = String(headers['Content-Type'] || headers['content-type'] || res.getHeader('Content-Type') || '');
+      const send = (finalHeaders) => {
+        if (pendingCode != null) originalWriteHead(pendingCode, finalHeaders);
+        else for (const [key, value] of Object.entries(finalHeaders)) res.setHeader(key, value);
+      };
       if (!encoding || body.length < 256 || !COMPRESSIBLE.test(contentType)) {
+        send(headers);
         originalEnd(body);
         return;
       }
       const compressed = encoding === 'br' ? zlib.brotliCompressSync(body) : zlib.gzipSync(body);
-      res.removeHeader('Content-Length');
-      res.setHeader('Content-Encoding', encoding);
-      res.setHeader('Content-Length', compressed.length);
-      res.setHeader('Vary', 'Accept-Encoding');
+      const finalHeaders = { ...headers };
+      delete finalHeaders['Content-Length'];
+      delete finalHeaders['content-length'];
+      finalHeaders['Content-Encoding'] = encoding;
+      finalHeaders['Content-Length'] = compressed.length;
+      finalHeaders['Vary'] = 'Accept-Encoding';
+      send(finalHeaders);
       originalEnd(compressed);
     };
     handler(req, res);
