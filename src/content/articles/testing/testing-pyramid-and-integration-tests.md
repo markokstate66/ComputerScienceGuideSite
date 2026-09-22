@@ -62,7 +62,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/core/sdk/file-based-apps"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 "Unit test" and "integration test" get used loosely enough that two developers can agree a suite needs "more integration tests" and mean different things by it. This article pins the terms down, traces where the usual picture of test proportions came from, looks at a real objection to it, and then builds an integration test against a real database so the difference stops being abstract.
