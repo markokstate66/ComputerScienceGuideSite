@@ -1,0 +1,36 @@
+{
+  "article": "src/content/articles/networking/tcp-vs-udp.md",
+  "route": "/networking/tcp-vs-udp/",
+  "round": 1,
+  "critic": "design",
+  "score": 7.5,
+  "comparedAgainst": [
+    "https://en.wikipedia.org/wiki/Transmission_Control_Protocol",
+    "https://en.wikipedia.org/wiki/User_Datagram_Protocol"
+  ],
+  "justification": "Reads well ahead of the best-ranking pages for \"tcp vs udp\" on almost every axis a design critic controls: reading rhythm alternates prose / runnable C# / real measured output / diagram cleanly, heading hierarchy is correct and varied (no boilerplate Introduction/Conclusion), all three figures are legible and theme-correct at both desktop and 390px-mobile width in both light and dark (checked every part of desktop-light and mobile-dark, plus fold+2 of desktop-dark and mobile-light), code blocks keep their operative content within the visible ~40-column window with no clipped point-of-the-example, callouts and the four exercises are used correctly (solutions collapsed, not given away above the fold), and the sources list is complete and well-formatted. Lighthouse is 98/100/100/100, zero console errors, zero broken links, zero page-level horizontal overflow (mobileOverflowPx: 0). Wikipedia's TCP and UDP pages, by contrast, have no runnable code, no real measurements, and only static header/handshake diagrams, so on depth and illustration this article is clearly ahead of them, consistent with a 10 on that axis alone. What holds the overall score well below the 8.5 (\"MDN/Real Python, nits only\") anchor is that the article's two comparison tables -- the exact device the query \"tcp vs udp\" is asking for -- lose an entire column off-screen by default at phone width, confirmed identically in both mobile-dark and mobile-light screenshots. That is more than a nit for the site's majority mobile audience on a compare-shape article, so this lands at 7.5: clearly better illustrated and more rigorous than the best-ranking pages, but with a real, repeated mobile readability defect in its central content device.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "\"What each one actually promises\" table (Guarantee/TCP/UDP) and \"What the guarantees cost in bytes\" table (blank/UDP/TCP), both confirmed on mobile-dark-part02/part13 and mobile-light-part02",
+      "problem": "At 390px width, each table shows only about 2 of its 3 columns before the fade; the reader has to notice and perform a horizontal scroll to see the rest. In the first table the entire UDP column is off-screen on load (only Guarantee + TCP are visible); in the second table the entire TCP column is off-screen (only the blank label column + UDP are visible). For an article whose whole point is TCP vs UDP, hiding one full side of the comparison by default is a real readability defect, not a cosmetic one. The root cause matches the exact failure mode docs/WRITER_GUIDE.md section 7 warns about: cells are full sentences (\"Retransmits until acknowledged or the connection gives up\", \"4-way FIN exchange, then TIME-WAIT (RFC 9293, section 3.6)\") rather than the short phrases the guide calls for, so a nominally-3-column table still overflows.",
+      "fixLooksLike": "Rewrite every cell in both tables as a short phrase rather than a sentence (e.g. \"Retransmits until acked\" / \"Lost datagram is just gone\", \"4-way FIN, then TIME-WAIT\"), so each column comfortably fits within roughly 40 characters at phone width and no column is hidden without a deliberate scroll. If phrase-length cells still do not fit three across, restructure the guarantees table as two stacked two-column tables (TCP | UDP each on their own) or a definition list instead, per the guide's own fallback advice.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Both comparison tables, site-wide table rendering (lighthouse.json failing audits)",
+      "problem": "Lighthouse's `td-has-header` audit scores 0: the tables' data cells (e.g. the \"Delivery\", \"Header\" row-label cells) are not associated with a header via `scope=\"row\"` or `headers`/`id`, so a screen reader traversing a cell cannot always announce which row it is in. This does not currently pull down the Accessibility category score (still 100 in this run) but is a genuine, repeated gap on every article that uses a comparison table.",
+      "fixLooksLike": "Have the shared Markdown-table renderer add `scope=\"row\"` to the first `<td>` in each row (or `scope=\"col\"` plus row `id`s if a different scheme is preferred). This is not something a GFM table in an article's Markdown can express, so it belongs in the shell/table component, not per-article.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 98,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

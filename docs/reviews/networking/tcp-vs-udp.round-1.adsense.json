@@ -1,0 +1,25 @@
+{
+  "score": 8.4,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/computer-networks/differences-between-tcp-and-udp/",
+    "https://www.guru99.com/tcp-vs-udp-understanding-the-difference.html",
+    "https://www.imperva.com/learn/ddos/udp-user-datagram-protocol/"
+  ],
+  "justification": "This clears the top-ranking pages for \"tcp vs udp\" by a wide margin on original value. GeeksforGeeks is a definitions-plus-comparison-table page with no code and no diagrams. Guru99 is an intermediate tutorial with two static comparison images and no code. Imperva only covers UDP in depth (mostly through a DDoS-mitigation lens) and gives TCP no substantive treatment; it also has no code. None of the three demonstrates anything running. This article instead builds six runnable, independent loopback programs (UDP echo showing preserved datagram boundaries, a deliberately dumb TCP echo showing stream coalescing, a length-prefixed framing scheme, a TCP flow-control stall against a sleeping receiver, a UDP send-storm against a shrunk receive buffer, and a connected-UDP ICMP-unreachable demo) plus three original diagrams (datagram-vs-stream, three-way handshake, lost-segment retransmission), all backed by inline RFC citations I spot-checked against the primary text (RFC 9293 s2.2/s3.7, RFC 768, RFC 1035 s4.2.1) and found verbatim and accurately attributed. I compared this article against its published sibling `how-the-internet-works.md`: headings, opening sentences, demos (hand-typed HTTP, TLS cert inspection, DNS timing, hop counting) and exercise formats are all distinct with no reuse; the exercise section varies its form (predict-then-verify, predict-then-measure, a decision task) rather than repeating \"Predict the output\" verbatim, and no predict-output exercise leaks its output panel outside the collapsed solution. The crosslinks file for this article exists and lists sensible, specific anchors, so the missing links to unpublished siblings (http-explained, dns, tls-and-https) are not held against it. What keeps this below the 8.5 pass line is one instance of the exact pattern the editorial brief calls out as binding and previously fatal: a stamped toolchain/provenance sentence placed at the very open of the article rather than beside the first real per-machine measurement (see issue 1). A secondary, more minor concern is one overstated claim in the transport-choice exercise about what TCP alone guarantees for payments.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Opening paragraph, final sentence: \".NET 10.0.401 on Windows 11, x64, is what ran every program below.\"",
+      "problem": "docs/EDITORIAL_BRIEF.md \"Lessons from the pilot round\" is explicit and binding: state the toolchain once, in your own words, where measurements appear, and do not open the article with a stamped provenance sentence of the form \"every block on this page was run with…\" because that pattern cost an article its pass in the pilot round. This sentence is functionally that pattern (toolchain + \"ran every program\") and sits at the end of paragraph 1, well before the first machine-dependent measurement in the article (the flow-control stall count under \"Flow control: the receiver sets TCP's pace\"). The two code blocks that precede it (udp-echo, tcp-echo) produce deterministic, machine-independent byte counts, so nothing in the opening actually needs the toolchain stated yet.",
+      "fixLooksLike": "Delete the sentence from the opening paragraph. Reintroduce the toolchain, in the writer's own words, next to the first real measurement (the 560-writes/2.3 MB stall in \"Flow control: the receiver sets TCP's pace\"), the way the published sibling `how-the-internet-works.md` places its toolchain sentence in Band 1 right after the first timed DNS lookups rather than in its own opening paragraph.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise \"Pick a transport\", solution item 1 (payment API): \"TCP's delivery guarantee and its natural retry-on-failure connection model exist for exactly this.\"",
+      "problem": "This overstates what TCP alone provides. TCP guarantees in-order, complete delivery of bytes on one connection, and detects connection failure, but it does not give an application \"exactly once\" semantics for an operation like a payment: a client that times out after a request was actually processed and retries on a new connection can still double-submit. TCP's guarantee explains why it's the right transport, but the sentence as written implies TCP itself solves the exactly-once problem, which invites the kind of overreaching claim the brief's hard rules warn against (\"generalisations get checked\").",
+      "fixLooksLike": "Scope the claim: TCP is the right transport because it won't silently drop or reorder the bytes of the request, but exactly-once delivery of the payment itself still needs an idempotency key or equivalent at the application layer, which TCP does not provide.",
+      "owner": "writer"
+    }
+  ]
+}
