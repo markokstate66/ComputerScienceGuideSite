@@ -1,0 +1,33 @@
+{
+  "score": 7.0,
+  "comparedAgainst": [
+    "https://bytebytego.com/guides/what-is-the-difference-between-process-and-thread/",
+    "https://www.backblaze.com/blog/whats-the-diff-programs-processes-and-threads/",
+    "https://www.geeksforgeeks.org/operating-systems/difference-between-process-and-thread/"
+  ],
+  "justification": "Against the three top-ranking pages for 'process vs thread' that I actually opened (ByteByteGo, Backblaze, and GeeksforGeeks's OS page), this article is in a different class: none of the three has runnable code, a real measurement, or a primary-source citation, while this article has ten runnable, verified C# programs, real machine-specific timing ranges stated qualitatively (not fake precision), two original diagrams with proper title/desc, and a sources list I checked line by line. I fetched and read the actual cited primary sources -- Microsoft Learn's Context Switches, Inheritance, and Thread Stack Size pages, man7.org's pthreads(7) and clone(2), the exact USENIX PDF for 'Quantifying The Cost of Context Switch' (not a preliminary draft with different numbers -- I initially pulled a mirror with c1=3.4us and had to re-fetch the exact cited URL to confirm the article's '3.8 microseconds' and 'several microseconds to more than a thousand' are the real numbers from that paper, correctly attributed to Ousterhout and McVoy), and both cited OSTEP chapters (26 and 7) -- and every claim I checked against them was accurate and correctly scoped (e.g., the address-space/page-table difference between thread and process switches, the CPU-cache/TLB/branch-predictor cold-state claim, the 1 MB linker default stack reservation, the 1-2-threads-per-second and 'more than about three times the core count' ThreadPool starvation language, the .NET 6 heuristics claim). The article is also careful about what a managed program can and cannot observe: it never claims to instrument true kernel context switches, explicitly states its relay-based measurement infers switch cost by division rather than direct kernel counters (matching the cited paper's own pipe-based methodology), and flags 'This program does not measure a switch between two processes' where relevant. `node tools/run-code.mjs` passes cleanly (20 blocks, 10 executed, PASS). What keeps this from an 8.5+ score is two internal numeric inconsistencies I found by cross-checking the article's own reported figures against later references to them (see issues): a 'committed per thread' figure given as 38 KB in one paragraph and 37 KB two paragraphs later, and a 'the 90-microsecond line' / 'about 90 microseconds' reference to a dedicated-thread creation cost that the article itself measured and reported as 97 to 149 microseconds -- 90 is not inside that range. Per the brief, a factual error caps the technical score at 7, and these are two, so I am scoring at that cap rather than below it, since the errors are narrow (self-consistency of specific numbers, not a conceptual or sourcing error) and everything else checked out.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "\"The private part, measured\" section: the sentence beginning \"On the test machine (.NET 10.0.401, Windows 11, x64) the three lines were\" versus the paragraph two sentences later beginning \"Reserved address space costs almost nothing\"",
+      "problem": "The committed-memory-per-parked-thread measurement is reported as \"38 KB\" in the first sentence, then the very next paragraph calls the same figure \"The 37 KB of committed memory per parked thread\" -- two different numbers for one measurement.",
+      "fixLooksLike": "Re-run the id=stacks block, confirm the real committed-per-thread figure on the current build, and use that single number in both places (or explain the discrepancy, e.g. rounding, if intentional).",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Opening sentence of \"The thread pool, and how to starve it\" (\"The pool exists because of the 90-microsecond line in the last output\") and exercise \"Four designs to judge\", solution 1 (\"at about 90 microseconds each on the test machine\"), versus the id=cost output description (\"97 to 149 per dedicated thread\")",
+      "problem": "Both later references cite a \"90-microsecond\" dedicated-thread creation cost, but the article's own measured range for that figure, reported three paragraphs earlier, is 97 to 149 microseconds. 90 falls outside that range entirely -- it is not a number the article's own data supports.",
+      "fixLooksLike": "Replace both \"90-microsecond\"/\"about 90 microseconds\" references with a value that is actually inside the reported 97-to-149 range (e.g. \"roughly 100-\" or \"~120-microsecond\"), or re-measure and update the range and both back-references together so all three agree.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "\"What a context switch costs\" section, paragraph beginning \"The single-core figure is the cleanest\"",
+      "problem": "\"A round there contains two switches and four calls into the kernel (two Set, two WaitOne)\" is asserted as fact with no citation. It's a reasonable claim for Windows (AutoResetEvent wraps a Win32 event kernel object, and the test machine is Windows), but it's an implementation detail of .NET's synchronization primitives that isn't sourced and wouldn't necessarily hold unmodified on every platform/version a reader might try this on.",
+      "fixLooksLike": "Either add a citation for AutoResetEvent's kernel-object backing (Win32 CreateEvent/SetEvent/WaitForSingleObject docs, or the .NET runtime source), or scope the sentence explicitly to Windows and soften to acknowledge it as an implementation detail rather than a guaranteed contract.",
+      "owner": "writer"
+    }
+  ],
+  "runCodePass": true
+}

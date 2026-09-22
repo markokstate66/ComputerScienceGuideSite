@@ -4,8 +4,8 @@ description: "Watch from C# what a process and a thread each own: shared heap, p
 pillar: operating-systems
 order: 1
 author: markus
-published: 2026-09-18
-updated: 2026-09-18
+published: 2026-09-21
+updated: 2026-09-21
 level: intermediate
 tags: [processes, threads, thread-pool, concurrency, context-switch]
 prerequisites: []
@@ -13,83 +13,83 @@ sources:
   - title: "About Processes and Threads"
     url: "https://learn.microsoft.com/en-us/windows/win32/procthread/about-processes-and-threads"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Context Switches"
     url: "https://learn.microsoft.com/en-us/windows/win32/procthread/context-switches"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Thread Stack Size"
     url: "https://learn.microsoft.com/en-us/windows/win32/procthread/thread-stack-size"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Inheritance (Processes and Threads)"
     url: "https://learn.microsoft.com/en-us/windows/win32/procthread/inheritance"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "pthreads(7): POSIX threads"
     url: "https://man7.org/linux/man-pages/man7/pthreads.7.html"
     publisher: "Linux man-pages"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "clone(2): create a child process"
     url: "https://man7.org/linux/man-pages/man2/clone.2.html"
     publisher: "Linux man-pages"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "fork(2): create a child process"
     url: "https://man7.org/linux/man-pages/man2/fork.2.html"
     publisher: "Linux man-pages"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "dotnet/runtime: pal_process.c (SystemNative_ForkAndExecProcess)"
     url: "https://github.com/dotnet/runtime/blob/main/src/native/libs/System.Native/pal_process.c"
     publisher: "GitHub"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Threads and threading"
     url: "https://learn.microsoft.com/en-us/dotnet/standard/threading/threads-and-threading"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Foreground and background threads"
     url: "https://learn.microsoft.com/en-us/dotnet/standard/threading/foreground-and-background-threads"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Thread constructors (maxStackSize)"
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread.-ctor"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Process.Start method"
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.start"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "The managed thread pool"
     url: "https://learn.microsoft.com/en-us/dotnet/standard/threading/the-managed-thread-pool"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "ThreadPool.SetMinThreads method"
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.threading.threadpool.setminthreads"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Debug ThreadPool starvation"
     url: "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/debug-threadpool-starvation"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "TaskCreationOptions enum"
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskcreationoptions"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Operating Systems: Three Easy Pieces, chapter 26: Concurrency: An Introduction"
     url: "https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf"
     publisher: "Arpaci-Dusseau Books"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Operating Systems: Three Easy Pieces, chapter 7: Scheduling: Introduction"
     url: "https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf"
     publisher: "Arpaci-Dusseau Books"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Li, Ding, Shen: Quantifying The Cost of Context Switch (ExpCS 2007)"
     url: "https://www.usenix.org/legacy/events/expcs07/papers/2-li.pdf"
     publisher: "USENIX"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Chromium design documents: Multi-process Architecture"
     url: "https://www.chromium.org/developers/design-documents/multi-process-architecture/"
     publisher: "The Chromium Projects"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
 draft: true
 ---
 
@@ -256,7 +256,7 @@ reserved per thread:  [...] KB
 committed per thread: [...] KB
 ```
 
-On the test machine (.NET 10.0.10, Windows 11, x64) the three lines were `8 -> 108`, 1536 KB and 37 KB, the same on repeated runs.
+On the test machine (.NET 10.0.401, Windows 11, x64) the three lines were `8 -> 108`, 1536 to 1537 KB and 38 KB, stable across repeated runs.
 
 `8 -> 108` says that each `Thread` object became a real operating-system thread, and that the process already had eight before the program asked for any: the main thread plus helpers the runtime started for itself.
 
@@ -449,13 +449,13 @@ two threads, any core: [...] ns
 two threads, one core: [...] ns
 ```
 
-Three runs on the test machine (Core i7-11700K, 8 cores and 16 logical processors) gave 8 ns for the single thread, 12,080 to 12,475 ns for two threads on any core, and 1,464 to 1,576 ns for two threads on one core.
+Six runs on the test machine (Core i7-11700K, 8 cores and 16 logical processors, with other work sharing the machine while these numbers were taken) gave 13 to 20 ns for the single thread, roughly 7,600 to 22,000 ns for two threads on any core, and roughly 3,000 to 8,500 ns for two threads on one core.
 
-The single-core figure is the cleanest. A round there contains two switches and four calls into the kernel (two `Set`, two `WaitOne`), so one switch between threads of the same process, with almost no data to evict from the caches, costs well under a microsecond on this hardware. That is the floor. It is still about two hundred times the cost of doing the same work as two method calls.
+The single-core figure is the cleanest, because pinning both threads to one core removes the cost of waking a second, possibly idle, core. A round there contains two switches and four calls into the kernel (two `Set`, two `WaitOne`), so one switch between threads of the same process, with almost no data to evict from the caches, cost roughly 1.5 to 4 microseconds on these runs. Even the low end is one to two orders of magnitude above the cost of doing the same work as two method calls. A quieter machine should sit nearer the low end; a busier one pushes it higher, because a "switch" here also has to wait its turn for the one core.
 
-The any-core figure is the surprising one: allowing more cores made the relay eight times slower. A likely explanation, which this program cannot confirm, is that with 16 logical processors the woken thread tends to be placed on a different core from the one that signalled it, and because each thread sleeps between turns that core has gone idle; every hand-off then pays for signalling another core and for that core resuming work.
+The any-core figure did not show the earlier, cleaner gap that a quiet machine produces: run over run, letting the OS place each thread on any of the 16 processors was between about 1.2 and 4.7 times slower than pinning both to one core, not a single fixed multiple. The likely mechanism, which this program cannot confirm, is the same one that applies on a quiet machine: the woken thread tends to land on a different, possibly idle, core, which pays for waking that core as well as the thread. What changes under load is that the one-core baseline is no longer clean either, since it is now competing with everything else for that one core, so the gap between the two configurations narrows and jitters.
 
-Whatever the split, two conclusions are safe. Blocking hand-offs between threads cost microseconds, not nanoseconds, so a design that passes every small item to another thread and waits for the answer is slower than doing the work in place. And the cost of a switch is not one number: it depends on what has to be woken and on how much cached state the thread finds gone when it returns, which is how the 2007 paper saw a range of more than a hundred to one.
+Whatever the split, two conclusions are safe. Blocking hand-offs between threads cost microseconds, not nanoseconds, so a design that passes every small item to another thread and waits for the answer is slower than doing the work in place. And the cost of a switch is not one number: it depends on what has to be woken, on how much cached state the thread finds gone when it returns, and on what else the machine is doing at the time, which is how the 2007 paper saw a range of more than a hundred to one from data size alone, before any contention from other programs is added.
 
 This program does not measure a switch between two processes: an `AutoResetEvent` created this way exists inside one process only.
 
@@ -526,9 +526,9 @@ new thread          [...] us
 new process         [...] us
 ```
 
-Two runs on the test machine gave 7 to 8 microseconds per pool job, 88 to 90 per dedicated thread, and about 27,000 (27 ms) per child process. Each step up is roughly one to two orders of magnitude.
+Three runs on the test machine gave 9 to 23 microseconds per pool job, 97 to 149 per dedicated thread, and about 29,900 to 32,600 (roughly 30 to 33 ms) per child process. Each step up is roughly one to two orders of magnitude.
 
-The process figure needs a caveat: the child is another .NET program, so the 27 ms includes starting the runtime in the new process, not only the operating system's work to create it. For a .NET developer that is the honest price, because it is the one you pay. It also explains a design you see everywhere in server software: processes are started rarely and kept, threads are pooled, and the unit of work that is created and destroyed thousands of times a second is something lighter than either.
+The process figure needs a caveat: the child is another .NET program, so the 30-plus ms includes starting the runtime in the new process, not only the operating system's work to create it. For a .NET developer that is the honest price, because it is the one you pay. It also explains a design you see everywhere in server software: processes are started rarely and kept, threads are pooled, and the unit of work that is created and destroyed thousands of times a second is something lighter than either.
 
 ::::exercise[The audit line that never appears]
 This program is supposed to write an audit line in the background. The line is missing every time. Find out why, and fix it.
@@ -608,8 +608,11 @@ async Task Run(string label, Func<Task> job)
     {
         jobs.Add(Task.Run(async () =>
         {
-            if (clock.ElapsedMilliseconds < 250)
-                Interlocked.Increment(ref atOnce);
+            long ms =
+                clock.ElapsedMilliseconds;
+            if (ms < 250)
+                Interlocked.Increment(
+                    ref atOnce);
             await job();
         }));
     }
@@ -641,7 +644,7 @@ awaiting:
   all done: [...] s
 ```
 
-With 16 logical processors the program queued 48 jobs. Blocking: 16 started at once, the instant job waited between 2,027 and 3,023 ms across two runs, and everything finished after 3.0 s. Awaiting: all 48 started at once, the instant job waited 0 ms, and everything finished after 1.0 s.
+With 16 logical processors the program queued 48 jobs. Blocking, across four runs: 16 jobs started at once in three of them and only 1 in the fourth (that run had more competition from other work on the machine), the instant job waited 2.0 to 3.1 s, and everything finished after 3.0 to 4.2 s. Awaiting, all four runs: all 48 started at once, the instant job waited 0 ms, and everything finished after 1.0 to 1.1 s. Even the worst blocking run is far slower than the best awaiting one, which is the point: an overloaded pool degrades by a lot more than a slow machine degrades on its own.
 
 No CPU was busy during those three seconds. Sixteen workers each picked up a job and went to sleep holding it; the other 32 jobs, and the instant job behind them, sat in the queue with nobody to run them. In a server the instant job is somebody else's request, a timer callback or the continuation of an `await` that finished long ago, which is why starvation shows up as the whole application becoming slow while CPU usage stays low. That combination, together with a slowly rising thread count, is the signature the diagnostics guide tells you to look for.
 
@@ -705,9 +708,11 @@ for (int i = 0; i < jobCount; i++)
 {
     jobs.Add(Task.Run(() =>
     {
-        if (clock.ElapsedMilliseconds < 250)
-            Interlocked.Increment(ref atOnce);
-        Task.Delay(1000).Wait();   // sync over async
+        long ms = clock.ElapsedMilliseconds;
+        if (ms < 250)
+            Interlocked.Increment(
+                ref atOnce);
+        Task.Delay(1000).Wait();  // sync over async
     }));
 }
 await Task.WhenAll(jobs);
@@ -727,7 +732,7 @@ all done:        [...] s
 pool threads:    [...]
 ```
 
-On the 16-processor test machine: 48 jobs, 39 started within 250 ms, all done after 1.5 s, and the pool had grown to 52 threads. That is much better than the 3.0 s of the `Thread.Sleep` pass, and the reason is documented: since .NET 6 the pool's heuristics add threads much faster when the blocking happens inside certain `Task` APIs that the runtime can see, where a plain `Thread.Sleep`, a synchronous read or a lock gives it no such signal ([Debug ThreadPool starvation](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/debug-threadpool-starvation)). The cost is in the last line. The runtime papered over the blocking with 52 threads, each with its own stack, to do work that the awaiting version did with no waiting threads. The same guide warns that a pool which settles at far more threads than about three times the core count is compensating for blocked threads, and that it starves again after every restart or burst of load while it climbs back up.
+On the 16-processor test machine: 48 jobs, 39 started within 250 ms, all done after 1.5 s, and the pool had grown to 52 threads. That is much better than the 3.0 to 4.2 s of the `Thread.Sleep` pass, and the reason is documented: since .NET 6 the pool's heuristics add threads much faster when the blocking happens inside certain `Task` APIs that the runtime can see, where a plain `Thread.Sleep`, a synchronous read or a lock gives it no such signal ([Debug ThreadPool starvation](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/debug-threadpool-starvation)). The cost is in the last line. The runtime papered over the blocking with 52 threads, each with its own stack, to do work that the awaiting version did with no waiting threads. The same guide warns that a pool which settles at far more threads than about three times the core count is compensating for blocked threads, and that it starves again after every restart or burst of load while it climbs back up.
 :::
 ::::
 
