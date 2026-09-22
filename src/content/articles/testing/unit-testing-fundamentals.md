@@ -37,7 +37,7 @@ Run `GradeCalculator.Average([70, 80, 90])` inside a test and get `80` back, and
 
 ## What a unit test proves — and what it doesn't
 
-xUnit's own documentation draws the line procedurally rather than philosophically. A `[Fact]` is "a test which is always true," testing an "invariant condition"; a `[Theory]` is "only true for a particular set of data" ([Getting Started with xUnit.net v3](https://xunit.net/docs/getting-started/v3/getting-started)). Calling a test a Fact is a claim about the code, not a guarantee from the framework: xUnit runs the one path your test builds and reports whether the one assertion on it held. It does not explore any path you didn't construct.
+xUnit's own documentation draws the line procedurally rather than philosophically: "Facts are tests which are always true. They test invariant conditions," while "Theories are tests which are only true for a particular set of data" ([Getting Started with xUnit.net v3](https://xunit.net/docs/getting-started/v3/getting-started)). Calling a test a Fact is a claim about the code, not a guarantee from the framework: xUnit runs the one path your test builds and reports whether what it asserts held. It does not explore any path you didn't construct.
 
 So a passing test demonstrates three things, no more:
 
@@ -55,7 +55,7 @@ The shape is a discipline, not a library feature — nothing in xUnit enforces i
 
 ## A first test, run for real
 
-The class under test is a small grade calculator: `Average` takes a set of numeric scores and averages them (throwing rather than returning `NaN` on an empty set, the "divide by zero" case), and `LetterGrade` maps an average onto a letter with the usual school boundaries. Neither method reaches out to a file, a clock or a network, so nothing about testing them needs a double — that subject belongs to [Mocks, Stubs and Fakes](/testing/test-doubles/), a later article.
+The class under test is a small grade calculator: `Average` takes a set of numeric scores and averages them, and `LetterGrade` maps an average onto a letter with the usual school boundaries. An empty array has no average, and LINQ's own `Average()` already throws for that case on its own — `InvalidOperationException`, with the generic message "Sequence contains no elements." `GradeCalculator.Average` guards for it explicitly anyway, so it can throw the same exception type with a message that says what actually went wrong: "cannot average zero scores." Neither method reaches out to a file, a clock or a network, so nothing about testing them needs a double — that subject belongs to [Mocks, Stubs and Fakes](/testing/test-doubles/), a later article.
 
 Every program below ran against the .NET 10 SDK (10.0.401) on Windows 11, x64.
 
@@ -105,8 +105,9 @@ public class GradeCalculatorTests
         int[] scores = [];
 
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(
+        var exception = Assert.Throws<InvalidOperationException>(
             () => GradeCalculator.Average(scores));
+        Assert.Equal("cannot average zero scores", exception.Message);
     }
 
     [Theory]
@@ -166,7 +167,7 @@ The `#:package xunit.v3@1.*` line is a file-based-app directive: it pulls in the
 <figcaption>Figure 1. Arrange builds the input, act calls the single method under test, assert checks the single result. Nothing before the assert can fail the test itself.</figcaption>
 </figure>
 
-The second test, `Average_EmptyArray_ThrowsInvalidOperationException`, collapses act and assert into one call: `Assert.Throws` both performs the act (invoking the delegate) and checks it, so there is nothing to act on separately. That is a normal variation, not a broken pattern — arrange still comes first, and there is still exactly one thing being checked.
+The second test, `Average_EmptyArray_ThrowsInvalidOperationException`, collapses act and assert into one call for its first check: `Assert.Throws` both performs the act (invoking the delegate) and checks its type, so there is nothing to act on separately. That is a normal variation, not a broken pattern — arrange still comes first. The line after it checks the exception's message too, so the test pins down not just that `Average` throws on an empty array but what it says when it does — specific enough that deleting the custom guard, and falling back to LINQ's own generic exception, would turn this test red.
 
 ## Naming a test so the failure explains itself
 
@@ -183,7 +184,7 @@ The exact word order is not sacred — some teams write BDD-flavored names such 
 Good naming pays off fastest exactly when a test is red. The next test class has the same boundaries as `LetterGrade` above, with one change to the production code:
 
 ::::exercise[Find the bug]
-One character is wrong in `LetterGrade` below, and one of the three theory cases catches it. Read only the test names and the failure — not the switch expression yet — and say which score is misclassified and in which direction (too high a letter, or too low).
+One character is wrong in `LetterGrade` below, and one of the three theory cases catches it. Before scrolling down to the switch expression, see if the test names and the failure below are enough on their own to say which score is misclassified and in which direction (too high a letter, or too low).
 
 ```csharp run id=boundary-bug fails
 #:package xunit.v3@1.*
@@ -194,9 +195,9 @@ public static class GradeCalculator
     public static char LetterGrade(double average) => average switch
     {
         > 90 => 'A',
-        > 80 => 'B',
-        > 70 => 'C',
-        > 60 => 'D',
+        >= 80 => 'B',
+        >= 70 => 'C',
+        >= 60 => 'D',
         _ => 'F'
     };
 }
@@ -234,7 +235,7 @@ xUnit.net v3 In-Process Runner [...]
 ```
 
 :::solution
-The failing case name says it directly: `average: 90, expected: 'A'` got `'B'` instead — a score of exactly 90 is being graded one letter too low. Every `>` in the switch should be `>=`: with strict `>`, a score exactly on a boundary (90, 80, 70, 60) falls through to the *next* branch instead of the one it belongs to. `[InlineData(95, 'A')]` and `[InlineData(85, 'B')]` sit safely inside their bands, so only the boundary case (90) exposes the bug — the same reason the theory earlier in this article tested `89.9` next to `90` instead of only round numbers.
+The failing case name says it directly: `average: 90, expected: 'A'` got `'B'` instead — a score of exactly 90 is being graded one letter too low. The `>` in the `'A'` branch should be `>=`: with strict `>`, a score exactly on the 90 boundary falls through to the *next* branch (`>= 80`) instead of the one it belongs to. `[InlineData(95, 'A')]` and `[InlineData(85, 'B')]` sit safely inside their bands, so only the boundary case (90) exposes the bug — the same reason the theory earlier in this article tested `89.9` next to `90` instead of only round numbers.
 
 ```csharp run id=boundary-fixed
 #:package xunit.v3@1.*
