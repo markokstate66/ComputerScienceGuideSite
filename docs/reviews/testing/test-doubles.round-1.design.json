@@ -1,0 +1,36 @@
+{
+  "article": "src/content/articles/testing/test-doubles.md",
+  "route": "/testing/test-doubles/",
+  "round": 1,
+  "critic": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://martinfowler.com/articles/mocksArentStubs.html",
+    "https://enterprisecraftsmanship.com/posts/stubs-vs-mocks/"
+  ],
+  "justification": "Both real top-ranking pages for 'mock vs stub' are plain, static HTML with no responsive/dark-theme design: Fowler's canonical piece uses dated Java/jMock/EasyMock snippets and static class-diagram images with no mobile consideration; Enterprise Craftsmanship's post is a single-example blog post with one XML-parsing scenario and no theme support. This article clearly exceeds both on the design/UX axis the critic judges: one running exit-gate example carries every code block so the reader never re-orients, heading hierarchy is clean and specific (no boilerplate Introduction/Conclusion), code blocks and output panels render correctly with the standard scroll-and-fade behavior at 390px in every fence checked across all 20 mobile-dark parts and all 13 desktop-light parts, both hand-written SVG diagrams (Figure 1: collaborator-replacement/indirect-I-O map; Figure 2: spy-vs-mock verification-timing steps) stay legible and correctly themed at phone width in both light and dark screenshots, the four exercises vary in form (classify, find-the-bug-in-the-test, loosen-the-mock, write-a-contract) with solutions properly collapsed, callouts are used sparingly (one :::note, one :::dotnet) rather than overused, and the 10-item sourced list plus inline citations reads as more rigorous than either comparison page. Real numbers: Lighthouse 92/100/100/100 (performance clears the round's 90 floor but is not saturated), zero console errors, zero broken links, mobileOverflowPx 0. Held back from a full 10 by two minor, likely shell-level nits rather than any article content problem: performance's sub-audits (FCP, max-potential-FID, bf-cache) leave headroom below the aggregate 92, and the phone-width data tables reveal their third column via a hard-looking clip rather than an obviously graded fade, which is a shared site behavior worth an integrator look rather than a writer fix.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "site-wide performance profile (affects this route's Lighthouse run; not this article's markup)",
+      "problem": "Lighthouse performance is 92 (clears the round's ≥90 gate) but several sub-audits fail outright: First Contentful Paint scores 0.61 (2.7s), Max Potential FID scores 0.3 (320ms), and 'Page prevented back/forward cache restoration' scores 0. These come from shared page shell/script behavior, not from anything in the article body.",
+      "fixLooksLike": "Integrator investigates what blocks bfcache restoration (commonly an unload/beforeunload listener or a no-store cache header) and what is delaying first paint/input responsiveness; likely a global fix that lifts every article's score, not a per-article change.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "mobile screenshots of the two data tables ('Kind / The test uses it to / Can it fail the test?' after the five-doubles section, and 'Gate / State-based test / Strict mock test' after the over-mocking section)",
+      "problem": "On mobile-dark and mobile-light, the third column of both tables is pushed off the 390px viewport and only a sliver of its content ('r', 'pa', 'fai') is visible at the right edge; the screenshots don't show an obvious graded fade as the scroll cue the site's own phone-width rules promise ('the hidden edge faded out as the cue'), so a reader may not immediately realize a third column exists to scroll to.",
+      "fixLooksLike": "Confirm in a live browser (not just the PNG) whether the fade gradient renders on the table's shared scroll container; if it's genuinely absent or too subtle, strengthen it. This is the shared table component used by every article, so it belongs with the integrator rather than a per-article markup change; the article's own table markup (3 columns, short cells, identifying column first) already follows docs/WRITER_GUIDE.md §7.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 92,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

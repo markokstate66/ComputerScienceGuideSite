@@ -4,58 +4,58 @@ description: "Mock vs. stub, settled: the five kinds of test double written by h
 pillar: testing
 order: 2
 author: markus
-published: 2026-09-18
-updated: 2026-09-18
+published: 2026-09-21
+updated: 2026-09-21
 level: intermediate
 tags: [unit-testing, test-doubles, mocking, dependency-injection]
 prerequisites: ["testing/unit-testing-fundamentals"]
 sources:
-  - title: "xUnit Test Patterns: Refactoring Test Code, chapters 11 (Using Test Doubles) and 23 (Test Double Patterns)"
+  - title: "xUnit Test Patterns: Refactoring Test Code, chapter 11 (Using Test Doubles), chapter 23 (Test Double Patterns) and chapter 27 (Value Patterns)"
     url: "https://www.informit.com/store/xunit-test-patterns-refactoring-test-code-9780131495050"
     publisher: "Gerard Meszaros, Addison-Wesley"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Test Double"
     url: "https://martinfowler.com/bliki/TestDouble.html"
     publisher: "Martin Fowler"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Mocks Aren't Stubs"
     url: "https://martinfowler.com/articles/mocksArentStubs.html"
     publisher: "Martin Fowler"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Software Engineering at Google, chapter 13: Test Doubles"
     url: "https://abseil.io/resources/swe-book/html/ch13.html"
     publisher: "O'Reilly / Google"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Best practices for writing unit tests: unit testing terminology"
     url: "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "NSubstitute: Getting started"
     url: "https://nsubstitute.github.io/help/getting-started/"
     publisher: "NSubstitute"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "NSubstitute: Checking received calls"
     url: "https://nsubstitute.github.io/help/received-calls/"
     publisher: "NSubstitute"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "Moq Quickstart"
     url: "https://github.com/devlooped/moq/wiki/Quickstart"
     publisher: "Moq"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "File-based apps"
     url: "https://learn.microsoft.com/en-us/dotnet/core/sdk/file-based-apps"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
+    accessed: 2026-09-21
   - title: "What is the TimeProvider class"
     url: "https://learn.microsoft.com/en-us/dotnet/standard/datetime/timeprovider-overview"
     publisher: "Microsoft Learn"
-    accessed: 2026-09-18
-draft: true
+    accessed: 2026-09-21
+draft: false
 ---
 
 A stub answers the code you are testing. A mock checks what the code you are testing did to it. The data flows in opposite directions, and that is the whole of the "mock vs. stub" question. The other three kinds of test double (dummy, spy and fake) fall into place once that direction is clear, and the quickest way to make it clear is to write all five by hand, with no library, against one small class.
 
-The vocabulary comes from Gerard Meszaros, who named the general idea a *test double*, after a film's stunt double, and sorted the variations into dummy objects, test stubs, test spies, mock objects and fake objects (*xUnit Test Patterns*, chapter 23; Martin Fowler's [Test Double](https://martinfowler.com/bliki/TestDouble.html) note summarizes the list). A test double is any object a test puts in the place of a real collaborator of the code being tested.
+The vocabulary comes from Gerard Meszaros, who named the general idea a *test double*, after a film's stunt double, and sorted the variations into dummy objects, test stubs, test spies, mock objects and fake objects (*xUnit Test Patterns*, chapter 11 introduces all five; stub, spy, mock and fake get their own pattern entries in chapter 23, and dummy object is catalogued separately among the value patterns in chapter 27. Martin Fowler's [Test Double](https://martinfowler.com/bliki/TestDouble.html) note summarizes the list). A test double is any object a test puts in the place of a real collaborator of the code being tested.
 
 ## One exit gate, three collaborators
 
