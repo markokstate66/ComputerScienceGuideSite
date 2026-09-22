@@ -4,7 +4,7 @@ description: "Follow one small repository through a fast-forward, a three-way me
 pillar: version-control
 order: 2
 author: markus
-published: 2026-09-18
+published: 2026-09-21
 updated: 2026-09-21
 level: beginner
 tags: [git, merging, branching, merge-conflicts]
