@@ -55,7 +55,7 @@ When more than one runnable thread is waiting and a core is free, something has 
 
 A scheduling policy is judged against a small set of goals, and the goals conflict, which is why there is more than one policy. Operating Systems: Three Easy Pieces defines the first two precisely. **Turnaround time** is `T_turnaround = T_completion - T_arrival`: the total time a job spends in the system, from arrival to finishing. **Response time** is `T_response = T_firstrun - T_arrival`: the time until a job is *first* given the CPU, which is what an interactive user actually feels while waiting for the first sign of life ([OSTEP ch. 7](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf)).
 
-Two more goals follow from those. **Waiting time** is the turnaround time minus the burst time (`T_waiting = T_turnaround - T_burst`): the part of turnaround spent doing nothing but sitting in the ready queue rather than running. **Throughput** is how many jobs complete per unit of time; a scheduler that keeps the CPU busy on useful work maximizes it, and a scheduler that leaves the CPU idle while jobs wait for something else does not. **Fairness** is a claim about how evenly the CPU is divided among competing jobs, and OSTEP is explicit that it usually trades off against the performance goals above: a scheduler that always prefers the shortest job improves average turnaround at the direct expense of making some jobs wait far longer than others ([OSTEP ch. 7](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf)). No single algorithm below wins on all five; the point of running them on identical input is to see exactly which goal each one buys, and at whose expense.
+Two more goals follow from those. **Waiting time** is the turnaround time minus the burst time (`T_waiting = T_turnaround - T_burst`): the part of turnaround spent doing nothing but sitting in the ready queue rather than running. **Throughput** is how many jobs complete per unit of time; a scheduler that keeps the CPU busy on useful work maximizes it, and a scheduler that leaves the CPU idle while jobs wait for something else does not. **Fairness** is a claim about how evenly the CPU is divided among competing jobs, and OSTEP is explicit that it usually trades off against the performance goals above: a scheduler that always prefers the shortest job improves average turnaround at the direct expense of making some jobs wait far longer than others ([OSTEP ch. 7](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf)). No single algorithm below wins on all five; the point of running them on identical input is to see exactly which goal each one buys, and at whose expense. This turnaround/waiting/response/throughput/fairness framework is not specific to OSTEP: Operating System Concepts covers the same scheduling criteria in its own chapter on CPU scheduling ([Operating System Concepts, 10th ed., ch. 5](https://www.os-book.com/OS10/)).
 
 ## One workload, five algorithms
 
@@ -166,7 +166,7 @@ static void PrintMetrics(
         Console.WriteLine($"{p.Id,-4} {p.Arrival,3} {p.Burst,3} {completion[p.Id],4} {turn,4} {wait,4} {resp,4}");
     }
     int n = procs.Count;
-    Console.WriteLine($"avg turnaround {turnSum / n:F1}  avg waiting {waitSum / n:F1}  avg response {respSum / n:F1}");
+    Console.WriteLine($"turn {turnSum / n:F1}  wait {waitSum / n:F1}  resp {respSum / n:F1}");
 }
 
 record Proc(string Id, int Arrival, int Burst, int Priority);
@@ -182,7 +182,7 @@ P2     1   3    8    7    4    4
 P3     2   8   16   14    6    6
 P4     3   4   20   17   13   13
 P5     4   2   22   18   16   16
-avg turnaround 12.2  avg waiting 7.8  avg response 7.8
+turn 12.2  wait 7.8  resp 7.8
 ```
 
 These numbers come from actually running the program above (.NET 10.0.401 on Windows 11, x64); nothing here is hand arithmetic, and the same is true of every measurement below.
@@ -272,7 +272,7 @@ static void PrintMetrics(
         Console.WriteLine($"{p.Id,-4} {p.Arrival,3} {p.Burst,3} {completion[p.Id],4} {turn,4} {wait,4} {resp,4}");
     }
     int n = procs.Count;
-    Console.WriteLine($"avg turnaround {turnSum / n:F1}  avg waiting {waitSum / n:F1}  avg response {respSum / n:F1}");
+    Console.WriteLine($"turn {turnSum / n:F1}  wait {waitSum / n:F1}  resp {respSum / n:F1}");
 }
 
 record Proc(string Id, int Arrival, int Burst, int Priority);
@@ -288,10 +288,10 @@ P2     1   3   10    9    6    6
 P3     2   8   22   20   12   12
 P4     3   4   14   11    7    7
 P5     4   2    7    3    1    1
-avg turnaround 9.6  avg waiting 5.2  avg response 5.2
+turn 9.6  wait 5.2  resp 5.2
 ```
 
-Average waiting time drops from 7.8 to 5.2 units, and average turnaround from 12.2 to 9.6, just by reordering the same five jobs. P1 still runs first only because it is the sole process that has arrived at time 0; from that point on, the shortest remaining job always wins. The cost lands on P3: it has the longest burst, so it is the one job SJF is willing to make wait for everyone shorter, and its turnaround (20) is the worst of any process in this run, worse even than under FCFS (14). Under heavier and more varied load a burst-8 job could be pushed back indefinitely by a stream of shorter arrivals; that is the trade-off OSTEP calls the SJF/STCF weakness, and it is what priority scheduling's starvation problem below is really the same shape of. SJF also assumes something FCFS does not: that the scheduler already knows each job's burst length before running it, which a real OS almost never does. A preemptive variant, Shortest Time-to-Completion First (STCF), lets a newly arrived shorter job interrupt whatever is running; OSTEP proves SJF is optimal for average turnaround when all jobs arrive together, and STCF for the general case where arrivals are staggered, as they are in this workload ([OSTEP ch. 7](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf)).
+Average waiting time drops from 7.8 to 5.2 units, and average turnaround from 12.2 to 9.6, just by reordering the same five jobs. P1 still runs first only because it is the sole process that has arrived at time 0; from that point on, the shortest remaining job always wins. The cost lands on P3: it has the longest burst, so it is the one job SJF is willing to make wait for everyone shorter, and its turnaround (20) is the worst of any process in this run, worse even than under FCFS (14). Under heavier and more varied load a burst-8 job could be pushed back indefinitely by a stream of shorter arrivals; that is the trade-off OSTEP calls the SJF/STCF weakness, and it is what priority scheduling's starvation problem below is really the same shape of. SJF also assumes something FCFS does not: that the scheduler already knows each job's burst length before running it, which a real OS almost never does. A preemptive variant, Shortest Time-to-Completion First (STCF), lets a newly arrived shorter job interrupt whatever is running; OSTEP asserts that SJF is optimal for average turnaround when all jobs arrive together, without walking through the proof, and does prove STCF optimal for the general case where arrivals are staggered, as they are in this workload ([OSTEP ch. 7](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf)).
 
 ::::exercise[Do the arithmetic before you run it]
 Three jobs arrive together at time 0: A needs 6 units of CPU time, B needs 2, C needs 4. Predict the average turnaround time under FCFS, running them in the order A, B, C, and under SJF. Then check your numbers by running a program that computes both.
@@ -334,7 +334,7 @@ FCFS: A finishes at 6, B at 6+2=8, C at 8+4=12, average (6+8+12)/3 = 8.67. SJF r
 
 ## Round robin: trading turnaround for response time
 
-Round robin gives up "shortest first" entirely. It runs each ready job for at most one **quantum** — a fixed time slice — and if the job is not done, moves it to the back of the queue and starts the next one. The rule that matters for correctness: a process that finishes its slice rejoins the ready queue *after* any process that arrived during that slice, or an unlucky arrival timing could let one process cut in front of another forever.
+Round robin gives up "shortest first" entirely. It runs each ready job for at most one **quantum** — a fixed time slice — and if the job is not done, moves it to the back of the queue and starts the next one. The rule that matters for correctness: a process that finishes its slice rejoins the ready queue *after* any process that arrived during that slice, or an unlucky arrival timing could let one process cut in front of another on every round, not just once.
 
 ```csharp run id=rr
 List<Proc> Workload() =>
@@ -352,7 +352,7 @@ var procs = Workload();
 // Round robin: a FIFO ready queue and a fixed time slice.
 // Newly arrived processes join the queue before a process that
 // just used up its slice rejoins it, or a same-tick arrival could
-// be starved behind that process forever.
+// be pushed behind that process on every round that follows.
 var remainingBurst = procs.ToDictionary(p => p.Id, p => p.Burst);
 var notArrivedYet = new Queue<Proc>(procs.OrderBy(p => p.Arrival).ThenBy(p => p.Id));
 var ready = new Queue<string>();
@@ -439,7 +439,7 @@ static void PrintMetrics(
         Console.WriteLine($"{p.Id,-4} {p.Arrival,3} {p.Burst,3} {completion[p.Id],4} {turn,4} {wait,4} {resp,4}");
     }
     int n = procs.Count;
-    Console.WriteLine($"avg turnaround {turnSum / n:F1}  avg waiting {waitSum / n:F1}  avg response {respSum / n:F1}");
+    Console.WriteLine($"turn {turnSum / n:F1}  wait {waitSum / n:F1}  resp {respSum / n:F1}");
 }
 
 record Proc(string Id, int Arrival, int Burst, int Priority);
@@ -455,7 +455,7 @@ P2     1   3    7    6    3    3
 P3     2   8   22   20   12    5
 P4     3   4   15   12    8    8
 P5     4   2   17   13   11   11
-avg turnaround 13.8  avg waiting 9.4  avg response 5.4
+turn 13.8  wait 9.4  resp 5.4
 ```
 
 Average response time is 5.4, worse than SJF's 5.2 here only because P1 happens to start immediately under both, but look at P3 and P4: under FCFS or SJF a process either starts at time 0 or waits behind whichever full job runs before it; under RR, every process is guaranteed to be looked at within one pass of the queue. The trade is visible in the averages: turnaround (13.8) and waiting (9.4) are both worse than plain FCFS. Every job except the one that happens to finish inside its first slice pays for a second dispatch, and RR has no notion of "shortest job" at all, so a long job delays every other job's *second* turn exactly as much as it delayed FCFS's first pass.
@@ -630,7 +630,7 @@ static void PrintMetrics(
         Console.WriteLine($"{p.Id,-4} {p.Arrival,3} {p.Burst,3} {p.Priority,3} {completion[p.Id],4} {turn,4} {wait,4} {resp,4}");
     }
     int n = procs.Count;
-    Console.WriteLine($"avg turnaround {turnSum / n:F1}  avg waiting {waitSum / n:F1}  avg response {respSum / n:F1}");
+    Console.WriteLine($"turn {turnSum / n:F1}  wait {waitSum / n:F1}  resp {respSum / n:F1}");
 }
 
 record Proc(string Id, int Arrival, int Burst, int Priority);
@@ -646,7 +646,7 @@ P2     1   3   1    8    7    4    4
 P3     2   8   4   20   18   10   10
 P4     3   4   2   12    9    5    5
 P5     4   2   5   22   18   16   16
-avg turnaround 11.4  avg waiting 7.0  avg response 7.0
+turn 11.4  wait 7.0  resp 7.0
 ```
 
 P5 has priority 5, the worst in the workload, and it pays for it: it waits 16 units even though its burst is only 2, finishing dead last regardless of the fact that it arrived fourth, not fifth. Give this algorithm a steady stream of arriving high-priority work and a low-priority job can wait arbitrarily long — real starvation, not just a bad average. The classic fix is **aging**: gradually raise a waiting job's effective priority the longer it waits, so it eventually outranks even freshly arrived urgent work ([OSTEP ch. 8](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf) discusses the same starvation problem for MLFQ, which aging and the priority boost below both address).
@@ -904,7 +904,7 @@ static void PrintMetrics(
         Console.WriteLine($"{p.Id,-4} {p.Arrival,3} {p.Burst,3} {completion[p.Id],4} {turn,4} {wait,4} {resp,4}");
     }
     int n = procs.Count;
-    Console.WriteLine($"avg turnaround {turnSum / n:F1}  avg waiting {waitSum / n:F1}  avg response {respSum / n:F1}");
+    Console.WriteLine($"turn {turnSum / n:F1}  wait {waitSum / n:F1}  resp {respSum / n:F1}");
 }
 
 record Proc(string Id, int Arrival, int Burst, int Priority);
@@ -927,7 +927,7 @@ P2     1   3    6    5    2    2
 P3     2   8   22   20   12    4
 P4     3   4   20   17   13    6
 P5     4   2   14   10    8    8
-avg turnaround 13.6  avg waiting 9.2  avg response 4.0
+turn 13.6  wait 9.2  resp 4.0
 ```
 
 Watch P1: it uses its whole level-0 quantum (3 units, 0-3), so Rule 4 demotes it to level 1 with 2 units of burst left. Before it gets to run again, the boost at `t=14` (`14 % 14 == 0`) fires and resets every still-waiting job to level 0, so when P1 finally runs again at 14-16 the trace shows level 0, not level 1 — the boost erased its demotion. P3, the longest job, gets demoted the same way at `t=9`, is boosted back to level 0 at `t=14`, runs another full level-0 quantum (16-19), gets demoted again, and only reaches level 1 for its last slice (20-22). Every process here got a slice within its first 14 units, which is why average response time (4.0) beats every other algorithm above, including SJF; the cost is an average turnaround (13.6) worse than plain FCFS, because the boost is deliberately generous with this article's small, short-lived workload and repeatedly resets progress that a pure SJF or priority scheduler would never give up.
@@ -936,19 +936,29 @@ Watch P1: it uses its whole level-0 quantum (3 units, 0-3), so Rule 4 demotes it
 
 Every row below is copied from the average lines actually printed above; nothing here is computed by hand.
 
-| Algorithm | Avg turnaround | Avg waiting | Avg response | Preemptive | Needs burst length |
-|---|---:|---:|---:|---|---|
-| FCFS | 12.2 | 7.8 | 7.8 | No | No |
-| SJF (non-preemptive) | 9.6 | 5.2 | 5.2 | No | Yes |
-| Round robin (quantum 4) | 13.8 | 9.4 | 5.4 | Yes | No |
-| Priority (non-preemptive) | 11.4 | 7.0 | 7.0 | No | No |
-| MLFQ (3 levels + boost) | 13.6 | 9.2 | 4.0 | Yes | No |
+| Algorithm | Turn | Wait | Resp |
+|---|---:|---:|---:|
+| FCFS | 12.2 | 7.8 | 7.8 |
+| SJF | 9.6 | 5.2 | 5.2 |
+| RR-4 | 13.8 | 9.4 | 5.4 |
+| Priority | 11.4 | 7.0 | 7.0 |
+| MLFQ | 13.6 | 9.2 | 4.0 |
 
 SJF wins on turnaround and waiting because it has information the other four do not: exact burst lengths, known in advance, which is unrealistic for a general-purpose OS. Among the algorithms that do not require that knowledge, MLFQ gets the best response time (4.0) by giving every job early access to the CPU and letting demotion sort out who deserves more of it, at the cost of turnaround, because this workload is too short and too I/O-free for its long-run advantage over plain round robin to show. Priority scheduling sits in the middle only because the priorities happened to be assigned sensibly here; nothing stops someone from assigning them so that priority scheduling behaves far worse than FCFS on every metric, which is exactly why a real scheduler that exposes priorities to applications also needs a defense against the starvation that creates, whether that is aging (above) or MLFQ's periodic boost.
 
+That knowledge requirement, and whether each algorithm can be interrupted mid-burst, is what actually separates the five:
+
+| Algorithm | Preemptive | Needs burst length |
+|---|---|---|
+| FCFS | No | No |
+| SJF | No | Yes |
+| RR-4 | Yes | No |
+| Priority | No | No |
+| MLFQ | Yes | No |
+
 ## What Windows actually schedules
 
-Windows schedules threads, not processes, using **32 priority levels, numbered 0 (lowest) to 31 (highest)**, where threads of equal priority round-robin and a thread becomes eligible to preempt a lower-priority one immediately, without waiting for that thread's slice to end ([Scheduling Priorities](https://learn.microsoft.com/en-us/windows/win32/procthread/scheduling-priorities)). A thread's *base priority* comes from combining its process's priority class (`IDLE_PRIORITY_CLASS` through `REALTIME_PRIORITY_CLASS`) with a priority level relative to that class (`THREAD_PRIORITY_IDLE` through `THREAD_PRIORITY_TIME_CRITICAL`); Microsoft's own table shows, for example, that `THREAD_PRIORITY_NORMAL` in `NORMAL_PRIORITY_CLASS` gives base priority 8, while the same thread priority level in `HIGH_PRIORITY_CLASS` gives base priority 13 ([Scheduling Priorities](https://learn.microsoft.com/en-us/windows/win32/procthread/scheduling-priorities)).
+Windows schedules threads, not processes: the system scheduler decides which of the competing threads gets the next processor time slice, based on scheduling priorities ([Scheduling](https://learn.microsoft.com/en-us/windows/win32/procthread/scheduling)). It uses **32 priority levels, numbered 0 (lowest) to 31 (highest)**, where threads of equal priority round-robin and a thread becomes eligible to preempt a lower-priority one immediately, without waiting for that thread's slice to end ([Scheduling Priorities](https://learn.microsoft.com/en-us/windows/win32/procthread/scheduling-priorities)). A thread's *base priority* comes from combining its process's priority class (`IDLE_PRIORITY_CLASS` through `REALTIME_PRIORITY_CLASS`) with a priority level relative to that class (`THREAD_PRIORITY_IDLE` through `THREAD_PRIORITY_TIME_CRITICAL`); Microsoft's own table shows, for example, that `THREAD_PRIORITY_NORMAL` in `NORMAL_PRIORITY_CLASS` gives base priority 8, while the same thread priority level in `HIGH_PRIORITY_CLASS` gives base priority 13 ([Scheduling Priorities](https://learn.microsoft.com/en-us/windows/win32/procthread/scheduling-priorities)).
 
 On top of that static base, every thread also has a *dynamic priority*, which starts equal to the base priority and which the scheduler raises temporarily to improve responsiveness: when a process is brought to the foreground, when a thread's window receives input, and when a blocked thread's wait condition is satisfied (finishing a disk or keyboard I/O wait, for instance). Critically, this boost decays on its own: "the scheduler reduces that priority by one level each time the thread completes a time slice, until the thread drops back to its base priority" ([Priority Boosts](https://learn.microsoft.com/en-us/windows/win32/procthread/priority-boosts)). Only threads with a base priority from 0 to 15 receive these boosts at all; the 16-31 real-time range is left alone ([Priority Boosts](https://learn.microsoft.com/en-us/windows/win32/procthread/priority-boosts)).
 
@@ -958,7 +968,7 @@ That combination — a static priority, a temporary boost for a thread that just
 
 For years the correct answer here was the **Completely Fair Scheduler (CFS)**, merged in Linux 2.6.23. CFS tracks a per-task **virtual runtime** (`vruntime`) and keeps ready tasks in a red-black tree ordered by it, always picking the leftmost (smallest-`vruntime`) task to run next, which is the mechanism that gives every task an equal share of the CPU over time without fixed time slices ([CFS design](https://docs.kernel.org/scheduler/sched-design-CFS.html)). That is still an accurate description of CFS. It is no longer an accurate description of what a current Linux kernel runs by default.
 
-Linux 6.6, released in 2023, replaced CFS as the default with a different algorithm, **EEVDF** (Earliest Eligible Virtual Deadline First). The kernel's own current scheduler documentation states it directly: CFS "is making room for EEVDF" ([EEVDF Scheduler](https://docs.kernel.org/scheduler/sched-eevdf.html)). Where CFS orders purely by accumulated virtual runtime, EEVDF gives each task a **virtual deadline** and a **lag** value — positive lag means a task is owed CPU time, negative means it has taken more than its fair share — and picks whichever eligible task (lag at least zero) has the earliest virtual deadline; a task can also preempt the one running if its own deadline is earlier ([EEVDF Scheduler](https://docs.kernel.org/scheduler/sched-eevdf.html)). The practical difference from CFS is that EEVDF reasons explicitly about *when* a task is owed its fair share, not only *how much*, which the documentation credits with improving latency for tasks CFS's heuristics would otherwise leave behind.
+Linux 6.6, released in 2023, replaced CFS as the default with a different algorithm, **EEVDF** (Earliest Eligible Virtual Deadline First). The kernel's own current scheduler documentation describes the change directly: the kernel began "moving away from the earlier Completely Fair Scheduler (CFS) in favor of a version of EEVDF proposed by Peter Zijlstra in 2023" ([EEVDF Scheduler](https://docs.kernel.org/scheduler/sched-eevdf.html)). Where CFS orders purely by accumulated virtual runtime, EEVDF gives each task a **virtual deadline** and a **lag** value — positive lag means a task is owed CPU time, negative means it has taken more than its fair share — and picks whichever eligible task (lag at least zero) has the earliest virtual deadline; a task can also preempt the one running if its own deadline is earlier ([EEVDF Scheduler](https://docs.kernel.org/scheduler/sched-eevdf.html)). The practical difference from CFS is that EEVDF reasons explicitly about *when* a task is owed its fair share, not only *how much*, which the documentation credits with improving latency for tasks CFS's heuristics would otherwise leave behind.
 
 A widely used man page, `sched(7)`, still says as of this writing that "the default scheduler is CFS" for `SCHED_OTHER`, the ordinary time-sharing policy ([sched(7)](https://man7.org/linux/man-pages/man7/sched.7.html)) — a reminder that even official-looking documentation can lag a kernel change, which is exactly why this section cites the kernel's own scheduler documentation, not just a man page, for the current behavior. Both CFS and EEVDF apply to `SCHED_OTHER`, the default policy; niceness still works under EEVDF the way it did under CFS, adjusting how much of the CPU a task is owed, not which specific algorithm makes the decision.
 
