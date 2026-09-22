@@ -1,0 +1,12 @@
+# Cross-links wanted by /oop-design/interfaces-vs-abstract-classes/
+
+One line each: anchor text | target route | where in the article. All targets are planned in `CONTENT_PLAN.md` section 7.4 and were unpublished when this round was written (2026-09-22), so the body does not link them yet. Each sentence reads correctly with or without the link.
+
+- "interface segregation principle" | /oop-design/solid-principles/ | "Choosing between them", first paragraph after the flowchart ("The middle question is a narrower stand-in for the interface segregation principle").
+- "prefer composition over inheritance" | /oop-design/composition-over-inheritance/ | Same paragraph, the sentence starting "The same capability table also explains why...".
+
+## Boundaries with planned siblings
+
+- `/oop-design/solid-principles/` plans to cover the Liskov substitution principle and interface segregation in depth, including the `ReadOnlyCollection`/`IList` LSP wrinkle (CONTENT_PLAN §7.4 row 3). This article only uses interface segregation once, informally, as a name for the "unrelated types opting into one small contract" branch of its decision guide; it does not define the principle or give it its own worked example. That article should own the definition and link back here for the interface-vs-abstract-class mechanics behind it.
+- `/oop-design/composition-over-inheritance/` owns the full before/after refactor away from a fragile base class (CONTENT_PLAN §7.4 row 2). This article's decision guide mentions composition only to clarify that "prefer composition" is not an argument against abstract classes as such, in one sentence, with no refactor of its own.
+- `/csharp-dotnet/generics/` plans its own generic-math example (`INumber<T>` sum, CONTENT_PLAN §7.5 row 5) as part of a broader treatment of constraints, variance and reified generics. This article's static-abstract-members section stays narrow: it builds one small custom interface (`IAddable<TSelf>`) to show what a static abstract member requires, then points at the real `INumber<T>` once, to explain why the feature exists (generic math), and does not attempt variance, erasure or the fuller constraint vocabulary. The generics article should treat `INumber<T>`/generic math as its own topic and can link back here for what static abstract members are and how the diamond-avoidance rules that govern ordinary default members do not apply to them (they resolve at compile time from the type argument, not through interface dispatch).
