@@ -1,0 +1,68 @@
+{
+  "article": "src/content/articles/complexity/big-o-notation.md",
+  "route": "/complexity/big-o-notation/",
+  "round": 2,
+  "role": "design",
+  "score": 8.2,
+  "comparedAgainst": [
+    "https://www.freecodecamp.org/news/big-o-notation-simply-explained-with-illustrations-and-video-87d5a71c0174/ (freeCodeCamp; read via WebFetch: friendly toy-search narrative with a few charts, no formal definition, no runnable code, no Omega/Theta, ~2,000 words, introductory only)",
+    "https://en.wikipedia.org/wiki/Big_O_notation (Wikipedia; read via WebFetch: rigorous formal definitions and full Omega/Theta/little-o coverage, but zero code, minimal diagrams, written for mathematicians rather than practitioners, ~6,000 words of dense prose)"
+  ],
+  "justification": "This round fixes both design majors from round 1. Every wildcard-only timing panel (doubling program, sorted-vs-quadratic, List-vs-HashSet duplicate check) now sits directly above a real 'One run on this machine printed:' TEXT block with actual measured numbers, matching the pattern the sort-crossover section used well in round 1 - the page no longer shows a reader unresolved [...] placeholders as its own evidence. I read every code block visible by default on mobile-dark and desktop-light (fold + all parts) and could not find a single remaining instance of the round-1 clipping problem: the previously-cited offenders (the Math.Abs split, the Console.WriteLine header lines, the Stopwatch.GetElapsedTime chain, the budget program's tuple deconstruction and bisection line, the duplicate-check program) are now all broken so the operative token sits inside the first ~40 columns and is fully visible at 390 px in both themes. Remaining line-tail clipping is confined to genuinely inert boilerplate (the repeated `random.NextDouble(` tail inside `MakeLaps`, an unremarkable helper reader never has to parse), which the brief explicitly allows. The 'Three more things Big-O leaves out' aside now has its own h2 and shows in the on-this-page list, fixing the buried-content minor. `docs/crosslinks/complexity/big-o-notation.md` now exists and is specific and sensible (eight links, each with anchor text, target and location, plus a 'boundaries with planned siblings' section), so missing links to unpublished siblings are not counted. The two SVG figures now use a 360-wide viewBox each (previously wider), so on a 390 px phone they render close to 1:1 CSS-px-per-unit; I read Figure 1 in all four theme/device combinations and Figure 2 in three, and every axis label, threshold marker and in-chart note (12-unit d-small text) is crisp and correctly themed in both light and dark - a real improvement over round 1's ~9-10 px labels. Measured real numbers this run: Lighthouse 93/100/100/100 (performance measured while other agents may be active in this repo, per round 1's own caveat - possibly unreliable low; the orchestrator should re-measure serially), 0 console errors, 0 console warnings, 0 broken links out of 32 internal and 15 external, mobileOverflowPx 0, the only verify-page failure is the expected NEEDS_MARKUS placeholder. What keeps the score under 8.5, and below where the fixes alone would otherwise land it, is a new phone-width problem in content added specifically to satisfy a round-1 minor: the growth-rate table gained the requested third 'Typical example' column, but at 390 px the first two columns (a bound and a full phrase like 'gains one step (log base 2)' or 'is multiplied by more than n^n') already fill the visible width, so the third column is clipped to three or four characters on every row ('has', 'bin', 'line', 'con', 'all', 'all', 'all') in both mobile-light and mobile-dark - a reader who does not think to scroll a data table sideways never learns that O(1) means 'hash lookup' or O(n log n) means 'comparison sort', which was the entire point of the addition. That is a table-on-mobile failure of the same character as round 1's major, just narrower in scope (one table instead of most of eighteen code blocks), so it goes back on the list rather than being waved through as effort. Two minor round-1 findings persist unaddressed: math fragments still break across lines in both themes (the hero subtitle wraps 'O(n log' from 'n) one.', and body prose still splits 'n0' from '= 40' and similar), and Figure 2 still stacks two charts (linear-axis and log-axis) in one figure, which remains dense for a beginner-tagged page even though both halves are individually legible. Not inflated to 8.5 because the table regression is real and touches a piece of content this very review cycle produced; not held at round 1's 8.0 because the fixes it verified are genuine, extensive, and correctly executed rather than superficial.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Growth-rate table, section 'The growth rates you will meet, judged by doubling' (the Bound / If n doubles, g(n)... / Typical example table), mobile-light and mobile-dark, screenshot parts showing this table (e.g. mobile-dark-part15/16, mobile-light-part15).",
+      "problem": "At 390 px the 'Bound' and 'If n doubles, g(n)...' columns already use the full visible width (the second column's longest cells, 'gains one step (log base 2)' and 'is multiplied by more than nⁿ', are long phrases), so the new third column added to answer round 1's minor finding is clipped to 3-4 characters on every row: 'has', 'bin', 'line', 'con', 'all', 'all', 'all'. No cell wraps (each is under 40 characters, technically satisfying the letter of the phone table rule), but in practice none of the eight 'Typical example' values (hash lookup, binary search, linear scan, comparison sort, all pairs, all triples, all subsets, all orderings) is readable without a reader actively scrolling a compact-looking data table sideways, which most readers will not do. The fix this table exists to deliver - linking each abstract growth class to a recognizable operation - does not reach a phone reader.",
+      "fixLooksLike": "Shorten the second column to phrases under ~15 characters (e.g. 'log base 2 step', '8x per doubling', 'squared per +1') so three columns fit within ~358 px, or drop the second column's parenthetical clauses, or reorder columns so the short, high-value 'Typical example' column is not last and is not the one squeezed out. Re-check with mobile-light and mobile-dark screenshots at 390 px after the edit.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Hero subtitle ('...an O(n²) sort beats an O(n log / n) one.') and body prose math fragments (e.g. 'The witness is c = 4, n₀ / = 40.'), visible in both light and dark, desktop and mobile.",
+      "problem": "Unresolved from round 1: line breaks still fall inside short math expressions, splitting 'O(n log n)' and 'n₀ = 40' across lines in the normal reading flow, on both desktop and mobile.",
+      "fixLooksLike": "Wrap short math fragments in a no-wrap span or use non-breaking spaces inside the expressions; add a math-fragment CSS class at the shell level if one does not exist.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure 2 (growth rates plotted on linear and log-log axes), all four theme/device combinations.",
+      "problem": "Unresolved from round 1: the figure still stacks two distinct charts (linear-axis, up to n=32; log-log axis, up to n=10^9) inside one `<figure>` with one caption. Each half is individually legible at 390 px in both themes (a genuine improvement over round 1's sub-11px labels), but the combined figure is dense for a page tagged beginner and doubles the amount a reader has to parse before reaching the caption's point.",
+      "fixLooksLike": "Split into two figures, each with its own short caption ('Figure 2a: ... on linear axes', 'Figure 2b: ... on log-log axes'), or keep combined only if the beginner tag is reconsidered.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 93,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "note": "Measured with other agents potentially active in this repo (per the environment's stated concurrency), so this run's performance number may be unreliable; failing audits were first-contentful-paint (2.5s), largest-contentful-paint (2.5s), unused-css-rules (~11 KiB), bf-cache (2 failure reasons), document-latency (~191 KiB), forced-reflow and network-dependency-tree insights. The orchestrator should re-measure serially before treating 93 as final; round 1 measured 96 under similar conditions."
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "otherMeasured": {
+    "consoleWarnings": 0,
+    "mobileOverflowPx": 0,
+    "words": 5434,
+    "codeBlocks": 26,
+    "figures": 2,
+    "internalLinks": 32,
+    "externalLinks": 15,
+    "verifyPagePass": false,
+    "verifyPageFailures": ["placeholder text: NEEDS_MARKUS (expected)"],
+    "round1MajorsFixed": {
+      "phoneCodeClipping": "fixed - no operative-token clipping found in any default-visible code block across desktop-light (fold+16 parts) and mobile-dark (fold+24 parts)",
+      "wildcardOnlyOutputPanels": "fixed - every wildcard OUTPUT block is now followed by a real-numbers TEXT block labelled 'One run on this machine printed:'"
+    },
+    "round1MinorsFixed": {
+      "threeThingsAsideNoHeading": "fixed - now its own h2, 'Three more things Big-O leaves out', shown in on-this-page",
+      "growthTableNoExampleColumn": "partially fixed - column added but clipped on mobile, see new major issue",
+      "crosslinksFileMissing": "fixed - docs/crosslinks/complexity/big-o-notation.md exists and is specific",
+      "svgTextTooSmallAtPhoneWidth": "fixed - both figures now use a 360-wide viewBox and read clearly at 390 px in both themes",
+      "mathNotationLineBreaks": "not fixed - still splits across lines, see issue list",
+      "figure2TooDenseForBeginner": "not fixed - still one combined figure, see issue list"
+    },
+    "screenshotsRead": "desktop-light fold and parts 01-16 (all); mobile-dark fold and parts 01-24 (all); desktop-dark fold, part06, part13; mobile-light fold, part09, part15"
+  }
+}

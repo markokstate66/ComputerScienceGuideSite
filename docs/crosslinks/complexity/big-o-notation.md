@@ -1,0 +1,20 @@
+# Cross-links wanted by /complexity/big-o-notation/
+
+One line each: anchor text | target route | where in the article. All targets are planned in `CONTENT_PLAN.md` section 7. `/algorithms/binary-search/` and `/data-structures/arrays-and-dynamic-arrays/` exist as files on this branch but are `draft: true` (unpublished); the rest have no file yet. Each sentence reads correctly with or without the link.
+
+- "binary search" | /algorithms/binary-search/ | "Reading a bound off C# code", the sentence "Two of the documented bounds carry conditions... binary search requires a list that is already sorted." Also candidate for the `List<T>.BinarySearch` mention in "The growth rates you will meet".
+- "sorting algorithms" (or "how the other classic sorts compare") | /algorithms/sorting-algorithms-compared/ | End of "When the dropped constant decides the winner", or the closing "what to read next" paragraph. This page only compares insertion sort and merge sort; the planned article covers selection sort, quicksort, heapsort, stability and the Ω(n log n) lower bound for comparison sorts.
+- "recurrences" (or "the Master Theorem") | /complexity/analyzing-loops-and-recursion/ | "Reading a bound off C# code", rule 5 ("A method call costs what the method costs") and the closing paragraph. This is the natural next page: it derives the Θ(n log n) merge-sort bound this article only cites from Sedgewick and Wayne.
+- "recursion" | /algorithms/recursion/ | Same location as above, as an alternative/earlier link if the reader has not met recursion yet (this article assumes it, via merge sort).
+- "arrays and dynamic arrays" | /data-structures/arrays-and-dynamic-arrays/ | "Three things Big-O leaves out", the "what a step really costs" bullet (caching); that article measures cache locality directly.
+- "best, average and worst cases" | /complexity/best-average-worst-case/ | "Three things Big-O leaves out", the "which input" bullet ("When no case is named, assume the worst case is meant, and check").
+- "space complexity" | /complexity/space-complexity/ | "Count the steps before you time anything", closing sentence. Currently links to the glossary entry `/glossary/#space-complexity`; switch to the article once published.
+- "hash table" | /data-structures/hash-tables/ | "Reading a bound off C# code", the paragraph after the `hidden` program ("under the usual hashing assumption"), and "Two of the documented bounds carry conditions...". Currently links to the glossary entry `/glossary/#hash-table`; switch to the article once published.
+
+## Boundaries with planned siblings (to avoid near-duplicate coverage)
+
+- `/algorithms/sorting-algorithms-compared/` owns the full sort lineup (selection, quick, heap), stability, and the Ω(n log n) comparison-sort lower bound. This article uses only insertion sort and merge sort, as a vehicle for "constants can decide a small-n winner"; it does not attempt a decision table.
+- `/complexity/analyzing-loops-and-recursion/` owns recursion trees, recurrences and the Master Theorem. This article states Θ(n log n) for merge sort on Sedgewick and Wayne's authority and never derives it from the recursion.
+- `/algorithms/binary-search/` owns the algorithm itself, its invariants and the classic off-by-one bugs. This article only cites `List<T>.BinarySearch` as the O(log n) example in the growth-rate table.
+- `/data-structures/arrays-and-dynamic-arrays/` owns memory layout and measured cache locality. This article only asserts, on Sedgewick and Wayne's authority, that the cost model ignores caching.
+- `/data-structures/hash-tables/` owns hashing, collisions and `Dictionary`/`HashSet` internals. This article only states which qualifier (expected, amortized) covers which half of `HashSet<T>.Add`'s documented cost.

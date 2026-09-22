@@ -1,0 +1,63 @@
+{
+  "role": "adsense",
+  "article": "src/content/articles/complexity/big-o-notation.md",
+  "round": 1,
+  "score": 8.5,
+  "comparedAgainst": [
+    "GeeksforGeeks, Big O Notation (https://www.geeksforgeeks.org/dsa/analysis-algorithms-big-o-analysis/): gives the c/n0 definition, simplification rules and a table of classes with code snippets; no measurements, no case where the notation misleads, no worked witness proofs.",
+    "freeCodeCamp, What is Big O Notation Explained (https://www.freecodecamp.org/news/big-o-notation-why-it-matters-and-why-it-doesnt-1674cfa8a23c/): definition, Omega/Theta, a selection-sort derivation and a 'why it doesn't matter' section that only asserts quicksort beating merge sort in practice; no reproducible measurement.",
+    "Sources spot-checked, not competitors: NIST DADS big-O entry, Sedgewick and Wayne section 1.4, Microsoft Learn Array.Sort, dotnet/runtime ArraySortHelper.cs (all fetched and read)."
+  ],
+  "justification": "Judged as a Google low-value-content reviewer, this page is not thin, not padded and not copied. It clearly out-delivers the two ranking pages it was compared with: those give the definition and a class table, while this article derives the step counts itself, produces worked (c, n0) witnesses including a disproof and exercises, and measures a real insertion-vs-merge sort crossover in C#, plus the effect of a compiler flag and a tuned hybrid cutoff. That is original, checkable value. Spot-checks passed: the NIST definition (constants c and k, and the note that Big-O is often misused to mean 'equal to'), the Sedgewick and Wayne quote on caching, garbage collection and JIT, the Array.Sort remarks (16-element insertion sort, heapsort fallback, O(n log n)) and the 2- and 3-element special cases in ArraySortHelper.cs all match what the article says. The stated CPU (i7-11700K) matches this machine. Web searches for the article's distinctive phrasing and its 3n+40 / c=4 / n0=40 example found no copy; the 'age 30 is under 90' analogy is a common teaching image, used here in the article's own words. The opening delivers a concrete scenario, there is no filler intro or 'key takeaways' outro, headings are content-specific, and exercise forms vary (produce a witness, true/false/not-a-claim, extend the code, nested-loop bound). Points held back from a higher score: (1) the docs/crosslinks file the brief relies on does not exist, and the body has no link to the published binary-search or arrays articles, so the page leaves the reader few next steps and ends inside an exercise solution; (2) the sorts are printed twice (in the collapsed full program and again as a snippet), which reads as padding; (3) a few claims rest on runs whose output the reader never sees (the no-Optimize run, the 80,000-lap row), so they are trusted rather than verifiable; (4) small unsupported or loose statements (table row 'O(log n) gains one step', 'O(n!) grows faster still', causal explanation of insertion sort's small constants asserted rather than shown); (5) a mild house-style fingerprint shared with siblings ('on the machine used here/for this page', scenario-first openings, 'X does not move Y' contrasts). None is a policy risk; together they keep it at MDN/Real Python-with-nits, not clearly better than the best result.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "docs/crosslinks/complexity/big-o-notation.md (missing) and the whole body; the only in-body internal links are three glossary anchors and /complexity/amortized-analysis/",
+      "problem": "The brief tells writers to record wanted links to planned siblings in docs/crosslinks/<pillar>/<slug>.md; this file does not exist, so the missing sibling links cannot be treated as wired later. The body also does not link to pages that already exist in the repo: the O(log n) row and the 'binary search requires a sorted list' sentence do not link to /algorithms/binary-search/, and the 'Big-O does not see cache effects' caveat does not point to /data-structures/arrays-and-dynamic-arrays/, which has a section on exactly that. A page with mostly outbound source links and few internal ones reads more like a dead end.",
+      "fixLooksLike": "Create docs/crosslinks/complexity/big-o-notation.md with one line per intended link (anchor text, target route, location): sorting algorithms, binary search, hash tables, recursion analysis (the 'reading a bound off code' section defers recursion to 'a subject in its own right' with no target), amortized analysis. Link the two existing articles in the body where the concepts are used.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Final section, 'A nested loop that is not what it seems', last paragraph of the solution",
+      "problem": "The article ends inside a collapsed exercise solution with one link to amortized analysis. There is no closing pointer that tells the reader where to go next (recursive bounds, sorting, data structures). Navigation-wise this is a soft dead end.",
+      "fixLooksLike": "Move one exercise earlier or add a short, content-bearing final paragraph after the last exercise that names the two or three articles that continue the thread and why (for example recurrences for the merge sort Theta(n log n) claim that this page cites but does not derive).",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'When the dropped constant decides the winner': collapsed 'Full program' block followed by the 'snippet of=crossover' block",
+      "problem": "InsertionSort and Split/merge are printed in full twice, about 35 lines, one after the other, and the exercise solution prints them a third time (with changes). It looks like length rather than value.",
+      "fixLooksLike": "Keep only one copy of the sorts in the visible flow (the snippet) and leave the harness in the collapsed block, or show the harness collapsed and the sorts only once in the body.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Paragraph after the crossover table: 'Now remove the first line of the program... insertion sort was still ahead at 64 and merge sort won from 128'; also the 80,000-row sentence in 'The count predicts growth, not milliseconds' and the 'about nine seconds' claim in the opening",
+      "problem": "These are measured results from runs whose code or output the reader never sees (there is no Optimize=false table and no 80,000 row in the program), so a reviewer cannot verify them and the rule about measured numbers being real is satisfied only on the writer's word.",
+      "fixLooksLike": "Either show the run (a second output block with [...] wildcards, or the exact instruction plus the resulting shape) or add 80,000 to the doubling program's input list so the opening claim is reproducible from the page.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Growth table (rows O(log n) and O(n!)) and the sentence 'The reason is the constants. Insertion sort's inner loop is one comparison and one assignment...'",
+      "problem": "'O(log n) gains one step' is true only for base 2 with a unit constant, right after the article says the base is irrelevant; 'O(n!) grows faster still' says nothing concrete. The explanation of why insertion sort has smaller constants is asserted without any measurement or source, in an article whose selling point is measuring instead of asserting.",
+      "fixLooksLike": "Write 'gains a constant amount of work (one step for log base 2)' and give n! a concrete doubling statement or figure; either count comparisons, moves and calls in both sorts for one size, or soften to 'a likely reason, consistent with...'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Throughout; e.g. 'Two runs on the machine used here', 'on the machine used for this page', scenario-then-measurement opening",
+      "problem": "Sibling articles (amortized-analysis, arrays-and-dynamic-arrays, how-the-internet-works) use the same phrase and the same scenario-then-measurement opening shape. Individually fine; across 40+ articles it becomes a recognizable template. This article also leans on 'X does not move Y' contrasts and enumerated threes ('Three separate reasons', 'three others deserve a sentence each').",
+      "fixLooksLike": "State the machine once where measurements first appear and then say 'on this run'; rewrite at least one contrast sentence and one enumerated three so the prose sounds less formulaic.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Opening paragraph",
+      "problem": "The page targets 'what is big o notation', but the first paragraph only says Big-O is how you 'see that coming'; a plain definition (how the amount of work grows with input size, ignoring constants) does not arrive until the O(n)/O(n^2) sentence after the first table. Both ranking pages state it immediately, so a reader landing from search may bounce before the good material.",
+      "fixLooksLike": "Add one plain sentence to the first paragraph saying what Big-O notation is, without restating the title or adding a generic intro.",
+      "owner": "writer"
+    }
+  ]
+}

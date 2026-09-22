@@ -1,0 +1,99 @@
+{
+  "article": "src/content/articles/complexity/big-o-notation.md",
+  "route": "/complexity/big-o-notation/",
+  "round": 1,
+  "role": "design",
+  "score": 8.0,
+  "comparedAgainst": [
+    "https://www.freecodecamp.org/news/big-o-notation-simply-explained-with-illustrations-and-video-87d5a71c0174/ (freeCodeCamp, Big O Notation simply explained; read in full via WebFetch: narrative, several illustrations, no runnable code)",
+    "https://www.bigocheatsheet.com/ (Big-O Cheat Sheet; read via WebFetch: colour-coded chart and reference tables, no explanation)",
+    "GeeksforGeeks Big-O analysis page: both URLs I tried returned 404, so it was not read and is not counted"
+  ],
+  "justification": "Structurally this is well above the two pages I could read. The freeCodeCamp piece has a friendly toy-search story and a few pictures but no runnable code, no formal definition and nothing on what Big-O hides. The cheat sheet is a lookup table with no teaching. This article has a real opening hook, eight specific h2 headings with no Introduction/Conclusion boilerplate, four exercises that vary in form (produce witnesses, extend the code, true/false/not-a-claim, tight-bound puzzle) with collapsed solutions, two purposeful SVG figures (the two-constants diagram and the linear-vs-log-log plot, both correct and legible in light and dark on desktop), a compact 2-column doubling table that survives 390 px, sensible callout use (one IN .NET, one COMMON PITFALL, exercises) and a clean 13-item dated sources list. Measured real numbers: Lighthouse 96/100/100/100 (performance measured under heavy machine load, so unreliable and the orchestrator should re-measure serially), 0 console errors, 0 console warnings, 0 broken links out of 32 internal links and 13 external links, mobileOverflowPx 0, the only failure is the expected NEEDS_MARKUS placeholder. What keeps it under 8.5 is the phone experience of the code, which is the bulk of the page: at 390 px most of the 18 code blocks have clipped lines, including the key operative statements (the Math.Abs line, the Console.WriteLine table headers and rows, the Stopwatch line, comment lines, the merge-sort condition); the timing output panels show literal [...] wildcards under the reader's eyes, so the article's central doubling experiment shows no visible result table; and a three-bullet 'what Big-O hides' aside that the title promises is buried under the sorting section. Diagram tick labels also land around 9 to 10 CSS px on a phone. These are fixable article-level edits, none of them structural. Not inflated to 8.5 because the brief's phone rules (about 40 visible characters, break long statements so the operative part is not clipped) are violated in roughly a dozen places, and not deflated because reading rhythm, hierarchy, diagrams and exercises are otherwise at or above the reference pages.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Code blocks throughout, worst in: first program (Console.WriteLine header with \"closest pair\", `Task 2` comment lines, the `Math.Abs(laps[i] - laps[j])` line, the two `Console.WriteLine($\"{n,6:N0}...\")` lines), the timing program (`// warm-up for the JIT`, `Stopwatch.GetElapsedTime(start)`, the `$\"{n,7:N0}{ms,9:F0} ms{growth,9}\"` line), the budget program (`// Assumption:` comments, the header WriteLine, `(fits, tooBig) = (tooBig, tooBig * 2);`, `long mid = fits + (tooBig - fits) / 2;`, `if (steps(mid) <= Budget) fits = mid;`), the Excerpt (`while (j >= 0 && items[j] > value)`, `int[] items, int[] buffer, int lo, int hi`, the merge condition), the duplicate-check program (comments, header WriteLine, TimeMs lines, `int[] ids = [.. Enumerable.Range(1, count)];`).",
+      "problem": "At 390 px roughly 40 characters are visible; many lines run to 55 to 70 characters and are clipped or need horizontal scrolling. In several the clipped tail is the operative part (the loop condition, the subtraction, the growth formula, the format widths that produce the output columns). mobileOverflowPx is 0 only because blocks scroll internally, but a reader cannot follow the code without side-scrolling.",
+      "fixLooksLike": "Re-break every line over about 40 columns (statement continuation on the next line, arguments one per line, comments shortened or split into two lines), and re-run tools/run-code.mjs. Concretely: move the format strings into named locals or split `$\"{n,6}{...}\"` across lines; split `while (j >= 0 && items[j] > value)` into `while (j >= 0\\n    && items[j] > value)`; split the Split() signature over lines; shorten comments to under 40 characters. Then re-screenshot mobile and confirm no operative code is clipped.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Output panels of the doubling-time program (`5,000[...] ms`, `10,000[...] ms[...]x[...]`) and of the duplicate-check program (`25,000[...] ms[...] ms`), sections 'The count predicts growth, not milliseconds' and 'Reading a bound off C# code'.",
+      "problem": "The verification wildcards are rendered verbatim, so a reader sees what looks like broken output and never sees an actual timing table for the two experiments the argument rests on (the 4x-per-doubling claim and the List-vs-HashSet gap). The results are only summarised in a dense paragraph of ranges (`33 to 40 ms`, `2.2 to 2.4 s`, `3.6 and 4.5`, `9.0 s`, `4.0 times`). The sort comparison, by contrast, gets a real TEXT table, which shows how much better the pattern reads.",
+      "fixLooksLike": "Keep the wildcard OUTPUT block for verification, but follow each with a small real-run TEXT block (as the sort section does), for example the n / time / growth rows from one run, and say which run it is. Trim the surrounding paragraph to the two or three numbers that carry the point. Keep the block within 40 columns.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'When the dropped constant decides the winner', the paragraph beginning 'Constants are the biggest thing the notation hides, but three others deserve a sentence each.' (Which input / What a step really costs / How big n gets).",
+      "problem": "A three-bullet aside that delivers half of the title's promise ('What It Hides') sits at the tail of the sorting section, after an IN .NET callout and Exercise 2, with no heading of its own. It is easy to miss, it does not show in the on-this-page list, and the sorting section becomes the longest and most heterogeneous on the page (collapsed program, excerpt, table, three prose blocks, callout, exercise, bullets).",
+      "fixLooksLike": "Give it its own h2 (for example 'Three more things Big-O leaves out') placed after the sort section so it appears in the table of contents, and consider one concrete sentence or number for each bullet rather than three abstract ones.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure 1 and Figure 2 SVG text at phone width.",
+      "problem": "The SVGs scale down with the column, so axis tick labels and the in-chart notes ('n and log n are there too, flat along the axis.', 'Left of n0 the bound fails: f(20) = 100 > 80.') come out at roughly 9 to 10 CSS px on a 390 px screen, below the brief's legibility bar. Figure 2 stacks two charts in one figure, which is dense for an article tagged beginner. Series distinction relies on direct labels because n, n log n and log n share one green and n^2, n^3 one blue (labels are present and correct, so this is a nit, not a colour-blindness failure).",
+      "fixLooksLike": "Raise SVG font sizes (or the viewBox aspect) so the smallest label is at least 11 to 12 CSS px at 390 px; consider splitting Figure 2 into two figures (linear, log-log) each with its own short caption so each can use the full width; keep the under-the-drawing annotations as they are.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Hero subtitle and body prose: 'O(n log / n) one', 'c = 4, n₀ / = 40', 'n²/2 − / n/2', 'f(n) ≥ c · / g(n)'.",
+      "problem": "Line breaks fall inside notation, splitting O(n log n), 'n₀ = 40' and inequalities across lines on both desktop and phone. It costs a beat of comprehension in the exact passages where symbols matter most.",
+      "fixLooksLike": "Wrap short math fragments in a no-wrap span (white-space: nowrap), or use non-breaking spaces inside the expressions in the article text; for the hero subtitle use a non-breaking space between 'log' and 'n'. If the site has a math-fragment class, use it; otherwise the integrator can add one.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Boilerplate at the top of four code blocks: `using System.Globalization; CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;`.",
+      "problem": "Four to five lines of harness noise open the first, timing, budget and duplicate-check programs, so the first thing a reader (and on a phone a full screen) sees is not the idea. The first program is also about 45 lines before any output, with no figure or callout for the first 40% of the page.",
+      "fixLooksLike": "Keep the culture line only if the output depends on it; otherwise hide it from the visible listing (a collapsed harness, or a single line with a one-clause note the first time). Shorten the first program by splitting Task 1 and Task 2 into two blocks, so the first reader-facing code is under 20 lines.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Doubling table, section 'The growth rates you will meet, judged by doubling'.",
+      "problem": "Clean and phone-safe, but two thin columns. The row 'O(n!) grows faster still' is vague where every other row is exact, and there is no example column, so the table does not link to the .NET operations named in the paragraph below (HashSet.Contains, BinarySearch, List.Contains, Array.Sort).",
+      "fixLooksLike": "Add a third short column ('Typical example', for instance 'hash lookup', 'binary search', 'scan', 'sort', 'all pairs', 'all triples', 'all subsets', 'all orderings') if it fits at 390 px, and replace 'grows faster still' with a concrete factor (for example 'multiplied by roughly n').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Sort excerpt and its `// ...` line; Excerpt/TEXT labelling.",
+      "problem": "The excerpt jumps from InsertionSort to Split with a bare `// ...` and no blank line, which reads as a rendering glitch; the sort result table is labelled TEXT rather than OUTPUT, so it is not obvious to a reader that it is real printed output rather than an illustration.",
+      "fixLooksLike": "Separate the two methods with a blank line and a comment naming what was elided (`// (MergeSort wrapper omitted)`), or split into two excerpts; label the results block so it is clearly program output from a run, for example with a caption line above ('One run of the collapsed program printed:').",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "docs/crosslinks/complexity/big-o-notation.md",
+      "problem": "The file does not exist (Test-Path false). The article links only to pages in the build, so nothing is broken, but the planned links (amortized analysis, hash table, recursion, time/space complexity entries) are not recorded for the integrator.",
+      "fixLooksLike": "Create the crosslinks file with one line per wanted link: anchor text, target route, location in the article.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 96,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "note": "Measured under heavy load from other agents (FCP 2.2 s reported), so performance is unreliable; the orchestrator should re-measure serially. Failing audits listed: first-contentful-paint 0.76, unused-css-rules (about 11 KiB), bf-cache, document latency, network dependency tree."
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "otherMeasured": {
+    "consoleWarnings": 0,
+    "mobileOverflowPx": 0,
+    "words": 4393,
+    "codeBlocks": 18,
+    "figures": 2,
+    "internalLinks": 32,
+    "externalLinks": 13,
+    "verifyPagePass": false,
+    "verifyPageFailures": ["placeholder text: NEEDS_MARKUS (expected)"],
+    "screenshotsRead": "desktop-light fold and parts 01-12; mobile-dark fold and parts 01-19; desktop-dark fold, part05, part09; mobile-light fold, part05, part14 (desktop part13 files are 123 bytes and empty, ignored)"
+  }
+}
