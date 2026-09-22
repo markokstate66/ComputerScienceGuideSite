@@ -60,7 +60,7 @@ sources:
     accessed: 2026-09-18
   - title: "Design Patterns: Elements of Reusable Object-Oriented Software, chapters 1 (Inheritance versus Composition) and 5 (Template Method)"
     url: "https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480"
-    publisher: "Addison-Wesley"
+    publisher: "Addison-Wesley, 1994; publisher record, cited by chapter"
     accessed: 2026-09-18
   - title: "The Expression Problem (Philip Wadler, 12 November 1998)"
     url: "https://homepages.inf.ed.ac.uk/wadler/papers/expression/expression.txt"
@@ -69,6 +69,14 @@ sources:
   - title: "Compiler Warning (level 2) CS0108"
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0108"
     publisher: "Microsoft Learn"
+    accessed: 2026-09-21
+  - title: "Closed hierarchies (C# 15 feature specification)"
+    url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-15.0/closed-hierarchies"
+    publisher: "Microsoft Learn / dotnet/csharplang"
+    accessed: 2026-09-21
+  - title: "A Behavioral Notion of Subtyping (Liskov and Wing, 1994)"
+    url: "https://www.cs.cmu.edu/~wing/publications/LiskovWing94.pdf"
+    publisher: "Carnegie Mellon University"
     accessed: 2026-09-21
 draft: true
 ---
@@ -88,7 +96,7 @@ Every example below comes from one small domain: a subscription billing system w
 | Inheritance | Similar classes repeat code |
 | Abstraction | Callers see changing details |
 
-Two of the four have a price that one-line definitions leave out. Polymorphism costs an indirect call at run time, and inheritance binds a derived class to the inner workings of its base. Both are shown below with programs you can run.
+Two of the four have a price that one-line definitions leave out. Polymorphism usually costs an indirect call at run time, and inheritance binds a derived class to the inner workings of its base. Both are shown below with programs you can run.
 
 ## What is encapsulation really protecting?
 
@@ -119,7 +127,8 @@ static void Print(string name, object v)
     => Console.WriteLine(
         $"{name,-9}{v}");
 
-record Line(string Text, decimal Amount);
+record Line(
+    string Text, decimal Amount);
 
 class OpenInvoice
 {
@@ -174,9 +183,12 @@ static void Attempt(Action change)
     }
 }
 
+// --- the class ---
+
 enum Status { Draft, Issued, Paid }
 
-record Line(string Text, decimal Amount);
+record Line(
+    string Text, decimal Amount);
 
 sealed class Invoice
 {
@@ -198,8 +210,9 @@ sealed class Invoice
     {
         Require(Status == Status.Draft,
             "Lines are frozen.");
-        Require(amount > 0,
-            "Amounts are above zero.");
+        ArgumentOutOfRangeException
+            .ThrowIfNegativeOrZero(
+                amount);
         _lines.Add(
             new Line(text, amount));
     }
@@ -218,8 +231,9 @@ sealed class Invoice
     {
         Require(Status == Status.Issued,
             "Not open for payment.");
-        Require(amount > 0,
-            "Payments are above zero.");
+        ArgumentOutOfRangeException
+            .ThrowIfNegativeOrZero(
+                amount);
         Require(amount <= Balance,
             $"Only {Balance} is owed.");
         _paid += amount;
@@ -249,7 +263,7 @@ Four design decisions do the work here, and only one of them is the keyword `pri
 
 1. **State is private, so the class is the only writer.** To know whether `_paid` can ever exceed the total, read three methods instead of the whole code base.
 2. **`Total` is computed rather than stored.** The stale total in the first program was possible because the same fact was kept in two places. A value derived from the lines cannot disagree with them. If summing ever became too slow, a cached total would be a private detail that `AddLine` keeps in step, and no caller would notice the change.
-3. **Every method checks before it changes anything.** `RecordPayment` runs all of its `Require` calls first and only then touches `_paid` and `Status`. A rejected call leaves the invoice exactly as it was, so catching the exception and carrying on is safe.
+3. **Every method checks before it changes anything.** `RecordPayment` runs its checks first and only then touches `_paid` and `Status`. A rejected call leaves the invoice exactly as it was, so catching the exception and carrying on is safe. The checks also split by kind: a bad argument (an amount that is not positive) throws `ArgumentOutOfRangeException`; a rule that depends on the invoice's own state (frozen, not open, overpaid) throws `InvalidOperationException` from the private `Require` helper. A caller can tell which kind of mistake it made from the exception type alone.
 4. **The status has one writer too.** With `private set`, "paid" is a conclusion the invoice draws from its own numbers; nobody can stick the label on.
 
 The invariant may be false for a moment inside a method: between `_paid += amount` and the next line, a fully paid invoice still says `Issued`. In single-threaded code that is harmless, because no outside code runs in the middle of the method. The promise is about what is true when public methods return. (Sharing an invoice between threads needs synchronization on top of this, which is outside this article.)
@@ -269,7 +283,7 @@ The invariant may be false for a moment inside a method: between `_paid += amoun
 <path d="M180 46 V92" class="d-line" marker-end="url(#inv-arrow)"/>
 <path d="M292 46 V92" class="d-line" marker-end="url(#inv-arrow)"/>
 <rect x="10" y="66" width="340" height="212" rx="10" class="d-accent"/>
-<text x="20" y="84" class="d-text-accent d-small d-bold">Invoice</text>
+<text x="20" y="78" class="d-text-accent d-small d-bold">Invoice</text>
 <rect x="20" y="94" width="96" height="40" rx="6" class="d-box-accent"/><text x="68" y="119" text-anchor="middle" class="d-mono d-small">AddLine</text>
 <rect x="132" y="94" width="96" height="40" rx="6" class="d-box-accent"/><text x="180" y="119" text-anchor="middle" class="d-mono d-small">Issue</text>
 <rect x="236" y="94" width="108" height="40" rx="6" class="d-box-accent"/><text x="290" y="119" text-anchor="middle" class="d-mono d-small">RecordPayment</text>
@@ -323,13 +337,15 @@ var invoice = new Invoice();
 invoice.AddLine("Team plan", 245m);
 invoice.Issue();
 
-var backDoor = (List<Line>)invoice.Lines;
+var backDoor =
+    (List<Line>)invoice.Lines;
 backDoor.Add(new Line("Oops", -500m));
 
 Console.WriteLine(invoice.Issued);
 Console.WriteLine(invoice.Total);
 
-record Line(string Text, decimal Amount);
+record Line(
+    string Text, decimal Amount);
 
 sealed class Invoice
 {
@@ -353,7 +369,8 @@ sealed class Invoice
             new Line(text, amount));
     }
 
-    public void Issue() => Issued = true;
+    public void Issue()
+        => Issued = true;
 }
 ```
 
@@ -388,6 +405,8 @@ foreach (Plan plan in plans)
         $"{plan.Name,-8}{due,4}  " +
         plan.Describe());
 }
+
+// --- the class ---
 
 record Usage(int Seats, int Blocks);
 
@@ -453,13 +472,15 @@ Team      60  12/seat, min 5
 API      105  3/block after 10 free
 ```
 
-The loop contains one call, `plan.PriceFor(usage)`, and it ran three different method bodies. The variable's compile-time type is `Plan` each time; what differs is the run-time type of the object it refers to. The C# specification states the rule: "In a virtual method invocation, the run-time type of the instance for which that invocation takes place determines the actual method implementation to invoke" [[3]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/classes). An `abstract` method is a virtual method with no body in the base class, so every non-abstract derived class has to supply one [[3]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/classes).
+The loop contains one call, `plan.PriceFor(usage)`, and it ran three different method bodies. The variable's compile-time type is `Plan` each time; what differs is the run-time type of the object it refers to. The C# specification states the rule, in its section on virtual methods (§15.6.4): "In a virtual method invocation, the run-time type of the instance for which that invocation takes place determines the actual method implementation to invoke" [[3]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/classes). An `abstract` method is a virtual method with no body in the base class, so every non-abstract derived class has to supply one [[3]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/classes).
 
 The payoff is in what you do not edit. A fourth plan is one new class; the loop, and every other piece of code that works with `Plan`, stays as it is. Written as a `switch` on a plan-type code instead, the same feature means finding and editing every such `switch`.
 
-The trade runs the other way when the set of types is fixed and new *operations* keep arriving. Then a `switch` with pattern matching keeps each operation in one place, where virtual methods would make you touch every class. Wadler's 1998 note names this tension the expression problem: extend both the cases and the operations without touching existing code [[14]](https://homepages.inf.ed.ac.uk/wadler/papers/expression/expression.txt). C# has no way to declare a class hierarchy closed, so a `switch` over class types compiles with warning CS8509 unless it ends in a fallback arm.
+The trade runs the other way when the set of types is fixed and new *operations* keep arriving. Then a `switch` with pattern matching keeps each operation in one place, where virtual methods would make you touch every class. Wadler's 1998 note names this tension the expression problem: add new cases and new operations to a datatype without recompiling existing code, while keeping static type safety, meaning no casts [[14]](https://homepages.inf.ed.ac.uk/wadler/papers/expression/expression.txt). As of C# 14, a class hierarchy cannot be declared closed, so a `switch` *expression* over class types compiles with warning CS8509 unless it ends in a fallback arm; a `switch` *statement* over the same cases gives no such warning. C# 15 previews a `closed` modifier that lets an exhaustive switch expression over a closed hierarchy skip the fallback arm [[16]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-15.0/closed-hierarchies).
 
 ### What the runtime does with `plan.PriceFor(usage)`
+
+This section and the next look inside CoreCLR; skip ahead to "Is method overloading polymorphism too?" on a first read if you only want the four pillars, and come back once the mechanics matter to you.
 
 The compiler cannot know which body to call, so it cannot emit a jump to a fixed address. CoreCLR, the runtime behind .NET, resolves the call with a table lookup:
 
@@ -507,7 +528,8 @@ The slot layout is an implementation detail of CoreCLR, and the C# language prom
 using System.Reflection;
 
 Console.WriteLine(
-    "Type        Body in     Slot from");
+    "Type        Body in" +
+    "     Slot from");
 Row(typeof(FlatPlan)
     .GetMethod("Describe")!);
 Row(typeof(PerSeatPlan)
@@ -585,15 +607,15 @@ fixed price
 grandfathered
 ```
 
-Same object, two answers. The first call goes through `Plan`'s slot, which `LegacyPlan` never filled, so `Plan`'s body runs. The second call is bound at compile time to the separate, non-virtual `LegacyPlan.Describe`. The specification walks through the same situation in its section on override methods [[3]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/classes).
+Same object, two answers. The first call goes through `Plan`'s slot, which `LegacyPlan` never filled, so `Plan`'s body runs. The second call is bound at compile time to the separate, non-virtual `LegacyPlan.Describe`. The specification's section on virtual methods (§15.6.4) walks through a close relative of this situation [[3]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/classes).
 
-Behavior that depends on the type of the variable instead of the type of the object is what polymorphism exists to remove. That is why the compiler warns (CS0108) when you hide a member without writing `new` to say you meant it [[15]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0108).
+Behavior that depends on the type of the variable instead of the type of the object is what polymorphism exists to remove, which is one reason the compiler warns (CS0108) when you hide a member without writing `new` [[15]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0108).
 :::
 ::::
 
 ### What does a virtual call cost?
 
-For a virtual call on a class, the JIT team's design notes show the machine code as a chain of three dependent loads before the indirect call: fetch the method table from the object, fetch the chunk of the table that holds the slot, and call through the slot [[8]](https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/jit/GuardedDevirtualization.md). Figure 2 draws the slots as one block; the extra step is that CoreCLR keeps them in chunks reached through one more pointer. The larger cost is usually the optimization that is lost: the Framework Design Guidelines say virtual members are slower than non-virtual ones "mostly because calls to virtual members are not inlined" [[12]](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/virtual-members).
+For a virtual call on a class, the JIT team's design notes show the machine code as a chain of three dependent loads before the indirect call: fetch the method table from the object, fetch the chunk of the table that holds the slot, and call through the slot [[8]](https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/jit/GuardedDevirtualization.md). Figure 2 draws the slots as one block; the extra step is that CoreCLR keeps them in chunks reached through one more pointer. The larger cost is usually the optimization that is lost: the 2008, second edition of the Framework Design Guidelines says virtual members are slower than non-virtual ones "mostly because calls to virtual members are not inlined" [[12]](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/virtual-members). That page itself notes a third edition exists and that some of its information may be out of date; the JIT recovers part of that lost cost through the devirtualization described next.
 
 The JIT removes the lookup when it can prove the target. It turns a virtual call into a direct one when it knows the exact type of the object, for example because it has just seen the `new` expression, or when the declared type is a `sealed` class [[8]](https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/jit/GuardedDevirtualization.md). That is one practical reason the concrete plans above are `sealed`. The other reason is in the section on inheritance.
 
@@ -770,10 +792,10 @@ PriceFor: -11
 Amounts are above zero.
 ```
 
-The exception comes from `AddLine` and talks about line amounts. The code at fault is `PromoPlan`, which may live in a different file written by someone else a year later. For a derived class to be usable wherever its base is expected, it has to keep what the base promises: what callers may assume about results, and the invariants the base maintains. The unwritten promises count too. That requirement is known as the Liskov substitution principle, after Barbara Liskov and Jeannette Wing's 1994 paper "A Behavioral Notion of Subtyping", and here `PromoPlan` weakens the base's unwritten postcondition that the price is not negative. The compiler checks none of it beyond method signatures.
+The exception comes from `AddLine` and talks about line amounts. The code at fault is `PromoPlan`, which may live in a different file written by someone else a year later. For a derived class to be usable wherever its base is expected, it has to keep what the base promises: what callers may assume about results, and the invariants the base maintains. The unwritten promises count too. That requirement is known as the Liskov substitution principle; Liskov and Wing give its formal definition in "A Behavioral Notion of Subtyping" [[17]](https://www.cs.cmu.edu/~wing/publications/LiskovWing94.pdf), and here `PromoPlan` weakens the base's unwritten postcondition that the price is not negative. The compiler checks none of it beyond method signatures.
 
 ::::exercise[Move the check to where the promise is made]
-Change `Plan` so that no derived class, present or future, can hand a negative price to a caller, and so that the error names the plan at fault. Derived classes should still supply the pricing formula.
+Change `Plan` so that a caller holding a `Plan` reference can never receive a negative price from `PriceFor`, and so that the error names the plan at fault. Derived classes should still supply the pricing formula.
 
 Hint: the guidelines for .NET library authors say public members should provide extensibility "by calling into a protected virtual member" [[12]](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/virtual-members).
 
@@ -832,7 +854,54 @@ sealed class PromoPlan(
 Broken priced -11
 ```
 
-The base class now encapsulates its own rule instead of delegating it to every subclass. Callers cannot reach `Compute` at all, so the check cannot be skipped. This shape is the Template Method pattern, one of the behavioral patterns in *Design Patterns* [[13]](https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480).
+The base class now encapsulates its own rule instead of delegating it to every subclass. A caller holding a `Plan` cannot reach `Compute` at all, so it cannot skip the check. That guarantee is scoped to that reference, though: a derived class can still hide `PriceFor` with `new`, and the compiler will not stop it. `SneakyPlan` below does exactly that.
+
+```csharp run
+var usage = new Usage(0);
+Plan viaPlan = new SneakyPlan();
+var viaSneaky =
+    (SneakyPlan)viaPlan;
+
+Console.WriteLine(
+    viaPlan.PriceFor(usage));
+Console.WriteLine(
+    viaSneaky.PriceFor(usage));
+
+record Usage(int Seats);
+
+abstract class Plan(string name)
+{
+    public decimal PriceFor(
+        Usage usage)
+    {
+        decimal price = Compute(usage);
+        if (price >= 0) return price;
+        throw new
+            InvalidOperationException(
+            $"{name} priced {price}");
+    }
+
+    protected abstract decimal Compute(
+        Usage usage);
+}
+
+sealed class SneakyPlan()
+    : Plan("Sneaky")
+{
+    protected override decimal Compute(
+        Usage usage) => 1m;
+
+    public new decimal PriceFor(
+        Usage usage) => -999m;
+}
+```
+
+```text output
+1
+-999
+```
+
+`viaPlan` and `viaSneaky` refer to the same object. `viaPlan.PriceFor(usage)` is resolved at compile time to `Plan`'s non-virtual method, which calls `Compute`, checks the result, and returns 1. `viaSneaky.PriceFor(usage)` resolves instead to the `new` method on `SneakyPlan`, which never calls `Compute` or the check. This is the same hiding the `LegacyPlan` example showed earlier, and the same rule applies: writing `public new decimal PriceFor(...)` without the `new` keyword would earn warning CS0108 instead of compiling quietly [[15]](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0108). The guarantee that survives is narrower than "no derived class": every caller that holds a `Plan` gets a checked price; a caller that holds the concrete derived type can still be handed whatever that type chooses to return. This shape, a non-virtual method that calls a protected abstract one, is the Template Method pattern, one of the behavioral patterns in *Design Patterns* [[13]](https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480).
 :::
 ::::
 
@@ -844,7 +913,7 @@ Use it when all three of these hold:
 - The base class was written to be inherited from, with its few extension points `protected` and its rules enforced in non-virtual methods.
 - You control both classes, so a change to the base can be tested against every subclass.
 
-The `Plan` hierarchy qualifies. When you only want to reuse some code, hold an object of the other class in a private field and call it.
+The `Plan` hierarchy qualifies once `PriceFor` is the non-virtual, checked version built in the exercise above; the first version, with a public abstract `PriceFor` and no shared check, did not. When you only want to reuse some code, hold an object of the other class in a private field and call it.
 
 The Framework Design Guidelines put the default bluntly: do not make members virtual "unless you have a good reason to do so and you are aware of all the costs related to designing, testing, and maintaining virtual members" [[12]](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/virtual-members). A `sealed` class makes the same statement for a whole type: nobody can override anything, so the reasoning you did about `Invoice` cannot be undone from a subclass.
 
@@ -878,7 +947,8 @@ enum ChargeResult
 interface IPaymentGateway
 {
     ChargeResult Charge(
-        string customer, decimal amount);
+        string customer,
+        decimal amount);
 }
 
 sealed class TestGateway(decimal limit)
@@ -925,7 +995,7 @@ Abstractions have a cost too. Each one is a layer a reader has to see through, a
 
 ## How do the four fit together?
 
-In the billing code they are not four separate features. `Plan.PriceFor` from the last exercise is an abstraction (callers know only "a plan yields a non-negative price"), enforced by encapsulation (the check lives in a method nobody can bypass or override), varied through polymorphism (each plan fills in `Compute`), with inheritance as the mechanism that carries the shared check to every plan.
+In the billing code they are not four separate features. Give `Plan` a public, non-virtual `PriceFor` that checks a result and calls a protected abstract `Compute` for the formula, the shape the last exercise built. That is an abstraction (a caller holding a `Plan` knows only that `PriceFor` returns a non-negative price), enforced by encapsulation (the check runs in a method that every such caller goes through, whatever `Compute` returns), varied through polymorphism (each plan supplies its own `Compute`), with inheritance as the mechanism that carries the shared check to every plan.
 
 They are not equally safe to reach for. Encapsulation protects you from the first class onward. Abstraction and polymorphism pay for themselves once a second variant really exists. Inheritance is the one to justify each time.
 
@@ -953,7 +1023,8 @@ catch (InvalidOperationException e)
 
 static void Show(Invoice i)
     => Console.WriteLine(
-        $"{i.Status}, owed {i.Balance}");
+        $"{i.Status}, owed " +
+        $"{i.Balance}");
 
 enum Status { Draft, Issued, Paid }
 
@@ -970,8 +1041,10 @@ sealed class Invoice(decimal total)
     public void RecordPayment(
         decimal amount)
     {
-        Require(amount > 0
-            && amount <= Balance,
+        ArgumentOutOfRangeException
+            .ThrowIfNegativeOrZero(
+                amount);
+        Require(amount <= Balance,
             "Payment not accepted.");
         _paid += amount;
         if (Balance == 0)
@@ -980,8 +1053,9 @@ sealed class Invoice(decimal total)
 
     public void Refund(decimal amount)
     {
-        Require(amount > 0,
-            "Refunds are above zero.");
+        ArgumentOutOfRangeException
+            .ThrowIfNegativeOrZero(
+                amount);
         Require(amount <= _paid,
             $"Only {_paid} was paid.");
         _paid -= amount;
