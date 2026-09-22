@@ -46,7 +46,7 @@ sources:
     url: "https://git-scm.com/docs/git-branch"
     publisher: "Git documentation"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A branching model answers two questions for a team: which branches live longer than a day, and what has to be true about a commit before it reaches the one branch a deploy is built from. Trunk-based development, GitHub Flow and Git Flow answer both questions differently, and each is a specific, named structure with its own primary source, not a mood. This page builds a real branch history for the two that differ most, trunk-based development and Git Flow, reads the difference straight off `git log --graph`, and builds the same kind of history more lightly for GitHub Flow in between. It builds on [How Git Works Inside](/version-control/how-git-works/) and [Branching and Merging](/version-control/branching-and-merging/): merge mechanics, fast-forwards and `--no-ff` are not re-explained here.
