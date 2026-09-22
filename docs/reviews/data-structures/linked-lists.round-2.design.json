@@ -1,0 +1,32 @@
+{
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/linked-list-data-structure/",
+    "https://www.programiz.com/dsa/linked-list"
+  ],
+  "justification": "Fresh round-2 pass, judged independently before reopening the round-1 review. For the target query 'linked list explained', both ranking pages fetched this round confirm the round-1 characterization: GeeksforGeeks's page is a topic/problem catalog with a comparison table but no runnable code, no complexity table, no benchmarks and no interactive exercises in the tutorial section itself; Programiz has diagrams and tabbed code samples across four languages but covers singly linked lists only, defers doubly/circular to separate pages, and has no LRU cache, no measured benchmarks, and no worked exercises with collapsed solutions. This article clearly exceeds both on every design/UX axis: three hand-drawn, theme-aware SVG diagrams (node chain, four-pointer splice, reverse-step before/after) confirmed legible with no fade/scroll at 390px in mobile-light and mobile-dark, and rendering correctly as centered non-scrolling islands in desktop-light and desktop-dark; correct ##/### heading hierarchy reflected in 'On this page'; strong rhythm alternating prose, runnable code with output panels, diagrams and five varied exercises (find-the-bug, why-a-pointer-matters, predict-two-edge-cases, extend-the-code, measure-it), all with solutions collapsed and no predict-style exercise showing its output above the fold; callouts (:::dotnet, :::warning, ::::exercise) used sparingly and correctly styled in both themes; a clean 13-entry sources list; zero console errors, zero broken links (30 internal, 13 external), zero horizontal overflow at 390px, and Lighthouse 93/100/100/100 (performance may be somewhat noisy if other agents were loading the machine during this run, but it clears the 90 threshold same as round 1's 92, so it is not a blocker either way). This round's four writer edits (the internal-set Node properties plus explanatory sentence, the toolchain-disclosure sentence, the rewritten memory-overhead paragraph, and the two corrected quotes) are all prose or property-syntax changes that read fine at 390px and introduce no new overflow, fade, or table/diagram regression anywhere checked. Checking against the round-1 design review after forming this independent judgment: both of its minor findings are still present, unchanged in kind and severity -- the operation-cost table still only shows the Operation and T[] columns before the phone fade, and a few lines in the doubly-linked-list and LRU-cache listings (the InsertBefore object initializer, the LinkedListNode<(TKey,TValue)> dictionary field) still carry meaningful content past the visible ~40 columns. Neither was touched by this round's edits, so there is nothing to regress; the score holds at 9.2 rather than moving in either direction, since effort spent on unrelated content fixes does not by itself earn a higher design score.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "\"What each operation costs, and under what assumption\" section, the Operation/T[]/List<T>/LinkedList<T> cost table (mobile-dark-part07/part08, mobile-light-part07)",
+      "problem": "The table still has four columns, and the Operation column's longest cells ('Insert/remove given a node you hold', 'Insert/remove at the front') take up enough width that at 390px only the Operation and T[] columns are visible before the fade; a phone reader must scroll to see the List<T> and LinkedList<T> costs for every row. Unchanged from round 1's finding.",
+      "fixLooksLike": "Shorten the Operation labels (e.g. 'Insert/remove: front', 'Insert/remove: given node') so more of the data columns stay on-screen, or confirm this is an accepted sitewide pattern for cost-comparison tables in this pillar (arrays-and-dynamic-arrays likely has the same shape) and downgrade to a non-issue if so.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Doubly-linked-list InsertBefore object initializer and the LRU cache's Dictionary<TKey, LinkedListNode<...>> field (mobile-dark-part06 and mobile-dark-part18)",
+      "problem": "Lines such as `var node = new Node(value) { Next = at, Prev = at.Prev };` and `TKey, LinkedListNode<(TKey Key, TValue Value)>> _index = new();` still run long enough that the part past the visible ~40 columns carries meaningful content (the object-initializer body, the dictionary's value type), not just a boilerplate tail. Unchanged from round 1's finding; the round-2 Node-class edit (fields to `{ get; internal set; }`) lengthened the Node class lines slightly but only pushed boilerplate (`set; }`) past the fold, not new operative content, so it does not add a new instance of this issue.",
+      "fixLooksLike": "Not blocking -- a reasonable trade-off for constructor/type-heavy C# lines, and the fade cue correctly signals more content. Worth revisiting only if a future round wants every operative token on-screen: break the object initializer onto its own line, or alias the LRU cache's tuple type.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 93,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

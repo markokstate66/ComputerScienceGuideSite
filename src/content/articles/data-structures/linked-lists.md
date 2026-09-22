@@ -62,7 +62,7 @@ sources:
     url: "https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/"
     publisher: "MIT Press"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A node in a linked list is one heap object holding two things: a value, and a reference to the next node. There is no block, no index arithmetic, no fixed size. To reach the fifth element you read the first, then the second, then the third and the fourth, because that reference is the only way from one node to the next. Everything below — what a linked list can do quickly, what it cannot do at all, and the one shape of problem where it beats a `List<T>` outright — follows from that one sentence.
@@ -382,8 +382,8 @@ sealed class DoublyLinkedList<T>
     public sealed class Node(T value)
     {
         public T Value = value;
-        public Node? Next;
-        public Node? Prev;
+        public Node? Next { get; internal set; }
+        public Node? Prev { get; internal set; }
     }
 }
 ```
@@ -397,6 +397,8 @@ Count: 3
 ```
 
 `AddLast` and `AddFirst` are not separate implementations; both call `InsertBefore` with a different starting node, and `InsertBefore` never checks whether the list happens to be empty, because the sentinel guarantees `at.Prev` always exists. `Remove` given a node you already hold — `alice` here — is two field writes: O(1), no search.
+
+`Next` and `Prev` use `internal set`: any code holding a `Node` can read where it sits, but only code inside this library can rewrite it — public callers get a read-only view, the same shape `LinkedListNode<T>` uses below for its own `Next` and `Previous`.
 
 <figure class="diagram">
 <svg viewBox="0 0 360 340" role="img" aria-labelledby="splice-title splice-desc">
@@ -446,7 +448,7 @@ Count: 3
 
 ## What each operation costs, and under what assumption
 
-An array's length "cannot change for the lifetime of the instance", per the [C# array reference](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/arrays), which is why insert and remove have no meaning for `T[]` at all — only `List<T>` and `LinkedList<T>` support them. Every entry below is a worst-case [Big-O](/complexity/big-o-notation/) bound, and each assumes you already have whatever reference the column needs (a valid position for an array, a node reference for a linked list) — reaching that reference in the first place is a separate cost, covered by "Access by position" and "Search by value".
+Per the [C# array reference](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/arrays), "you establish the length of each dimension when you create the array instance" and "can't change these values during the lifetime of the instance" — which is why insert and remove have no meaning for `T[]` at all — only `List<T>` and `LinkedList<T>` support them. Every entry below is a worst-case [Big-O](/complexity/big-o-notation/) bound, and each assumes you already have whatever reference the column needs (a valid position for an array, a node reference for a linked list) — reaching that reference in the first place is a separate cost, covered by "Access by position" and "Search by value".
 
 | Operation | `T[]` | `List<T>` | `LinkedList<T>` |
 |---|---|---|---|
@@ -692,7 +694,7 @@ One more documented limit: [`LinkedList<T>`](https://learn.microsoft.com/en-us/d
 
 ### What a node costs beyond its value
 
-Every node is a separate heap object, and every object carries fixed overhead — a method table pointer and a sync block, on top of its fields — that an array element sharing a block with its neighbors does not pay. [`GC.GetAllocatedBytesForCurrentThread`](https://learn.microsoft.com/en-us/dotnet/api/system.gc.getallocatedbytesforcurrentthread) reports the running total of bytes allocated on the current thread, so the difference across a loop is the loop's real allocation, independent of when the garbage collector happens to run.
+Every node is a separate heap object, and every object carries fixed overhead — a method table pointer and a sync block, on top of its fields — that an array element sharing a block with its neighbors does not pay. [`GC.GetAllocatedBytesForCurrentThread`](https://learn.microsoft.com/en-us/dotnet/api/system.gc.getallocatedbytesforcurrentthread) reports the running total of bytes allocated on the current thread, so the difference across a loop is the loop's real allocation, independent of when the garbage collector happens to run. The three measurements in this section and the two that follow — node overhead, seek cost, and the LRU cache comparison — were all taken on .NET 10.0.12, Windows 11, x64, on a desktop Core i7-11700K.
 
 ```csharp run id=memory
 long beforeArray = GC.GetAllocatedBytesForCurrentThread();
@@ -726,7 +728,7 @@ IntNode:  32.0 bytes/element
 head still reachable: True
 ```
 
-The array holds four bytes of overhead across the whole 4 MB block, so it rounds to exactly 4.0 bytes per `int`. Each `IntNode` is a whole object — on this runtime, eight times the size of the `int` it carries, once the object header and the reference field are counted — and that ratio only gets worse for a doubly linked node, which pays for a second reference field. This is one run on one machine; the shape (array wins, by a wide and constant margin) is what to take from it, not the exact multiple.
+A million-element `int[]` pays a small, fixed overhead once, not per element: a 16-byte object header plus an 8-byte length field, 24 bytes total on this runtime. Measured directly the same way, around `new int[0]` and `new int[1000]`: the empty array allocates exactly 24 bytes, and the 1,000-element array allocates exactly 4,024 = 24 + 1,000 × 4. Spread across a million elements, that fixed 24 bytes disappears at one decimal place, which is why the array column above reads 4.0 — essentially just the four bytes each `int` itself occupies. Each `IntNode` pays a version of that same fixed cost on *every* element instead of once: a 16-byte object header, plus the 4-byte `int` and the 8-byte `Next` reference, padded to keep the object's size a multiple of eight bytes, comes to 32 bytes per node — eight times the array's per-element cost — and that ratio only gets worse for a doubly linked node, which pays for a second reference field. This is one run on one machine; the shape (array wins, by a wide and constant margin) is what to take from it, not the exact multiple.
 
 ### What "no index" really costs
 
@@ -799,7 +801,7 @@ The array column stays flat: one bounds check and one address computation, regar
 
 ## Where the pointers pay for themselves: an LRU cache
 
-A least-recently-used cache evicts whatever it has not touched in the longest time once it reaches capacity. That needs two things done together, fast: find an entry by key, and move whatever was just touched to the "most recent" end. A `Dictionary<TKey, TValue>` alone gives you the first; nothing about a dictionary gives you an order. Pairing it with a `LinkedList<T>` gives you both, because the dictionary's values are not the cached data — they are the `LinkedListNode<T>` for each key, so touching an entry is `Remove(node)` followed by `AddFirst(node)`, reusing the same node object. The `LinkedList<T>` class remarks say this directly: nodes "can be removed and reinserted... which results in no additional heap allocations."
+A least-recently-used cache evicts whatever it has not touched in the longest time once it reaches capacity. That needs two things done together, fast: find an entry by key, and move whatever was just touched to the "most recent" end. A `Dictionary<TKey, TValue>` alone gives you the first; nothing about a dictionary gives you an order. Pairing it with a `LinkedList<T>` gives you both, because the dictionary's values are not the cached data — they are the `LinkedListNode<T>` for each key, so touching an entry is `Remove(node)` followed by `AddFirst(node)`, reusing the same node object. The `LinkedList<T>` class remarks say this directly: "You can remove nodes and reinsert them, either in the same list or in another list, which results in no additional objects allocated on the heap."
 
 ```csharp run id=lru
 var cache = new LruCache<string, int>(capacity: 3);
