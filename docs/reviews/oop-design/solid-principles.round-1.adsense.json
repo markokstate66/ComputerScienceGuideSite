@@ -1,0 +1,47 @@
+{
+  "article": "src/content/articles/oop-design/solid-principles.md",
+  "route": "/oop-design/solid-principles/",
+  "round": 1,
+  "role": "adsense",
+  "score": 8.4,
+  "comparedAgainst": [
+    "https://en.wikipedia.org/wiki/SOLID",
+    "https://www.freecodecamp.org/news/solid-principles-explained-in-plain-english/",
+    "https://stackify.com/solid-design-open-closed-principle/",
+    "https://www.c-sharpcorner.com/UploadFile/damubetha/solid-principles-in-C-Sharp/",
+    "https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html",
+    "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+    "https://blog.ploeh.dk/2010/12/02/Interfacesarenotabstractions/",
+    "https://martinfowler.com/bliki/Yagni.html",
+    "https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/architectural-principles",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlycollection-1",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1",
+    "src/content/articles/oop-design/four-pillars-of-oop.md (sibling, published)"
+  ],
+  "consoleErrors": null,
+  "brokenLinks": null,
+  "justification": "run-code.mjs confirms the writer's claim exactly: PASS, blocks=26, executed=14. Originality: read freeCodeCamp's SOLID walkthrough (Invoice/InvoicePrinter/InvoicePersistence for SRP, InvoicePersistence/DatabasePersistence/FilePersistence for OCP, Rectangle/Square for LSP, ParkingLot/FreeParking for ISP, PersistenceManager for DIP), Stackify's Open/Closed piece (coffee-machine hierarchy), and c-sharpcorner's five-principle tutorial (UserService/EmailService for SRP, Shape/Rectangle/Circle/AreaCalculator for OCP, SqlFile/IReadableSqlFile/IWritableSqlFile for LSP, TeamLead/Programmer for ISP, ExceptionLogger/FileLogger/DbLogger for DIP). None of the five domains in this article (library overdue fines, a shipping-rate StartsWith collision bug, ReadOnlyCollection<T>/IList<T>, a three-format IDataExporter, a receipt printer with a static-flag hazard) match or lightly reskin any of these; the Rectangle/Square and Bird/Penguin toy hierarchies that dominate SOLID tutorials never appear. The LSP section in particular is a genuine differentiator: instead of an invented hierarchy it uses a real, documented BCL violation (List<T>.AsReadOnly() returning a type that implements IList<T> but throws NotSupportedException on Add), which is both more original and more convincing than any competing write-up checked. Structure: this article's headings are short principle-plus-consequence statements ('Single responsibility: whose reason to change is this?' reads as an outlier but the rest — 'Open/closed: extend by adding, not by editing what shipped', 'Liskov substitution: a violation the BCL ships with' — are colon-form statements), matching its assigned R (reference/catalog) shape in CONTENT_PLAN.md, and is clearly not templated against the sibling four-pillars-of-oop.md (Q shape, mostly full-sentence questions as H2s). composition-over-inheritance.md does not exist yet in this worktree, so only one sibling comparison was possible; CONTENT_PLAN.md confirms its shape (D) will differ again. Exercises: six total (one per principle plus one for the over-application section), covering six genuinely different forms — reason-from-description with no code ('Spot the second responsibility'), predict-before-running ('Predict before you run it'), a compile-vs-runtime distinction ('Prove it with a narrower type'), write-new-code-without-touching-existing ('Add a format without breaking anyone'), pure verbal scenario reasoning with no code at all ('Find the bug from a description alone'), and a judgment call with a decision rule ('Decide, don't guess'). All solutions are correctly nested inside collapsed ':::solution' blocks; no output or answer leaks above the fold. The 'Where SOLID gets over-applied' section is genuinely argued, not a token caveat: it names a real single-implementation case from earlier in the article (an interface extracted from OrderProcessor with no second implementation), a real over-splitting case (further slicing ICsvExportable), and a real anti-pattern candidate (pre-emptively building IShippingRate before any collision bug existed), each backed by an accurate quote from Seemann or Fowler applied to that specific example rather than SOLID in general. LSP citation reuse: the article cites the same Liskov & Wing 1994 paper as four-pillars-of-oop.md (a legitimate reuse of the correct primary source for the concept, not a second-hand citation), and the surrounding prose is entirely original — four-pillars discusses a PromoPlan constructor/postcondition violation, solid-principles discusses the unrelated ReadOnlyCollection/IList case; no sentences are shared. No filler, no restated title, no keyword stuffing, no ad code; the description in front matter reads for a human. Citation spot-checks: of Robert C. Martin's five 'Solid Relevance' quotes used, four are byte-for-byte exact (verified via curl against the raw page) and one (the SRP sentence) inserts an extra word not in the source ('Separate those things that change' vs the actual 'Separate things that change'). Mark Seemann's two quotes ('An interface is just a language construct... it's just a shape' and 'Having only one implementation of a given interface is a code smell') are both exact. Martin Fowler's two Yagni quotes are both exact. Microsoft's dependency-inversion passage is exact for the first sentence and accurate in substance for the second, though the article's quoted fragment silently drops the word 'to' from 'allows A to call methods' without an ellipsis marking the elision. One citation could not be verified: the article states IList<T>'s inherited IsReadOnly is 'documented as meaning that \"these mutation methods should throw\" when it is true' and cites the IList<T> Interface page for it. That exact phrase does not appear in the IList<T> interface remarks, the ICollection<T>.IsReadOnly remarks, the non-generic IList.IsReadOnly remarks, or the ICollection<T>.Add page (checked all four). The underlying behavior is true and independently verifiable (ICollection<T>.Add's own Exceptions section documents NotSupportedException when the collection is read-only), so this is not a fabricated fact, but a quotation mark is being put around text that does not appear to exist verbatim on the cited page, which the binding rules treat as a fabrication risk regardless of how minor. That, plus the one-word SRP misquote, is what keeps this below the 8.5 bar this round; nothing else approaches a major finding.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Liskov substitution section, sentence beginning '`IList<T>` itself anticipates this: it inherits an `IsReadOnly` property...', citing [[5]] (IList<T> Interface, Microsoft Learn)",
+      "problem": "The quoted phrase \"these mutation methods should throw\" does not appear verbatim on the cited IList<T> page, nor on the ICollection<T>.IsReadOnly remarks page, the non-generic IList.IsReadOnly remarks page, or the ICollection<T>.Add page (all four checked directly). The underlying fact — that Add/Clear/Remove/Insert/RemoveAt throw NotSupportedException when the collection is read-only — is true and is documented (e.g. in ICollection<T>.Add's Exceptions section), but presenting a sentence in quotation marks as if it is the documentation's own wording, when it is not found there, is exactly the kind of thing the binding 'never fabricate... quotes' rule is meant to catch.",
+      "fixLooksLike": "Either drop the quotation marks and state the behavior in the writer's own words (the fact is well supported by the Add/Clear/Remove Exceptions sections, which can be cited instead), or find and quote the exact sentence if one does exist somewhere in current or archived Microsoft documentation and cite that specific page.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Opening paragraph, first Robert C. Martin quote: '\"Gather together the things that change for the same reasons. Separate those things that change for different reasons\" [[2]]'",
+      "problem": "Verified against the raw cleancoder.com page: the actual sentence is 'Gather together the things that change for the same reasons.  Separate things that change for different reasons.' The article's quote inserts an extra word, 'those', that is not in the source.",
+      "fixLooksLike": "Remove 'those' so the quotation is verbatim: 'Separate things that change for different reasons.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Dependency inversion section, second Microsoft Learn quote: '\"A call methods on an abstraction that B implements... thus *inverting* the typical compile-time dependency\" [[6]]'",
+      "problem": "The source reads 'allows A to call methods on an abstraction that B implements'. The article's quoted fragment starts at 'A call methods', silently dropping 'to' with no bracket or ellipsis marking the omission, so the quotation marks claim more precision than the text delivers.",
+      "fixLooksLike": "Either quote 'A to call methods on an abstraction that B implements' in full, or mark the elision explicitly, e.g. 'A [to] call methods...'.",
+      "owner": "writer"
+    }
+  ]
+}
