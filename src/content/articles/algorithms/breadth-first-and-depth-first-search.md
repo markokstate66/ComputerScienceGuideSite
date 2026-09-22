@@ -30,6 +30,22 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
+  - title: "Queue<T>.Enqueue(T) Method"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1.enqueue"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-22
+  - title: "Queue<T>.Dequeue Method"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1.dequeue"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-22
+  - title: "Stack<T>.Push(T) Method"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.push"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-22
+  - title: "Stack<T>.Pop Method"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.pop"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-22
 draft: true
 ---
 
@@ -204,7 +220,7 @@ DFS: Config Service Api Client Cache Logging Repository Database
 Every line of `Bfs` and `DfsIterative` matches except the field type, `Enqueue`/`Dequeue` against `Push`/`Pop`, and the variable name. That is the entire structural difference between the two searches: a first-in-first-out frontier gives you rings expanding outward, a last-in-first-out frontier gives you a single thread pulled as far as it goes before backtracking. It is also why every textbook description of DFS as "BFS with a stack" is simultaneously true and a little bit of a trap, which the [pitfalls section](#why-the-iterative-version-gets-it-wrong) below works through: this `DfsIterative` visits the *same eight modules* as the recursive `Dfs` from the first program, but not in the same order (`Config Service Api Client Cache Logging Repository Database`, against `Config Database Repository Service Api Client Logging Cache`). Marking a node "seen" the moment it is popped, rather than the moment it is enqueued, matters too: `Bfs` here marks on dequeue and still produces the identical level order as the enqueue-marking version above, because a queue only ever holds *first arrivals* ahead of any duplicate.
 
 :::dotnet
-[`Queue<T>` is documented as a circular array](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1): a fixed backing array with a head and tail index that wrap around, growing by reallocation when full. [`Stack<T>` is an array too](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1), used from one end. Both document `O(1)` for the operations a graph search calls in a loop — `Enqueue`/`Dequeue` and `Push`/`Pop` — except when a push forces a reallocation, which the docs call out as the one `O(n)` case for `Stack<T>.Push`. Neither type is a linked structure; "queue" and "stack" here are interfaces the algorithm relies on, not particular memory layouts.
+[`Queue<T>` is documented as a circular array](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1): a fixed backing array with a head and tail index that wrap around, growing by reallocation when full. [`Stack<T>` is an array too](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1), used from one end. The operations a graph search calls in a loop split the same way on both types: [`Enqueue`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1.enqueue) and [`Push`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.push) are each documented `O(1)`, except on the one call that forces a reallocation, which both document as `O(n)`; [`Dequeue`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1.dequeue) and [`Pop`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.pop) are documented plain `O(1)`, with no such exception, because removing an element never grows the array. Neither type is a linked structure; "queue" and "stack" here are interfaces the algorithm relies on, not particular memory layouts.
 :::
 
 ::::exercise[Predict a different walk]
@@ -590,7 +606,7 @@ hallway, correct: False
 `hallway` is a straight corridor with no loop in it, and the naive check still reports one. An undirected edge is stored both ways — `Closet`'s list contains `Hall` and `Hall`'s list contains `Closet` — so the moment DFS recurses from `Hall` into `Closet`, `Closet` looks back at its own neighbor list and finds `Hall` already marked seen. That is not a cycle; it is the same door counted from both sides. `HasCycleCorrect` passes the parent along and skips exactly that one edge, so a real cycle only registers when DFS reaches an already-seen room through a *different* door than the one it arrived by, which is what happens at `LivingRoom` in `rooms`: it reaches back to `Hall`, and `Hall` is not `LivingRoom`'s parent.
 
 :::pitfall
-An undirected cycle check that doesn't exclude the parent edge reports a cycle on every graph with at least one edge, tree or not. This is not an edge case to test for later — it fires on the very first edge of the very first call.
+An undirected cycle check that doesn't exclude the parent edge reports a cycle on every graph with at least one edge, tree or not. This is not an edge case to test for later — it fires on the first edge the very first child examines.
 :::
 
 ### A directed cycle needs "still on this call's path," not "seen before"
@@ -680,7 +696,7 @@ broken,  correct: True
 
 The naive checker reports a cycle in `modules` — a graph that has none. `Logging` and `Cache` each have a second edge into a module DFS has already fully explored by another route (`Logging -> Repository`, `Cache -> Service`); the naive check cannot tell that from a genuine loop, because it only ever asks "have I marked this before," never "is this an ancestor of where I am now." A real cycle detector needs both sets: `onPath` for modules still open on the current call chain, `done` for modules whose entire subtree has already returned. Only a hit against `onPath` is a cycle; a hit against `done` means two different paths reach the same module, which is normal in a graph and not a defect.
 
-This is exactly the theorem behind the check: a directed graph is acyclic if and only if a depth-first search of it never finds an edge to a node still open on the current path — a back edge, in the vocabulary the [edge-classification section](#why-the-iterative-version-gets-it-wrong) below uses. Cormen, Leiserson, Rivest and Stein prove this in the chapter on elementary graph algorithms, and Sedgewick and Wayne's own cycle detector for digraphs is built on the same idea ([Sedgewick & Wayne, "Directed Graphs"](https://algs4.cs.princeton.edu/42digraph/)).
+This is exactly the theorem behind the check: a directed graph is acyclic if and only if a depth-first search of it never finds an edge to a node still open on the current path — a back edge, in the vocabulary the [edge-classification section](#why-the-iterative-version-gets-it-wrong) below uses. [Cormen, Leiserson, Rivest and Stein](https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/) prove this in the chapter on elementary graph algorithms, and Sedgewick and Wayne's own cycle detector for digraphs is built on the same idea ([Sedgewick & Wayne, "Directed Graphs"](https://algs4.cs.princeton.edu/42digraph/)).
 
 ::::exercise[Find the second bug]
 This directed cycle check uses the right idea — an `onPath` set of ancestors still open on the current call — but has one line missing. What does it report for the acyclic `modules` graph above, and why?
@@ -722,12 +738,12 @@ static bool HasCycleBuggy(Dictionary<string, List<string>> g)
 }
 ```
 
+:::solution
+It reports `True` on a graph with no cycle. `Visit` adds `u` to `onPath` on entry but never removes it on return, so `onPath` behaves like the naive checker's plain `seen` set: once a module has been visited at all, it stays "on the path" forever, even after DFS has completely finished it and backtracked. By the time `Cache` examines its edge to `Service`, `Service` is long finished — but still sitting in `onPath`, since nothing ever took it out — so the check misreports a back edge. The missing line is `onPath.Remove(u);` immediately before the final `return false;`, exactly where `HasCycleCorrect` moves `u` from `onPath` into `done`.
+
 ```text output
 True
 ```
-
-:::solution
-It reports `True` on a graph with no cycle. `Visit` adds `u` to `onPath` on entry but never removes it on return, so `onPath` behaves like the naive checker's plain `seen` set: once a module has been visited at all, it stays "on the path" forever, even after DFS has completely finished it and backtracked. By the time `Cache` examines its edge to `Service`, `Service` is long finished — but still sitting in `onPath`, since nothing ever took it out — so the check misreports a back edge. The missing line is `onPath.Remove(u);` immediately before the final `return false;`, exactly where `HasCycleCorrect` moves `u` from `onPath` into `done`.
 :::
 ::::
 
@@ -784,7 +800,7 @@ Config -> Cache -> Logging -> Database -> Repository -> Service -> Api -> Client
 valid start order: True
 ```
 
-A module can only finish after everything it points to has finished (`Visit` recurses into every neighbor before appending `u`), so reversing the finish order puts every dependency before its dependents. Sedgewick and Wayne state this exactly: "reverse postorder in a DAG provides a topological order," computed in time proportional to *V* + *E* ([Sedgewick & Wayne, "Directed Graphs"](https://algs4.cs.princeton.edu/42digraph/)). It only works on a graph with no cycle — a DAG, directed acyclic graph — which is why `TopoSort` and `HasCycleCorrect` are two views of the same traversal: a topological order exists exactly when DFS finds no back edge to certify.
+A module can only finish after everything it points to has finished (`Visit` recurses into every neighbor before appending `u`), so reversing the finish order puts every dependency before its dependents. Spelled out, that start order is `Config`, `Cache`, `Logging`, `Database`, `Repository`, `Service`, `Api`, then `Client` — every module appears before anything that depends on it. Sedgewick and Wayne state this exactly: "reverse postorder in a DAG provides a topological order," computed in time proportional to *V* + *E* ([Sedgewick & Wayne, "Directed Graphs"](https://algs4.cs.princeton.edu/42digraph/)). It only works on a graph with no cycle — a DAG, directed acyclic graph — which is why `TopoSort` and `HasCycleCorrect` are two views of the same traversal: a topological order exists exactly when DFS finds no back edge to certify.
 
 ::::exercise[Prove the connection]
 Using only the definitions above — a tree edge goes to an unvisited node, a back edge goes to a node still `onPath` (an ancestor on the current call) — explain why a graph with a valid topological order can never contain a back edge.
@@ -933,7 +949,7 @@ stack, push forward: Config Service Api Client Cache Logging Repository Database
 stack, push reversed: Config Database Repository Service Api Client Logging Cache
 ```
 
-Pushing `[Database, Logging, Cache, Service]` in list order puts `Service` — the *last* neighbor — on top, so it pops first: the stack tries the neighbors in the opposite order from recursion, which only ever calls into the *first* unvisited neighbor immediately. Reversing the push order before pushing fixes that and reproduces the recursive order exactly, as shown above. Order is the easy half of the pitfall, though — the hard half is what a stack of plain nodes cannot recover at all.
+Pushing `[Database, Logging, Cache, Service]` in list order puts `Service` — the *last* neighbor — on top, so it pops first: the stack tries the neighbors in the opposite order from recursion, which only ever calls into the *first* unvisited neighbor immediately. In full, `recursive` and `stack, push reversed` both visit `Config`, `Database`, `Repository`, `Service`, `Api`, `Client`, `Logging`, then `Cache`; `stack, push forward` visits `Config`, `Service`, `Api`, `Client`, `Cache`, `Logging`, `Repository`, then `Database` — reversing the push order before pushing fixes the mismatch and reproduces the recursive order exactly. Order is the easy half of the pitfall, though — the hard half is what a stack of plain nodes cannot recover at all.
 
 ### The naive stack can't tell a cycle from a coincidence
 
@@ -1097,15 +1113,15 @@ Every traversal in this article — BFS, recursive DFS, and the frame-based iter
 
 ```csharp run
 Console.WriteLine(
-    "layers  vertices  edges  BFS edges  DFS edges");
+    "layers  verts  edges  BFS  DFS");
 foreach (int layers in new[] { 2, 4, 6, 8 })
 {
     var (g, edgeCount) = BuildLayered(layers);
     int bfsExamined = CountBfsEdges(g, 0);
     int dfsExamined = CountDfsEdges(g, 0);
     Console.WriteLine(
-        $"{layers,6}  {g.Count,8}  {edgeCount,5}  " +
-        $"{bfsExamined,9}  {dfsExamined,9}");
+        $"{layers,6}  {g.Count,5}  {edgeCount,5}  " +
+        $"{bfsExamined,3}  {dfsExamined,3}");
 }
 
 // Layer i has i+1 nodes, each pointing to every node in the
@@ -1174,11 +1190,11 @@ static int CountDfsEdges(Dictionary<int, List<int>> g, int start)
 ```
 
 ```text output
-layers  vertices  edges  BFS edges  DFS edges
-     2         6      8          8          8
-     4        15     40         40         40
-     6        28    112        112        112
-     8        45    240        240        240
+layers  verts  edges  BFS  DFS
+     2      6      8    8    8
+     4     15     40   40   40
+     6     28    112  112  112
+     8     45    240  240  240
 ```
 
 `edgesExamined` matches the edge count exactly at every size, for both algorithms: each edge is looked at precisely once, whichever end discovers it first, and every vertex is dequeued or recursed into exactly once. Add the *O(V)* vertex work to the *O(E)* edge work and the total is *O(V + E)* — linear in the size of the graph's adjacency-list representation, which every algorithm in this article assumes. An adjacency *matrix* changes the bound: checking all possible neighbors of one vertex costs *O(V)* regardless of how many actually exist, so a full traversal becomes *O(V<sup>2</sup>)*, worse than *O(V + E)* on any graph where most pairs of vertices are not directly connected. Space is *O(V)* for the `seen`/`onPath`/`done` sets and the frontier or call stack, on top of whatever the graph's own representation costs to store.

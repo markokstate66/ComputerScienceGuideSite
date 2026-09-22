@@ -1,0 +1,54 @@
+{
+  "article": "src/content/articles/algorithms/breadth-first-and-depth-first-search.md",
+  "route": "/algorithms/breadth-first-and-depth-first-search/",
+  "round": 1,
+  "role": "design",
+  "score": 7.5,
+  "comparedAgainst": [
+    "https://algs4.cs.princeton.edu/41graph/",
+    "https://www.geeksforgeeks.org/dsa/breadth-first-search-or-bfs-for-a-graph/"
+  ],
+  "lighthouse": { "performance": 86, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "node tools/verify-page.mjs --drafts /algorithms/breadth-first-and-depth-first-search/ (PowerShell, serial, nothing else running): FAIL on 'placeholder text: NEEDS_MARKUS' (expected, byline pending) and 'lighthouse performance 86 < 90' (real fail, not expected). words=3692, code=32, figures=2, h1=1, mobileOverflowPx=0, consoleErrors=[], consoleWarnings=[], broken=[]. Lighthouse scores/scores 86/100/100/100. lighthouse.json failing audits: first-contentful-paint 3.3s (score 0.41), largest-contentful-paint 3.3s (score 0.71), unused-css-rules ~13 KiB (0.5), bf-cache prevented/2 reasons (0), document-latency-insight 'no compression applied' est. 280 KiB savings (0.5), network-dependency-tree-insight (0). total-byte-weight audit: 422 KiB total, of which 418 KiB is the HTML document itself (uncompressed, 286,839 bytes wasted per document-latency-insight's own numbers) versus 3 KiB for hoisted.js and 1 KiB favicon -- this is an unusually large single-document page, not a many-request problem. Screenshots read: all 4 fold shots, desktop-light part03/part24, desktop-dark none needed beyond fold (light and dark render identically aside from theme), mobile-light parts 02,03,05,06,07,10,11,12,21,22,24,25, mobile-dark parts 01,04,14,17,18,21.",
+  "justification": "Structurally this is a strong article: a clean H2 outline with four purposeful H3s under 'What depth-first search is actually for', a TOC that reads as a table of contents of the argument, restrained and well-placed callouts (:::dotnet, :::pitfall), and four exercises spaced through the piece with varied forms (predict-before-running, adapt-the-algorithm, find-the-bug, prove-the-theorem, extend-the-counter) whose solutions are correctly collapsed behind 'Show solution' and never spoil the visible output. Both figures are genuinely informative rather than decorative -- Figure 1's three-level BFS fan-out and Figure 2's DFS tree with a non-tree-edge legend both have correct <title>/<desc>, remap color classes cleanly between light and dark, hold no overflow at 390 px in either theme, and their captions say exactly what to notice (Figure 1: why Cache has no level-2 child; Figure 2: why the legend edges are not back edges). No GFM tables are used, so there is no table-clipping risk, and mobileOverflowPx is 0 site-wide. Two real problems keep it off the pass bar. First, Lighthouse performance is 86, a genuine fail against the binding >=90 gate on every category, driven by an unusually heavy single HTML document (418 of 422 KiB) served uncompressed in the verify server -- FCP/LCP both land at 3.3s. Total byte weight this high for a text-only article is itself worth a look: the same eight-entry 'modules' dictionary literal is retyped in full in at least nine separate code blocks across the piece, which is good for run-code self-containment but adds real, avoidable HTML weight. Second, and specific to this article's content, the BFS/DFS visit-order comparisons that are the entire subject of the piece are printed with `string.Join(\" \", ...)` over eight node names, producing output lines of 55-70 characters; at the 390 px/40-column budget the back half of the list -- the very thing being compared -- disappears under the fade in at least five code blocks (the opening traverse example, the queue-for-stack skeleton, exercise 1's solution, the topological-sort output, and the recursive-vs-stack-forward-vs-stack-reversed comparison). The worst instance is the 'What both cost' edge-count table, where the entire 'DFS edges' column -- the numeric proof that DFS examines exactly as many edges as BFS -- is cut off completely on a phone, not just its tail; a reader has to infer the value by symmetry with the visible 'edges' and 'BFS edges' columns rather than read it. Two of the five join-output clippings are substantially mitigated because the prose spells the same node lists out in full as wrapped inline code (the DfsIterative-vs-Dfs comparison, and rooms/hallway which is short enough to fit anyway); the topo-sort order and the recursive/stack comparison are not restated and stay genuinely lost on mobile. Against the GeeksforGeeks BFS page this is still clearly better: no borrowed C-style pseudocode split across four languages, one running example instead of a new toy each time, and worked exercises with solutions instead of none. Against Sedgewick & Wayne's own site, this article covers strictly more ground (cycle detection, topological sort, components, and the iterative-DFS edge-classification pitfall all in one place) with runnable, checked C# throughout.",
+  "issues": [
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "'What both cost' section, block id (unlabelled, the layered-graph edge-counting program): OUTPUT panel header row 'layers vertices edges BFS edges DFS edges' and its four data rows; mobile-light part21/part22, mobile-dark equivalent",
+      "problem": "At 390 px the entire 'DFS edges' column is off-screen, not merely faded -- the table cuts after 'BFS edges' in the header and after the BFS-edges value in every data row. This is the one place in the article that turns the O(V+E) claim into a number a reader can check, and the DFS half of that check is invisible on the majority-share device.",
+      "fixLooksLike": "Shorten the header to something like 'layers verts edges BFS DFS' (drop 'edges' from the two per-algorithm columns since the header 'edges' already establishes the unit), and narrow the format widths (e.g. `{layers,4} {g.Count,4} {edgeCount,4} {bfsExamined,4} {dfsExamined,4}`) so all five columns fit inside 40 columns. Verify against a mobile screenshot after the change."
+    },
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "OUTPUT panels using `string.Join(\" \", ...)` over the eight-module visit order: the opening `traverse` block, the `skeleton` (queue-for-stack) block, exercise 1's solution block, the `TopoSort` block ('Config -> Cache -> Logging -> ...'), and the recursive/stack-forward/stack-reversed comparison block; mobile-dark part04, part14, part17-18 and mobile-light equivalents",
+      "problem": "Each of these prints a full 8-node visit order (55-70 characters incl. the 'BFS: '/'DFS: '/'recursive: ' label), so on a phone the last 3-4 module names -- routinely including the very node the surrounding sentence is about -- sit under the fade or off-panel entirely. The topo-sort order and the three-way recursive/push-forward/push-reversed comparison are not restated anywhere in prose, so that content is simply unavailable to a phone reader; two other instances (the DfsIterative-vs-Dfs order, and rooms/hallway) are mitigated because the full list is also spelled out as wrapped inline code in the following paragraph.",
+      "fixLooksLike": "For the two unmitigated cases (TopoSort output, and the recursive/forward/reversed comparison), either restate the full order once in prose as inline code the way the DfsIterative paragraph already does, or shorten the printed labels ('recursive:', 'stack, push forward:', 'stack, push reversed:' are themselves 12-20 characters of the budget) and abbreviate module names in just that demo (e.g. first two letters) with a one-line note that abbreviation is for width only."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Shell performance (lighthouse.json failing audits: document-latency-insight, network-dependency-tree-insight, bf-cache)",
+      "problem": "The verify server returns this page's 418 KiB HTML document uncompressed (document-latency-insight reports 'No compression applied', 280 KiB of the 286 KiB wasted-bytes estimate), which is the dominant cause of the 3.3s FCP/LCP and the 86 performance score on an otherwise CLS-free, TBT-free page. bf-cache restoration is also blocked for 2 undisclosed reasons.",
+      "fixLooksLike": "Enable gzip/br compression on the verify/preview server (and confirm the production Azure Static Web Apps config already compresses, since that is what actually ships). Investigate and fix the bf-cache blockers. File as a shell issue via /groom if not already tracked; this is the reason the round doesn't clear the >=90 gate, so it blocks this article specifically even though it isn't the writer's code to fix."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "The literal `Dictionary<string, List<string>> modules = new() { ... }` graph definition, repeated verbatim (or with one edge changed) in at least nine of the 32 code blocks",
+      "problem": "Each repetition is ~15 lines of near-identical HTML (syntax-highlighted spans, not just text), and is a meaningful contributor to the 418 KiB document weight that is the direct cause of the Lighthouse performance fail. This is a design/weight concern, not a correctness one -- run-code needs each block to be self-contained.",
+      "fixLooksLike": "Where a block only changes one line of `modules` (e.g. exercise 1's reordered adjacency list, the `broken` cycle example), consider defining the base graph once and showing only the diff/override in the visible snippet where run-code's mechanics allow it, or accept the repetition but flag it to the integrator as a contributor to page weight so it can be weighed against the compression fix above."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Body citations ('Sedgewick and Wayne state this directly:', 'Cormen, Leiserson, Rivest and Stein prove this...', the :::dotnet callout's 'is documented as a circular array')",
+      "problem": "As in other pillar articles, sources are named in prose but not hyperlinked at the point of the claim, so a reader has to scroll to the sources list and match by title.",
+      "fixLooksLike": "Link the naming phrase to the source URL at the point of the claim, consistent with whatever convention the gauntlet settles on across the pillar (see binary-search's design review for the same note)."
+    }
+  ],
+  "crosslinksFile": "docs/crosslinks/algorithms/breadth-first-and-depth-first-search.md exists and is sensible: four planned links with anchor text and location, plus clear boundary notes against stacks-and-queues, graphs-representation, dijkstra-shortest-path and recursion siblings. No penalty for missing body links."
+}

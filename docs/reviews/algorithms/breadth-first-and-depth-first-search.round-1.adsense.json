@@ -1,0 +1,40 @@
+{
+  "role": "adsense",
+  "article": "src/content/articles/algorithms/breadth-first-and-depth-first-search.md",
+  "route": "/algorithms/breadth-first-and-depth-first-search/",
+  "round": 1,
+  "score": 7.5,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/difference-between-bfs-and-dfs/",
+    "https://algs4.cs.princeton.edu/41graph/",
+    "https://algs4.cs.princeton.edu/42digraph/",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1"
+  ],
+  "consoleErrors": null,
+  "brokenLinks": null,
+  "justification": "Originality is high. The top result for 'bfs vs dfs' (GeeksforGeeks) is a comparison table with no code, no discussion of iterative-DFS pitfalls, edge classification, or parent tracking, and only name-checks topological sort/cycle detection/SCCs as applications without deriving or proving anything (fetched and confirmed directly). This article instead runs one C# module-dependency graph through BFS and recursive DFS, derives the queue-vs-stack equivalence by writing DfsIterative as a near-literal copy of Bfs, proves BFS's shortest-path property with a maze reconstruction, shows a naive undirected cycle check failing on a straight corridor because it doesn't exclude the parent edge, shows a naive directed cycle check reporting a false cycle in an acyclic graph because it conflates 'seen' with 'still open,' derives topological sort from finish order, and — the strongest differentiator — shows a plain-node stack misclassifying tree/back/cross edges and fixes it with an explicit (node, next-index) frame that mirrors the call stack, verified against the recursive DFS's own edge trace. The O(V+E) bound is checked by exact edge-examination counts across four graph sizes rather than asserted. Running examples (module dependency graph, floor plan with rooms, grid maze) are original, not reused from Sedgewick/Wayne or CLRS. `node tools/run-code.mjs` passes (32 blocks, 16 executed). No ad code, no opening provenance stamp (correctly not needed: the article does exact edge-count verification, not wall-clock timing, so EDITORIAL_BRIEF's toolchain-disclosure rule doesn't apply), no keyword stuffing, front-matter description is 148 characters (in range) and reads as a human sentence. Headings are article-specific and do not templatize against algorithms/binary-search.md (checked side by side). Quotes I checked against the live pages are all accurate and correctly attributed: Sedgewick & Wayne on BFS computing 'a shortest path from s to v,' the V+E time bound, 'explores the vertices adjacent to v in the reverse order of the standard recursive DFS,' 'may be updated more than once, so it may not be suitable for backtracking applications,' and 'reverse postorder in a DAG provides a topological order' all matched the source pages verbatim. Two issues keep this below the bar. First, the :::dotnet callout's docs claim is checkably wrong: it says the docs single out Stack<T>.Push as 'the one O(n) case,' implying Queue<T>.Enqueue is pure O(1), but the Queue<T>.Enqueue method page documents an identical O(n) reallocation exception ('If the internal array needs to be reallocated to accommodate the new element, this method becomes an O(n) operation'), and the class-level page the article actually links to states no Big-O for Enqueue/Dequeue at all. That is the class of finding the brief treats as automatic-cap-worthy: a specific, checkable claim attributed to 'the docs' that the linked page doesn't support and that is also substantively incorrect. Second, the 'Find the second bug' exercise shows the program's `text output` block ('True') directly under a question that asks 'What does it report ... and why?' before the reader reaches :::solution, which is exactly the pattern the pilot-round rules forbid ('a predict-the-output exercise must not show the output panel under the question'). Both are concrete and cheap to fix; with them fixed this article is comfortably above the bar and clearly differentiated from the field.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "The `:::dotnet` callout right after the queue/stack swap section (around 'Both document O(1) for the operations a graph search calls in a loop — Enqueue/Dequeue and Push/Pop — except when a push forces a reallocation, which the docs call out as the one O(n) case for Stack<T>.Push.')",
+      "problem": "Checked against the live Microsoft Learn pages: (1) the linked Queue<T> class page states no Big-O complexity for Enqueue or Dequeue at all, only the circular-array remark the article correctly quotes elsewhere; (2) the actual Queue<T>.Enqueue method page documents the same O(n) reallocation exception as Stack<T>.Push ('If the internal array needs to be reallocated to accommodate the new element, this method becomes an O(n) operation, where n is Count'), so 'the one O(n) case' framing is factually wrong, not just under-cited — Enqueue has the identical exception, unmentioned. Dequeue and Pop are each documented plain O(1), which the callout gets right.",
+      "fixLooksLike": "Link the Enqueue and Dequeue method pages (not just the class page) alongside the Push/Pop ones, and rewrite the sentence to state that Enqueue and Push both document the same O(1)-normally/O(n)-on-reallocation shape, while Dequeue and Pop are documented as plain O(1) — dropping the 'except ... the one O(n) case for Stack<T>.Push' phrasing that implies Queue is exempt.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "::::exercise[Find the second bug] (the `id=missing-remove` code block and the `text output` block showing `True`, both sitting before `:::solution`)",
+      "problem": "The question asks 'What does it report for the acyclic `modules` graph above, and why?' but the `text output` block ('True') is shown directly beneath the code, before the reader reaches the solution — so the 'what' half of the question is answered before the exercise is attempted. This is the exact case the binding pilot-round rule calls out: 'A predict-the-output exercise must not show the output panel under the question; the program and its output go inside the solution.'",
+      "fixLooksLike": "Move the ```text output``` block (and, if the intent is a pure predict-the-output exercise, the fact that it prints `True` at all) inside `:::solution:::`, so the visible question only shows the buggy code and the reader has to reason through what it reports before opening the solution.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Cormen, Leiserson, Rivest and Stein prove this in the chapter on elementary graph algorithms' (directed-cycle section, just before the Sedgewick & Wayne citation)",
+      "problem": "This is the article's only reference to the front-matter-listed CLRS source, and it is never hyperlinked to the front-matter URL (mitpress.mit.edu). Every other pillar article that cites CLRS (binary-search, amortized-analysis, big-o-notation) links the mitpress URL at least once alongside the name-drop; here it is name-only, which reads as a source listed but not actually cited inline.",
+      "fixLooksLike": "Wrap 'Introduction to Algorithms' or the chapter reference in a markdown link to https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/, matching the convention used in the other pillar articles.",
+      "owner": "writer"
+    }
+  ]
+}
