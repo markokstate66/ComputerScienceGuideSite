@@ -216,7 +216,7 @@ Random input keeps the [recursion](/glossary/#recursion) shallow — under 30 fr
 Every call to `Quicksort` on a range of size *m* does *m* − 1 comparisons in `Partition`, then recurses on whatever the partition produced. That gives one recurrence per case, depending only on how the split sizes behave:
 
 - **Worst case.** The split is `0 : (m-1)` at every level, the pattern measured above. *T*(*n*) = *T*(*n* − 1) + (*n* − 1) solves to *n*(*n* − 1)/2, which is Θ(*n*²).
-- **Best case.** The split is as even as possible at every level, `⌊(m-1)/2⌋ : ⌈(m-1)/2⌉`. *T*(*n*) = 2*T*(*n*/2) + (*n* − 1) is the same recurrence merge sort satisfies (see [the O(*n* log *n*) argument for merge sort](/complexity/big-o-notation/#the-pair-search-does-not-have-to-be-quadratic)), and it solves to Θ(*n* log *n*).
+- **Best case.** The split is as even as possible at every level, `⌊(m-1)/2⌋ : ⌈(m-1)/2⌉`. *T*(*n*) = 2*T*(*n*/2) + (*n* − 1) is the same recurrence merge sort satisfies — merge sort's own Θ(*n* log *n*) bound is asserted with a citation rather than derived from that recurrence (see [merge sort's comparison count](/complexity/big-o-notation/#when-the-dropped-constant-decides-the-winner)), since solving recurrences like this one is left to a future article — and by the same bound, this recurrence also solves to Θ(*n* log *n*).
 - **Average case.** Average over what, precisely, is its own question, worked out below — but the answer is again Θ(*n* log *n*), with a larger constant than the best case.
 
 <figure class="diagram">
