@@ -1,0 +1,29 @@
+{
+  "article": "src/content/articles/data-structures/stacks-and-queues.md",
+  "route": "/data-structures/stacks-and-queues/",
+  "round": 2,
+  "role": "adsense",
+  "score": 8.8,
+  "comparedAgainst": [
+    "https://cp-algorithms.com/data_structures/stack_queue_modification.html",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic",
+    "https://algs4.cs.princeton.edu/13stacks/",
+    "https://www.geeksforgeeks.org/dsa/check-for-balanced-parentheses-in-an-expression/",
+    "https://www.geeksforgeeks.org/dsa/introduction-to-circular-queue/",
+    "https://www.geeksforgeeks.org/dsa/introduction-to-monotonic-stack/",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1"
+  ],
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "justification": "Round 1's single capping problem -- a fabricated quotation attributed by name to cp-algorithms.com -- is genuinely fixed, not relabeled. I re-fetched https://cp-algorithms.com/data_structures/stack_queue_modification.html directly (page title 'Minimum Stack / Minimum Queue') and confirmed its actual sentence: 'we will keep the queue in nondecreasing order (i.e. the smallest value will be stored in the head)'. The article's round-2 sentence -- 'cp-algorithms describes the same technique for a minimum-tracking structure, explaining that it will \"keep the queue in nondecreasing order\" by removing trailing elements larger than the new one before adding it' -- quotes only that exact five-word-plus phrase verbatim, in quotation marks, and states the removal step as the writer's own unquoted paraphrase rather than dressing it up as a quote. This is the honest-fix pattern the round-1 fixLooksLike asked for: drop the false quotation marks, keep what the source actually says, paraphrase the rest plainly. No new invented wording was smuggled in under quotes; the diff versus round 1 touches exactly three sentences and adds nothing else that reads as fabricated. Both new inline citations check out against the live pages: (1) 'the namespace lists List<T>, LinkedList<T>, Stack<T>, Queue<T>, PriorityQueue<TElement,TPriority> and the rest', linked to https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic -- I re-fetched that page and it lists exactly those five classes (plus Dictionary, HashSet, SortedDictionary, etc.) and, as the article claims, no Deque<T>. (2) '[Sedgewick and Wayne's Algorithms] walks through both implementations side by side for exactly this reason: the array and linked-list versions of a stack (and a queue) make the same underlying tradeoff', linked to https://algs4.cs.princeton.edu/13stacks/ -- I re-fetched that page and confirmed it presents both an array-resizing stack/queue and a linked-list stack/queue, so the claim about both implementations being covered is accurate, not stretched. Both citations sit exactly where the claims they support are made (the Deque<T> absence, and the array-vs-linked-list tradeoff), which was the concrete gap round 1 flagged. `node tools/run-code.mjs src/content/articles/data-structures/stacks-and-queues.md` reports `PASS data-structures/stacks-and-queues.md blocks=25 executed=12`, matching expectation exactly -- the fix touched only prose, no code blocks. The diff is otherwise minimal and additive (three sentences gain a citation or a corrected quote; nothing else in the article moved), so the originality, structure and exercise strength round 1 already credited highly stand unregressed. One residual, minor, pre-existing sloppiness survives from round 1 and was not addressed: the front-matter source entry titled 'Stack / queue modifications (minimum stack, monotonic deque)' (same cp-algorithms URL) still doesn't match the page's real title ('Minimum Stack / Minimum Queue') and still carries the parenthetical 'monotonic deque' gloss the source page never uses -- and this source list renders publicly in the article's 'Sources' section (src/layouts/ArticleLayout.astro renders `data.sources` as a linked, titled list), so a reader who clicks through sees a title mismatch. Round 1 listed this only as an optional alternative inside issue 1's fixLooksLike ('fix the title OR drop the parenthetical'), not as its own required fix, and it is a citation-label imprecision rather than a fabricated quote or claim in prose -- it does not rise to the severity that capped round 1. It keeps the round from a higher score but does not block a pass.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Front matter source 'title: \"Stack / queue modifications (minimum stack, monotonic deque)\"' (cp-algorithms.com entry), rendered publicly in the article's Sources section",
+      "problem": "The source's real page title is 'Minimum Stack / Minimum Queue' (confirmed by re-fetching https://cp-algorithms.com/data_structures/stack_queue_modification.html). The front-matter title still says 'monotonic deque', a term that does not appear anywhere on that page. This was flagged as an optional fix alongside round 1's major fabricated-quote issue and was not applied; unlike the quote itself, it was not required, but it remains a visible mismatch in the public-facing Sources list.",
+      "fixLooksLike": "Retitle the source entry to match the page, e.g. 'Minimum stack / Minimum queue', or drop the '(minimum stack, monotonic deque)' parenthetical entirely and let the URL and publisher speak for themselves.",
+      "owner": "writer"
+    }
+  ]
+}
