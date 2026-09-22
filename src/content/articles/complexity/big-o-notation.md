@@ -4,7 +4,7 @@ description: "Count the steps in real C# loops, meet the formal definition of Bi
 pillar: complexity
 order: 1
 author: markus
-published: 2026-09-18
+published: 2026-09-21
 updated: 2026-09-21
 level: beginner
 tags: [big-o, asymptotic-analysis, time-complexity, sorting]
@@ -70,7 +70,15 @@ sources:
     url: "https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/"
     publisher: "MIT Press"
     accessed: 2026-09-18
-draft: true
+  - title: "Big Omicron and Big Omega and Big Theta"
+    url: "https://danluu.com/knuth-big-o.pdf"
+    publisher: "Donald E. Knuth, ACM SIGACT News 8(2), 1976"
+    accessed: 2026-09-21
+  - title: "Common MSBuild Project Properties (Optimize)"
+    url: "https://learn.microsoft.com/en-us/visualstudio/msbuild/common-msbuild-project-properties"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-21
+draft: false
 ---
 
 A race-timing app holds an array of lap times and has to answer two questions: which lap was fastest, and which two laps were closest to each other. Both are a few lines of C#. On 1,000 laps both feel instant. On 80,000 laps the first still does, and the second, written the obvious way, takes a couple of seconds on the machine used for this page, one comparison at a time. Big-O notation states how the number of steps an algorithm takes grows as its input grows, largely apart from the constants: it is how you see that difference coming from the code itself, before anyone has 80,000 laps to wait through. The way in is to count what each loop does.
@@ -195,7 +203,7 @@ Choosing what to count as a step is called choosing a *cost model*; Sedgewick an
 
 ## The count predicts growth, not milliseconds
 
-A step count is not a running time. But if each step takes roughly the same time, multiplying the steps by four multiplies the time by four, whatever that time is. The program below times the pair search (without the counter) on inputs that double. Its first line, [`#:property`](https://learn.microsoft.com/en-us/dotnet/core/sdk/file-based-apps) `Optimize=true`, is a build directive that asks the compiler for optimized code, the way a release build would. Every timing program on this page carries it; a plain debug build of the same loop runs several times slower, which a later section measures precisely.
+A step count is not a running time. But if each step takes roughly the same time, multiplying the steps by four multiplies the time by four, whatever that time is. The program below times the pair search (without the counter) on inputs that double. Its first line, [`#:property`](https://learn.microsoft.com/en-us/dotnet/core/sdk/file-based-apps) `Optimize=true`, is a build directive that sets the [`Optimize` MSBuild property](https://learn.microsoft.com/en-us/visualstudio/msbuild/common-msbuild-project-properties), documented as a boolean that "enables compiler optimizations" when true — the way a release build would. Every timing program on this page carries it; a plain debug build of the same loop runs several times slower, which a later section measures precisely.
 
 ```csharp run id=doubling
 #:property Optimize=true
@@ -279,7 +287,7 @@ One run on this machine printed:
  80,000     2138 ms     x3.9
 ```
 
-Three runs gave 7 to 11 ms for 5,000 laps and 2.14 to 2.26 seconds for 80,000; the smallest, fastest row is the noisiest one, since a few milliseconds of timer and JIT variation is a large share of 7 ms. From 20,000 laps up, every growth factor stayed between 3.9 and 4.5, close to the four the step count predicts.
+Three runs gave 7 to 11 ms for 5,000 laps and 2.14 to 2.26 seconds for 80,000; the smallest, fastest row is the noisiest one, since a few milliseconds of timer and JIT variation is a large share of 7 ms. From 20,000 laps up, every growth factor stayed close to four, typically between 3.9 and 4.5 but occasionally further off on a busy machine, near the four the step count predicts.
 
 The measurements on this page come from .NET 10 (SDK 10.0.401, runtime 10.0.12) on Windows 11, on a desktop with an Intel Core i7-11700K; your digits will differ.
 
@@ -621,21 +629,21 @@ At 8 items the O(*n*²) algorithm is almost four times faster than the O(*n* log
 
 The reason is the constants. Insertion sort's inner loop is one comparison and one assignment on a single array, all the way through, with no method calls. Merge sort pays more before it does any useful work: `MergeSort` allocates a fresh *n*-element buffer once per call, and `Split` then recurses all the way down to arrays of length 1 — at *n* = 8 that is 7 recursive calls and 7 merge steps to sort 8 numbers, each with call overhead insertion sort never pays. Every one of merge sort's steps costs more, and at small sizes it does not take enough fewer of them to make up for that. The crossover point itself is a property of this implementation (no cutoff into insertion sort, one buffer allocation per call, `int` elements), this range of sizes, and this machine; a different element type, a cache-friendlier merge, or a faster processor moves it.
 
-Now remove the first line of the program and run it again. The code and the Big-O class are unchanged; only the compiler switch is gone. On this machine it printed:
+Now take the collapsed `id=crossover` program above, delete its one build directive (`#:property Optimize=true`), and run it again. This specific comparison is an informal aside: `tools/run-code.mjs` does not exercise it, because pasting the whole hundred-line harness a second time just to remove one line would only pad the page rather than teach anything new. Reproduce it yourself in under a minute — delete the line, save, rerun. The code and the Big-O class are unchanged; only the compiler switch is gone. On this machine it printed:
 
 ```text
     n   insertion       merge  faster
-    8      120 ns      296 ns  insertion
-   16      343 ns      694 ns  insertion
-   32      969 ns    1,588 ns  insertion
-   64    3,026 ns    3,598 ns  insertion
-  128   10,444 ns    8,557 ns  merge
-  256   37,436 ns   18,242 ns  merge
-  512  144,926 ns   40,370 ns  merge
- 1024  559,222 ns   89,159 ns  merge
+    8      120 ns      338 ns  insertion
+   16      343 ns      742 ns  insertion
+   32      975 ns    1,788 ns  insertion
+   64    3,037 ns    4,093 ns  insertion
+  128   10,408 ns    9,368 ns  merge
+  256   38,011 ns   20,476 ns  merge
+  512  146,989 ns   44,457 ns  merge
+ 1024  576,459 ns  100,846 ns  merge
 ```
 
-(2,048 is left out only because its unformatted digit count collides with the column beside it; unoptimized, that row printed 2,235,565 ns for insertion sort and 193,634 ns for merge sort, still an eleven-fold gap.) Insertion sort is still ahead at 64 and merge sort wins from 128 on: the crossover point moved from between 256 and 512 down to between 64 and 128, a shift of about a factor of four, purely from a compiler switch. Both algorithms are exactly the same Big-O as before. That is the precise sense in which Big-O "ignores constants": it is silent about them, and they are free to matter.
+Two more runs stayed within a few percent of these numbers at every row, and the crossover stayed between 64 and 128 each time. (2,048 is left out only because its unformatted digit count collides with the column beside it; unoptimized, that row printed 2,396,718 ns for insertion sort and 217,457 ns for merge sort, still an eleven-fold gap.) Insertion sort is still ahead at 64 and merge sort wins from 128 on: the crossover point moved from between 256 and 512 down to between 64 and 128, a shift of about a factor of four, purely from a compiler switch. Both algorithms are exactly the same Big-O as before. That is the precise sense in which Big-O "ignores constants": it is silent about them, and they are free to matter.
 
 :::dotnet
 Library sorts are built around this crossover. The documentation for [`Array.Sort`](https://learn.microsoft.com/en-us/dotnet/api/system.array.sort) describes an introspective sort: insertion sort when a partition has 16 elements or fewer, heapsort if the partitioning goes too deep, quicksort otherwise, O(*n* log *n*) overall. In the current source, [`ArraySortHelper.cs`](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Collections/Generic/ArraySortHelper.cs) goes one step further and sorts partitions of 2 and 3 elements with hard-coded compare-and-swap calls. Those remarks describe the current implementation; treat the 16 as a detail that can change between releases.
@@ -782,7 +790,7 @@ Big-O is an upper bound, and upper bounds are allowed to be loose. Merge sort is
 
 The pair count is Θ(*n*²). The upper half was proved above with *c* = ½. For the lower half, *n*/2 ≤ *n*²/4 once *n* ≥ 2, so *n*²/2 − *n*/2 ≥ ¼ · *n*² from *n*₀ = 2. Sandwiched between ¼*n*² and ½*n*², the count cannot be described by any other power of *n*.
 
-The NIST entry notes that Big-O is often misused to mean "equal to" rather than "less than": a speaker who says "this loop is O(*n*²)" frequently means Θ(*n*²). In conversation that rarely causes trouble. When a statement has to be exact, for instance "no comparison sort can beat this" or "this loop really is quadratic, not just at most quadratic", Ω and Θ are the tools. A third notation, [*o*, "little-o"](https://xlinux.nist.gov/dads/HTML/littleOnotation.html), tightens O further: *f* is o(*g*(*n*)) if for *every* positive *c*, not just some, *f*(*n*) < *c* · *g*(*n*) beyond some threshold — *f* grows strictly slower than *g*, not just no faster. And Ω itself has two conventions in the wider literature: the one used here, from NIST and CLRS, requires the lower bound for *every* sufficiently large *n*; an older convention from analytic number theory only requires it for infinitely many *n*, which is weaker. This page uses the first, stronger one throughout.
+The NIST entry notes that Big-O is often misused to mean "equal to" rather than "less than": a speaker who says "this loop is O(*n*²)" frequently means Θ(*n*²). In conversation that rarely causes trouble. When a statement has to be exact, for instance "no comparison sort can beat this" or "this loop really is quadratic, not just at most quadratic", Ω and Θ are the tools. A third notation, [*o*, "little-o"](https://xlinux.nist.gov/dads/HTML/littleOnotation.html), tightens O further: *f* is o(*g*(*n*)) if for *every* positive *c*, not just some, *f*(*n*) < *c* · *g*(*n*) beyond some threshold — *f* grows strictly slower than *g*, not just no faster. And Ω itself has had two conventions. Hardy and Littlewood introduced Ω in 1914 to mean a function whose absolute value exceeds a constant multiple of *g*(*n*) for infinitely many *n* — weaker than O's mirror image, since it says nothing about the *n* in between. [Knuth's 1976 note on the notation](https://danluu.com/knuth-big-o.pdf) changed this to the symmetric definition used here, requiring the bound for *every* sufficiently large *n*, because "for all the applications I have seen so far in computer science, a stronger requirement... is much more appropriate." This page uses Knuth's convention, now the standard one in computer science, throughout.
 
 :::pitfall
 O, Ω and Θ are not "worst case, best case, average case". The notation bounds a function; the case chooses *which* function. Every combination is meaningful: insertion sort's worst case is Θ(*n*²), its best case is Θ(*n*), and the algorithm taken over all inputs is O(*n*²) and Ω(*n*), with no single Θ that covers every input.
@@ -812,18 +820,18 @@ Decide each statement, using the definitions rather than intuition.
 
 ## The growth rates you will meet, judged by doubling
 
-A handful of functions cover nearly every bound you will read. The most practical way to tell them apart is the test from the first section: what happens to the work when *n* doubles? The table below answers that for the pure function *g*(*n*) itself, not for every function that happens to be O(*g*(*n*)) — a function that is O(log *n*) with a huge constant can still be slow at every size you will ever run.
+A handful of functions cover nearly every bound you will read. The most practical way to tell them apart is the test from the first section: what happens to the work when *n* doubles? The table below answers that for the pure function *g*(*n*) itself, not for every function that happens to be O(*g*(*n*)) — a function that is O(log *n*) with a huge constant can still be slow at every size you will ever run. (The O(log *n*) row assumes base 2, the natural base for something that halves each step, such as binary search; doubling *n* adds exactly one step only at that base, though the earlier point about dropping the base still holds for the O(log *n*) *class* itself.)
 
-| Bound | If *n* doubles, *g*(*n*)... | Typical example |
+| Bound | Doubling *n* | Example |
 |---|---|---|
-| O(1) | is unchanged | hash lookup |
-| O(log *n*) | gains one step (log base 2) | binary search |
+| O(1) | unchanged | hash lookup |
+| O(log *n*) | +1 step | binary search |
 | O(*n*) | doubles | linear scan |
-| O(*n* log *n*) | just over doubles | comparison sort |
+| O(*n* log *n*) | just over 2x | comparison sort |
 | O(*n*²) | quadruples | all pairs |
 | O(*n*³) | grows 8-fold | all triples |
 | O(2ⁿ) | is squared | all subsets |
-| O(*n*!) | is multiplied by more than *n*ⁿ | all orderings |
+| O(*n*!) | grows fastest | all orderings |
 
 (The last row: going from *n*! to (2*n*)! multiplies by (*n*+1)(*n*+2)···(2*n*), a product of *n* terms each bigger than *n*, so the multiplier itself exceeds *n*ⁿ and grows without bound as *n* grows — a stronger and more precise statement than "grows faster still".)
 
@@ -898,9 +906,9 @@ n!                       12
 The top two rows are separated by a factor of 25: for practical purposes *n* log *n* is "linear with a small tax", which is why sorting first is so often an acceptable move — the same trade the sorted closest-pair search above relies on. Then the cliff: a quadratic algorithm gets through 31,622 items in the time a linear one handles a billion. The last two rows are a different kind of thing. A machine a thousand times faster raises the quadratic limit to about a million; it raises the 2ⁿ limit from 29 to 39, because each extra item doubles the work and 2¹⁰ is about a thousand. O(log *n*) and O(1) are missing from the table because no input you could store would use up the budget.
 
 <figure class="diagram">
-<svg viewBox="0 0 360 574" role="img" aria-labelledby="curves-title curves-desc">
-<title id="curves-title">Growth rates plotted on linear axes and again on logarithmic axes</title>
-<desc id="curves-desc">Top chart, linear axes up to n = 32 and 1,024 steps: 2 to the n leaves the chart before n = 10, n squared curves up to the top right corner, and n log n, n and log n are squashed along the bottom. Bottom chart, logarithmic axes up to n = one billion and ten to the twelfth steps: n, n squared and n cubed are straight lines of increasing slope, n log n runs just above n, log n is almost flat, and 2 to the n bends upward almost vertically. A dashed horizontal line at one billion steps crosses the curves at n = 29, 1,000, 31,622, about 40 million and one billion.</desc>
+<svg viewBox="0 0 360 260" role="img" aria-labelledby="growth-linear-title growth-linear-desc">
+<title id="growth-linear-title">Growth rates on linear axes: two curves dominate almost immediately</title>
+<desc id="growth-linear-desc">A chart of steps against n from 0 to 32, steps from 0 to 1,024. 2 to the n leaves the chart before n = 10. n squared curves up toward the top right corner. n log n, n and log n stay squashed along the bottom, nearly indistinguishable at this scale.</desc>
 <text x="20" y="18" class="d-bold">Linear axes: n up to 32</text>
 <path d="M44 40 V210 H340" class="d-line"/>
 <path d="M53.3 210 L62.5 209.8 L81 209.7 L118 209.5 L192 209.3 L340 209.2" class="d-good" style="stroke-width:2"/>
@@ -920,41 +928,49 @@ The top two rows are separated by a factor of 25: for practical purposes *n* log
 <text x="266" y="226" text-anchor="middle" class="d-mono">24</text>
 <text x="340" y="226" text-anchor="middle" class="d-mono">32</text>
 <text x="20" y="246" class="d-muted">n and log n stay flat near the axis.</text>
-<text x="20" y="274" class="d-bold">Log axes: n up to 10⁹</text>
-<path d="M44 290 V530 H340" class="d-line"/>
-<path d="M44 350 H340" class="d-line d-dashed"/>
-<path d="M53.9 530 L63.7 524 L76.9 519.6 L93.3 516.1 L109.8 513.6 L142.7 510 L175.6 507.5 L208.4 505.6 L241.3 504 L274.2 502.7 L307.1 501.5 L340 500.5" class="d-good" style="stroke-width:2"/>
-<path d="M44 530 L340 350" class="d-good" style="stroke-width:2"/>
-<path d="M53.9 524 L63.7 512 L76.9 499.6 L93.3 486.1 L109.8 473.6 L142.7 450 L175.6 427.5 L208.4 405.6 L241.3 384 L274.2 362.7 L307.1 341.5 L340 320.5" class="d-good" style="stroke-width:2"/>
-<path d="M44 530 L241.3 290" class="d-accent" style="stroke-width:2.5"/>
-<path d="M44 530 L175.6 290" class="d-accent" style="stroke-width:2.5"/>
-<path d="M44 524 L53.9 518 L63.7 506 L70.3 492 L76.9 469.8 L80.2 454.2 L83.5 434.6 L86.8 409.9 L90 378.8 L93.3 339.6 L95 316.4 L96.6 290" class="d-bad" style="stroke-width:2.5"/>
-<circle cx="92.1" cy="350" r="4" class="d-fill-bad"/>
-<circle cx="142.7" cy="350" r="4" class="d-fill-accent"/>
-<circle cx="192" cy="350" r="4" class="d-fill-accent"/>
-<circle cx="293.9" cy="350" r="4" class="d-fill-good"/>
-<circle cx="340" cy="350" r="4" class="d-fill-good"/>
-<text x="104" y="306" class="d-text-bad d-bold">2ⁿ</text>
-<text x="183" y="306" class="d-text-accent d-bold">n³</text>
-<text x="249" y="306" class="d-text-accent d-bold">n²</text>
-<text x="330" y="314" text-anchor="end" class="d-text-good d-small">n log n</text>
-<text x="336" y="376" text-anchor="end" class="d-text-good d-small">n</text>
-<text x="336" y="520" text-anchor="end" class="d-text-good d-small">log n</text>
-<text x="40" y="534" text-anchor="end" class="d-mono">1</text>
-<text x="40" y="474" text-anchor="end">10³</text>
-<text x="40" y="414" text-anchor="end">10⁶</text>
-<text x="40" y="354" text-anchor="end" class="d-bold">10⁹</text>
-<text x="40" y="294" text-anchor="end">10¹²</text>
-<text x="44" y="546" text-anchor="middle" class="d-mono">1</text>
-<text x="142.7" y="546" text-anchor="middle">10³</text>
-<text x="241.3" y="546" text-anchor="middle">10⁶</text>
-<text x="336" y="546" text-anchor="middle">10⁹</text>
-<text x="20" y="566" class="d-muted">Dashed: 10⁹ steps. Dots: table limits.</text>
 </svg>
-<figcaption>Figure 2. The same growth rates drawn twice. On linear axes (top) only the two fastest growers are visible. On log-log axes (bottom) every power of <em>n</em> is a straight line whose slope is its exponent, so <em>n</em>² climbs twice as steeply as <em>n</em>, while 2ⁿ bends upward and leaves the chart before <em>n</em> = 40. The dots where the curves cross the dashed line are the limits printed by the budget program.</figcaption>
+<figcaption>Figure 2a. Growth rates on linear axes, <em>n</em> up to 32. Only O(<em>n</em>²) and O(2ⁿ) are visible as curves at this scale; every slower-growing rate sits nearly flat along the bottom.</figcaption>
 </figure>
 
-The log-log picture is also a measuring tool. Plot running time against *n* on log-log axes and read the slope: about 1 means linear, about 2 quadratic. The doubling experiment near the top of this page is the same test in numbers: a growth factor of 4 per doubling is a slope of log₂ 4 = 2.
+<figure class="diagram">
+<svg viewBox="0 0 360 320" role="img" aria-labelledby="growth-log-title growth-log-desc">
+<title id="growth-log-title">Growth rates on logarithmic axes: every power of n becomes a straight line</title>
+<desc id="growth-log-desc">A chart of steps against n from 1 to one billion, steps from 1 to ten to the twelfth, both on logarithmic axes. n, n squared and n cubed are straight lines of increasing slope. n log n runs just above n. log n is almost flat. 2 to the n bends upward almost vertically. A dashed horizontal line at one billion steps crosses the curves at n = 29, 1,000, 31,622, about 40 million and one billion, matching the budget table above.</desc>
+<text x="20" y="14" class="d-bold">Log axes: n up to 10⁹</text>
+<path d="M44 30 V270 H340" class="d-line"/>
+<path d="M44 90 H340" class="d-line d-dashed"/>
+<path d="M53.9 270 L63.7 264 L76.9 259.6 L93.3 256.1 L109.8 253.6 L142.7 250 L175.6 247.5 L208.4 245.6 L241.3 244 L274.2 242.7 L307.1 241.5 L340 240.5" class="d-good" style="stroke-width:2"/>
+<path d="M44 270 L340 90" class="d-good" style="stroke-width:2"/>
+<path d="M53.9 264 L63.7 252 L76.9 239.6 L93.3 226.1 L109.8 213.6 L142.7 190 L175.6 167.5 L208.4 145.6 L241.3 124 L274.2 102.7 L307.1 81.5 L340 60.5" class="d-good" style="stroke-width:2"/>
+<path d="M44 270 L241.3 30" class="d-accent" style="stroke-width:2.5"/>
+<path d="M44 270 L175.6 30" class="d-accent" style="stroke-width:2.5"/>
+<path d="M44 264 L53.9 258 L63.7 246 L70.3 232 L76.9 209.8 L80.2 194.2 L83.5 174.6 L86.8 149.9 L90 118.8 L93.3 79.6 L95 56.4 L96.6 30" class="d-bad" style="stroke-width:2.5"/>
+<circle cx="92.1" cy="90" r="4" class="d-fill-bad"/>
+<circle cx="142.7" cy="90" r="4" class="d-fill-accent"/>
+<circle cx="192" cy="90" r="4" class="d-fill-accent"/>
+<circle cx="293.9" cy="90" r="4" class="d-fill-good"/>
+<circle cx="340" cy="90" r="4" class="d-fill-good"/>
+<text x="104" y="46" class="d-text-bad d-bold">2ⁿ</text>
+<text x="183" y="46" class="d-text-accent d-bold">n³</text>
+<text x="249" y="46" class="d-text-accent d-bold">n²</text>
+<text x="330" y="54" text-anchor="end" class="d-text-good d-small">n log n</text>
+<text x="336" y="116" text-anchor="end" class="d-text-good d-small">n</text>
+<text x="336" y="260" text-anchor="end" class="d-text-good d-small">log n</text>
+<text x="40" y="274" text-anchor="end" class="d-mono">1</text>
+<text x="40" y="214" text-anchor="end">10³</text>
+<text x="40" y="154" text-anchor="end">10⁶</text>
+<text x="40" y="94" text-anchor="end" class="d-bold">10⁹</text>
+<text x="40" y="34" text-anchor="end">10¹²</text>
+<text x="44" y="286" text-anchor="middle" class="d-mono">1</text>
+<text x="142.7" y="286" text-anchor="middle">10³</text>
+<text x="241.3" y="286" text-anchor="middle">10⁶</text>
+<text x="336" y="286" text-anchor="middle">10⁹</text>
+<text x="20" y="306" class="d-muted">Dashed: 10⁹ steps. Dots: table limits.</text>
+</svg>
+<figcaption>Figure 2b. The same growth rates on log-log axes, <em>n</em> up to 10⁹. Every power of <em>n</em> is now a straight line whose slope is its exponent; 2ⁿ still bends upward and leaves the chart before <em>n</em> = 40. The dots where curves cross the dashed line are the limits the budget program printed above.</figcaption>
+</figure>
+
+The log-log picture in Figure 2b is also a measuring tool. Plot running time against *n* on log-log axes and read the slope: about 1 means linear, about 2 quadratic. The doubling experiment near the top of this page is the same test in numbers: a growth factor of 4 per doubling is a slope of log₂ 4 = 2.
 
 ## Reading a bound off C# code
 

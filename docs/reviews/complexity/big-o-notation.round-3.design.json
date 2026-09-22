@@ -1,0 +1,46 @@
+{
+  "article": "src/content/articles/complexity/big-o-notation.md",
+  "route": "/complexity/big-o-notation/",
+  "round": 3,
+  "role": "design",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/analysis-algorithms-big-o-analysis/ (top result for \"what is big o notation\"; read fresh via WebFetch: gives the formal c/n0 definition and code snippets for several algorithms, but the snippets are fragments never compiled or run, no Omega/Theta coverage, two generic stock-style diagrams, ~1,800-2,000 words, beginner-friendly but shallow)",
+    "https://en.wikipedia.org/wiki/Big_O_notation (top result for \"what is big o notation\"; read fresh via WebFetch: rigorous formal definitions and full Omega/Theta/little-o/Vinogradov coverage, but zero runnable code, effectively one diagram, ~15,000-18,000 words of dense academic prose assuming calculus background)"
+    ],
+  "justification": "Forming a fresh judgement before opening the prior rounds' reviews: this article beats both fresh top-ranking comparisons on the dimensions that matter for design/UX. Neither GeeksforGeeks nor Wikipedia has a single complete, compiled, actually-run C# program with real measured output; this page has ten, each preceded by a wildcard-verification OUTPUT block and followed by a real 'One run on this machine printed:' TEXT block with genuine numbers and machine specs, which reads as trustworthy rather than illustrative. It covers O, Omega, Theta and little-o with the same rigor as Wikipedia but organizes it for a beginner (worked witness proofs, a pitfall callout distinguishing the notations from case analysis, exercises with collapsed solutions) rather than Wikipedia's dense unbroken prose. It has three purpose-built, theme-aware SVG diagrams against GeeksforGeeks's two generic stock images and Wikipedia's one. I then read report.json/lighthouse.json and every default-visible screenshot: Lighthouse 95/100/100/100 (up from round 2's 93, likely because performance is noisy under concurrent-agent load per both prior rounds' own caveat rather than a real regression/improvement), 0 console errors, 0 console warnings, 0 broken links out of 32 internal and 17 external, mobileOverflowPx 0, and the sole verify-page failure is the expected NEEDS_MARKUS placeholder. Checking round 2's major specifically: the growth-rate table was rebuilt from a three-column 'Bound / If n doubles, g(n)... / Typical example' layout (whose long second-column phrases squeezed the new example column to 3-4 characters) into a tighter 'Bound / Doubling n / Example' layout with short cell text throughout ('unchanged', '+1 step', 'doubles', 'just over 2x', 'quadruples', 'grows 8-fold', 'is squared', 'grows fastest' against 'hash lookup', 'binary search', 'linear scan', 'comparison sort', 'all pairs', 'all triples', 'all subsets', 'all orderings'). I read this table at 390 px in both mobile-dark (part16) and mobile-light (part16): all three columns are fully readable on every row in both themes, no clipping, no cell forces a scroll to read the example — the major is genuinely fixed, not just narrowed. Checking round 2's remaining minor about Figure 2: it is now split into Figure 2a (linear axes, n up to 32) and Figure 2b (log-log axes, n up to 10^9), each with its own caption naming what to notice. I read both new figures at 390 px in mobile-dark (parts 17-18) and mobile-light (parts 17-18): every axis label, curve label (2^n, n^2, n^3, n log n, n, log n) and the under-drawing annotation line is crisp and correctly themed in both figures in both themes, and each figure is now a single, less dense idea rather than one figure carrying two charts — this minor is genuinely fixed too. The remaining gap from a 10 is a single minor that has now survived three rounds unaddressed: in the hero subtitle, 'O(n log' ends one line and 'n) one.' begins the next, at desktop width in both light and dark themes (confirmed in desktop-light-part01 and desktop-dark-fold; mobile widths wrap the whole phrase together and do not show this). It is a genuine, reproducible nit — a beat of friction on a short math expression, not a comprehension blocker — and it caps the score just short of the 'only nits, nothing outstanding' ceiling. Not scored higher because a three-times-flagged fix should eventually land; not held down at round 2's level because both real defects from that round (one major, one minor) are confirmed resolved with evidence, and the page's design now clears the design/UX bar the reference pages set.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Hero subtitle, front matter `description` as rendered under the H1 ('...and measure where an O(n²) sort beats an O(n log n) one.'), desktop width only, both desktop-light-part01 and desktop-dark-fold.",
+      "problem": "Unresolved from round 1 and round 2: at desktop column width the line breaks inside the math expression, so 'an O(n log' ends one line and 'n) one.' begins the next. Mobile widths (mobile-light-part01, mobile-dark-part01) wrap the whole phrase together and do not show this, so it is desktop-only.",
+      "fixLooksLike": "Wrap short math fragments such as 'O(n log n)' in a no-wrap span, or insert a non-breaking space between 'log' and 'n' (and between other short symbol/number pairs prone to the same break) at the shell/typography level so it applies wherever math notation appears, not just this one sentence.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 95,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "otherMeasured": {
+    "consoleWarnings": 0,
+    "mobileOverflowPx": 0,
+    "words": 5661,
+    "codeBlocks": 26,
+    "figures": 3,
+    "internalLinks": 32,
+    "externalLinks": 17,
+    "verifyPagePass": false,
+    "verifyPageFailures": ["placeholder text: NEEDS_MARKUS (expected)"],
+    "round2IssuesRechecked": {
+      "growthTableThirdColumnClipped(major)": "fixed - rebuilt as Bound/Doubling n/Example with short cell text; all three columns fully readable at 390px in mobile-light-part16 and mobile-dark-part16, both themes",
+      "figure2TooDenseForBeginner(minor)": "fixed - split into Figure 2a (linear axes) and Figure 2b (log-log axes), each with its own caption; both legible at 390px in mobile-light and mobile-dark parts 17-18",
+      "mathNotationLineBreaks(minor)": "not fixed - still splits 'O(n log n)' across lines in the hero subtitle at desktop width; see issue list"
+    },
+    "screenshotsRead": "desktop-light fold and parts 01-16 (all); mobile-dark fold and parts 01-25 (all); desktop-dark fold, part01, part02; mobile-light fold, part01, part02, plus targeted parts 16-18 to recheck the round-2 growth table and Figure 2a/2b fixes in both themes"
+  }
+}
