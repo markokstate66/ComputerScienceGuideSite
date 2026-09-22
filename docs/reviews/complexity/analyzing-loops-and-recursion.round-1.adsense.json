@@ -1,0 +1,34 @@
+{
+  "score": 8.8,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/how-to-analyse-loops-for-complexity-analysis-of-algorithms/",
+    "https://www.freecodecamp.org/news/time-complexity-of-algorithms/",
+    "https://www.geeksforgeeks.org/dsa/time-complexity-and-space-complexity/",
+    "https://www.geeksforgeeks.org/dsa/analysis-of-algorithms-set-4-analysis-of-loops/"
+  ],
+  "justification": "Target query: \"how to calculate time complexity\" (CONTENT_PLAN.md §7.1 row 2). I fetched four of the pages that currently rank for this query and adjacent phrasing (GeeksforGeeks's loop-analysis page, its general time/space-complexity page, its 'analysis of loops' page, and freeCodeCamp's introductory piece). All four stop at single/nested-loop Big-O and simple recursion; none covers dependent-bound (triangular) loops with a derived closed form, recursion trees, recurrence relations, the Master Theorem (any of its three cases), the regularity condition, or when the theorem doesn't apply (subtractive recurrences, unequal subproblems, the case-2/3 gap). This article covers all of that, each claim backed by an instrumented C# program whose measured counts match the derived closed form, plus a genuinely reusable five-step procedure at the end (not a rehash of headings). That is a real, verified content gap the top results leave open, matching the plan's stated angle ('a procedure a reader can apply, with 8 graded code fragments analysed fully'). Structurally the article earns its assigned Q (question-driven) shape: every heading is a real search-style question, distinct from the prerequisite big-o-notation.md's declarative headings, and it explicitly avoids re-teaching big-o-notation's five rules of thumb, instead measuring and extending each one. Boundaries with the three other planned complexity/algorithms siblings are documented and sensible in docs/crosslinks/complexity/analyzing-loops-and-recursion.md, so the missing body links to /algorithms/recursion/, /complexity/space-complexity/ and /complexity/best-average-worst-case/ are not held against it; the one live cross-link used (/algorithms/binary-search/) resolves to a published (draft:false) article, and the two anchor links into big-o-notation.md point at headings that actually exist there. No filler intro/outro, no keyword stuffing, no boilerplate 'Introduction/Conclusion' headings, exercises vary in form (find-the-trap, extend-the-code, apply-it, measure-it) and none leaks its output panel above the solution. I checked whether the article states its toolchain wherever it reports measured numbers (the pilot-round rule flagged on a sibling article this batch): every 'measured' figure here is a deterministic step/call/comparison count from `long` counters (steps, calls, matches, moves, compares), not a wall-clock timing, so there is no hardware- or runtime-dependent number that needs a 'ran on .NET X on OS Y/CPU Z' disclosure — unlike big-o-notation.md, this article never times anything with Stopwatch, and it correctly has no such statement. The score is held below the top of the range by a real sourcing-hygiene problem: 'Introduction to Algorithms, 4th ed., chapter 7 (Quicksort)' is listed in front matter but never cited anywhere in the body (the quicksort-worst-case paragraph cites only NIST's 'hard split, easy merge' page), which the binding pilot-round lesson calls out by name as a finding, and which reads as an unused, decorative citation rather than a source the text actually leans on. Two smaller citation-weave gaps compound this (see issues). None of these are fabrications or factual errors — I independently fetched the NIST DADS 'easy split, hard merge' entry and the Microsoft Learn Thread constructor page and confirmed the article's own phrasing is original (not paraphrased from either) and that the '1 megabyte' default stack-size claim is accurate per that page — but they are real, fixable sourcing gaps that keep this from the very top of the scale."
+  ,
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Front matter sources list (lines 17-20, \"Introduction to Algorithms, 4th ed., chapter 7 (Quicksort)\") vs. body section \"When does the Master Theorem not apply?\", quicksort paragraph",
+      "problem": "CLRS chapter 7 (Quicksort) is listed as a source with an access date but is never cited inline anywhere in the article. The only paragraph about quicksort's worst case cites NIST's 'hard split, easy merge' entry instead. Per the binding pilot-round lesson in docs/EDITORIAL_BRIEF.md ('A source in the list that is never cited inline... is a finding'), an unused source in front matter reads as padding rather than a source the text actually relies on.",
+      "fixLooksLike": "Either add an inline citation to CLRS ch. 7 at the sentence asserting quicksort's Θ(n) partition cost / worst-case behavior on sorted input, or remove the chapter-7 entry from front matter if the paragraph is meant to stand on the NIST citation alone.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "`:::dotnet` callout in the Master Theorem section, sentence \"The default thread stack size in .NET is documented as 1 megabyte\"",
+      "problem": "This specific factual claim has no inline hyperlink to the source that supports it (the 'Thread.Thread(ThreadStart, Int32) Constructor' page listed in front matter); only the adjacent StackOverflowException clause in the same sentence is linked. I fetched the Microsoft Learn page and the '1 megabyte' figure is accurate and documented there, so this is a citation-weave gap, not a factual error.",
+      "fixLooksLike": "Hyperlink \"documented as 1 megabyte\" (or \"documented\") to the Thread constructor source, the same way StackOverflowException is linked two words later.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise \"Measure it: three subproblems instead of two\" solution, sentence \"it is the cost of Karatsuba's integer multiplication algorithm, which splits an n-digit multiplication into three multiplications of n/2 digits... beating the naive O(n²) method for large enough n\"",
+      "problem": "This names a specific historical algorithm and makes a specific comparative performance claim about it, but no source for Karatsuba's algorithm appears in front matter or inline, unlike every other named algorithm/result in the article (merge sort, quicksort, binary search, `Array.Sort` are all sourced). Per hard rule 3, a non-obvious factual claim needs a primary source.",
+      "fixLooksLike": "Cite a primary source for the Karatsuba claim (e.g. the original algorithm's textbook treatment in CLRS or another already-used standard reference), or soften the sentence to note the shape only without the specific crossover claim if no source will be added.",
+      "owner": "writer"
+    }
+  ]
+}

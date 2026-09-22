@@ -1,0 +1,28 @@
+{
+  "critic": "design",
+  "article": "complexity/analyzing-loops-and-recursion",
+  "round": 1,
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/how-to-analyse-complexity-of-recurrence-relation/",
+    "https://www.freecodecamp.org/news/big-o-notation-why-it-matters-and-why-it-doesnt-1674cfa8a23c/"
+  ],
+  "justification": "verify-page.mjs passes clean: Lighthouse 97/100/100/100, 0 console errors, 0 broken links, 0px mobile overflow at 390px; the only failure is the expected NEEDS_MARKUS placeholder. I opened all 12 desktop-light parts, all 18 mobile-dark parts, the fold plus two parts of desktop-dark, and the fold plus two parts of mobile-light. Reading rhythm is strong throughout: prose sets up a concrete scenario, a runnable csharp block follows with its measured output panel directly under it, and the derivation closes each section — 25 code blocks never feel like a wall because two hand-drawn SVG diagrams (round-robin staircase, recursion tree) and four collapsed exercises break up the run. Heading hierarchy is clean (H2 question-headings, H3 for the three Master Theorem cases, no skipped levels), the desktop 'On this page' TOC nests the three cases under the Master Theorem entry correctly. Code blocks render with no unwanted wrapping; every 'text output' table (steps, matches/formula, moves/n·log2n/ratio, compares/n^2/2/ratio) stays comfortably inside 40 columns and shows zero clipping or misalignment in any of the four device/theme combinations I checked, including the ratio columns that carry the article's actual evidence. Both diagrams use viewBox widths of 360 (well inside the 360-max rule), so neither one scrolls or fades at phone width in either theme; team-row labels, the n/2-n/4-leaves recursion tree, and both captions stay legible and correctly recoloured in dark mode. Exercises are properly collapsed (no answer leakage) and vary in form (find-the-trap, extend-the-code, apply-it, measure-it) per the editorial brief. Compared with the two ranking pages for 'how to calculate time complexity': GeeksforGeeks has no diagrams at all for a recurrence-tree topic and pads the page with six near-duplicate language blocks; freeCodeCamp has decent diagrams but breaks the reading flow with a mid-article ad banner. This page has neither weakness — no ad code anywhere, hand-drawn theme-aware diagrams instead of static images, and interactive collapsed solutions freeCodeCamp doesn't offer — while matching or beating both on code/output pairing and measured evidence. That clears the 8.5 (MDN/Real Python bar) with real margin; it stops short of a 10 only because of the minor boilerplate-line clipping noted below, not because of any structural weakness.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Sequential-loops and nested-loops sections, mobile screenshots (mobile-dark-part03, part04): the `foreach (int n in (int[])[1_000, 2_000, 4...` and `int[] orderSkus = MakeCodes(m, seed:...` lines",
+      "problem": "A handful of setup lines (the array-literal of test sizes, a constructor's `seed:` argument) run past the ~40-character visible width on a 390px phone and fade under the right edge.",
+      "fixLooksLike": "Not required — per WRITER_GUIDE.md section 7 this is acceptable when the tail is boilerplate and not the point of the line, and here the same n values reappear as the first column of the output panel directly below, so nothing evidential is hidden. Noting only as a polish opportunity: breaking the array literal across two lines (one value per line, or a leading comment) would remove the fade entirely if a future pass touches this file.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
