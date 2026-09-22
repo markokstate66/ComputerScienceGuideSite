@@ -980,12 +980,10 @@ lookup (1,1): True second
 
 ## Choosing chaining, open addressing, or `Dictionary<TKey,TValue>`
 
-| Situation | Use |
-|---|---|
-| General-purpose key/value storage in C# | `Dictionary<TKey,TValue>` — chaining over two parallel arrays, expected O(1) |
-| Custom key type | Override `GetHashCode`/`Equals` together, from immutable state, or use a `record` |
-| Key might otherwise be mutated after insertion | Key on an immutable id, not the mutable object itself |
-| Keys are attacker-influenced strings | Already covered: `string.GetHashCode()` is randomized per process, and `Dictionary<TKey,TValue>` escalates to it under a collision attack |
-| Cache-friendliness matters more than deletion | Open addressing keeps everything in one array with no chain pointers at all, at the cost of a trickier `Remove` and a hard ceiling at 100% full |
+- **General-purpose key/value storage in C#:** `Dictionary<TKey,TValue>` — chaining over two parallel arrays, expected O(1).
+- **Custom key type:** override `GetHashCode`/`Equals` together, from immutable state, or use a `record`.
+- **Key might otherwise be mutated after insertion:** key on an immutable id, not the mutable object itself.
+- **Keys are attacker-influenced strings:** already covered — `string.GetHashCode()` is randomized per process, and `Dictionary<TKey,TValue>` escalates to it under a collision attack.
+- **Cache-friendliness matters more than deletion:** open addressing keeps everything in one array with no chain pointers at all, at the cost of a trickier `Remove` and a hard ceiling at 100% full.
 
 Whichever is picked, the two questions from this article decide correctness before performance ever enters it: does the key type's `GetHashCode` agree with its `Equals`, and can anything mutate that key while it is in the table.
