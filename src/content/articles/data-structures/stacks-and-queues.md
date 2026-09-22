@@ -42,7 +42,7 @@ sources:
     url: "https://cp-algorithms.com/data_structures/stack_queue_modification.html"
     publisher: "cp-algorithms.com"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A configuration parser reports a file as well-formed when it is not. Its bracket checker counts opening and closing brackets and calls the text balanced when the two counts agree — but `([)]` has two of each in the wrong order, and the check waves it through. Getting the *order* right, not just the count, is exactly what a [stack](/glossary/#abstract-data-type) buys you, and it is the cleanest way into two structures that agree on almost nothing except that code reaches for them constantly: a stack undoes the most recent action first, a queue serves the oldest request first, and .NET ships a real, inspectable implementation of each.
