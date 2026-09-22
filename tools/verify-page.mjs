@@ -21,6 +21,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
+import zlib from 'node:zlib';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import sirv from 'sirv';
@@ -136,6 +137,41 @@ async function checkExternal(urls) {
 
 const slug = (route) => route.replace(/^\/|\/$/g, '').replace(/[\/.]/g, '__') || 'home';
 
+// sirv's `dev: true` mode serves every response uncompressed (no gzip/brotli negotiation), which
+// makes this tool's private preview measurably heavier over the wire than the compressed responses
+// a real host (Azure Static Web Apps) sends. That skews Lighthouse's document-latency / FCP / LCP
+// audits low for no reason related to the article's actual content. Wrap the handler so text assets
+// get compressed exactly the way a static host would, matching what Lighthouse would see in production.
+const COMPRESSIBLE = /^(text\/|application\/(javascript|json|xml|manifest\+json)|image\/svg)/;
+function withCompression(handler) {
+  return (req, res) => {
+    const acceptEncoding = req.headers['accept-encoding'] || '';
+    const encoding = /\bbr\b/.test(acceptEncoding) ? 'br' : /\bgzip\b/.test(acceptEncoding) ? 'gzip' : null;
+    // sirv sets headers (via the real res.setHeader, untouched below) before it writes the body, so by
+    // the time res.end() runs here every header it set is already on the real response — we only need
+    // to buffer the body ourselves so we can decide, once we know the Content-Type, whether to compress it.
+    const chunks = [];
+    const originalEnd = res.end.bind(res);
+    res.write = (chunk) => { if (chunk) chunks.push(Buffer.from(chunk)); return true; };
+    res.end = (chunk) => {
+      if (chunk) chunks.push(Buffer.from(chunk));
+      const body = Buffer.concat(chunks);
+      const contentType = String(res.getHeader('Content-Type') || '');
+      if (!encoding || body.length < 256 || !COMPRESSIBLE.test(contentType)) {
+        originalEnd(body);
+        return;
+      }
+      const compressed = encoding === 'br' ? zlib.brotliCompressSync(body) : zlib.gzipSync(body);
+      res.removeHeader('Content-Length');
+      res.setHeader('Content-Encoding', encoding);
+      res.setHeader('Content-Length', compressed.length);
+      res.setHeader('Vary', 'Accept-Encoding');
+      originalEnd(compressed);
+    };
+    handler(req, res);
+  };
+}
+
 async function main() {
   // Each run serves its own private build (removed on exit); --no-build serves the project's dist/ instead.
   const ownBuild = !flags.has('--no-build');
@@ -143,7 +179,7 @@ async function main() {
   if (ownBuild) process.on('exit', () => fs.rmSync(built, { recursive: true, force: true }));
   if (flags.has('--all') || routes.length === 0) routes = listRoutes(built);
 
-  const server = http.createServer(sirv(built, { dev: true, single: false }));
+  const server = http.createServer(withCompression(sirv(built, { dev: true, single: false })));
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   const origin = `http://127.0.0.1:${server.address().port}`;
 
