@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-21 — `/ship 20`: complexity/big-o-notation merged
+
+- PR #20 squash-merged into `adsense-rebuild`, branch deleted, issue #5 closed. Round 3 gauntlet result: technical 9.4 / AdSense 9.3 / design 8.7, all ≥ the 8.5 bar.
+- Verified before merge: `npm run build` green (27 pages), `node tools/run-code.mjs src/content/articles/complexity/big-o-notation.md` PASS (blocks=26, executed=10).
+- Serial `verify-page` Lighthouse (owner-facing, run earlier by the consumer with nothing else running): 93/100/100/100. Only failure was the expected `NEEDS_MARKUS` byline placeholder.
+- `docs/STATUS.json` totals: passed 7 → 8, drafted 6 → 5.
+
 ## 2026-09-21 — `/ship 19`: oop-design/four-pillars-of-oop merged
 
 - PR #19 squash-merged into `adsense-rebuild`, branch deleted, issue #2 closed. Round 3 gauntlet result: technical 9.0 / AdSense 9.3 / design 9.0, all ≥ the 8.5 bar.

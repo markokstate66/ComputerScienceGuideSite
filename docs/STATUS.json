@@ -41,9 +41,9 @@
   },
   "totals": {
     "planned": 67,
-    "passed": 7,
+    "passed": 8,
     "inReview": 0,
-    "drafted": 6,
+    "drafted": 5,
     "notStarted": 54,
     "cut": 0
   },
@@ -55,16 +55,55 @@
       "wave": "A",
       "shape": "W",
       "title": "Big-O Notation: What It Measures and What It Hides",
-      "state": "drafted",
-      "round": 1,
-      "scores": null,
+      "state": "passed",
+      "round": 3,
+      "scores": {
+        "technical": 9.4,
+        "adsense": 9.3,
+        "design": 8.7
+      },
       "codePass": true,
-      "lighthouse": null,
-      "openIssues": [
-        "round-1 draft written, run-code green (orchestrator run 2026-09-18), NOT yet reviewed by any critic"
+      "lighthouse": [
+        93,
+        100,
+        100,
+        100
       ],
-      "history": [],
-      "batch": 1
+      "openIssues": [
+        "byline NEEDS_MARKUS placeholder (owner input)",
+        "wave-3 cross-links in docs/crosslinks/",
+        "hero subtitle still breaks math fragment mid-line at desktop width (integrator, open since round 1)"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-21",
+          "technical": 8.0,
+          "adsense": 8.5,
+          "design": 8.0,
+          "pass": false,
+          "note": "reviews in docs/reviews/"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-21",
+          "technical": 9.0,
+          "adsense": 9.0,
+          "design": 8.2,
+          "pass": false
+        },
+        {
+          "round": 3,
+          "date": "2026-09-21",
+          "technical": 9.4,
+          "adsense": 9.3,
+          "design": 8.7,
+          "pass": true
+        }
+      ],
+      "batch": 1,
+      "lighthouseNote": "serial run by orchestrator, 2026-09-21",
+      "published": "2026-09-21"
     },
     {
       "pillar": "complexity",
