@@ -42,7 +42,7 @@ sources:
     url: "https://algs4.cs.princeton.edu/23quicksort/"
     publisher: "Sedgewick and Wayne, Princeton University"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Two functions can carry the same Big-O time and still put very different pressure on memory: one needs a second array the size of the input, the other needs none; one recurses a thousand levels deep, the other loops with two variables. [Big-O notation](/complexity/big-o-notation/) applies just as well to memory as to steps, but most explanations of it stop at time. This page measures the memory side directly, with [`GC.GetAllocatedBytesForCurrentThread`](https://learn.microsoft.com/en-us/dotnet/api/system.gc.getallocatedbytesforcurrentthread), so every space claim below is a number a program produced, not one asserted from the shape of the code.
