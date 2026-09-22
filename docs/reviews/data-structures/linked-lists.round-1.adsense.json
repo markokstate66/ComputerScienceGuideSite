@@ -1,0 +1,24 @@
+{
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/linked-list-data-structure/",
+    "https://en.wikipedia.org/wiki/Linked_list"
+  ],
+  "justification": "This clearly exceeds both top-ranking pages for \"linked list explained.\" GeeksforGeeks is a curriculum index with only a four-row comparison table and no runnable code or measurements. Wikipedia is deep conceptually (sentinels, tradeoffs vs. dynamic arrays, cache-locality mention) but entirely pseudocode-level, with no executed benchmarks. This article builds a singly and doubly linked list from scratch with a sentinel node, derives and tabulates real operation costs against List<T> and T[], measures node overhead with GC.GetAllocatedBytesForCurrentThread, times position-seek growth against List<T>, and builds a genuinely useful LRU cache with a measured naive-vs-real comparison — none of which either competitor offers. Every code sample is original (own hiking-trail and pantry examples, own LRU cache, own diagrams), and there is no filler intro/outro, no keyword stuffing, and no boilerplate section titles. I spot-checked five direct quotations against their cited Microsoft Learn / LWN pages: four are exact, one (the LinkedList<T> node-reinsertion remark) is a paraphrase dressed as a verbatim quote. I also compared this article's structure, headings, and its two memory/benchmark demos directly against the published sibling arrays-and-dynamic-arrays.md: the headings, opening, exercise formats, and the specific measurements (node-allocation overhead and position-seek cost) are all distinct from that article's cache-locality traversal and Insert/RemoveAt-shift benchmarks, so there is no templated reuse. The one real, binding-rule gap is that none of the three measurement sections (node-overhead benchmark, seek-cost benchmark, LRU naive-vs-real benchmark) ever state the runtime/OS/CPU toolchain the numbers came from, which EDITORIAL_BRIEF.md's pilot-round lessons call out explicitly as something that cost articles their pass. That omission, plus the one inexact quotation, are why this is a 9.0 rather than a 9.5–10: an excellent, clearly original article held back from a flawless score by a specific, fixable provenance gap and a citation-accuracy nit.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "\"Two things worth measuring before you decide\" (both the node-cost benchmark, id=memory, and the seek benchmark, id=seek) and the \"Measure the naive alternative\" exercise (id=ex-lru-measure) under \"Where the pointers pay for themselves: an LRU cache\"",
+      "problem": "The article reports concrete measured numbers (\"4.0 bytes/element\", \"32.0 bytes/element\", the seek-time table, the LRU ms comparison) and even says \"on this runtime\" and \"on this machine\" repeatedly, but never once names the runtime version, OS, or CPU class anywhere in the article. EDITORIAL_BRIEF.md's binding \"Lessons from the pilot round\" require stating the toolchain once, in the writer's own words, where measurements appear, and calls this out as something that cost articles their pass in the pilot round. The published sibling arrays-and-dynamic-arrays.md does this correctly (\".NET 10 (runtime 10.0.10) on Windows 11, on an 8-core x64 desktop processor...\").",
+      "fixLooksLike": "Add one sentence near the first measurement (\"What a node costs beyond its value\") stating the runtime, OS and CPU class in the writer's own words, matching the pattern used in arrays-and-dynamic-arrays.md, so all three measurement sections in this article are covered by it.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "\"Where the pointers pay for themselves: an LRU cache\", the sentence beginning \"The LinkedList<T> class remarks say this directly: nodes \\\"can be removed and reinserted... which results in no additional heap allocations.\\\"\"",
+      "problem": "This is presented in quotation marks as a verbatim citation, but the actual LinkedList<T> Remarks text (verified by fetching the page) reads: \"You can remove nodes and reinsert them, either in the same list or in another list, which results in no additional objects allocated on the heap.\" The article's quoted fragment \"no additional heap allocations\" is a paraphrase of \"no additional objects allocated on the heap,\" not the source's wording, even though it appears inside quotation marks alongside an accurate ellipsis-elided middle clause.",
+      "fixLooksLike": "Either quote the source's exact wording (\"...which results in no additional objects allocated on the heap\") or drop the closing quotation mark and state it as paraphrase, consistent with how the rest of the article's other four quoted fragments (all verified verbatim) are handled.",
+      "owner": "writer"
+    }
+  ]
+}

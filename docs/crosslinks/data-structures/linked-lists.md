@@ -1,0 +1,14 @@
+# Cross-links wanted by /data-structures/linked-lists/
+
+One line each: anchor text | target route | where in the article. `/data-structures/arrays-and-dynamic-arrays/` exists as a file on this branch but is `draft: true` (unpublished) as of 2026-09-22, so the body does not link it yet; it is already listed in `prerequisites` in front matter, which will render once that article is published. Each sentence reads correctly with or without the link.
+
+- "Contiguous memory wins every measurement above" | /data-structures/arrays-and-dynamic-arrays/ | "Deciding when to reach for a linked list", first bullet ("Reading, or building once and reading many times").
+- "an array element sharing a block with its neighbors does not pay" | /data-structures/arrays-and-dynamic-arrays/ | "Two things worth measuring before you decide" / "What a node costs beyond its value", first paragraph.
+- "List<T>" (the first mention, in the opening paragraph, "the one shape of problem where it beats a `List<T>` outright") | /data-structures/arrays-and-dynamic-arrays/ | Opening paragraph. That article builds `DynamicArray<T>` and owns `List<T>`'s internals; this article only compares against it.
+
+## Boundaries with planned siblings (to avoid near-duplicate coverage)
+
+- `/data-structures/arrays-and-dynamic-arrays/` owns array/`List<T>` memory layout, index arithmetic, cache-locality measurement (row- vs column-major traversal) and `Insert`/`RemoveAt` cost. This article cites those `List<T>` costs (`Insert`/`RemoveAt` O(*n*)) directly from Microsoft Learn rather than re-deriving them, and runs its own, different measurements (node overhead via `GC.GetAllocatedBytesForCurrentThread`, and position-seek cost growth) instead of repeating the row/column traversal benchmark.
+- `/data-structures/hash-tables/` (not yet written) will own hashing, collisions and `Dictionary<TKey,TValue>` internals in depth. This article uses `Dictionary<TKey, LinkedListNode<T>>` in the LRU cache and states only that dictionary lookup is expected O(1), linking the glossary entry `/glossary/#hash-table` for the one-line definition; it does not explain chaining, open addressing or load factor.
+- `/data-structures/stacks-and-queues/` (not yet written) will own `Stack<T>`/`Queue<T>` internals and the ring-buffer implementation. This article mentions both only once, in the closing decision list, as the array-backed alternative to a linked structure for unbounded FIFO/LIFO use.
+- `/complexity/amortized-analysis/` (published) traces `List<T>`'s doubling growth policy. This article's cost table states `List<T>` insert/remove as O(1) amortized at the back without re-deriving the proof, and does not link it inline because the claim is not the article's focus; add the link if a future round wants it spelled out.
