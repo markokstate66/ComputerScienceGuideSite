@@ -6,7 +6,9 @@
 //   node tools/run-code.mjs --pillar algorithms
 //
 // Fence contract (see CONTENT_PLAN.md §3):
-//   ```csharp run [id=name] [error=CS0165 | throws=TypeName] [args="a b"] [stdin="text"]
+//   ```csharp run [id=name] [error=CS0165 | throws=TypeName] [args="a b"] [stdin="text"] [fails] [warnings]
+//     `fails` allows (requires) a non-zero exit, e.g. a file-based xUnit v3 program (`#:package xunit.v3@1.*`)
+//     whose red/failing tests make it exit 1 on purpose. Without `fails`, non-zero exit is always a failure.
 //   ```text output            (directly after a run block: exact expected stdout; "[...]" is a wildcard)
 //   ```csharp snippet of=name (every non-blank line must appear, in order, in run block `name`)
 //   ```sql run [error]        (SQLite, one in-memory database per article, blocks run in order)
@@ -169,7 +171,10 @@ async function verifyArticle(file) {
         if (expected !== null && !outputMatches(expected, r.stdout)) fail(next, 'stdout before the exception does not match', { expected: norm(expected), actual: norm(r.stdout) });
         continue;
       }
-      if (r.status !== 0) { fail(b, `exit code ${r.status}`, { id, output: all.slice(-3000) }); continue; }
+      // `fails`: the program is expected to exit non-zero (e.g. an xUnit run with a deliberately red test,
+      // for a TDD red/green step) rather than crash unexpectedly. Mirrors the same flag on bash blocks.
+      const okExit = b.meta.flags.has('fails') ? r.status !== 0 : r.status === 0;
+      if (!okExit) { fail(b, `exit code ${r.status}${b.meta.flags.has('fails') ? ' (expected failure)' : ''}`, { id, output: all.slice(-3000) }); continue; }
       if (/warning CS\d+/.test(all) && !b.meta.flags.has('warnings')) { fail(b, 'compiles with warnings (fix them, or add the `warnings` flag if the warning is the point)', { id, output: all.match(/.*warning CS\d+.*/g).slice(0, 5).join('\n') }); continue; }
       if (expected === null && norm(r.stdout) !== '') { fail(b, 'program prints output but the article has no `text output` block after it', { id, actual: norm(r.stdout).slice(0, 2000) }); continue; }
       if (expected !== null && !outputMatches(expected, r.stdout)) { fail(b, 'stdout does not match the article', { id, expected: norm(expected), actual: norm(r.stdout) }); continue; }
