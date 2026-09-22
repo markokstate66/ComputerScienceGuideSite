@@ -1,0 +1,65 @@
+{
+  "article": "src/content/articles/algorithms/binary-search.md",
+  "route": "/algorithms/binary-search/",
+  "round": 2,
+  "role": "technical",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://raw.org/book/algorithms/binary-search/",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.array.binarysearch",
+    "https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/"
+  ],
+  "justification": "Fresh read first, then round 1. I found no factual error. run-code is green (PASS blocks=31 executed=15). Re-derived: split floor(s/2) versus ceil(s/2)-1, worst case floor(log2 n)+1 (also confirmed by the 11/1000/1000000 program: 4/10/20); lower/upper bound iteration range floor(log2(n+1)) to floor(log2 n)+1, so 'full count or one fewer' holds; the buggy program's 4 misses and the claim that a value is lost only when it sits immediately left of a too-big probe; Figure 1 and Figure 2 traces row by row (all consistent with the code); the 700 trace; closed-versus-half-open table; ~x == -x-1 and the index-0 argument for the complement; the 3.2e9 wrap to -547483648; >>> correct while the true sum is below 2^32; unsorted [560,305,990,350] giving -3 and the ordinal-versus-ignore-case miss of kiwi; LastAtOrBefore hanging on a two-element interval and the round-up repair; CountBetween windows; thumbnail search (Figure 3 probes 961, 481, 721, 601, 661, 631 are what FirstTrue does on [1,1921), 11 calls, 633 boundary, bar widths proportional); x > n/x equivalent to x*x > n for positive integers; isqrt(long.MaxValue) = 3037000499 so the exclusive bound 3037000500 brackets. Primary sources opened: Bloch (nine years, 1946/1962 quote attributed to Bentley, Programming Pearls version affected, 2^30 or more elements), ArraySortHelper.InternalBinarySearch (lo + ((hi - lo) >> 1), lo <= hi, return ~lo) and SpanHelpers.BinarySearch (the (int)(((uint)hi + (uint)lo) >> 1) form, PERF comment about saving one subtraction, return ~lo), the C# 11 unsigned-right-shift proposal, and the Array.BinarySearch docs (O(log n), duplicates quote, complement definition, unsorted warning; text reflects round-1 verification, and the article's paraphrases match). Round-1 findings all genuinely fixed: every listed source is now cited inline where its claim is made, C# 11 caveat added, checked-block scoping added, comparer example added with real output, real-valued and difference-overflow caveats added, solution code wrapped, output alignment fixed, and bug two now has a visible termination argument. Against the competition: raw.org is a rigorous pseudocode treatment (half-open invariant, lower/upper bound, termination) but has no runnable code, no C#, no failing-first narrative, no oracle testing, no library conventions, no overflow demonstration and no answer-space failure modes; the Microsoft Learn reference page is authoritative but has no reasoning at all. This article covers everything those two do plus the mechanisms behind the library return value, and it verifies rather than asserts its complexity claims. That is at the MDN-quality bar with nits, and in depth above it; I hold it at 8.7 rather than higher because nothing here is clearly better than the best possible result across the board (no measurements of cache behavior or interpolation/exponential variants, which top results do not cover either) and because of the small issues below, chiefly a source URL that does not resolve to the cited book.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Front matter sources: 'Programming Pearls, 2nd ed., column 4' URL https://www.pearson.com/en-us/subject-catalog/p/programming-pearls/P200000000629",
+      "problem": "The URL opens Pearson's generic search/landing page, not a Programming Pearls product page, so the source listed for the invariant-derivation claim does not resolve to the book. (The MIT Press URL for CLRS returned 403 to my fetcher, so I could not confirm it either way; the book and chapters cited, 2, 8 and 13, are correct for the 4th edition.)",
+      "fixLooksLike": "Replace with a URL that verifiably lands on the book (publisher product page or WorldCat/Open Library record) and re-check the MIT Press link in a browser; keep the chapter-level citation.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Intro paragraph after the second output block ('a search that never returns') and section 'Say what lo and hi mean...', paragraph beginning 'The converse is the bug'",
+      "problem": "The title and intro promise three bugs 'this page works through'. Bug two now has a visible termination argument, but the actual hang is never shown in the body; it appears only as a collapsed exercise solution. A reader who does not open the exercise gets the rule but not the demonstration, unlike bugs one and three.",
+      "fixLooksLike": "Two or three visible sentences naming the concrete case (a two-element interval with lo = mid and a rounded-down midpoint spins forever) with a pointer to the exercise for the runnable reproduction; or state in the intro that the third is left as an exercise.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The midpoint that overflows', paragraph before the overflow program: 'a byte[] with 1.2 billion elements needs only about 1.2 GB'",
+      "problem": "The demo uses lo = 1.2e9 and hi = 2e9, which corresponds to a 2 GB byte[], not 1.2 GB. The sentence is true on its own (overflow needs only lo + hi > 2^31 - 1, which a 1.2e9-element array can reach) but a reader will connect it to the numbers in the program and find the sizes do not match.",
+      "fixLooksLike": "Either say 'a byte[] of 2 billion elements is only 2 GB' to match the demo values, or explain that any array above about 1.07 billion elements (2^30) can reach the overflowing sum.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Searching a range of answers...', last bullet: 'a hundred halvings exhaust a double's precision'",
+      "problem": "Precision is exhausted relative to the magnitude of the bounds. For a range with lo at or near 0 (for example a tiny tolerance around zero) an interval can keep halving far past 100 steps before adjacent doubles are reached. 'For ordinary ranges' hedges it but leaves the reader without the criterion.",
+      "fixLooksLike": "Say why in half a sentence: about 53 halvings of a range whose bounds are far from zero reach adjacent doubles, so a fixed count of 100 is a safe choice for such ranges; near zero use a tolerance instead.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Searching a range of answers...' after the thumbs program: 'a handful of calls replace up to 1,920'; and 'First, last, and how many' closing paragraph: 'Both run the full floor(log2 n)+1 iterations or one fewer, since they never stop early'",
+      "problem": "Two small imprecisions. Eleven calls is a tenth of the alternative, not 'a handful'; and 'since they never stop early' explains the upper figure but not 'or one fewer', which comes from the right-branch size ceil(s/2)-1 shrinking faster than the left (range floor(log2(n+1)) to floor(log2 n)+1, and the formula is undefined for n = 0).",
+      "fixLooksLike": "Write 'eleven calls replace up to 1,920', and either drop 'or one fewer' or give the one-line reason (some probes cut the interval to ceil(s/2)-1) and note n >= 1.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'What Array.BinarySearch tells you...', duplicates paragraph: '(The library has no such variant, which is why the earlier section builds one.)'",
+      "problem": "An 'X has no Y' generalisation of the kind the pilot lessons warn about, with no source and no scope. I believe it is true of Array, List<T> and MemoryExtensions, but the article does not say which types it means and the docs pages do not state the absence.",
+      "fixLooksLike": "Scope it: 'Array, List<T> and the span extensions offer no lower-bound or upper-bound variant', which the reader can confirm from the linked member lists.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "docs/crosslinks/algorithms/binary-search.md line 5 versus article body first paragraph of 'Why a million elements need twenty probes'",
+      "problem": "The crosslinks file says the big-O article was unpublished; src/content/articles/complexity/big-o-notation.md exists (round-1 note). The body still links to the glossary entry although the article is also the front-matter prerequisite.",
+      "fixLooksLike": "Integrator confirms the route builds and switches the O(log n) link in wave 3 as the crosslinks file already requests.",
+      "owner": "integrator"
+    }
+  ],
+  "runCodePass": "PASS algorithms/binary-search.md  blocks=31 executed=15"
+}

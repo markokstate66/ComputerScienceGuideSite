@@ -1,0 +1,70 @@
+{
+  "article": "src/content/articles/algorithms/binary-search.md",
+  "route": "/algorithms/binary-search/",
+  "round": 2,
+  "role": "design",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://cp-algorithms.com/num_methods/binary_search.html",
+    "https://www.geeksforgeeks.org/dsa/binary-search/"
+  ],
+  "lighthouse": { "performance": 94, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "node tools/verify-page.mjs --drafts /algorithms/binary-search/ : FAIL only on the expected NEEDS_MARKUS placeholder. words=4469, code=31, figures=3, h1=1, mobileOverflowPx=0, consoleErrors=[], consoleWarnings=[], broken=[], internalLinks=30, 14 external. Lighthouse 94/100/100/100 on the first run (no re-run needed, performance was already >= 90). Screenshots read: desktop-light fold + all 15 parts; mobile-dark fold + all 23 parts; desktop-dark fold, part03, part12; mobile-light fold, part03, part11. Collapsed exercise solutions are not in the screenshots (details closed), so their code was judged from the source, not pixels.",
+  "justification": "Round 2 is a clear step up and the round-1 defects are genuinely fixed, not papered over. (1) The major phone-clipping finding is fixed at the root: every search function now puts the update on its own line (`lo = mid + 1;` / `hi = mid;` / `return mid;`), and LowerBound/UpperBound/LastAtOrBefore/CountBetween signatures are broken after `(`; I checked every search function in the mobile-dark parts and the operative assignments are all fully visible. The collapsed solutions were wrapped in the source (stuck message, CountBetween `=>`, FirstTrue call in Isqrt) to at most about 39 columns. (2) The missing picture for answer search is now Figure 3: a fits/too-big strip with the 634 boundary and six shrinking probe rows, informative rather than decorative; I recomputed the bar geometry and it matches the real probes (961, 481, 721, 601, 661, 631), it is correct in dark theme (green/red/accent remap), text is legible at 390 px, and annotations sit under each bar. (3) Probe encoding is now consistent across Figures 1 and 2 (triangle under the probed cell) and Figure 2 has ticks for lo/hi and a caption sentence saying they mark boundaries, not cells. (4) Sources are hyperlinked at the claim (Bloch, checked/unchecked, Array.MaxLength, >>> proposal, both runtime files, Array/List BinarySearch, Insert, Dictionary) and every front-matter source has an inline anchor. (5) The third bug is now visible, the sortedness precondition is shown with a comparer example, and real-valued and difference-overflow caveats are in the list. (6) Perf: 94/100/100/100 with 0 console errors and 0 broken links. Rhythm: the page still never runs more than about three paragraphs without a program, figure, table or exercise; headings are specific and form a clean H2/H3 outline; the mobile 'On this page' disclosure and desktop sticky TOC work; the three tables fit a phone without scrolling; callouts are restrained (one .NET note, one pitfall) and four exercises of varied form sit mid-article with collapsed solutions and no give-away outputs. Against cp-algorithms (one borrowed image, four code blocks, exercises are a list of external problems) and GeeksforGeeks (about a dozen near-identical multi-language blocks, one frame image, no invariants/overflow/lower bound) this page is clearly better illustrated and better paced; it is at or slightly above the MDN/Real Python bar for presentation. What holds it below 9 is residual polish: about twenty `Console.WriteLine($\"...\")` and argument lines still end 1-6 characters past the phone viewport (in two places the clipped token is a real argument, `BinarySearch(delays, 2)` and `BinarySearch(unsorted, 560)`, and once a string tail, `not foun`), a few 120-word paragraphs in the overflow and BCL sections, and the central invariant blockquotes rendered in de-emphasised grey. None is a blocker; the score is not raised further because the phone-clip discipline, the brief's own binding lesson, is still not fully met.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Print and call lines that still exceed about 40 columns, seen in mobile-dark part01/02 (`// First, middle, last, and an absent one.`, `Console.WriteLine($\"{t} -> {index}\");`, `Console.WriteLine($\"{t}: not found\");` shows as `not foun`), part07 (`$\"{n,7}  {worst,5}  {formula,7}\");`, `BitOperations.Log2((uint)n) + 1;`), part09 (`Console.WriteLine($\"subtract {subtract}\");`, `$\"checked  {name}\");`), part11 (four `Console.WriteLine` lines in the bounds program), part15 (`Array.BinarySearch(delays, 2);`, `Array.BinarySearch(unsorted, 560);`, `StringComparer.OrdinalIgnoreCase;`), part16 (`StringComparer.Ordinal);`, `{Find(\"kiwi\")}\");`), part17 (`{calls}\")`, `{agrees}\")`)",
+      "problem": "The operative assignments are fixed, but the same discipline was not applied to the driver code. On a 390 px phone the tail is in the scroll fade or cut; in two spots it is an argument that matters to the point being made (the target `2` in `Array.BinarySearch(delays, 2)` on the duplicates demo, and `560` in the unsorted demo), and in the second bug demo the message string is cut mid-word. This is the same binding 'operative part not clipped' lesson, now at smaller scale.",
+      "fixLooksLike": "Hoist arguments into short locals or break after `(` exactly as done in `LowerBound(` and `LastAtOrBefore(`: e.g. `int some2 = Array.BinarySearch(` / `    delays, 2);`, `string name = e.GetType().Name;` kept, `Console.WriteLine(` / `    $\"{t}: not found\");`. Shorten padded labels by a few characters (`\"first 2 at\"`, `\"scan agrees\"`) so no line passes about 38 columns. Re-run run-code and re-check mobile parts 01, 02, 07, 09, 11, 15, 16, 17."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "'The midpoint that overflows' paragraph 3 ('C# behaves the same way as Java here...'), 'What Array.BinarySearch tells you' paragraph 3 (the ~ operator and two's complement), and 'Why a million elements need twenty probes' opening paragraph (mobile-dark part06 bottom, part08, part14)",
+      "problem": "Three paragraphs of roughly 110-140 words each carry two to four links, several inline code chips and a derivation, so on a phone each is a 12-16 line block of text. They are the densest reading on the page, and each is followed by code but not broken by anything visual. The midpoint one bundles five separate facts (unchecked default, checked escape hatches, Array.MaxLength value, 1.2 GB arithmetic, 'shown without allocating').",
+      "fixLooksLike": "Split each at its natural seam into two paragraphs of about 60 words (for the midpoint paragraph: unchecked default, then the MaxLength/1.2 GB point), or move the two's-complement identity `~x == -x - 1` into a short two-row example or bullet so the derivation is not embedded in a sentence with three links."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Front matter description and hero (desktop fold and mobile fold): '...then meet midpoint overflow, lower bound and ~index.'",
+      "problem": "The description ends in the cryptic token `~index`, which wraps to a widow line on desktop (`~index.` alone on the third line) and reads as a typo or keyword-list tail to a first-time visitor. The article itself explains `~` only much later.",
+      "fixLooksLike": "End on a phrase a human parses: '...then see midpoint overflow, lower bound and what Array.BinarySearch's negative result means.' Keep it within two lines at 1366 px."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Blockquote styling for the two loop-invariant statements ('If target is anywhere in a...' and 'Every element left of lo...'), desktop-light part04 and part07",
+      "problem": "These two sentences are the thesis of the article, yet the blockquote renders them in lighter grey than body text with only a thin left rule, so they read as asides rather than as the rule to remember. They are also the only place on the page that uses a blockquote for content rather than a quotation.",
+      "fixLooksLike": "Either a shell variant for blockquotes that sets body-colour text (or slightly larger/semibold) with a stronger rule, or, if the shell keeps blockquotes muted for real quotations, a named callout style for a key statement. Append to docs/INTEGRATOR_REQUESTS.md."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "id=bcl output panel (desktop-light part09/part10, mobile-dark part14): the last line `560 600 635` directly under the aligned target/result/~result columns",
+      "problem": "A differently shaped line (the List<T> insert result) is appended to the aligned table with no label, so it reads as a fifth row of the table with a missing column. Also the `~result` column is blank for the found row, which looks like a dropped value.",
+      "fixLooksLike": "Prefix the last line with a label such as `after insert: 560 600 635` (keeps it under 40 columns), and print `-` in the `~result` column for found values, or drop the blank-padded string."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Figure 3 (all four themes/widths) and its caption",
+      "problem": "The picture shows 6 of the 11 probes and stops ('Probes 7 to 11 pin down the boundary at 634'); the last bars are 10-20 px wide and the final dot sits on the dashed line, so the picture ends before the payoff, and the figure labels the boundary 634 while the caption headline is 633. Both statements are true (634 is the first too-big width, 633 the answer) but the figure has no annotation connecting them.",
+      "fixLooksLike": "Add one label under the last row such as 'first too big = 634, so the answer is 633', or make the boundary label read '634 (first too big)'. Optional: drop the duplicated dashed `<path>` that is emitted twice per row."
+    }
+  ],
+  "roundOneCheck": {
+    "phoneClippingOfUpdateLines": "fixed at root (own-line assignments in all search functions, wrapped signatures); residual driver-line clipping carried forward as the first issue, downgraded to minor",
+    "solutionCodeNotWrapped": "fixed in source (solutions wrapped to about 39 columns); could not be seen in screenshots because details are closed",
+    "missingFigureForAnswerSearch": "fixed: Figure 3, geometry verified against real probes, theme-correct",
+    "probeEncodingAndLoHiTicks": "fixed: triangle probe in both figures, boundary ticks, caption clarified",
+    "sourcesNotHyperlinked": "fixed: inline links at each claim, every listed source cited",
+    "consoleWriteLineOverrun": "partly fixed, still present in about 20 lines (issue 1)",
+    "shellPerformance": "not re-flagged: 94 with headroom; integrator request from round 1 still stands"
+  },
+  "crosslinksFile": "docs/crosslinks/algorithms/binary-search.md exists and lists sensible links; no penalty for missing body links to unpublished siblings."
+}
