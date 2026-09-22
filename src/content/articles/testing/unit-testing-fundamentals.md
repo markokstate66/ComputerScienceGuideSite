@@ -30,7 +30,7 @@ sources:
     url: "https://github.com/xunit/assert.xunit/blob/main/EqualityAsserts.cs"
     publisher: "xUnit.net (GitHub)"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Run `GradeCalculator.Average([70, 80, 90])` inside a test and get `80` back, and you have proven exactly one thing: for this input, on this code, right now, the method returns 80. That is a real fact, checked by a machine instead of asserted by a person, and it is also a much narrower fact than "the code works." Most of what makes unit testing useful, and most of what makes it misunderstood, lives in that gap.
