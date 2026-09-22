@@ -131,7 +131,7 @@ git branch
 On `main`, merge in `annotate`. The two branches touched different lines of `log.txt` (the March lines versus a new April line), so there is nothing to resolve by hand:
 
 ::::exercise[Rule out the easy case first]
-Before running the merge, decide whether Git can get away with just moving a pointer. Is `main`'s tip an ancestor of `annotate`'s tip, or the other way around? Work it out from Figure 1, then check both directions with `git merge-base --is-ancestor`, which "checks if the first commit is an ancestor of the second, and exits with status 0 if true, or with status 1 if not" ([git-merge-base](https://git-scm.com/docs/git-merge-base)).
+Before running the merge, decide whether Git can get away with just moving a pointer. Is `main`'s tip an ancestor of `annotate`'s tip, or the other way around? Work it out from Figure 1, then check both directions with `git merge-base --is-ancestor`, which the documentation defines as: "Check if the first commit is an ancestor of the second, and exit with status 0 if true, or with status 1 if not" ([git-merge-base](https://git-scm.com/docs/git-merge-base)).
 
 :::solution
 Neither is true. `main` gained "Add April books" after the split, and `annotate` gained two commits of its own; each tip has a commit the other's history lacks, so a fast-forward is impossible and a merge commit is the only outcome.
@@ -228,11 +228,12 @@ tip is the same commit: no
 
 A plain rebase like this one never opens an editor. The [git-rebase documentation](https://git-scm.com/docs/git-rebase)'s own summary of what happened is: check out the upstream commit, then "replay the commits, one by one, in order. This is similar to running `git cherry-pick` for each commit". `annotate-for-rebase` is a straight line now, four commits deep instead of the fork Figure 1 showed, and the two commits that used to sit on top of "Add March books" sit on top of "Add April books" instead. Both messages survived unchanged, but neither survived as the same object: `before_tip` and `after_tip` differ, and so does every commit between the fork point and the tip, because a commit's hash covers its parent, and the parent of the first replayed commit is no longer "Add March books".
 
-The two "Note: reread Dune" commits, `annotate~1` and `annotate-for-rebase~1`, are different objects, but the one line either of them actually changed reads the same either way:
+The two "Note: reread Dune" commits, `annotate~1` and `annotate-for-rebase~1`, are different objects (their actual IDs depend on your name, email and clock, the way [How Git Works Inside](/version-control/how-git-works/#a-new-repository-no-objects-and-a-head-that-points-at-nothing) pinned them to make reproducible; this page compares the two instead of printing either one), but the one line either of them actually changed reads the same either way:
 
 ```bash run
-git rev-parse annotate~1
-git rev-parse annotate-for-rebase~1
+same=$(git rev-parse annotate~1)
+rebased=$(git rev-parse annotate-for-rebase~1)
+echo "same object: $([ "$same" = "$rebased" ] && echo yes || echo no)"
 echo "-- the Dune line each one produced:"
 git show annotate~1:log.txt | grep Dune
 git show annotate-for-rebase~1:log.txt |
@@ -240,8 +241,7 @@ git show annotate-for-rebase~1:log.txt |
 ```
 
 ```text output
-ac26f6b58281449f4fa4079c23f7479123b68011
-e3d0a89b599d07a1a40a1e30ca4c349833244ae4
+same object: no
 -- the Dune line each one produced:
 Mar: Dune -- reread
 Mar: Dune -- reread
@@ -349,7 +349,7 @@ Mar: Dune -- reread in April
 
 The [Pro Git book](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) states the rule plainly, under the heading "The Perils of Rebasing": "Do not rebase commits that exist outside your repository and that people may have based work on." The [git-rebase documentation](https://git-scm.com/docs/git-rebase) reaches the same place from the command's own notes: "Rebasing (or any other form of rewriting) a branch that others have based work on is a bad idea: anyone downstream of it is forced to manually fix their history. ... The real fix, however, would be to avoid rebasing the upstream in the first place."
 
-The reasoning follows directly from what this page has already shown twice over: a rebase does not edit a commit, it writes a new one with the same tree and a different parent, so the old and new versions are unrelated objects that happen to have the same content. If `annotate` had already been pushed and a teammate had fetched it and built a commit of their own on top of the original "Note: borrowed Hyperion", replacing `annotate` with `annotate-for-rebase` and force-pushing would not update their copy for them. Their branch still points at the original commit, which is not an ancestor of the new tip (the new tip's ancestry runs through "Add April books" instead), so their next ordinary `git pull` would try to reconcile two histories that share only the much older "Add March books" (or, if they too rebase onto the replaced branch, their commit gets replayed a second time, and Git cannot tell that it was already there).
+The reasoning follows directly from what this page has already shown twice over: a rebase does not edit a commit, it writes a new one with a new tree as well as a new parent — replaying a commit onto a different base changes what it contains, not only where it sits — so the old and new versions are unrelated objects that happen to carry the same edit. If `annotate` had already been pushed and a teammate had fetched it and built a commit of their own on top of the original "Note: borrowed Hyperion", replacing `annotate` with `annotate-for-rebase` and force-pushing would not update their copy for them. Their branch still points at the original commit, which is not an ancestor of the new tip (the new tip's ancestry runs through "Add April books" instead), so their next ordinary `git pull` would try to reconcile two histories that share only the much older "Add March books" (or, if they too rebase onto the replaced branch, their commit gets replayed a second time, and Git cannot tell that it was already there).
 
 ::::exercise[What the force-push changes for someone else]
 You have not force-pushed anything in this walk-through; every branch here is local. If you had pushed `annotate`, then run the two rebase sections above and pushed `annotate-for-rebase` to the same remote name with `git push --force`, name one command a teammate who already has the old `annotate` could run to see exactly which of their assumptions broke.
