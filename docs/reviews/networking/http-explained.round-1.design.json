@@ -1,0 +1,47 @@
+{
+  "article": "src/content/articles/networking/http-explained.md",
+  "route": "/networking/http-explained/",
+  "round": 1,
+  "role": "design",
+  "score": 8.0,
+  "lighthouse": { "performance": 91, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "Single verify-page --drafts run, PowerShell, no other heavy job started by me during the run (other worktrees may have been building concurrently per task brief; performance came back 91, comfortably above the gate, but re-check serially at the final gate since it is the category most sensitive to contention). report.json: words 3134, codeBlocks 13, figures 2, h1 1, internalLinks 27, mobileOverflowPx 0, consoleErrors [], consoleWarnings [], broken []. Only failure: 'placeholder text: NEEDS_MARKUS' (expected, byline/bio/legal-name markers). Screenshots read: all 18 desktop-light parts, all 24 mobile-dark parts, desktop-dark fold + parts 01/04/09/10/13, mobile-light fold + parts 02/13/14.",
+  "comparedAgainst": [
+    "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview",
+    "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching",
+    "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+  ],
+  "justification": "Shell and page mechanics are clean: Lighthouse 91/100/100/100, zero console errors, zero broken links, 0 px mobile overflow, one h1, and a six-item h2 hierarchy (no skipped levels) that maps cleanly onto 'On this page'. Both diagrams earn their place and are theme-correct: Figure 1 (request/response as one four-part shape) and Figure 2 (a proper two-lane sequence diagram for the ETag round trip, complete with a highlighted 304-no-body arrow) both use a 360-wide viewBox, stay legible at 390 px in light and dark, put every label under or inside its own box rather than beside it, and their captions say exactly what to notice. This beats MDN's caching guide, which has no diagram for the revalidation round trip at all, and is roughly on par with MDN's HTTP overview page for illustration density. The five 'text output' panels I checked in full, including the two named in the brief (the Expect/100-continue interim response and the 200/304/200 ETag sequence), are all short, label-padded lines under 40 columns and none clips on a phone; this is the article's strongest area given the brief's specific worry about wide raw-HTTP panels. All five exercises are correctly collapsed behind 'Show solution' in every screenshot checked, in both themes. Rhythm is sound: each of the five build sections follows prose, then either a table or a diagram, then a runnable program, its output, a pitfall or note, and an exercise, so no section is a bare wall of code the way a couple of sections were in the sibling article 'how the internet works'. It falls short of 8.5 on one recurring, genuine phone defect: every GFM table in the article loses content on the right at 390 px, and in the worst case the lost column is the entire point of its paragraph. The methods table and the HTTP/1.1-vs-2-vs-3 table both use four columns of prose, which WRITER_GUIDE section 7 explicitly flags ('four columns of sentences will put half the table off screen; prefer at most three'); the version table is the more serious instance because its fourth column, 'Where head-of-line blocking is left', is the fact the following two paragraphs spend 250 words explaining, and it is invisible without a sideways scroll a phone reader is not prompted to make.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Section 'HTTP/1.1, HTTP/2 and HTTP/3 send the same semantics differently', the four-column version table (mobile-dark part22, mobile-light equivalent)",
+      "problem": "At 390 px only 'Version' and 'Connection model' are visible; 'Header encoding' and 'Where head-of-line blocking is left' are entirely off-screen with no visual cue beyond the table's own edge that two more columns exist. The paragraph right after the table is built entirely around the fourth column's content (TCP's strict ordering vs QUIC's per-stream reliability), so the reader hits the article's central payoff for that section before ever seeing the fact it explains. WRITER_GUIDE section 7 calls out exactly this shape: four columns of full sentences puts half the table off-screen.",
+      "fixLooksLike": "Cut to three columns: fold 'Header encoding' into a short parenthetical inside 'Connection model' (e.g. 'Many streams on one TCP connection, HPACK-compressed'), or drop it from the table and cover it in the prose that already discusses HPACK/QPACK by name. Keep 'Where head-of-line blocking is left' as its own column so it is the second or third thing a phone reader sees, not the fourth. Re-check the mobile screenshot for a lingering right-edge fade.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Methods, and which ones are safe to repeat', the four-column method table (mobile-dark part05)",
+      "problem": "'Typical use' is cut off after 1-3 words per row ('Retrieve a r...', 'Discover all...', 'Open a tun...') on a 390 px phone. Less severe than the version table because the surrounding prose is about the Safe/Idempotent columns, which are fully visible, so the cut column is supplementary rather than load-bearing, but it is still a fourth column of short sentences in a guide that recommends three.",
+      "fixLooksLike": "Shorten 'Typical use' entries to two or three words each ('Retrieve', 'Replace', 'Create/act') so the column fits, or drop it and let the surrounding prose (which already covers PUT/DELETE/POST/PATCH individually) carry that information.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Five families of status code', the three-column class table (mobile-dark part09-10)",
+      "problem": "Even at three columns, 'Meaning' is clipped mid-sentence ('Interim; more is coming', 'The request was receive[d]...') because each cell is a full sentence rather than a phrase. This is the mildest of the three table instances (a phone reader still gets the class number and name unclipped, and the meaning is restated in prose immediately after), but it is the same underlying pattern as the other two tables.",
+      "fixLooksLike": "Trim 'Meaning' cells to a short phrase ('interim; more follows', 'request received & accepted') rather than a full clause, matching the phrase-not-sentence guidance in WRITER_GUIDE section 7.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "The five run=id programs (wire, idempotent, families, caching, cookies), each of which repeats the same ReadMessage/ReadHead/ReadBody socket-parsing helper near-verbatim (desktop-light parts 2-3, 5-6, 7-10, 10-13, 14-16)",
+      "problem": "Each program is a full, independently runnable file, which is correct per WRITER_GUIDE (no multi-file mode yet), but the reader scrolls past essentially the same 30-40 line header/body-reading helper five times, most heavily visible on the phone where each program spans 3-5 screens. By the caching program (the third repeat) the helper is no longer new information and just adds scroll distance between the parts that changed (the ETag/If-None-Match logic).",
+      "fixLooksLike": "Nothing to fix mechanically since each block must compile standalone, but consider a one-line pointer at the top of the third and later programs ('ReadHead/ReadBody are unchanged from the previous program; the new part is Etag(...) below') so a skimming reader knows what to skip, similar to the pointer suggested for the sibling article's long programs.",
+      "owner": "writer"
+    }
+  ]
+}
