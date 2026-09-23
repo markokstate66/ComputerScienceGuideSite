@@ -1,6 +1,8 @@
 # Legacy redirects
 
-Source of truth: the `routes` array in `staticwebapp.config.json` (repo root). Each legacy path is listed twice there, without and with a trailing slash; the table shows it once. All are 301s.
+Source of truth: the `routes` array in `staticwebapp.config.json` (repo root). Each legacy path is listed once, with a trailing slash. All are 301s.
+
+(Until 2026-09-23 each path was listed twice, without and with a trailing slash — this was never actually deployed until then, and Azure Static Web Apps' deploy-time validator rejected it: with the file's own `trailingSlash: "always"` setting, Azure redirects any no-slash request to its slash form *before* route rules are evaluated, so the no-slash entry can never be reached and Azure treats it as a literal duplicate of the slash entry. Removed the no-slash half of each pair.)
 
 ## How targets are resolved
 
