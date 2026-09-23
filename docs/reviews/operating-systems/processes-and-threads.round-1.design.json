@@ -1,0 +1,29 @@
+{
+  "article": "operating-systems/processes-and-threads",
+  "round": 1,
+  "critic": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/operating-systems/difference-between-process-and-thread/",
+    "https://bytebytego.com/guides/what-is-the-difference-between-process-and-thread/",
+    "https://learn.microsoft.com/en-us/windows/win32/procthread/processes-and-threads"
+  ],
+  "justification": "For the target query 'process vs thread' the current best-ranking pages are a GeeksforGeeks bullet-point comparison table with two generic structural diagrams and no code, a ByteByteGo page with one hierarchy diagram and five bullet differences, and Microsoft's own Processes and Threads overview, a 230-word index page with no code and no diagrams at all. None of the three has a runnable example, a measured number, or a dark theme. This article's shell renders 20 real C# run blocks with distinct 'C#'/'Output' panels, two hand-drawn figures that are legible and colour-correct at 390 px in both themes, a two-column decision table that needs no horizontal scroll on a phone, and four exercise callouts with collapsed solutions, all with a reading rhythm that alternates prose, code and figures every few paragraphs rather than walling up text. verify-page confirms the mechanics: Lighthouse 93/100/100/100 (drafts build), 0 console errors, 0 broken links (20 external, all resolved), 0 px of mobile horizontal overflow, and only the expected NEEDS_MARKUS placeholder failure. I opened every desktop-light and mobile-dark screenshot part (14 and 22 respectively) plus the fold and several parts of desktop-dark and mobile-light, including both figures in all four device/theme combinations and the two deep-nesting code blocks (id=relay, id=starve): all render as designed, with long boilerplate lines fading off the right edge while the operative tokens (ProcessorAffinity, WaitOne/Set, the atOnce counter) stay inside the visible ~40 columns. That is a clear step above the best-ranking pages' presentation, which is why this scores above the 8.5 'equal to MDN/Real Python' anchor; it stops short of a 10 only because the shell's own Lighthouse performance sub-metrics (FCP 1.9s, TBT 240ms, blocked bfcache restoration) leave visible headroom that a flawless reference page would not.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Site shell performance (lighthouse.json, applies to this route's build)",
+      "problem": "Lighthouse performance is 93/100 (pass), but the detail file shows several sub-metrics well under full marks: First Contentful Paint 1.9s (score 0.87), Total Blocking Time 240ms (0.86), Max Potential FID 290ms (0.39), back/forward-cache restoration blocked (score 0), document request latency costing an estimated 137 KiB (0.5), a forced-reflow flag and a flagged network dependency tree (both score 0). These come from the shared template/scripts, not from this article's Markdown.",
+      "fixLooksLike": "Integrator investigates what is holding back/forward-cache restoration (commonly an unload handler or a Cache-Control: no-store response header on the shell), trims render-blocking work in the critical path to cut FCP/TBT, and shortens the initial network dependency chain. None of this blocks the round-1 pass bar (>=90 in all four categories is already met), so it is a follow-up rather than a blocker.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 93,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

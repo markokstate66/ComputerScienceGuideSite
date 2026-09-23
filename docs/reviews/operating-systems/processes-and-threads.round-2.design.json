@@ -1,0 +1,28 @@
+{
+  "article": "operating-systems/processes-and-threads",
+  "round": 2,
+  "critic": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/difference-between-process-and-thread/",
+    "https://bytebytego.com/guides/what-is-the-difference-between-process-and-thread/"
+  ],
+  "justification": "Fresh read for the target query 'process vs thread' (CONTENT_PLAN.md section 7, angle C). I re-fetched the two top-ranking pages before opening any prior review. GeeksforGeeks: two illustrative, non-technical images, a nine-row comparison table, no runnable code, no measured numbers, explicitly 'introductory to intermediate' with no discussion of memory layout or scheduling. ByteByteGo: one unlabelled relationship diagram, five bullet differences, no code, no quantitative context-switch cost, no thread-pool or crash-isolation coverage. Baeldung returned HTTP 403 and could not be read. Against that bar this article's shell renders 20 real C# run blocks with distinct labelled 'C#'/Output panels, two hand-drawn figures, a two-column decision table, and four exercise callouts with collapsed solutions in a rhythm that alternates prose, code and figures every few paragraphs. I opened every desktop-light (14 parts + fold) and mobile-dark (22 parts + fold) screenshot, plus the fold and two interior parts each for desktop-dark and mobile-light, covering both figures in all four device/theme combinations. Everything I looked at, including the sections rewritten since round 1 ('What belongs to the process and what belongs to each thread', its Figure 1, and 'What a context switch costs'), renders cleanly: no overflow, no clipped labels, both diagrams legible and theme-correct at 390 px, the decision table needs no horizontal scroll, code blocks fade long boilerplate at the right edge while operative tokens (ProcessorAffinity, WaitOne/Set, atOnce) stay inside ~40 visible columns, and dark-mode contrast on callouts/diagrams is intact. verify-page (node tools/verify-page.mjs --drafts /operating-systems/processes-and-threads/) confirms the mechanics: Lighthouse 96/100/100/100, 0 console errors, 0 broken links (21 external, all resolved), 0 px mobile horizontal overflow, and only the expected NEEDS_MARKUS placeholder failure. That is a clear step above both re-read competing pages, consistent with round 1's independent finding of 9.0 (comparedAgainst GeeksforGeeks/ByteByteGo/MS Learn overview) -- I am not raising the score for effort, but the underlying design quality genuinely still clears the 8.5 'equal to MDN/Real Python' anchor by a comfortable margin without reaching the 10 'clearly better than best existing result with no nits' bar, because the shell's own Lighthouse performance sub-metrics still show avoidable headroom (see issue below), unchanged in kind since round 1. Note: other agents were active in this repo during this run (see git status), so the performance sub-score (96, versus round 1's 93) may be somewhat noisy; the orchestrator should treat it as indicative, not final, and re-measure serially if it matters to the gate.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Site shell performance (lighthouse.json, applies to this route's build, not the article Markdown)",
+      "problem": "Lighthouse performance is 96/100 (pass, and above round 1's 93), but several sub-metrics are still well under full marks: First Contentful Paint 2.1s (score 0.8, slightly worse than round 1's 1.9s), Max Potential First Input Delay 240ms (0.52), back/forward-cache restoration still blocked (score 0, 2 failure reasons), document request latency costing an estimated 139 KiB (0.5), a forced-reflow flag (score 0) and a flagged network dependency tree (score 0). Same shape of finding as round 1's issue; it has not been addressed and could be partly measurement noise from other agents sharing the machine during this run.",
+      "fixLooksLike": "Integrator investigates what blocks back/forward-cache restoration (commonly an unload handler or a Cache-Control: no-store response header on the shell), trims render-blocking work in the critical path to cut FCP, and shortens the initial network dependency chain. This does not block the round-2 pass bar for this critic (Lighthouse performance is 96, well above 90), so it remains a follow-up, not a blocker.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 96,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
