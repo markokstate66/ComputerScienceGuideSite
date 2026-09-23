@@ -16,7 +16,39 @@ User-visible and repo-visible changes. Newest first.
 - Published article: `csharp-dotnet/value-types-vs-reference-types` (passed round 1: technical 9.3 / AdSense 9.0 / design 9.0, first article in the csharp-dotnet pillar).
 - Published article: `databases/relational-model-and-keys` (passed round 2: technical 8.8 / AdSense 9.3 / design 9.3).
 - Published article: `testing/test-doubles` (passed round 1: technical 9.0 / AdSense 9.0 / design 9.0, first article in the testing pillar).
-- Ten draft articles (`draft: true`, excluded from the build): see `docs/STATUS.json`.
+- Published article: `data-structures/arrays-and-dynamic-arrays` (passed round 6: technical 9.5 / AdSense 9.2 / design 9).
+- Published article: `operating-systems/processes-and-threads` (passed round 3: technical 9.2 / AdSense 8.6 / design 9).
+- Published article: `networking/tcp-vs-udp` (passed round 2: technical 8.5 / AdSense 8.6 / design 9).
+- Published article: `data-structures/linked-lists` (passed round 2: technical 9.3 / AdSense 9.5 / design 9.2).
+- Published article: `csharp-dotnet/garbage-collection` (passed round 2: technical 8.6 / AdSense 9.5 / design 9.5).
+- Published article: `complexity/analyzing-loops-and-recursion` (passed round 2: technical 9.4 / AdSense 9 / design 9.2).
+- Published article: `algorithms/sorting-algorithms-compared` (passed round 3: technical 9.5 / AdSense 9.2 / design 9).
+- Published article: `operating-systems/concurrency-race-conditions-locks` (passed round 2: technical 9.3 / AdSense 8.8 / design 9.3).
+- Published article: `version-control/rebase-vs-merge` (passed round 2: technical 9.5 / AdSense 9.1 / design 8.9).
+- Published article: `databases/indexes` (passed round 2: technical 9 / AdSense 8.7 / design 8.7).
+- Published article: `oop-design/composition-over-inheritance` (passed round 2: technical 9.2 / AdSense 8.8 / design 8.7).
+- Published article: `testing/unit-testing-fundamentals` (passed round 2: technical 8.8 / AdSense 9 / design 9.3).
+- Published article: `oop-design/solid-principles` (passed round 2: technical 9.3 / AdSense 8.9 / design 9.2).
+- Published article: `operating-systems/virtual-memory` (passed round 3: technical 9 / AdSense 9 / design 9.2).
+- Published article: `data-structures/stacks-and-queues` (passed round 2: technical 9 / AdSense 8.8 / design 9.3).
+- Published article: `networking/http-explained` (passed round 3: technical 9 / AdSense 9.2 / design 9.3).
+- Published article: `csharp-dotnet/async-await` (passed round 1: technical 9.3 / AdSense 8.9 / design 8.6).
+- Published article: `complexity/space-complexity` (passed round 1: technical 9.2 / AdSense 8.7 / design 9.3).
+- Published article: `algorithms/recursion` (passed round 1: technical 9.3 / AdSense 9.1 / design 9.1).
+- Published article: `version-control/undoing-things-in-git` (passed round 2: technical 9.2 / AdSense 9 / design 9).
+- Published article: `databases/normalization` (passed round 1: technical 8.9 / AdSense 8.8 / design 9.1).
+- Published article: `testing/test-driven-development` (passed round 2: technical 9 / AdSense 9 / design 9).
+- Published article: `csharp-dotnet/linq-deferred-execution` (passed round 3: technical 8.7 / AdSense 8.6 / design 9.3).
+- Published article: `testing/testing-pyramid-and-integration-tests` (passed round 2: technical 9.2 / AdSense 9.2 / design 9).
+- Published article: `data-structures/hash-tables` (passed round 2: technical 9.1 / AdSense 9 / design 9.3).
+- Published article: `oop-design/interfaces-vs-abstract-classes` (passed round 2: technical 9 / AdSense 8.8 / design 9.3).
+- Published article: `version-control/git-workflows` (passed round 2: technical 9 / AdSense 9 / design 9.1).
+- Published article: `databases/transactions-and-acid` (passed round 2: technical 9 / AdSense 9 / design 9.3).
+- Published article: `networking/dns` (passed round 4: technical 8.7 / AdSense 9 / design 8.6).
+- Published article: `complexity/best-average-worst-case` (passed round 3: technical 8.8 / AdSense 8.7 / design 9.3).
+- Published article: `operating-systems/cpu-scheduling` (passed round 2: technical 9.2 / AdSense 9 / design 9).
+- Published article: `algorithms/breadth-first-and-depth-first-search` (passed round 2: technical 9.3 / AdSense 9 / design 8.8).
+- 24 articles remain unstarted (`state: planned` in `docs/STATUS.json`); 43 of 67 planned articles are now published.
 - Technical SEO: own `sitemap.xml` with real `lastmod`, corrected `robots.txt`, JSON-LD (Article with Person author, BreadcrumbList, WebSite, Organization), per-pillar OG images under 15 KB, `apple-touch-icon.png`, `logo.png`, 301s for every legacy URL, real 404.
 - Tools: `tools/verify-page.mjs`, `tools/run-code.mjs`, `tools/make-images.mjs`.
 - Project docs: `AUDIT.md`, `CONTENT_PLAN.md`, `WORKLOG.md`, `CLAUDE.md`, `docs/` (editorial brief, writer guide, gauntlet, status, reviews, cross-links, shell notes, redirects, owner inputs).

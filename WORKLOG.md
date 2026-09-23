@@ -2,6 +2,19 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-22 — Batch merge: 32 articles + 1 tooling PR, all open PRs cleared
+
+- At the owner's explicit instruction ("let's merge it all"), merged all 33 open PRs into `adsense-rebuild` in one pass, skipping the normal per-PR playtest gate for this batch. Confirmed first that every open PR targeted `adsense-rebuild` (none targeted `master`), none were drafts, and `gh pr list` reported all 33 as `CLEAN`/`MERGEABLE` before merging any of them.
+- Squash-merged #21, #24, #37–#41, #42, #43–#46, #48, #59–#68, #79–#88 (32 articles across every pillar plus the `verify-page` compression-bug tooling PR), branches deleted, 10 leftover worktrees from this session's own Batch 3 removed.
+- Discovered mid-batch: PR #42 (my own, "verify-page: fix response compression never actually applying") duplicated an already-open, already-validated PR #42... no — duplicated PR #42 was original; my newly-opened PR #89 duplicated it. Closed #89 as a duplicate before merging, merged #42 instead. Root cause was the same as #26's original fix (`sirv` sets headers via a direct `res.writeHead(code, headers)` call, bypassing `res.setHeader()`), #42 fixed it properly by intercepting `writeHead` itself.
+- **Post-merge verification:** `npm ci` (main checkout's `node_modules` had emptied out again, same junction-fragility pattern as earlier in the session — reinstalled, 448 packages), then `npm run build`: green, 65 pages.
+- **`docs/STATUS.json` reconciliation:** built from the real per-round review JSON files on disk under `docs/reviews/` wherever available (240 files), cross-checked against each merged PR's own "## Gauntlet" summary. Found 4 articles whose passing-round review JSON files were missing from disk despite the PR recording a real pass: `operating-systems/virtual-memory` (rounds 2–3), `version-control/undoing-things-in-git` (round 1), `testing/testing-pyramid-and-integration-tests` (round 1 design — from earlier in this session, before the visible window), and `operating-systems/cpu-scheduling` (round 2 — my own mistake this session: committed the `draft: false` flip without the round-2 review JSON files before deleting the worktree). For all 4, used the real scores recorded in the PR body at merge time (not fabricated — genuinely subagent-verified results, just not persisted to the expected file path) and flagged the gap explicitly in each entry's `openIssues`.
+- Also found and removed 4 stray untracked review JSON files sitting in the **main checkout** (not any worktree) — leftover phantom-writes from critics that wrote to the wrong working directory earlier this session, including the file that explains an earlier `hash-tables` "phantom write" mystery from mid-session (the critic's file did exist, just not where anyone was looking).
+- `docs/STATUS.json` totals: passed 11 → 43, notStarted 54 → 24 (of 67 planned).
+- `CHANGELOG.md`: one line per newly-published article under Unreleased/Added.
+- Did not run a fresh serial Lighthouse pass on all 32 articles post-merge — each was already verified individually (serially, by the consumer) before its own PR was opened; this entry does not re-assert those numbers, `docs/STATUS.json` carries them per-article.
+- **Known deviation from the normal process, disclosed to the owner before merging and explicitly confirmed:** none of these 33 PRs were played through `pr-playtest.html` by the owner first, which `CLAUDE.md` and the `/ship` skill both otherwise require. The owner chose the full-batch scope after being asked to confirm it (vs. a narrower "just this session's 11" option).
+
 ## 2026-09-22 — `/ship 47`: run-code xUnit support merged
 
 - PR #47 squash-merged into `adsense-rebuild`, branch deleted, issue #12 closed. Tooling change, not an article — no gauntlet round.
