@@ -1,0 +1,32 @@
+{
+  "score": 8.6,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/async-scenarios",
+    "https://blog.stephencleary.com/2012/02/async-and-await.html"
+  ],
+  "justification": "Design/UX round 1 for /csharp-dotnet/async-await/, a long, code-heavy article (3619 words, 36 code blocks, 19 executed, 9 sections, 2 diagrams, 4 exercises). Verified with `node tools/verify-page.mjs --drafts /csharp-dotnet/async-await/`: Lighthouse 97/100/100/100 (all four categories well clear of the 90 gate; only Lighthouse-internal near-misses are FCP 2.1s and a network-dependency-tree insight, neither a hard failure, and this was a single serial run with no other worktree activity visible in the timing, so the score looks trustworthy rather than load-depressed). report.json confirms 0 console errors, 0 console warnings, 0 broken links (27 internal, 12 external, all resolved), mobileOverflowPx 0, and figures 2 (the task brief mentioned one diagram, but the article actually has two: Figure 1, the MoveNext state-machine sketch, and Figure 2, the deadlock's wait-for cycle — both reviewed here). The only failure is the expected `placeholder text: NEEDS_MARKUS` byline/legal-name markers. Read every desktop-light part (01-14) and every mobile-dark part (01-21) in full, plus the fold, both diagrams, the deadlock demo, the WhenAll timing comparison and the ValueTask allocation numbers on desktop-dark and mobile-light. Both diagrams are genuinely informative (a two-call MoveNext trace with a yes/no branch; a two-box mutual-wait cycle with labelled arrows), use viewBoxes at or under 360, stay legible at 390px in both themes with no faded edge, put every annotation under its box, and are correctly theme-aware (accent/bad/warn colors switch cleanly between light and dark). All four exercises (predict-it, find-the-bug, extend-it, measure-it) stay correctly collapsed behind 'Show solution' on both desktop and mobile, with no solution content visible before the reader opens it. Heading hierarchy is clean (one h1, flat h2 sections matching the 9-item 'On this page' TOC, no skipped levels). Reading rhythm holds up across the length: no code run exceeds roughly a code-block-plus-output before returning to prose, the two deadlock code blocks (id=deadlock, id=nodeadlock) are separated by a full paragraph and Figure 2 rather than sitting back to back, and exercises are spaced roughly one per major section rather than clustered. The crosslinks file correctly identifies two anchor texts to still-unpublished sibling articles (processes-and-threads, concurrency-race-conditions-locks) and both read as plain, unlinked prose in the rendered page, matching this project's convention of not rendering links to unpublished targets. Against Microsoft's own 'Asynchronous programming scenarios' page (prose plus short non-runnable snippets, no diagrams, no measured numbers) and Stephen Cleary's canonical 'Async and Await' introduction (prose and static code images, no interactivity, no dark mode), this article is well ahead on illustration depth: a hand-built, runnable IAsyncStateMachine sketch with a matching diagram, a real reproduced-and-timed deadlock with its own diagram, and measured ValueTask allocation byte counts are all things neither comparison source attempts. The two defects below both concern the same underlying gap — long `text output` lines that were not rewrapped for the ~40-column mobile window the way the WhenAll timing panel and the ValueTask byte-count panel clearly were — which is why this stops short of 8.5+1 territory rather than being a clean 9.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Section 'The deadlock .Result causes, precisely', the id=deadlock program's OUTPUT panel, second line (mobile-dark part09, mobile-light part09, both themes)",
+      "problem": "The output panel's second line reads 'still blocked after 2000 ms: this is the deadlock' (49 characters). At the ~40-column mobile window the line cuts after 'this is the', so the word 'deadlock' — the single word that names the phenomenon this entire demo exists to prove — is entirely off-screen with no fade cue that it's the payoff, not boilerplate. WRITER_GUIDE section 7 is explicit: 'If the last column is the evidence for a claim, it must not be the one that is cut off.' The article's own description ('reproduce the classic .Result deadlock safely') makes this exact word the claim.",
+      "fixLooksLike": "Shorten the string so the operative word stays on screen, e.g. `: \"still blocked: this is the deadlock\"` (39 chars) or move 'deadlock' earlier: `: \"deadlock: still blocked after 2000 ms\"`. Re-run run-code and verify-page afterward since this is inside an executed `csharp run` block whose text output must match exactly.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section '`async void`: the one place exceptions have nowhere to go', the id=asyncvoid program's OUTPUT panel, third line (mobile-dark part16, mobile-light equivalent)",
+      "problem": "The line 'child stderr starts: Unhandled exception. System.InvalidOperationException: boom from async void' cuts at column ~41, right after 'Unhandled exception.' — the exception type and the custom message ('boom from async void', which is the specific proof the crash came from the right place) are entirely hidden. This is less severe than the deadlock line because 'Unhandled exception.' alone already supports the paragraph's core claim (nothing caught it), but it's the same pattern of an unshortened runtime-printed line not being budgeted for phone width the way the other output panels in this article were.",
+      "fixLooksLike": "Since this text is real stderr output from the CLR and can't be edited directly, either print only the first stderr line's exception type via a narrower Console.WriteLine (e.g. `$\"child stderr: {firstLine[..Math.Min(40, firstLine.Length)]}\"`) or accept the cut since the crash/exit-code claim is already proven by the two lines above it; if accepted, no action needed beyond noting it's intentional.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
