@@ -1,0 +1,37 @@
+{
+  "article": "src/content/articles/data-structures/hash-tables.md",
+  "route": "/data-structures/hash-tables/",
+  "round": 1,
+  "critic": "design",
+  "score": 8.0,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/hash-table-data-structure/ -- a dense, ad-supported reference page with no evident dark-mode support and no per-topic diagrams tailored to a chained-vs-open-addressing comparison; this article's two purpose-drawn, dual-themed SVG figures and 390px-tuned typography clear it easily on the design/UX axis.",
+    "https://www.tutorialsteacher.com/csharp/csharp-dictionary -- a plain C#-Dictionary tutorial with no figures, no dark theme and no phone-specific layout handling at all; this article's collapsible exercises, faded scroll cues and themed code panels are a clear step up.",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 -- reference-style API docs: functional and responsive but no diagrams, no worked examples, no exercises; not built to teach the buckets/entries layout the way this article's Figure 2 does."
+  ],
+  "justification": "Real numbers from the serial `verify-page.mjs --drafts` run: Lighthouse 91/100/100/100 (all four categories clear the round's 90 floor), zero console errors, zero broken links, mobileOverflowPx 0. Both hand-written SVG diagrams (Figure 1: chaining-vs-open-addressing collision resolution; Figure 2: buckets[]/entries[] parallel-array layout) stay fully legible with correctly themed strokes and text at 390px in both light and dark screenshots, with every label readable without zooming. Heading hierarchy is clean: exactly one h1, h2 sections match the 'On this page' TOC one-for-one, and the one h3 ('Building HashMap<K,V>: real chaining, not pseudocode') is correctly nested under its parent h2 ('Collisions: chaining or open addressing') in both the page and the TOC. All four exercises collapse their solutions behind a working `<details><summary>Show solution</summary>` toggle, confirmed in mobile screenshots. Code/prose rhythm is otherwise good — worked example, then prose that explains the exact lines, repeated through nine sections — though several code blocks necessarily re-paste the full `HashMap<TKey,TValue>` class verbatim (required for each snippet to compile and run standalone under `run-code.mjs`), which makes for a long scroll-only-code stretch on mobile in the load-factor and worst-case sections; this is a site-wide convention, not a defect specific to this article, so it is not scored as an issue. The one real, article-level defect: the final comparison table ('Choosing chaining, open addressing, or Dictionary<TKey,TValue>', two columns, Situation/Use) loses its entire second column on mobile in both themes. I verified this is not the page-overflow bug a prior (unsaved) run may have meant — mobileOverflowPx is 0, and pixel-cropping the table's right edge at 4x zoom (light and dark) confirms the site's `.fade-r` mask-image gradient genuinely renders as a soft fade, not a hard clip. The real problem is upstream of that cue: the 'Situation' column's longest cell (46 characters, 'Key might otherwise be mutated after insertion') alone renders close to the full 390px viewport width, and the 'Use' column's longest cell (141 characters, a full sentence) trips `sizeTableColumns()`'s data-col='l' bucket (22rem/352px min-width) — so zero characters of 'Use' are visible without scrolling, not even a sliver, and there is no dedicated per-cell scroll indicator beyond the table's shared edge fade. This matters because at least one recommendation is stated only in that hidden column and nowhere else in the article body: 'Override GetHashCode/Equals together, from immutable state, or use a record.' Given most readers arrive on a phone (WRITER_GUIDE.md's own framing) and the guide explicitly warns that 'four columns of sentences will put half the table off-screen' and to 'keep cells to a phrase rather than a sentence,' this table's Use column (full sentences, up to 141 characters) is a direct instance of the pattern the guide tells writers to avoid, not a shell/component bug. It is writer-fixable: shorten Use cells to phrases (e.g. 'chaining over two arrays, O(1) expected', 'GetHashCode/Equals together, or a record', 'key on an immutable id') so both columns fit near 390px, or convert the table to a short list per the guide's own fallback suggestion.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "final comparison table, 'Choosing chaining, open addressing, or Dictionary<TKey,TValue>' section (Situation/Use table, both mobile-light and mobile-dark screenshots, part 19 of `.verify/data-structures__hash-tables/`)",
+      "problem": "On a 390px phone the table's second column ('Use') is entirely off-screen with zero characters visible in either theme — not a sliver, the whole column. The only affordance that more content exists is the shared `.fade-r` edge gradient (confirmed genuinely rendering via a 4x pixel crop, not a hard clip), which is subtle against the header's near-white/near-black background. At least one piece of guidance lives only in that hidden column and nowhere else in the article: 'Override GetHashCode/Equals together, from immutable state, or use a record.' Root cause: the 'Use' column's longest cell is 141 characters (a full sentence), which the site's `sizeTableColumns()` classes as data-col='l' (22rem/352px min-width), while the 'Situation' column's own longest cell (46 characters) already renders close to the full 390px viewport by itself, leaving no room for 'Use' to show even partially.",
+      "fixLooksLike": "Rewrite the 'Use' column's cells as short phrases instead of full sentences (docs/WRITER_GUIDE.md §7: 'keep cells to a phrase rather than a sentence'), e.g. 'Dictionary<TKey,TValue>: chaining, O(1) expected' / 'Override GetHashCode/Equals, or use a record' / 'Key on an immutable id' / 'Already covered: randomized string hash' / 'Open addressing: one array, trickier Remove'. That should bring both columns close enough to 390px that at least a meaningful slice of 'Use' is visible without scrolling. If it still does not fit, follow the guide's own fallback and turn the five rows into a short bulleted list instead of a table.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "site-wide performance profile (affects this route's Lighthouse run; not this article's markup)",
+      "problem": "Lighthouse performance is 91 (clears the round's ≥90 gate) but several sub-audits score near zero: First Contentful Paint 0.56 (2.8s), Largest Contentful Paint 0.82 (2.8s), Max Potential FID 0.09 (480ms), and 'Page prevented back/forward cache restoration' scores 0 with 2 failure reasons; 'Network dependency tree' also scores 0. These come from shared page shell/script/network behavior, not from anything in the article body.",
+      "fixLooksLike": "Integrator investigates what blocks bfcache restoration (commonly an unload/beforeunload listener or a no-store cache header) and what is delaying first paint/LCP/input responsiveness; likely a global fix that lifts every article's score, not a per-article change.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 91,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
