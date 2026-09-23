@@ -1,0 +1,36 @@
+{
+  "article": "src/content/articles/operating-systems/virtual-memory.md",
+  "route": "/operating-systems/virtual-memory/",
+  "round": 1,
+  "critic": "design",
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://en.wikipedia.org/wiki/Virtual_memory",
+    "https://www.geeksforgeeks.org/operating-systems/virtual-memory-in-operating-system/"
+  ],
+  "justification": "Both real top-ranking pages for 'virtual memory explained' are plain static HTML with no dark theme, no responsive diagram handling and no runnable code: Wikipedia's article leans on a single static PNG (a decades-old-style page-table box diagram) with dense unbroken prose and no mobile-specific layout; GeeksforGeeks intersperses ad units between sections, uses a handful of low-resolution raster diagrams that do not adapt to theme or viewport, and never shows real measured numbers, only textbook figures. This article clearly exceeds both on the design/UX axis: two hand-written SVG diagrams (Figure 1 address translation, Figure 2 TLB hit-vs-walk) that stay legible, correctly themed and unclipped at both 390px and desktop widths in every screenshot checked (all 8 desktop-light parts, all 12 mobile-dark parts read in full, plus spot checks of desktop-dark and mobile-light at fold, both figures and the two VirtualAlloc/MemoryMappedFile output panels); the writer sidestepped the biggest mobile risk in the brief by wildcarding every dynamic byte/MB/GB figure in the 'text output' panels with '[...]' rather than printing literal run-to-run numbers, so the panels stay column-aligned and well inside the ~40-char mobile window in both themes, with the real measured numbers (e.g. '2,233,454 MB virtual, 6 MB private, 19 MB working set') living in prose where they wrap normally instead of forcing horizontal scroll; the :::pitfall callout (double-counted working-set pages) renders with a clearly distinct red/pink border and icon in both light and dark; all three exercises stay correctly collapsed (<details>/'Show solution') in every screenshot; heading hierarchy is clean H2-only across the 7-question structure with no level skips; and the prerequisites crosslink to the still-draft processes-and-threads article is handled exactly per WRITER_GUIDE.md §6 — the inline prose mention ('the article on processes and threads', 'the processes-and-threads article') is plain text with no markdown link, and the front-matter 'prerequisites' field is resolved generically by ArticleLayout.astro against the article set it was built with, so it renders as a real 'Before you read' link inside this --drafts build (both articles are drafts) and will simply not render at all in a production build until processes-and-threads is published — there is no broken-link risk either way, confirmed by report.json's broken: []. Real numbers: Lighthouse 99/100/100/100 (only 1 point off a perfect performance score), zero console errors, zero broken links (27 internal links, 13 external checked), mobileOverflowPx 0. Held back from a full 10 by two minor, non-blocking issues: the 1-point performance shortfall traces to shared page-shell sub-audits (bf-cache, max-potential-FID) rather than this article's markup, and Lighthouse ran on a machine with other worktrees potentially building concurrently, so the number should be treated as a lower bound, not a precise one.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "site-wide performance profile (affects this route's Lighthouse run; not this article's markup)",
+      "problem": "Lighthouse performance is 99/100 (well clear of the round's ≥90 gate) but lighthouse.json's failing sub-audits are all shared-shell issues: max-potential-fid scores 0.59 (220ms), 'Page prevented back/forward cache restoration' scores 0 (2 failure reasons), unused-css-rules scores 0.5 (13 KiB), and a document-latency-insight/network-dependency-tree-insight pair flag ~94 KiB of document-request latency. None of these come from the article body (diagrams, code blocks, callouts).",
+      "fixLooksLike": "Integrator investigates the bf-cache blocker (commonly an unload/beforeunload listener or a no-store cache header) and the unused CSS, which would likely lift every article's score a point or two, not just this one.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Lighthouse run conditions",
+      "problem": "verify-page.mjs was run with full Lighthouse on a machine where other worktrees may be building concurrently (per the task brief), so the 99 performance score is a plausible lower bound rather than a guaranteed precise measurement; the consumer's serial re-run before merge (per ARTICLE_GAUNTLET.md step 5) is what should be treated as authoritative.",
+      "fixLooksLike": "No action needed from the writer; flagging for the consumer to re-run node tools/verify-page.mjs --drafts serially with nothing else running before the pass/fail decision, as the gauntlet process already requires.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 99,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
