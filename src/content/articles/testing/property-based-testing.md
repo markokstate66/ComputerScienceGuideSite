@@ -34,7 +34,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.array.sort"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Seven [unit tests](/glossary/#unit-test) exercise `Sorter.Sort`: the empty array, a single element, an already-sorted run, its reverse, a run with duplicates, a mix of positive and negative numbers, and a typical eight-item batch. Every program on this page ran against .NET SDK 10.0.401 on Windows 11, x64.
