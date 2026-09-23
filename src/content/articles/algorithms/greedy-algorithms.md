@@ -10,11 +10,11 @@ level: intermediate
 tags: [greedy-algorithms, exchange-argument, interval-scheduling, huffman-coding, priority-queue, dynamic-programming]
 prerequisites: ["complexity/big-o-notation"]
 sources:
-  - title: "Introduction to Algorithms, 4th ed., chapter 16: Greedy Algorithms"
+  - title: "Introduction to Algorithms, 4th ed., chapter 15: Greedy Algorithms"
     url: "https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/"
     publisher: "MIT Press"
     accessed: 2026-09-22
-  - title: "Introduction to Algorithms, 4th ed., chapter 15: Dynamic Programming"
+  - title: "Introduction to Algorithms, 4th ed., chapter 14: Dynamic Programming"
     url: "https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/"
     publisher: "MIT Press"
     accessed: 2026-09-22
@@ -208,7 +208,7 @@ static int[] MinCoins(int[] denominations, int upTo)
 
 ## The exchange argument: proving a greedy choice is safe
 
-"No counterexample up to 1,000" is not a proof, and hand-checking every amount does not scale to every problem greedy gets applied to. The standard technique for proving a greedy algorithm correct — used for both problems later on this page — is an **exchange argument**, structured in two parts, as laid out in CLRS chapter 16:
+"No counterexample up to 1,000" is not a proof, and hand-checking every amount does not scale to every problem greedy gets applied to. The standard technique for proving a greedy algorithm correct — used for both problems later on this page — is an **exchange argument**, structured in two parts, as laid out in CLRS chapter 15:
 
 1. **Greedy-choice property.** Show that there is *some* optimal solution that starts with the choice greedy makes. Usually by taking an arbitrary optimal solution and showing it can be rewritten ("exchanged") to include greedy's choice without getting worse.
 2. **Optimal substructure.** Show that once greedy's first choice is fixed, the rest of the problem is a smaller instance of the same problem, so the same argument applies again to the remaining choices.
@@ -297,7 +297,7 @@ Figure 1 walks through the same six jobs, already listed in order of increasing 
 
 Why finish time and not, say, shortest job first, or earliest start first? Because only "earliest finish time" makes step 1 of the exchange argument true. The claim: **some optimal schedule includes the job with the single earliest finish time.**
 
-This follows CLRS's exchange-argument structure for the activity-selection problem (chapter 16.1), applied here to the print-job example above rather than its own. Let *j\** be the job with the earliest finish time overall, and let *O* be any optimal schedule. If *O* already contains *j\**, there is nothing to show. Otherwise, let *o\** be the job in *O* with the earliest finish time. Because *j\** has the earliest finish time of *every* job, `End(j*) <= End(o*)`. Every other job in *O* is compatible with *o\**, meaning it starts at or after `End(o*)`, and therefore also starts at or after `End(j*)`. So replacing *o\** with *j\** keeps every pair in *O* compatible: *O′* = *O* − {*o\**} + {*j\**} is still a valid non-overlapping schedule, and it has exactly as many jobs as *O*. *O′* is optimal and contains *j\**, which is what the claim needed.
+This follows CLRS's exchange-argument structure for the activity-selection problem (chapter 15.1), applied here to the print-job example above rather than its own. Let *j\** be the job with the earliest finish time overall, and let *O* be any optimal schedule. If *O* already contains *j\**, there is nothing to show. Otherwise, let *o\** be the job in *O* with the earliest finish time. Because *j\** has the earliest finish time of *every* job, `End(j*) <= End(o*)`. Every other job in *O* is compatible with *o\**, meaning it starts at or after `End(o*)`, and therefore also starts at or after `End(j*)`. So replacing *o\** with *j\** keeps every pair in *O* compatible: *O′* = *O* − {*o\**} + {*j\**} is still a valid non-overlapping schedule, and it has exactly as many jobs as *O*. *O′* is optimal and contains *j\**, which is what the claim needed.
 
 For step 2, once *j\** is fixed, every job that overlaps it can never be scheduled alongside it, so the remaining problem is exactly the same problem on the jobs that start at or after `End(j*)` — a strictly smaller instance. Applying the same argument to that smaller instance, and to the one after that, is what the `foreach` loop in the code above is actually doing: each iteration re-solves a shrinking instance of the same claim.
 
@@ -498,7 +498,7 @@ Figure 2 shows the tree `BuildHuffmanTree` produced for `MISSISSIPPI`: `S` and `
 <figcaption>Figure 2. Building the tree bottom-up: M and P (the two smallest frequencies, 1 and 2) merge first into a node of frequency 3; that node and I (frequency 4) merge into frequency 7; finally that node and S (frequency 4) merge into the root. Reading root-to-leaf gives each symbol's code.</figcaption>
 </figure>
 
-`S` and `I` — the two most frequent letters — get the two shortest codes (1 bit and 2 bits); `M`, appearing once, gets the longest (3 bits). CLRS proves the greedy-choice property behind this (chapter 16.3) with its own exchange argument: in any optimal code tree, the two least-frequent symbols can always be made siblings at the tree's greatest depth without increasing the tree's total cost, which is exactly the pair the algorithm merges first. Encoding text this way needs `n` − 1 merges for an alphabet of `n` distinct symbols, and each merge does one dequeue-dequeue-enqueue on a heap of size at most `n`, so building the tree is O(*n* log *n*) in the size of the *alphabet* — not the length of the text being compressed, which is what actually decides the resulting code's bit length.
+`S` and `I` — the two most frequent letters — get the two shortest codes (1 bit and 2 bits); `M`, appearing once, gets the longest (3 bits). CLRS proves the greedy-choice property behind this (chapter 15.3) with its own exchange argument: in any optimal code tree, the two least-frequent symbols can always be made siblings at the tree's greatest depth without increasing the tree's total cost, which is exactly the pair the algorithm merges first. Encoding text this way needs `n` − 1 merges for an alphabet of `n` distinct symbols, and each merge does one dequeue-dequeue-enqueue on a heap of size at most `n`, so building the tree is O(*n* log *n*) in the size of the *alphabet* — not the length of the text being compressed, which is what actually decides the resulting code's bit length.
 
 On `MISSISSIPPI`, Huffman's 21 bits beats even a flat 2-bit-per-symbol code (22 bits) that ignores frequency entirely, and both are far below 88 bits of unpacked ASCII. That margin over the flat code is small here because the alphabet has only 4 symbols with fairly close frequencies (4, 4, 2, 1); a skewed distribution over a larger alphabet — natural-language text, for instance — is where Huffman coding earns most of its keep, because a fixed-width code cannot give any symbol fewer bits than `⌈log₂ n⌉`, however common it is, while Huffman can.
 
@@ -586,4 +586,4 @@ Every algorithm on this page so far either was greedy and correct (interval sche
 | Coin change `{1,3,4}` | Wrong (this page, first section) | Right (`minCoins[6] == 2`, above) |
 | Interval scheduling | Right (exchange argument, above) | Also right, but does more work than it needs to |
 
-Optimal substructure — "an optimal solution is built from optimal solutions to smaller subproblems", the property CLRS's dynamic-programming chapter builds on throughout (chapter 15) — holds for all three problems on this page; it is why a DP table can solve any of them. What greedy adds on top is the much stronger greedy-choice property, and that property is what actually has to be proven, problem by problem, the way the exchange argument did above for interval scheduling and the way CLRS does for Huffman coding. When it holds, greedy reaches the same answer as DP while doing asymptotically less work — interval scheduling never has to fill in a table of subproblem answers, just sort once and scan. When it does not hold, as for `{1, 3, 4}`, greedy does not become slower or approximate; it becomes wrong, silently, on inputs that happen not to be counterexamples.
+Optimal substructure — "an optimal solution is built from optimal solutions to smaller subproblems", the property CLRS's dynamic-programming chapter builds on throughout (chapter 14) — holds for all three problems on this page; it is why a DP table can solve any of them. What greedy adds on top is the much stronger greedy-choice property, and that property is what actually has to be proven, problem by problem, the way the exchange argument did above for interval scheduling and the way CLRS does for Huffman coding. When it holds, greedy reaches the same answer as DP while doing asymptotically less work — interval scheduling never has to fill in a table of subproblem answers, just sort once and scan. When it does not hold, as for `{1, 3, 4}`, greedy does not become slower or approximate; it becomes wrong, silently, on inputs that happen not to be counterexamples.
