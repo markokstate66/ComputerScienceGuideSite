@@ -38,6 +38,7 @@ const abs = (p: string) => new URL(p, SITE.url).href;
 const wasUpdated = isoDate(data.updated) !== isoDate(data.published);
 const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const authorPending = author.data.name.startsWith('NEEDS_MARKUS');
+const hasBio = author.data.bio.trim().length > 0 && !author.data.bio.startsWith('NEEDS_MARKUS');
 
 const structuredData = [
   {
@@ -132,7 +133,7 @@ const structuredData = [
 
           <section class="author-box" aria-label="About the author">
             <p class="author-name">Written by <a href="/about/" class:list={{ 'needs-markus': authorPending }}>{author.data.name}</a></p>
-            <p><span class:list={{ 'needs-markus': author.data.bio.startsWith('NEEDS_MARKUS') }}>{author.data.bio}</span></p>
+            {hasBio && <p>{author.data.bio}</p>}
             <p>Every program in this article was compiled and run, and its output compared with the text, before publication. See the <a href="/editorial-policy/">editorial policy</a>.</p>
           </section>
 

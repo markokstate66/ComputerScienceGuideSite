@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import NeedsMarkus from '../components/NeedsMarkus.astro';
 import { SITE, jsonLd } from '../lib/site';
 import { getLivePillars, pillarUrl } from '../lib/content';
 
@@ -196,7 +195,9 @@ const website = {
       </div>
       <div class="footer-bottom">
         <div class="container">
-          <p>&copy; {new Date().getUTCFullYear()} <NeedsMarkus n={4} what="legal or business name" /></p>
+          {/* Publication name for now, not a specific legal entity; see docs/NEEDS_MARKUS.md #4
+              and the still-open marker on /privacy/ and /terms/, which name the actual operator. */}
+          <p>&copy; {new Date().getUTCFullYear()} Computer Science Guide</p>
         </div>
       </div>
     </footer>

@@ -1,8 +1,8 @@
 ---
 // Facts about the author come only from docs/NEEDS_MARKUS.md (items 1-3). Until the owner supplies
-// them they render as visible markers, which tools/verify-page.mjs treats as a failure.
+// a real name and bio, this page attributes to the publication itself and omits the bio paragraph
+// rather than showing a broken-looking placeholder -- see src/content/authors/markus.yaml.
 import PageLayout from '../layouts/PageLayout.astro';
-import NeedsMarkus from '../components/NeedsMarkus.astro';
 ---
 <PageLayout
   title="About"
@@ -16,9 +16,8 @@ import NeedsMarkus from '../components/NeedsMarkus.astro';
   <p>It is aimed at people who already write code, often self-taught or a few years into a job, and who want to understand why the tools they use behave the way they do. Examples are in C#, because that is the language the author works in, and because most material on these subjects is written for Python, Java or pseudocode and never connects the theory to .NET types such as <code>List&lt;T&gt;</code>, <code>Dictionary&lt;TKey,TValue&gt;</code> or <code>Task</code>.</p>
 
   <h2 id="author">Who writes it</h2>
-  <p>The site is written and maintained by one person: <NeedsMarkus n={1} what="author display name" />.</p>
-  <p><NeedsMarkus n={2} what="author bio: current role, what you work on, technologies, links such as GitHub or LinkedIn" /></p>
-  <p>There are no guest posts, no sponsored articles and no anonymous staff writers. The same author is named on every article and is responsible for its accuracy.</p>
+  <p>The site is written and maintained by one person, publishing as <strong>Computer Science Guide</strong> for now. A named byline and bio are coming.</p>
+  <p>There are no guest posts, no sponsored articles and no anonymous staff writers. The same author is responsible for every article's accuracy.</p>
 
   <h2 id="how">How articles are made</h2>
   <p>The full process is in the <a href="/editorial-policy/">editorial policy</a>. In short:</p>
