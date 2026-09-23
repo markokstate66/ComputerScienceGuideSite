@@ -1,6 +1,6 @@
 ---
 title: "Generics in C#: Constraints, Variance and Why They're Fast"
-description: "See why ArrayList boxes and List<T> does not, reproduce the CS1961 errors the compiler gives for misused variance, and sum with INumber<T> generic math."
+description: "See why ArrayList boxes and List<T> does not, reproduce the CS1961 errors from misused variance, and clamp values with INumber<T> generic math."
 pillar: csharp-dotnet
 order: 5
 author: markus
@@ -36,6 +36,14 @@ sources:
     accessed: 2026-09-22
   - title: "INumberBase<TSelf>.Zero Property"
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1.zero"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-22
+  - title: "INumber<TSelf>.Clamp(TSelf, TSelf, TSelf) Method"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumber-1.clamp"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-22
+  - title: "INumberBase<TSelf>.CreateChecked<TOther>(TOther) Method"
+    url: "https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1.createchecked"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
   - title: "Type Erasure (The Java Tutorials)"
@@ -77,41 +85,58 @@ partIds.Add("1003-A");
 
 `List<T>.Add` isn't `Add(object)`; once `T` is fixed to `int`, it's `Add(int)`, and the compiler rejects the call at the exact line that's wrong. That's the guarantee `object`-based code can't give you: the [C# generics overview](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/generics) puts it plainly — "the compiler checks types at compile time, so you don't need runtime casts or risk `InvalidCastException`."
 
-Boxing isn't just a safety gap, it's also allocation and copying that `List<int>` skips entirely — [Microsoft's generics overview](https://learn.microsoft.com/en-us/dotnet/standard/generics/) lists this as one of the concrete benefits: "generic collection types generally perform better for storing and manipulating value types because there is no need to box the value types." Summing eight million part IDs through each list shows the gap instead of just asserting it:
+Boxing isn't just a safety gap, it's also allocation and copying that `List<int>` skips entirely — [Microsoft's generics overview](https://learn.microsoft.com/en-us/dotnet/standard/generics/) lists this as one of the concrete benefits: "generic collection types generally perform better for storing and manipulating value types because there is no need to box the value types." [Value types vs. reference types](/csharp-dotnet/value-types-vs-reference-types/#what-a-million-boxes-cost) measures that cost once, for a `List<object>` that boxes each *element* it stores. A non-generic dictionary pays the same tax twice over, because every entry has both a key and a value, and `Hashtable` — the pre-generics `Dictionary<TKey,TValue>` — types both `object`:
 
 ```csharp run id=box-cost
 #:property Optimize=true
 using System.Collections;
 using System.Diagnostics;
 
-const int n = 8_000_000;
+const int n = 2_000_000;
 
-ArrayList boxedIds = new(n);
-for (int i = 0; i < n; i++) boxedIds.Add(i);
+Run("Hashtable", () =>
+{
+    var map = new Hashtable(n);
+    for (int i = 0; i < n; i++)
+        map.Add(i, i);            // boxes the key and the value
+    long sum = 0;
+    foreach (DictionaryEntry e in map)
+        sum += Convert.ToInt32(e.Value);   // unboxes the value
+    return sum;
+});
 
-List<int> typedIds = new(n);
-for (int i = 0; i < n; i++) typedIds.Add(i);
+Run("Dictionary", () =>
+{
+    var map = new Dictionary<int, int>(n);
+    for (int i = 0; i < n; i++)
+        map.Add(i, i);
+    long sum = 0;
+    foreach (var kv in map)
+        sum += kv.Value;
+    return sum;
+});
 
-var sw = Stopwatch.StartNew();
-long boxedTotal = 0;
-foreach (object id in boxedIds) boxedTotal += (int)id;
-long boxedMs = sw.ElapsedMilliseconds;
+static void Run(string name, Func<long> work)
+{
+    work();   // warm-up run, not measured
+    long before = HeapBytes();
+    long start = Stopwatch.GetTimestamp();
+    long sum = work();
+    double ms = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
+    long bytes = HeapBytes() - before;
+    Console.WriteLine($"{name}: {bytes:N0} B, {ms:F1} ms");
+    GC.KeepAlive(sum);
+}
 
-sw.Restart();
-long typedTotal = 0;
-foreach (int id in typedIds) typedTotal += id;
-long typedMs = sw.ElapsedMilliseconds;
-
-Console.WriteLine($"ArrayList (boxed): {boxedTotal}, {boxedMs} ms");
-Console.WriteLine($"List<int>:         {typedTotal}, {typedMs} ms");
+static long HeapBytes() => GC.GetAllocatedBytesForCurrentThread();
 ```
 
 ```text output
-ArrayList (boxed): 31999996000000, [...] ms
-List<int>:         31999996000000, [...] ms
+Hashtable: [...] B, [...] ms
+Dictionary: [...] B, [...] ms
 ```
 
-On this machine (.NET 10.0.401, Windows 11, x64) the boxed sum consistently ran several times slower than the typed one — the exact multiple moved between runs, but `List<int>` was never close to the `ArrayList` time. The loop over `boxedIds` unboxes eight million times (a bounds-checked type test plus a copy out of the heap) before it can add anything; the loop over `typedIds` never leaves value-type land.
+`Hashtable.Add(object, object)` boxes both arguments, so every one of the two million entries allocates two boxes instead of `Dictionary<int, int>`'s zero — on this machine (.NET 10.0.401, Windows 11, x64) that showed up as tens of millions more allocated bytes and a run several times slower, the same shape as the `List<object>` result but doubled, because a dictionary has two `object` slots per entry where a list has one. `Dictionary<TKey, TValue>` closes it the same way `List<T>` does: `TKey` and `TValue` are substituted at the type it's built from, not carried as `object`, so there is nothing to box on the way in or unbox on the way out.
 
 ## Constraints: telling the compiler what `T` can do
 
@@ -121,7 +146,7 @@ A method that only knows its parameter is `T` can do exactly what it could do wi
 |---|---|
 | `where T : class` | `T` is a reference type |
 | `where T : struct` | `T` is a non-nullable value type |
-| `where T : new()` | `T` has a public parameterless constructor |
+| `where T : new()` | `T` has a public parameterless ctor |
 | `where T : SomeBase` | `T` is `SomeBase` or derives from it |
 | `where T : ISomeInterface` | `T` implements `ISomeInterface` |
 
@@ -188,7 +213,8 @@ A base-class constraint and `new()` combine cleanly when a factory needs both a 
 var goblin = Spawn<Goblin>();
 Console.WriteLine($"{goblin.Kind}: {goblin.Health} hp");
 
-static T Spawn<T>() where T : GameEntity, new()
+static T Spawn<T>()
+    where T : GameEntity, new()
 {
     var entity = new T();
     entity.Health = 10;
@@ -213,6 +239,44 @@ goblin: 10 hp
 
 `Spawn<T>` can set `entity.Health` because `GameEntity` guarantees the property exists, and it can call `new T()` because `new()` guarantees a parameterless constructor — neither works alone. `new()`, when combined with other constraints, has to come last in the list ([Constraints on type parameters](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters)).
 
+::::exercise[Explain the error: why does `new()` have to come last?]
+This version of `Spawn` only swaps the order of the two constraints. It does not compile.
+
+```csharp run error=CS0401
+Spawn<Goblin>();
+
+static T Spawn<T>() where T : new(), GameEntity => new T();
+
+abstract class GameEntity
+{
+}
+
+class Goblin : GameEntity
+{
+}
+```
+
+Before opening the solution: `GameEntity, new()` compiles, but `new(), GameEntity` does not, even though a `where` clause is just a list of requirements with no obvious reason to care about order. What does the compiler need to know about `T` before it can make sense of `new()`, and why would putting `new()` first make that impossible in general?
+
+:::solution
+`new()` alone only promises a parameterless constructor; it says nothing about what type `T` otherwise is. A base-class or interface constraint narrows `T` down to "a `GameEntity`, or something more specific." The compiler resolves the whole constraint list as one description of `T`, and `new()` is defined relative to whatever that description turns out to be — so the grammar simply requires every other constraint to be stated first, with `new()` last, rather than trying to make sense of `new()` before it knows what else `T` must be. [Constraints on type parameters](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters) states the rule directly: "If you specify the `new()` constraint, it must be the last constraint for that type parameter." Swapping the two back into `GameEntity, new()` is the only fix; nothing else about the method changes:
+
+```csharp run id=spawn-fixed
+Spawn<Goblin>();
+
+static T Spawn<T>() where T : GameEntity, new() => new T();
+
+abstract class GameEntity
+{
+}
+
+class Goblin : GameEntity
+{
+}
+```
+:::
+::::
+
 ## Reified at compile time and at runtime
 
 C# generics are **reified**: the type argument you gave is still there at runtime, not just at compile time. `typeof(T)` inside a generic method returns the real, substituted type — not `object`, not some placeholder:
@@ -221,8 +285,8 @@ C# generics are **reified**: the type argument you gave is still there at runtim
 List<int> ids = [1, 2, 3];
 List<string> names = ["a", "b"];
 
-Console.WriteLine(ids.GetType());
-Console.WriteLine(names.GetType());
+Console.WriteLine($"List<{ids.GetType().GetGenericArguments()[0].Name}>");
+Console.WriteLine($"List<{names.GetType().GetGenericArguments()[0].Name}>");
 Console.WriteLine(ids.GetType() == typeof(List<int>));
 
 Describe(7);
@@ -233,14 +297,14 @@ static void Describe<T>(T value) =>
 ```
 
 ```text output
-System.Collections.Generic.List`1[System.Int32]
-System.Collections.Generic.List`1[System.String]
+List<Int32>
+List<String>
 True
 T is System.Int32 here, not just object
 T is System.String here, not just object
 ```
 
-`List<int>` and `List<string>` report distinct runtime types — `List<int>`'s `GetType()` is reference-equal to `typeof(List<int>)`, not to some shared, type-erased `List`. Inside `Describe<T>`, `typeof(T)` reports `System.Int32` or `System.String` on the two calls, even though both call sites compile against the exact same method body. The [C# generics overview](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/generics) states this directly for readers coming from another language: "C# generics are similar to generics in Java or templates in C++, but with full runtime type information and no type erasure."
+`List<int>` and `List<string>` report distinct runtime types — the generic argument reflected back off each `GetType()` is `Int32` for one and `String` for the other, and `List<int>`'s `GetType()` is reference-equal to `typeof(List<int>)`, not to some shared, type-erased `List`. Inside `Describe<T>`, `typeof(T)` reports `System.Int32` or `System.String` on the two calls, even though both call sites compile against the exact same method body. The [C# generics overview](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/generics) states this directly for readers coming from another language: "C# generics are similar to generics in Java or templates in C++, but with full runtime type information and no type erasure."
 
 Java's own documentation describes the alternative it's contrasting with. The [Java Tutorials' page on type erasure](https://docs.oracle.com/javase/tutorial/java/generics/erasure.html) explains that to implement generics, the compiler applies erasure to:
 
@@ -251,6 +315,50 @@ Java's own documentation describes the alternative it's contrasting with. The [J
 > Generate bridge methods to preserve polymorphism in extended generic types.
 
 In that model, `List<Integer>` and `List<String>` compile down to the same class, `List`, holding `Object` references; the compiler inserts the casts a reader would otherwise write by hand, and there's no `typeof(T)`-equivalent to ask a generic method what its actual type argument was, because the answer no longer exists once the class file is built. This is Java's documented design, not a limitation this page tested against a running JVM — the C# side of the comparison above (the `List<int>`/`List<string>` identity and the `typeof(T)` output) is exactly what ran above.
+
+::::exercise[Predict it: does reification see through a record struct?]
+Four calls to the same generic method, each with a different `T`. Without running it, write down what `report` holds after all four calls — specifically, which of the four come back `IsValueType=True`.
+
+```csharp run id=reflect-stub
+List<string> report = [];
+Describe(42);
+Describe("forty-two");
+Describe(new Coordinate(1, 2));
+Describe(new Wrapper());
+
+// What does each report entry say?
+
+void Describe<T>(T value) =>
+    report.Add($"{typeof(T).Name}: IsValueType={typeof(T).IsValueType}");
+
+readonly record struct Coordinate(int X, int Y);
+class Wrapper;
+```
+
+:::solution
+```csharp run id=reflect
+Describe(42);
+Describe("forty-two");
+Describe(new Coordinate(1, 2));
+Describe(new Wrapper());
+
+static void Describe<T>(T value) =>
+    Console.WriteLine($"{typeof(T).Name}: IsValueType={typeof(T).IsValueType}");
+
+readonly record struct Coordinate(int X, int Y);
+class Wrapper;
+```
+
+```text output
+Int32: IsValueType=True
+String: IsValueType=False
+Coordinate: IsValueType=True
+Wrapper: IsValueType=False
+```
+
+`typeof(T)` is reified per call site, exactly as in the `Describe` example above, so `IsValueType` is asked of the true, substituted type on all four calls — never of some shared `object`. `record struct` still declares a value type, so `Coordinate` reports `True` alongside `int`; the ordinary class `Wrapper` reports `False` alongside `string`, even though nothing about the four call sites looks different from one another.
+:::
+::::
 
 ## Which direction does assignment compatibility flow?
 
@@ -364,36 +472,139 @@ interface IConsumer<in T>
 }
 ```
 
-This is why the two BCL interface families split the way they do: [`IEnumerable<out T>`](https://learn.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance) only ever returns `T` from `MoveNext`-driven enumeration, so it's covariant; [`IComparer<in T>`](https://learn.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance) only ever takes `T` as parameters to `Compare`, so it's contravariant. A type that needs to do both — like `IList<T>`, which both returns elements and accepts them through an indexer setter — can't be marked either way, which is why `IList<T>` stays invariant while `IEnumerable<T>` and `IReadOnlyList<T>` (read-only, so covariant is safe) are not. Variance is also restricted to interfaces and delegates in the first place — you cannot mark a type parameter of a `class` or `struct` as `in` or `out` ([Covariance and Contravariance](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/covariance-contravariance/)), which is part of why the invariant `List<Circle>`/`List<Shape>` example above fails: `List<T>`'s own type parameter is invariant, even though it implements the covariant `IEnumerable<T>`.
+This is why the two BCL interface families split the way they do: [`IEnumerable<out T>`](https://learn.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance) only ever returns `T` from `MoveNext`-driven enumeration, so it's covariant; [`IComparer<in T>`](https://learn.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance) only ever takes `T` as parameters to `Compare`, so it's contravariant. A type that needs to do both — like `IList<T>`, which both returns elements and accepts them through an indexer setter — can't be marked either way, which is why `IList<T>` stays invariant while `IEnumerable<T>` and `IReadOnlyList<T>` (read-only, so covariant is safe) are not. Variance is also restricted to interfaces and delegates in the first place — "only interface types and delegate types can have variant type parameters" ([Covariance and Contravariance in Generics](https://learn.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance)), so a `class` or `struct` can never mark one `in` or `out`, which is part of why the invariant `List<Circle>`/`List<Shape>` example above fails: `List<T>`'s own type parameter is invariant, even though it implements the covariant `IEnumerable<T>`.
+
+::::exercise[Find the bug: a covariant feed that will not compile]
+`ILiveFeed<out T>` is meant to be a read-only, covariant view over a sequence — the same idea as `IReadOnlyList<T>` from the paragraph above. It does not compile.
+
+```csharp run error=CS1961
+interface ILiveFeed<out T>
+{
+    T Latest { get; }
+    T this[int index] { get; set; }
+}
+```
+
+Before opening the solution: `Latest` is a plain `get`-only property and compiles fine on its own. Which member is the compiler actually rejecting, and why does combining `get` and `set` on it break covariance when `Latest`'s single `get` does not? What is the smallest change to `ILiveFeed<T>` that keeps index access and makes it compile?
+
+:::solution
+An indexer with both `get` and `set` is really two members sharing one syntax: the `get` needs `T` in an output position (fine for covariant `out T`), but the `set` needs `T` in an input position (fine only for contravariant `in T`). A single declaration cannot be covariant for reads and contravariant for writes at once, so the compiler requires `T` to be **invariantly** valid there instead — the exact conflict the `IList<T>` paragraph above describes for the same reason — and rejects it: `error CS1961: Invalid variance: The type parameter 'T' must be invariantly valid on 'ILiveFeed<T>.this[int]'. 'T' is covariant.` `Latest` never had this problem because it only ever declares `get`.
+
+Dropping the indexer's `set` is the smallest fix, and it is exactly the shape `IReadOnlyList<T>` uses in the BCL:
+
+```csharp run id=livefeed-fixed
+ILiveFeed<Circle> circleFeed = new FeedAdapter<Circle>([new Circle()]);
+ILiveFeed<Shape> shapeFeed = circleFeed;
+Console.WriteLine(shapeFeed[0].GetType().Name);
+
+interface ILiveFeed<out T>
+{
+    T Latest { get; }
+    T this[int index] { get; }
+}
+
+class FeedAdapter<T>(IReadOnlyList<T> source) : ILiveFeed<T>
+{
+    public T Latest => source[^1];
+    public T this[int index] => source[index];
+}
+
+class Shape;
+class Circle : Shape;
+```
+
+```text output
+Circle
+```
+
+`ILiveFeed<Circle>` now converts to `ILiveFeed<Shape>` the same way `IProducer<Circle>` did earlier, because every remaining member — `Latest` and the indexer's `get` — only ever returns `T`.
+:::
+::::
 
 ## Generic math: constraining `T` to `INumber<T>`
 
-.NET 7 added [`INumber<TSelf>`](https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumber-1) and the interfaces around it, built on C# 11's `static abstract` interface members, so a type parameter can be constrained to "number-like" instead of one specific numeric type ([Generic math](https://learn.microsoft.com/en-us/dotnet/standard/generics/math)). `int`, `double`, and `decimal` all implement `INumber<T>`, along with every other built-in numeric type, so one generic method sums all three without an overload for each:
+.NET 7 added [`INumber<TSelf>`](https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumber-1) and the interfaces around it, built on C# 11's `static abstract` interface members, so a type parameter can be constrained to "number-like" instead of one specific numeric type ([Generic math](https://learn.microsoft.com/en-us/dotnet/standard/generics/math)). `int`, `double`, `decimal`, and every other built-in numeric type already implement it, which is the specific thing a hand-rolled interface can't give you: a type you don't own can never be retrofitted to implement an interface you invent after the fact, so a custom `IClampable<T>` would only ever work for types you wrote yourself. `INumber<T>` works for `int` and `double` today because Microsoft put the implementation on those types directly, inside the BCL:
 
 ```csharp run id=generic-math
 using System.Numerics;
 
-int[] wholeHits = [3, 7, 2, 9];
-double[] cpuLoad = [0.42, 0.71, 0.55];
-decimal[] prices = [19.99m, 4.50m, 100m];
+int[] wholeHits = [3, 11, -2, 9];
+double[] cpuLoad = [0.42, 1.15, -0.08];
 
-Console.WriteLine($"hits total:  {Sum(wholeHits)}");
-Console.WriteLine($"load total:  {Sum(cpuLoad)}");
-Console.WriteLine($"price total: {Sum(prices)}");
+Console.WriteLine(string.Join(", ", Clamped(wholeHits, 0, 10)));
+Console.WriteLine(string.Join(", ", Clamped(cpuLoad, 0.0, 1.0)));
 
-static T Sum<T>(IEnumerable<T> values) where T : INumber<T>
+static IEnumerable<T> Clamped<T>(IEnumerable<T> values, T min, T max)
+    where T : INumber<T>
 {
-    T total = T.Zero;
     foreach (var v in values)
-        total += v;
-    return total;
+        yield return T.Clamp(v, min, max);
 }
 ```
 
 ```text output
-hits total:  21
-load total:  1.68
-price total: 124.49
+3, 10, 0, 9
+0.42, 1, 0
 ```
 
-`T.Zero` and `total += v` both resolve at compile time to `int`'s operators, `double`'s operators, or `decimal`'s operators, depending on the call site — there's no boxing to a common numeric type and no `dynamic`. `T.Zero` is possible at all because `Zero` is declared `public static abstract TSelf Zero { get; }` on [`INumberBase<TSelf>`](https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1.zero), which `INumber<TSelf>` extends — a `static abstract` member, the same C# 11 feature that lets [interfaces declare `static` contracts rather than instance ones](/oop-design/interfaces-vs-abstract-classes/#static-abstract-members-contracts-for-statics-not-instances), applied here to operators (`+`) and factory-style members (`Zero`, `One`) instead of ordinary methods. Before generic math, writing `Sum` for `int`, `double`, and `decimal` meant three overloads, or one that widened everything to `decimal` and paid for conversions nobody asked for.
+`Clamped<T>` never mentions `int` or `double` — `T.Clamp(v, min, max)` resolves at compile time to whichever type argument the call site supplies, the same way `T.Zero` would. What's different from a hand-written `where T : IComparable<T>` clamp is where the logic lives: [`Clamp`](https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumber-1.clamp) is declared `public static virtual TSelf Clamp(TSelf value, TSelf min, TSelf max)` directly on `INumber<TSelf>` — `virtual`, not `abstract`, so it ships with a working default implementation, argument checking included (it throws `ArgumentException` if `min` is greater than `max`). `Clamped<T>` gets that behavior, correct for every built-in numeric type, from the constraint alone.
+
+::::exercise[Extend it: a percentage that never casts to `double`]
+`PercentOfTotal` is meant to turn each element of an array into its percentage of the array's sum — entirely in `T`, no matter which numeric type `T` turns out to be. The body sums the array but the percentage step is missing, and a percentage needs the number 100, which nothing in `values` supplies.
+
+```csharp run id=percent-stub
+using System.Numerics;
+
+double[] cpuLoad = [0.42, 1.15, -0.08];
+_ = PercentOfTotal(cpuLoad);
+
+// Extend so result[i] is each value's percent
+// of the total, computed entirely in T.
+// INumberBase<T>.CreateChecked converts the
+// literal 100 into T's own type — use it.
+
+static T[] PercentOfTotal<T>(T[] values) where T : INumber<T>
+{
+    T total = T.Zero;
+    foreach (var v in values) total += v;
+    var result = new T[values.Length];
+    // TODO: fill in result[i]
+    return result;
+}
+```
+
+Before opening the solution: there is no `(T)100` in C# — a cast only converts between types the compiler already knows how to convert. What does `T.CreateChecked(100)` do that a cast cannot, and where does the reachable-for-every-numeric-type property come from?
+
+:::solution
+`(T)100` doesn't compile because `T` is an unconstrained-looking type parameter as far as casting is concerned — the compiler has no idea, for a generic `T`, whether `100` converts to it at all. [`T.CreateChecked(100)`](https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1.createchecked) sidesteps that: it's `public static virtual TSelf CreateChecked<TOther>(TOther value) where TOther : INumberBase<TOther>`, declared on `INumberBase<TSelf>`, so it takes the `int` literal `100` (itself an `INumberBase<int>`) and converts it to whichever `T` the constraint resolved to, throwing `OverflowException` if `T` can't represent it. It reaches every built-in numeric type for the same reason `Clamp` does: Microsoft implemented `INumberBase<TSelf>` directly on `int`, `double`, `decimal`, and the rest, so the conversion already exists no matter what `T` turns out to be.
+
+```csharp run id=percent
+using System.Numerics;
+
+int[] wholeHits = [3, 11, -2, 9];
+double[] cpuLoad = [0.42, 1.15, -0.08];
+
+Console.WriteLine(string.Join(", ", PercentOfTotal(wholeHits)));
+Console.WriteLine(string.Join(", ",
+    PercentOfTotal(cpuLoad).Select(x => x.ToString("F1"))));
+
+static T[] PercentOfTotal<T>(T[] values) where T : INumber<T>
+{
+    T total = T.Zero;
+    foreach (var v in values) total += v;
+    T hundred = T.CreateChecked(100);
+    var result = new T[values.Length];
+    for (int i = 0; i < values.Length; i++)
+        result[i] = values[i] * hundred / total;
+    return result;
+}
+```
+
+```text output
+14, 52, -9, 42
+28.2, 77.2, -5.4
+```
+
+`values[i] * hundred / total` multiplies before it divides on purpose: for `T = int`, dividing first (`values[i] / total`) truncates to `0` for every element smaller than `total`, because that division already happened in integer arithmetic before the multiply ever ran. Multiplying first keeps the intermediate value large enough that the final integer division still lands on a meaningful percentage — a reordering a `double`-based version would never need to think about, but a fully generic one, valid for `int` too, does.
+:::
+::::
