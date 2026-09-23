@@ -46,6 +46,10 @@ sources:
     url: "https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/"
     publisher: "MIT Press"
     accessed: 2026-09-22
+  - title: "clrsPython.zip: companion Python code for Introduction to Algorithms, 4th ed."
+    url: "https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/11599/clrsPython.zip"
+    publisher: "MIT Press (code by Thomas H. Cormen and Linda Xiao)"
+    accessed: 2026-09-22
 draft: true
 ---
 
@@ -1059,7 +1063,7 @@ same shape: True
 
 ## The red-black invariant, at the level that matters
 
-Rotations are the mechanism; a red-black tree is a policy for when to apply them, chosen so height never drifts far from log₂ *n* no matter what order keys arrive in — solving exactly the degeneration problem measured above, for every insertion order, not just random ones. .NET's own tree implementation states the four invariants directly, in the source for `SortedSet<T>`:
+Rotations are the mechanism; a red-black tree is a policy for when to apply them, chosen so height never drifts far from log₂ *n* no matter what order keys arrive in — solving exactly the degeneration problem measured above, for every insertion order, not just random ones. CLRS treats this as a separate chapter from plain binary search trees — chapter 13 follows chapter 12 in the fourth edition, a split the book's own [companion Python code](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/11599/clrsPython.zip) (by coauthor Thomas H. Cormen and Linda Xiao) preserves folder-for-folder: `Chapter 12/binary_search_tree.py`, `Chapter 13/red_black_tree.py`. .NET's own tree implementation states the four invariants directly, in the source for `SortedSet<T>`:
 
 > A binary search tree is a red-black tree if it satisfies the following red-black properties: 1. Every node is either red or black 2. Every leaf (nil node) is black 3. If a node is red, the both its children are black 4. Every simple path from a node to a descendant leaf contains the same number of black nodes
 
@@ -1069,7 +1073,7 @@ Maintaining the invariants after an ordinary binary-search-tree insert or delete
 
 ## Inside SortedDictionary<TKey,TValue> and SortedSet<T>
 
-.NET's own ordered collections are exactly this: Microsoft's documentation for `SortedDictionary<TKey,TValue>` states plainly that it "is a binary search tree with O(log n) retrieval," and the [dotnet/runtime source](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/SortedSet.cs) for `SortedSet<T>` confirms the specific kind of binary search tree: an `internal enum NodeColor : byte { Black, Red }` field on every node, a root always constructed black, and `RotateLeft`/`RotateRight` methods used throughout insertion and deletion — the same red-black tree this article just described. `SortedDictionary<TKey,TValue>` does not reimplement any of this; its [source](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/SortedDictionary.cs) holds a private `TreeSet<KeyValuePair<TKey,TValue>>` field, and `TreeSet<T>` is declared as `sealed class TreeSet<T> : SortedSet<T>` — a thin subclass that throws on duplicate keys instead of silently ignoring them. Both types are the same red-black tree engine underneath.
+.NET's own ordered collections are exactly this: Microsoft's [documentation for `SortedDictionary<TKey,TValue>`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.sorteddictionary-2) states plainly that it "is a binary search tree with O(log n) retrieval." `SortedSet<T>` is the same idea exposed as a set rather than a key/value map — Microsoft's [documentation for the type](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.sortedset-1) describes it as a collection "that is maintained in sorted order" without affecting insert/delete performance — and the [dotnet/runtime source](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/SortedSet.cs) for `SortedSet<T>` confirms the specific kind of binary search tree: an `internal enum NodeColor : byte { Black, Red }` field on every node, a root always constructed black, and `RotateLeft`/`RotateRight` methods used throughout insertion and deletion — the same red-black tree this article just described. `SortedDictionary<TKey,TValue>` does not reimplement any of this; its [source](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/SortedDictionary.cs) holds a private `TreeSet<KeyValuePair<TKey,TValue>>` field, and `TreeSet<T>` is declared as `public sealed class TreeSet<T> : SortedSet<T>` — a thin subclass that throws on duplicate keys instead of silently ignoring them. Both types are the same red-black tree engine underneath.
 
 ```csharp run id=bst-sorteddictionary
 var byName = new SortedDictionary<string, int>
@@ -1101,7 +1105,7 @@ in the 1990s: 1998
 the view sees it too: 1995, 1998
 ```
 
-`byName` enumerates by key, alphabetically, regardless of insertion order — the payoff of maintaining the ordering invariant on every write, at O(log *n*) per insert, rather than sorting once on demand. `Min` and `Max` are not cached constants; the source's `MinInternal`/`MaxInternal` walk the leftmost or rightmost spine from the root, an O(*h*) operation exactly like the `Contains` walk earlier in this article, which for a red-black tree means O(log *n*) rather than O(1). `GetViewBetween` is the most surprising of the three: it does not copy anything. It returns a `TreeSubSet`, and that class's own documentation says so directly — "this class represents a subset view into the tree. Any changes to this view are reflected in the actual tree" — which is why adding `1995` to `years` after `nineties` was already created still shows up when `nineties` is enumerated again: the view re-derives its own root from the live underlying tree on every access, rather than freezing a snapshot at the moment `GetViewBetween` was called.
+`byName` enumerates by key, alphabetically, regardless of insertion order — the payoff of maintaining the ordering invariant on every write, at O(log *n*) per insert, rather than sorting once on demand. `Min` and `Max` are not cached constants; the source's `MinInternal`/`MaxInternal` walk the leftmost or rightmost spine from the root, an O(*h*) operation exactly like the `Contains` walk earlier in this article, which for a red-black tree means O(log *n*) rather than O(1) — and Microsoft's [documentation for `Min`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.sortedset-1.min) fills in the edge case the walk itself doesn't advertise: on an empty set there is no leftmost node to find, so `Min` returns `default(T)` rather than throwing. `GetViewBetween` is the most surprising of the three: it does not copy anything. It returns a `TreeSubSet`, and [that class's own documentation](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/SortedSet.TreeSubSet.cs) says so directly — "this class represents a subset view into the tree. Any changes to this view are reflected in the actual tree" — which is why adding `1995` to `years` after `nineties` was already created still shows up when `nineties` is enumerated again: the view re-derives its own root from the live underlying tree on every access, rather than freezing a snapshot at the moment `GetViewBetween` was called.
 
 ::::exercise[Compare enumeration order against a plain Dictionary]
 `Dictionary<TKey,TValue>` gives expected O(1) lookup — covered in full in the [hash tables](/data-structures/hash-tables/) article — against `SortedDictionary<TKey,TValue>`'s O(log n). Insert the same five out-of-order integer keys into one of each and compare what `foreach` gives back.
@@ -1129,7 +1133,7 @@ SortedDictionary: 3, 7, 19, 42, 88
 sorted matches an actual sort: True
 ```
 
-`SortedDictionary<TKey,TValue>` always enumerates low to high, because that is what walking its red-black tree in order produces. `Dictionary<TKey,TValue>` happened to enumerate in insertion order here, but Microsoft's documentation for it is explicit that this is not a promise: "the order in which the items are returned is undefined." A future .NET version, a resize, or a removal can all change it without breaking any documented contract — code that needs order has to ask for `SortedDictionary<TKey,TValue>` (or sort explicitly), never rely on what an unsorted dictionary happens to do today.
+`SortedDictionary<TKey,TValue>` always enumerates low to high, because that is what walking its red-black tree in order produces. `Dictionary<TKey,TValue>` happened to enumerate in insertion order here, but Microsoft's [documentation for `Dictionary<TKey,TValue>`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2) is explicit that this is not a promise: "the order in which the items are returned is undefined." A future .NET version, a resize, or a removal can all change it without breaking any documented contract — code that needs order has to ask for `SortedDictionary<TKey,TValue>` (or sort explicitly), never rely on what an unsorted dictionary happens to do today.
 :::
 ::::
 
