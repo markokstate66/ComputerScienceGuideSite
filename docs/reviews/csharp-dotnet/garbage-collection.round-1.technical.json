@@ -1,0 +1,38 @@
+{
+  "article": "src/content/articles/csharp-dotnet/garbage-collection.md",
+  "route": "/csharp-dotnet/garbage-collection/",
+  "round": 1,
+  "role": "technical",
+  "score": 7.0,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/fundamentals (Microsoft Learn, \"Fundamentals of garbage collection\" — the authoritative page for this query; also re-fetched large-object-heap, weak-references, implementing-dispose, system.object.finalize, system.gc.collectioncount and standard/events pages to verify every quoted/cited claim in the article)",
+    "https://blog.elmah.io/how-net-garbage-collector-works-and-when-you-should-care/ (elmah.io blog, ranks for the query — covers generations, LOH, mark/compact; omits IDisposable-vs-finalizer and has no runnable, measured code)",
+    "https://www.site24x7.com/learn/garbage-collection-in-net-framework.html (Site24x7 tutorial, ranks for the query — covers generations, LOH threshold, mark/compact; no runnable code, no IDisposable/finalizer distinction, no weak references, no event-leak demo)"
+  ],
+  "justification": "Every primary-source quote and cited claim I re-checked against Microsoft Learn (GC roots list, the two generational-GC premises, the GC.Collect guidance, compaction moving objects 'towards the older end of the segment', the 85,000-byte LOH threshold and 'large objects belong to generation 2' line, the Object.Finalize 'at least two garbage collections' line, the event-sender/Delegate.Target quotes, and the DI-disposal and 'doesn't allocate or release unmanaged memory' lines from Implementing Dispose) matches the source verbatim and in context — nothing fabricated or misattributed. `node tools/run-code.mjs` passes clean (33 blocks, 17 executed, all output matches). The generation-promotion demo, the 84,960/85,000-byte LOH boundary demo, the mark/relocate/compact figure, the Dispose-vs-finalizer trace, and the event-handler-leak-then-fix pair are all mechanically correct, idiomatic modern C#, and re-derive the claims rather than just asserting them — this is a level of rigor neither of the two ranking third-party pages I compared against attempts (both omit IDisposable-vs-finalizer, weak references, and any runnable measurement; the elmah.io piece has no measured output at all). Against Microsoft's own page — the best existing result for this query — the article adds exactly what a strong reader wants next: checkable demonstrations of claims the docs only assert in prose. That would place it at or above the 8.5 anchor were it not for one claim I could not reconcile with the very source cited for it: 'what survives *that* moves to generation 2, which is scanned only when the younger generations can't free enough memory on their own' overstates the Fundamentals page, whose own 'Conditions for a garbage collection' section lists two other independent triggers (a low-memory notification, and an explicit GC.Collect call) that can produce a generation 2 collection without generation 0/1 first proving insufficient. This is exactly the class of unscoped 'only' generalization the pilot round flagged, it is attributed to the cited page, and the cited page does not support it as stated — a factual error under the rubric, which caps the score at 7.0 regardless of how strong the rest of the article is. Two further, minor citation-precision nits round out the issue list.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "\"Why sort objects into generations instead of collecting everything at once?\", first paragraph — the clause \"which is scanned only when the younger generations can't free enough memory on their own ([Fundamentals])\"",
+      "problem": "States that a generation 2 collection happens *only* when generations 0 and 1 fail to free enough memory, and attributes this to the Fundamentals page. That page's own 'Conditions for a garbage collection' section lists two other independent triggers that can produce a full (generation 2) collection directly: a low-memory notification from the OS/host, and an explicit `GC.Collect()` call (which, per that same page, collects the whole heap). The cascading-promotion description the article gives is accurate as one path to a generation 2 collection, but 'only' is not supported by the cited source and is the kind of unscoped absolute the editorial brief's pilot-round lessons specifically call out.",
+      "fixLooksLike": "Drop 'only', e.g. '...which is scanned when the younger generations can't free enough memory on their own, or the runtime otherwise needs a full sweep (a low-memory notification, or an explicit `GC.Collect()`).' Keep the promotion narrative as the primary, common-case story; just stop implying it is the sole trigger.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "\"Can a program leak memory with a garbage collector watching it?\" > \"A cache with no eviction is a permanent root\" — the sentence citing Weak References for eviction policy",
+      "problem": "The article cites the Weak References page as showing 'WeakReference entries...for exactly this case' (an unbounded growing cache). That page's own 'Guidelines for Using Weak References' section instead cautions: 'Avoid using weak references as an automatic solution to memory management problems. Instead, develop an effective caching policy.' The page's worked example (a single expensive-to-rebuild tree view) is also a different shape of problem than the many-item cache in the article's own `Cache` demo. The citation oversells what the source endorses.",
+      "fixLooksLike": "Either soften the claim ('...or `WeakReference` entries for cases like the one that page describes, with the same caveat it gives: this substitutes for a caching policy, it isn't one') or drop the specific 'exactly this case' framing.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "\"Why sort objects into generations...\" — the sentence introducing `GC.CollectionCount`: 'counts how many collections of at least that generation have happened since the process started ([GC.CollectionCount Method])'",
+      "problem": "The 'at least that generation' semantics are correct .NET behavior (a generation-2 GC also increments the counts for 0 and 1, per how generation collection is defined on the Fundamentals page), but the cited GC.CollectionCount page itself only says 'the number of times garbage collection has occurred for the specified generation... since the process was started' — it does not state the 'at least' rule the sentence attaches to it.",
+      "fixLooksLike": "Cite Fundamentals (which defines 'collecting a generation means collecting objects in that generation and all its younger generations') alongside or instead of the CollectionCount API page for the 'at least' clause, or fold both citations into the sentence.",
+      "owner": "writer"
+    }
+  ],
+  "runCodePass": true,
+  "runCodeOutput": "PASS csharp-dotnet/garbage-collection.md  blocks=33 executed=17 (ran via `node tools/run-code.mjs src/content/articles/csharp-dotnet/garbage-collection.md` from PowerShell)"
+}

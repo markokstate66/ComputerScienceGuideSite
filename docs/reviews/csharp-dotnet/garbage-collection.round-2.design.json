@@ -1,0 +1,21 @@
+{
+  "article": "src/content/articles/csharp-dotnet/garbage-collection.md",
+  "route": "/csharp-dotnet/garbage-collection/",
+  "round": 2,
+  "critic": "design",
+  "score": 9.5,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/fundamentals",
+    "https://learn.microsoft.com/en-us/dotnet/standard/automatic-memory-management"
+  ],
+  "justification": "Fresh read against both compared pages, fetched again this round. Fundamentals of garbage collection is ~2,922 words of unbroken prose with a single static screenshot ('Screenshot of how a thread triggers a Garbage Collection') and zero runnable code; Automatic Memory Management is ~1,445 words with no illustration of any kind. Neither has a dark theme, a mobile-specific layout, or anything interactive. This article has four hand-drawn diagrams that all obey the phone-width rules (viewBox <=360, portrait/stacked, annotations under the shape, semantic classes not literal colors), 35 runnable code blocks with real measured output, and six exercises (predict-it, find-the-bug, measure-it, extend-the-code, predict-it again with a different setup, prove-it) whose solutions stay correctly collapsed behind 'Show solution' on every screenshot checked across all four theme/device combinations. verify-page.mjs reports Lighthouse 97/100/100/100, 0 console errors, 0 console warnings, 0 broken links, and mobileOverflowPx 0. (Performance was 94 in round 1 and 97 here; other WIP branches are active in this repo per git status, so a few Lighthouse-performance points of run-to-run noise from a loaded machine is expected and not meaningful on its own -- both readings clear the 90 floor comfortably, so no re-run was needed.) Round 1 scored this page 9.0 and found exactly one major: the id=promotion output panel's `{when,-30}` padding pushed the generation digit (0, then 1, then 2) -- the entire point of the example -- past the fade on a 390px phone. The writer's fix (`{when,-16}` plus shortening nothing else, since the labels 'just allocated' / 'after gen 0' / 'after gen 1' were already short) is verified fixed, not just attempted: I opened the actual example in mobile-dark-part04.png, mobile-light-part04.png, desktop-dark-part03.png and desktop-light-part03.png, and in every one of them all three output lines -- 'just allocated  generation 0', 'after gen 0     generation 1', 'after gen 1     generation 2' -- render completely, well inside the visible column, with no fade cutting off the digit. No new defect was introduced by the fix (the line is short enough that it doesn't crowd anything else in the panel), and my own independent pass through every desktop-light part (13/13), every mobile-dark part (20/20), and the fold plus two additional parts each of desktop-dark and mobile-light found no other blocker, major or minor: heading hierarchy is clean (H1 once, H2 sections, no skipped levels), code blocks and output panels render correctly in both themes with no overflow, all four figures are legible and theme-correct including the red d-box-bad callout in Figure 1 and the purple/neutral generation boxes in Figure 2, callouts (note, pitfall) are visually distinct and readable in dark mode, reading rhythm alternates prose/code/diagram/exercise well with no wall-of-text stretch longer than what the surrounding structure already breaks up, and the sources/written-by/footer regions are intact (the NEEDS_MARKUS placeholders are the known, accepted non-issue). With the one reproducible major from round 1 verified fixed and nothing new found, this is a materially better reading and comprehension experience than either competitor on both desktop and phone, in both themes -- short of a 10 only because a single prior-round defect existing at all, even now fixed, keeps me from calling the page flawless across every round rather than merely flawless as of this snapshot.",
+  "issues": [],
+  "lighthouse": {
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
