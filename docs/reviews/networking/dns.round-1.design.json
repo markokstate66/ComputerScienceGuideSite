@@ -1,0 +1,54 @@
+{
+  "article": "src/content/articles/networking/dns.md",
+  "route": "/networking/dns/",
+  "round": 1,
+  "role": "design",
+  "score": 7.6,
+  "lighthouse": { "performance": 95, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "Single verify-page run (--drafts), all four Lighthouse categories pass the >=90 gate: performance 95, accessibility 100, best-practices 100, seo 100. report.json: words 2832, codeBlocks 14, figures 1, h1 1, internalLinks 27, mobileOverflowPx 0, consoleErrors [], consoleWarnings [], broken []. Only failures: three 'placeholder text: NEEDS_MARKUS' hits (byline/author bio/legal name, all expected per the gauntlet note until the owner supplies them). The PowerShell run printed one transient 'node : X [ERROR] The build was canceled' line partway through, but the run completed and .verify/networking__dns/report.json, lighthouse.json and all 4x11-17 screenshot parts are present and internally consistent with the printed FAIL summary, so this was not treated as a failed run. Screenshots read: mobile-light and mobile-dark all 17 parts + fold, desktop-light parts 1-2, desktop-dark fold + parts 1-3 and 5.",
+  "comparedAgainst": [
+    "https://www.rfc-editor.org/rfc/rfc1035.html",
+    "https://www.cloudflare.com/learning/dns/what-is-dns/",
+    "https://www.digitalocean.com/community/tutorials/an-introduction-to-dns-terminology-components-and-concepts"
+  ],
+  "justification": "Shell mechanics are clean: Lighthouse 95/100/100/100, zero console errors, zero broken links, zero px mobile page overflow, one h1, a plain five-item H2 hierarchy that matches the on-page TOC exactly, restrained callout use (one note, two exercises with collapsed solutions and no leaked answers), and a 9-source list plus footer that render correctly on both widths. Output panels are short and, where a value could run long (the CNAME answer, the SOA capture), the writer pre-wrapped them onto their own line so nothing clips. Desktop code and the record-type table are fully legible in both themes with correct contrast. Against general DNS explainers (Cloudflare's learning-center page, DigitalOcean's terminology tutorial) this article is far more rigorous - RFC quotes with section anchors, a captured wire-level walk, real RCODE decoding - and that same density is what costs it points on the phone. Three defects keep it out of pass range. First, Figure 1's own SVG has a structural legibility bug, not a viewport-dependent one: the annotation text on the left ('referral: org's NS + glue' x2, 'answer, aa=1: a CNAME', the closing 'One RD=1 query out...unseen' caption) starts at x=20 while the 'you' lifeline sits at x=55, so the dashed line runs straight through the middle of every one of those labels at every render size checked (mobile-light, mobile-dark, desktop-light, desktop-dark). Second, the DNS record-type table - the one place the article states each type's actual stored data - loses its whole fourth column ('RFC 1035 RDATA', the literal RFC quotes that back up the 'Stores' column) off the right edge of a 390px phone, and the third column ('Stores') itself is cut mid-word for four of six rows; nothing in the mobile screenshot signals there is more to scroll to. Third, the article's code carries far more repetition than its length should need: the same ~30-40 line BuildQuery/ReadName pair appears essentially unchanged four times (id=walk, the exercise-1 solution, id=records, the exercise-2 solution), id=walk alone runs 139 lines and spans roughly four uninterrupted phone screens of code, and the article's only figure sits at the 20% mark, leaving the record-type, TTL and failure-mode sections - about 80% of the page - as text and code with no visual break at all. None of the three is a shell defect; all are article-level and writer-fixable.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Figure 1 SVG, annotation text at x=20 (both mobile parts 03-04, both desktop screenshots around the figure)",
+      "problem": "The 'you' lifeline is drawn at x=55 (`<path d=\"M55 30 V366\" .../>`), but every left-side annotation text element starts at x=20: 'referral: org's NS + glue' (twice, y=168 and y=220), 'answer, aa=1: a CNAME' (y=272), and the two-line closing caption 'One RD=1 query out; three RD=0 / queries the resolver runs, unseen.' (y=356/370). At the font size used, each of those strings is wider than the 35-unit gap to the lifeline, so the dashed vertical line cuts straight through the middle of every one of them in all four theme/device renders - this is a viewBox-coordinate bug, not a scaling artifact, so it does not improve at any width.",
+      "fixLooksLike": "Move the annotation text elements so they clear the lifeline: either start them at x=65 or later (right of the 'you' line) and right-align nothing, or shift them further left and right-anchor them at x=48 so they end before the line, or draw the lifeline dashes with a small gap where labels cross (e.g. two separate `<path>` segments skipping y=160-180, y=264-280, y=350-376). Re-check both themes at 390px after the fix - the accent-coloured 'answer, aa=1: a CNAME' line is the one most worth a second look, since colour plus a line through it compounds the noise.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "'What does each record type actually store?' table (mobile-light/mobile-dark part07)",
+      "problem": "The table has four columns (Type, #, Stores, RFC 1035 RDATA). At 390px only Type, # and part of Stores are visible; Stores itself is truncated mid-word for AAAA ('not F...'), CNAME ('instead...'), NS ('for t...') and MX ('preference...'); and the fourth column - the literal RFC 1035 quotes that are the evidence for the third column's plain-English description, e.g. '\"ADDRESS A 32 bit Internet address\"' - is entirely off-screen with no fade or other visible cue in the screenshot that content continues to the right. This is the same class of defect flagged major in the how-the-internet-works round-1 review (WRITER_GUIDE section 7: the column carrying the evidence must not be the one that's cut).",
+      "fixLooksLike": "Shrink the table to fit phones without hiding the RDATA quotes: shorten 'An IPv6 address (RFC 3596, not RFC 1035)' to 'An IPv6 address' with the RFC 3596 aside moved to a footnote sentence after the table; and either drop the RFC 1035 RDATA column to a short paraphrase ('a 32-bit address', 'the alias name', ...) that fits alongside Stores, or replace the table with a definition list (Type - Stores - one-line quote) so nothing needs a fourth column at all. Re-run verify-page and confirm the mobile screenshot shows the full quote for every row.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "id=walk (lines 114-252, ~139 lines), id=records (lines 370-466, ~97 lines), exercise-1 solution (~41 lines) and exercise-2 solution (lines 627-711, ~85 lines)",
+      "problem": "The same BuildQuery/ReadName pair (~30-40 lines: the W16 helper, the label-writing loop, the compression-pointer-following name reader) is reproduced essentially unchanged four separate times across the article. id=walk, the longest program, runs 139 lines with no prose break and spans roughly four consecutive mobile screenshot parts (04-06) of code before the next paragraph. The article's only figure sits early (Figure 1, ~20% through); the record-type, TTL and failure-mode sections that follow - about 80% of a 2832-word page with 14 code blocks - contain no diagram at all, so the repeated boilerplate is the only thing carrying the reading rhythm for most of the article.",
+      "fixLooksLike": "After id=walk introduces BuildQuery/ReadName in full, show later programs with just their new logic plus a one-line comment such as '// BuildQuery and ReadName: unchanged from the walk above' instead of repeating the full listing; that alone should cut id=records and the exercise-2 solution to roughly a third of their current length. Consider one more small figure - a 12-byte DNS header bit layout (QR/Opcode/AA/TC/RD/RA/RCODE) sized to the existing 360-viewBox convention - placed around the 'What do DNS failure modes look like' section, which is the section furthest from Figure 1 and the one whose RCODE table would most benefit from a picture instead of only prose.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Figure 1 at desktop width (desktop-light/dark, the figure block around 'What's the difference between a recursive resolver and an iterative one?')",
+      "problem": "Same shell pattern already reported against how-the-internet-works round 1: a 360-unit viewBox renders at roughly 410px inside a ~735px figure frame, leaving about 160px of empty frame on each side on desktop, with diagram text noticeably smaller than body text. Correct behaviour for the 390px gate, but visually undersized on a wide screen.",
+      "fixLooksLike": "Same fix as previously requested: let narrow-viewBox diagrams scale up to roughly 560px on wide viewports rather than staying near-intrinsic size, or shrink the figure frame padding so the empty margin doesn't read as a layout bug. This is shared shell CSS (`.diagram-scroll > svg`), not article-specific; the consumer should confirm whether the equivalent request from the earlier round is already tracked in docs/INTEGRATOR_REQUESTS.md before filing a duplicate.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'What's the difference between a recursive resolver and an iterative one?', loop label 'iana.org auth' (Figure 1, all four renders)",
+      "problem": "The self-loop curve for the third iterative hop bulges out to the same x as the right-anchored label 'iana.org auth' (loop path reaches x=332, text anchors at x=335), so the curve's stroke sits immediately adjacent to, and in the tightest renders slightly through, the 'org' portion of the label - a smaller-scale version of the same left-side collision, on the right side of the diagram.",
+      "fixLooksLike": "Nudge the loop's rightmost x from 332 to about 322, or move the three hop labels ('root', '.org TLD', 'iana.org auth') up by a couple of units so they sit clear of the loop's lowest point rather than beside its widest point.",
+      "owner": "writer"
+    }
+  ]
+}

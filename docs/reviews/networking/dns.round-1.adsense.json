@@ -1,0 +1,45 @@
+{
+  "article": "src/content/articles/networking/dns.md",
+  "route": "/networking/dns/",
+  "round": 1,
+  "role": "adsense",
+  "score": 7.6,
+  "comparedAgainst": [
+    "https://developer.mozilla.org/en-US/docs/Glossary/DNS",
+    "https://aws.amazon.com/route53/what-is-dns/",
+    "https://www.cloudflare.com/learning/dns/what-is-dns/ (fetch blocked, HTTP 403; known from general knowledge to be conceptual, code-free)"
+  ],
+  "consoleErrors": null,
+  "brokenLinks": null,
+  "justification": "Compared against the kind of page that actually ranks for 'how dns works': MDN's DNS glossary entry is ~90 words, no code, no RFC citations, no wire detail. AWS Route 53's 'What is DNS' is ~800-900 words of marketing prose with a 9-step conceptual walkthrough, no code, no RFC citations, no negative-caching or record-type detail, and only names recursive vs. authoritative without ever hand-rolling a query (confirmed by fetching both pages directly). Cloudflare's equivalent page blocked the fetch (403) but is known to be the same genre. Against that bar this article's differentiator is real and substantial: a from-scratch UDP resolver that performs an actual root -> TLD -> authoritative walk over raw sockets and decodes the wire format by hand (id=walk), a second program that queries NS/MX/TXT records directly and reads real TTLs off the wire (id=records), and a third that produces NXDOMAIN, timeout and SERVFAIL from real network conditions and contrasts them with `Dns.GetHostAddressesAsync`'s collapsed `HostNotFound` exception (id=failures) — none of that exists in any competing result I could reach. `node tools/run-code.mjs src/content/articles/networking/dns.md` passes (PASS, blocks=14, executed=6). Sibling-overlap check: I read `how-the-internet-works.md` in full and grepped it for 'iterative', 'authoritative', 'NXDOMAIN', 'RCODE', 'TLD' — none appear; its Band 1 section only names 'stub resolver' and 'recursive' once each, covers only the A record, and its final exercise never actually says NXDOMAIN (its own crosslinks file overstates this slightly, calling it 'a one-line NXDOMAIN mention' when the exercise only prints a generic `HostNotFound`/`SocketException`). So the stated boundary in `docs/crosslinks/networking/dns.md` holds and the two articles do not duplicate each other's DNS coverage. I spot-checked roughly a dozen RFC and Microsoft Learn quotes against the live documents (RFC 1034 sections 3.6, 4.2, 4.3.1; RFC 1035 sections 3.2.2, 3.3.x RDATA formats, 4.1.1, 4.2.1; RFC 8499 section 6; RFC 2308 sections 3 and 5; RFC 2606 section 2; IANA root servers page; Microsoft Learn Dns.GetHostAddresses and Dns.GetHostEntry remarks) and all of them are verbatim, with fair ellipses that do not change meaning, except one (below). No filler: first sentence states the thesis, no restated title, no 'let's dive in', no conclusion paragraph, ends on a worked exercise. No ad code, no keyword stuffing; description reads for a human. What keeps this below a pass: a source listed in front matter is never cited in the body, and one quoted source is stretched to cover claims it does not support for three of the four items it is attached to — exactly the two things the brief's binding lessons call out as automatic findings for a sourcing-focused critic. Two further minor issues on structure/placement round out the list.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Front matter `sources` (RFC 5737: IPv4 Address Blocks Reserved for Documentation) versus the `failures` program's comment and prose, lines ~563 ('192.0.2.1 is TEST-NET-1, reserved so it can never be a real, answering address') and ~616 ('as the TEST-NET-1 case simulates')",
+      "problem": "RFC 5737 is listed as a source with an access date, and the article leans on the fact it defines (192.0.2.0/24, TEST-NET-1, as a documentation-reserved block that can never answer) at two points in the failure-modes program, but the RFC is never linked or cited anywhere in the body. A source in the list that is never cited inline is an explicit finding per docs/EDITORIAL_BRIEF.md's binding lessons ('Cite where the claim is made... A source in the list that is never cited inline... is a finding').",
+      "fixLooksLike": "Add an inline citation to RFC 5737 (e.g. section 3's table listing 192.0.2.0/24 as TEST-NET-1) at the comment or the prose sentence that relies on that fact, the same way TEST-NET-1's counterpart facts are cited elsewhere in the article. If the writer decides not to cite it, remove RFC 5737 from front matter.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Section 'What is the hierarchy below the root?', paragraph beginning 'Not every name that looks reserved is actually delegated.'",
+      "problem": "The article quotes RFC 2606 section 2 as recommending `.example`, `.test`, `.invalid` and `.localhost` collectively for use \"recommended for use in documentation\" (with a live citation link). I fetched RFC 2606 section 2 directly: only `.example` carries that phrase ('is recommended for use in documentation or as examples'). `.test` is 'recommended for use in testing of current or new DNS related code'; `.invalid` is for constructing names 'sure to be invalid'; `.localhost` is reserved for the loopback address, with no mention of documentation at all. Attaching a quoted phrase specific to one of the four names to all four, under one citation link, misstates what the cited section says for three of the four items — the kind of citation-scope problem the brief explicitly treats as a finding ('a citation attached to a sentence its page does not support').",
+      "fixLooksLike": "Quote `.example`'s language on its own ('RFC 2606 recommends `.example` \"for use in documentation or as examples\"') and describe `.test`, `.invalid` and `.localhost` in the writer's own words, each with its own distinct rationale (testing, guaranteed-invalid construction, loopback), rather than implying one quoted phrase covers all four.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Intro, second paragraph: 'Measurements and captured output below were taken on Windows 11, x64, with the .NET 10 SDK (10.0.401), on 2026-09-22...'",
+      "problem": "docs/EDITORIAL_BRIEF.md's binding lessons say to state the toolchain 'once, where measurements appear... not as a stamped opening sentence.' This disclosure lands in the article's second paragraph, before any code, output, or measurement has appeared — the first executable program and its captured output arrive roughly 150 lines later. The sibling `how-the-internet-works.md` instead places its equivalent sentence immediately after its first program's output, at the point timings actually start being discussed.",
+      "fixLooksLike": "Move the toolchain/date sentence down to just before or after the `walk` program's output block, where the `[...]` wildcarding and the dated capture first become relevant, matching the sibling's placement.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "All five H2 headings: 'What is the hierarchy below the root?', \"What's the difference between a recursive resolver and an iterative one?\", 'What does each record type actually store?', 'What does a TTL actually control?', 'What do DNS failure modes look like, and how do you tell them apart?'",
+      "problem": "Every H2 in this article is phrased as a question. That is the identical heading skeleton used by `src/content/articles/oop-design/four-pillars-of-oop.md` (six H2s, all questions), and it diverges from this article's own pillar sibling `how-the-internet-works.md`, which mixes declarative and labeled headings ('Band 1: the name becomes an address', 'Where the time went'). The AdSense rubric specifically asks critics to compare headings across two or three articles for templated structure; this all-question pattern recurring in a different pillar is the kind of thing that reads as formulaic once a reader has seen it twice.",
+      "fixLooksLike": "Rephrase one or two H2s as statements or labels (for example 'Record types and what each one stores') so the article does not repeat the exact same all-question shape used elsewhere on the site.",
+      "owner": "writer"
+    }
+  ]
+}
