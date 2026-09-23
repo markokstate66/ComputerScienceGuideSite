@@ -42,7 +42,7 @@ sources:
     url: "https://doi.org/10.1007/BF01386390"
     publisher: "Numerische Mathematik, vol. 1 (1959)"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 Breadth-first search finds the fewest-edges path, and on an unweighted [graph](/glossary/#graph) that is also the cheapest one, because every edge costs the same. Put a price on each edge and the two questions come apart. Take three cities with two roads out of `A`:
