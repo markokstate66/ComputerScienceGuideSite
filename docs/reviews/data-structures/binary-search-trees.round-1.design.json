@@ -1,0 +1,37 @@
+{
+  "article": "src/content/articles/data-structures/binary-search-trees.md",
+  "route": "/data-structures/binary-search-trees/",
+  "round": 1,
+  "critic": "design",
+  "score": 8.9,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/binary-search-tree-data-structure/ -- ad-dense reference page, static non-themed raster diagrams that do not adapt to dark mode and are not tuned for a 390px viewport, no worked delete-case or rotation figures anywhere near this article's clarity, no collapsible self-check exercises.",
+    "https://en.wikipedia.org/wiki/Binary_search_tree -- thorough but diagram-light (one generic BST image, no delete-case or rotation figures at all), no dark theme, no runnable/verified code, no phone-specific layout tuning.",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.sorteddictionary-2 -- reference API docs: functional and responsive but no diagrams, no worked build-your-own-tree narrative, no exercises; this article's three purpose-drawn SVG figures and five collapsible exercises are a clear step up for teaching the mechanism MS Learn only documents the surface of."
+  ],
+  "justification": "Real numbers from the serial `verify-page.mjs --drafts` run: Lighthouse 99/100/100/100 (all four categories clear the round's 90 floor with room to spare, notably better than this pillar's other reviewed articles), zero console errors, zero broken links, mobileOverflowPx 0, h1 count 1, zero placeholder/NEEDS_MARKUS markers. All three hand-drawn SVG figures (Figure 1: the three delete cases; Figure 2: shuffled-vs-ascending insertion shape; Figure 3: left-rotation before/after) were inspected directly in the mobile-light and mobile-dark full-page screenshots (390 CSS px viewport): every node circle, edge line and label sits comfortably inside the figure's bordered container with visible margin on both sides, colors (accent/warn/bad/muted classes) are correctly themed in both light and dark, and no diagram triggers the page's horizontal-scroll affordance -- they simply fit. All five exercises use the site's `<details><summary>Show solution</summary>` pattern and were confirmed collapsed in the rendered screenshots; the two predict-the-output exercises (Exercise 2 'Find the bug in a post-order traversal' and Exercise 3 'Predict the height of a reverse-sorted insert') both keep their code block visible as part of the question but the `text output` block and worked explanation are correctly hidden inside the collapsed solution, so a reader cannot see the answer before attempting the prediction. Code-block mobile clipping: the writer's claim of tightening ~20 lines from ~80 to ~75 characters is only a partial fix in practice -- at 390px the code panel shows roughly 33-38 monospace characters before the edge, so essentially every code line in this article (including the tightened ones, e.g. the two 77-char `if (cmp > 0) { node.Right = Remove(...) ...}` lines and two 76-char lines) still requires horizontal scrolling on a phone. This is not a defect, though: I pixel-cropped the right edge of a scrolled code block at 3x zoom in both themes and confirmed the site's `.fade-r` mask-image gradient genuinely fades the clipped glyphs to the panel background rather than hard-cutting them (letters visibly lighten toward the edge, e.g. 'null)' fading tail-first) -- the same mechanism verified for hash-tables' table columns, here applied correctly to code panels, and it is a site-wide convention every article shares, not an article-specific problem. The one real article-level nit: in 'The red-black invariant, at the level that matters' section, two consecutive long paragraphs ('Every real node is colored red or black...' at ~814 characters and 'Maintaining the invariants after an ordinary binary-search-tree insert or delete...' at ~765 characters) run back-to-back straight after the red-black-properties blockquote with no intervening code, list or figure, producing roughly 30+ lines of unbroken prose on a 390px screen before the next heading. Every other prose stretch in the article is broken up by code, a figure, or an exercise within a handful of paragraphs; this one section is denser than the rest and reads as a genuine wall of text on mobile, even though the content itself is accurate and well-written.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "'The red-black invariant, at the level that matters' section, the two paragraphs immediately after the red-black-properties blockquote (mobile-light-part17 / mobile-dark-part17 through the top of part18 of `.verify/data-structures__binary-search-trees/`)",
+      "problem": "Two paragraphs of roughly 814 and 765 characters run back-to-back with no code, figure, or list between them, producing about 30+ lines of continuous prose on a 390px phone screen -- the longest unbroken text stretch anywhere in the article. Every other section keeps prose bursts shorter and interleaves code/figures more often.",
+      "fixLooksLike": "Split either paragraph at its natural topic break (e.g. after '...called the tree's black-height.' and after '...regardless of insertion order.') or pull the rule-by-rule explanation ('Rule 3 stops two reds...Rule 4 forces...') into a short bulleted list under the blockquote, mirroring the blockquote's own four-item structure. Either change breaks the visual monotony without cutting content.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "site-wide code-block behavior on mobile (affects every code block in this article, not this article's markup specifically)",
+      "problem": "The writer's stated fix (tightening ~20 lines from ~80 to ~75 characters) does not make lines fit within the 390px code panel without scrolling -- the panel only shows ~33-38 monospace characters at that viewport width, so lines as short as 76-77 characters (e.g. the two `if (cmp > 0) { node.Right = Remove(node.Right, value); return node; }` lines at 77 chars) still scroll. This is not a regression or a broken affordance (the `.fade-r` gradient genuinely fades clipped text rather than hard-cutting it, confirmed by pixel inspection in both themes), but the specific 75-char target does not achieve 'no scrolling' the way it might read as intended.",
+      "fixLooksLike": "No action needed for this article -- horizontal code scroll with a fade cue is the established, working site convention (also present and passing in hash-tables, linked-lists, etc.). If the writer intends future line-tightening passes to actually eliminate mobile code scrolling, the real target would need to be roughly 35 characters, which is impractical for idiomatic C#; flagged here only so the 'tightened to ~75 chars for phone width' claim in review requests is understood as a scroll-distance reduction, not a scroll-elimination fix.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 99,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
