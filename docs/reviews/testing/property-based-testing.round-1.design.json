@@ -1,0 +1,39 @@
+{
+  "article": "src/content/articles/testing/property-based-testing.md",
+  "route": "/testing/property-based-testing/",
+  "round": 1,
+  "critic": "design",
+  "score": 9.4,
+  "comparedAgainst": [
+    "https://fscheck.github.io/FsCheck/",
+    "https://github.com/AnthonyLloyd/CsCheck"
+  ],
+  "verifyNotes": "node tools/verify-page.mjs --drafts /testing/property-based-testing/ (run serially from PowerShell): PASS. words=2324, code=19, figures=1, h1=1, internalLinks=34, external=6, broken=[], placeholders=[], mobileOverflowPx=0, consoleErrors=[], consoleWarnings=[]. Lighthouse 100/100/100/100 (performance/accessibility/best-practices/seo), all four categories saturated, not just clearing the 90 floor. Screenshots read: all 9 desktop-light parts, desktop-dark part04, all 14 mobile-dark parts (fold through part14), mobile-light fold/part02/part06/part07/part08/part13 -- the collapsed full-program details, the figure in both mobile themes, both exercises' collapsed solutions, the long generator/shrinker/property-runner code blocks, the CsCheck block, and the footer/sources/byline block.",
+  "justification": "This clears the design bar with the best real numbers seen in this pillar so far: a full 100/100/100/100 Lighthouse run (not merely >=90) with zero console errors, zero broken links, and zero mobile overflow. Compared against the two real sources this article leans on hardest -- FsCheck's own documentation site and CsCheck's GitHub README -- it is far ahead on the design/UX axis: FsCheck's docs are plain unstyled prose with code blocks and no dark theme, no diagrams, and no interactivity; CsCheck's README is a bare GitHub markdown file with a handful of code fences and zero worked narrative. This article's structure earns its length: prose -> code -> real captured output -> (diagram or exercise) throughout, with a single running example (Sorter.Sort's integer-overflow bug) carrying the whole page so the reader never has to re-orient to a new scenario. The collapsed <details>'Full program' block for the 130-line generator/shrinker/runner works exactly as the writer describes: closed by default in every screenshot checked (mobile-dark part02, mobile-light part02), a plain '> Full program' disclosure triangle with no fenced output visible until expanded, satisfying the 'read the rest of the page first, or run it first' convention without spoiling either path. The single diagram (Figure 1, the shrink-path chain from 10 elements down to the minimal [-2147483648, 1] pair) is legible at 390px in both themes (mobile-dark part07, mobile-light part07): four stacked boxes with generous internal padding, 12-14px text that stays crisp, a properly themed d-box-bad highlight on the minimal-case box (dark red-on-near-black in dark mode, light red-on-near-white in light mode, both with clear contrast against the surrounding neutral boxes), a title/desc pair on the <svg> for accessibility, and a two-line caption underneath that stands alone. Both exercises ('Would a permutation check have caught this?' and 'Extend the framework to find the bug') collapse correctly: the prompt is fully visible, a dashed rule separates it from a closed '> Show solution' triangle, and no output or code from the solution leaks above the fold in any of the four theme/width combinations checked (mobile-dark part09/part10, mobile-light part08). The long code blocks (Shrink, ElementTowardZero, Property.Check, the two full nested-exercise solutions, and the CsCheck demo) use the site's standard scroll-affordance for lines that exceed 40-ish mobile columns -- right edges clip cleanly rather than wrapping and breaking indentation, matching the same pattern already reviewed and accepted in docs/reviews/testing/test-doubles.round-1.design.json and docs/reviews/testing/unit-testing-fundamentals.round-1.design.json -- and the load-bearing tokens (method names, the falsifying values, Console.WriteLine text) are front-loaded on each line so the reader is not forced to scroll to get the point even when a line is truncated. 'snippet of=proptest' excerpt blocks carry a visible 'Excerpt' badge distinct from the plain 'C#' badge on runnable blocks, which is a small but real signal that keeps the reader oriented about which blocks were independently compiled and run versus pulled from the collapsed program above. Held back from a full 10 by one real, if minor, repetition cost: the entire generator/shrinker/Property.Check framework (roughly 130 lines) appears in full four separate times on the page -- once inside the collapsed <details>, then re-assembled piece by piece across the walkthrough sections, then copied whole into Exercise 1's solution, then copied whole again (with a bounded generator swapped in) into Exercise 2's solution -- which is defensible given the article's own stated rule that runnable blocks must be self-contained, but it does make the page one of the longer scrolls in the pillar (2324 words, 19 code blocks, 14 mobile screenshot parts) without a second diagram or table to break up the code-heavy back half.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Exercise 1 and Exercise 2 solutions, and the 'Fixing the comparer' and CsCheck sections -- the full Gen/Property/Shrink framework reappears near-verbatim four times across the page",
+      "problem": "Because every runnable block must be self-contained (a real constraint, not a style choice), the ~40-line Gen class and ~80-line Property/Shrink classes are retyped in full inside both exercise solutions and the 2000-trial rerun, on top of their first appearance in the collapsed <details> and their piecewise walkthrough in the body. A reader who has already read the walkthrough is scrolling past the same boilerplate several more times to reach each section's actual new idea (the bounded generator in Exercise 2, the fixed comparer in the rerun).",
+      "fixLooksLike": "Not really fixable without breaking the 'every block runs standalone' rule the site enforces, and the repeated code is never wrong -- just long. If this pillar ever gets a shared 'imports' mechanism for run blocks, this article would be the clearest beneficiary; until then this is a shape-of-the-page nit, not a defect.",
+      "note": "not blocking; noted for the writer's awareness only"
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "site-wide horizontal-scroll affordance on long code lines (affects every article with wide lines at mobile width, not specific to this one)",
+      "problem": "Long lines in the framework code blocks (e.g. the ElementTowardZero binary search, the Property.Check signature) clip cleanly at the right edge of the mobile viewport with no visible graded fade in the screenshots, the same shared-component behavior already flagged as a minor nit in docs/reviews/testing/test-doubles.round-1.design.json.",
+      "fixLooksLike": "Same fix as previously flagged: confirm in a live browser whether a fade gradient is present but too subtle to show in a static PNG, and strengthen it if it is genuinely absent. Shared code-block component, not this article's markup.",
+      "note": "not blocking; this article's own markup follows the house style correctly"
+    }
+  ],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
