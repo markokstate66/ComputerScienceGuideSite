@@ -1,0 +1,36 @@
+{
+  "article": "src/content/articles/data-structures/stacks-and-queues.md",
+  "route": "/data-structures/stacks-and-queues/",
+  "round": 1,
+  "critic": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/circular-queue-set-1-introduction-array-implementation/",
+    "https://en.wikipedia.org/wiki/Circular_buffer"
+  ],
+  "justification": "Design/UX round 1 for /data-structures/stacks-and-queues/, judged against two real pages that teach the same wraparound mechanic. GeeksforGeeks' circular-queue article has code in five languages and real output but zero diagrams for the wraparound itself -- it explains front=(front+1)%capacity entirely in prose and formulas, no dark mode, no exercises. Wikipedia's circular-buffer article is the stronger comparison (a ring diagram, an animation, labeled pointer diagrams), but its diagrams are static images with no theme awareness, there is no runnable/verified code and no exercises. This article matches or beats both: two hand-written, theme-aware inline SVGs (Figure 1: four call-stack frames with push/pop order; Figure 2: a before/after two-row diagram of an Enqueue that wraps tail from slot 3 back to slot 0, with the exact `tail=(2+2) mod 4=0` arithmetic printed under each row) that are legible in every screenshot checked (desktop-light, desktop-dark, mobile-light, mobile-dark, both figures, both widths); the wraparound mechanic is genuinely visible, not just described (a physically-earlier slot lights up as the new tail while the head marker stays put). Verified with `node tools/verify-page.mjs --drafts /data-structures/stacks-and-queues/`: real Lighthouse 97/100/100/100, 0 console errors/warnings, 0 broken links (30 internal + 8 external, including the still-draft arrays-and-dynamic-arrays prerequisite, which resolves correctly inside this --drafts build and is not a live broken link in the sense the checker cares about), mobileOverflowPx 0. Read every desktop-light part (01-11) and every mobile-dark part (01-17) in full, plus the fold and several interior parts of desktop-dark and mobile-light. The two output panels flagged as risks both hold up: the timed List<T>-vs-Queue<T> comparison is a wildcarded `[...]` panel (short, no width risk) backed by a real 3-column Markdown table (n / ListQueue ms / Queue<T> ms) that fits the 358px mobile column with no scrolling or fade at all; the RingQueue wraparound trace (`+E  E . C D  h=2 cap=4`, etc.) tops out around 31 characters per line, well inside the ~40-column visible window, and every line -- including the capacity-growth line `+G  C D E F G . . .  h=0 cap=8` -- is fully legible with no cut edge in any mobile screenshot. All four exercises (bug-in-a-two-index-ring-buffer, extend-into-a-deque, predict-Count-and-Capacity, adapt-to-a-distance) show as collapsed '> Show solution' in every screenshot where they appear, across both themes and both widths -- no accidental pre-expansion. Heading hierarchy is clean and shallow (h1 once, eight h2 sections, no h3s, so nothing skips a level), and the On this page TOC lists all eight matching entries. Rhythm holds prose -> code -> output -> (periodic diagram/table) -> exercise across the whole page with no oversized text block. This falls short of a 10 for two small reasons, both noted below: one is a shared Lighthouse sub-audit shortfall that isn't this article's markup, and the other is that the page ends immediately after Exercise 4's solution with no closing sentence tying the eight sections back together before Sources, which is a minor rhythm nit rather than a defect.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "site-wide performance profile (affects this route's Lighthouse run; not this article's markup)",
+      "problem": "Lighthouse performance is 97 (comfortably clears the round's >=90 gate) but several sub-audits still fail outright per lighthouse.json: First Contentful Paint scores 0.83 (2.0s), 'Reduce unused CSS' scores 0.5 (13 KiB), 'Page prevented back/forward cache restoration' scores 0, document request latency scores 0.5 (153 KiB), and the network-dependency-tree insight scores 0. These read as shared page-shell/script/caching behavior common to every article, not anything specific to this page's content.",
+      "fixLooksLike": "Integrator investigates the bf-cache blocker (commonly an unload/beforeunload listener or a no-store cache-control header) and the render-blocking/unused-CSS budget; likely a global fix that lifts every article's score rather than a per-article change.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "low",
+      "location": "end of article, immediately after Exercise 4's solution (\"Adapt next-greater-element to a distance\"), before the Sources list",
+      "problem": "The article ends on the exercise-4 solution paragraph with no short closing beat that ties the stack/queue/deque/ring-buffer/monotonic-stack threads back together, unlike the tidy one-paragraph wrap-ups the other seven sections each get before their own transition. It is not confusing, just a slightly abrupt stop against the Sources block.",
+      "fixLooksLike": "Consider one closing sentence or short paragraph after the exercise 4 solution (or as its own final beat) that recaps the throughline -- e.g. that Stack<T>/Queue<T> are the array-backed and circular-array structures built by hand above, plus the monotonic-stack pattern as a third, different use of Stack<T>.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 97,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
