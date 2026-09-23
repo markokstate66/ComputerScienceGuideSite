@@ -1,0 +1,43 @@
+{
+  "article": "src/content/articles/complexity/space-complexity.md",
+  "route": "/complexity/space-complexity/",
+  "round": 1,
+  "role": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://en.wikipedia.org/wiki/Space_complexity",
+    "https://www.scaler.com/topics/data-structures/space-complexity-in-data-structure/",
+    "https://www.geeksforgeeks.org/dsa/space-complexity-of-algorithms/ (and two other GeeksforGeeks/Programiz/freeCodeCamp/Baeldung/Interview Cake URLs guessed for the same topic; all returned HTTP 404/403 to the fetcher, so not read and not used in the comparison)"
+  ],
+  "lighthouse": { "performance": 93, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-22T21:30:50.332Z",
+    "runs": 2,
+    "words": 3403,
+    "codeBlocks": 30,
+    "figures": 2,
+    "h1": 1,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, not an issue)"],
+    "lighthouseFailingAudits": ["first-contentful-paint 2.6 s (0.63)", "largest-contentful-paint 2.6 s (0.87)", "max-potential-fid 280 ms (0.42)", "unused-css-rules 12 KiB", "bf-cache", "document-latency-insight", "network-dependency-tree-insight"]
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold + parts 01-14 (all)",
+    "mobile-dark": "fold + parts 01-20 (all)",
+    "desktop-dark": "fold, 04, 05, 10, 11",
+    "mobile-light": "fold, 03, 06, 15"
+  },
+  "justification": "Ran verify-page twice from PowerShell. First run (immediately after starting, with roughly a dozen other node.exe processes visible in tasklist, presumably other worktrees building): performance 90 (bare pass), FCP 2.9 s. Second run 80 seconds later: performance 93, FCP 2.6 s, everything else identical. Both runs agree on the numbers that matter for design: accessibility/best-practices/SEO 100/100/100, 0 console errors, 0 console warnings, 0 broken links (37 internal + 8 external, all resolve), mobileOverflowPx 0, and the only failure is the expected NEEDS_MARKUS placeholder. Treat the 90 as noisy load, not a real regression, but the consumer's serial gate run should still be the number of record. Read every desktop-light part (01-14, all) and every mobile-dark part (fold + 01-20, all); spot-checked desktop-dark at fold and both figures' parts (04-05, 10-11) and mobile-light at fold and both figures' parts (03, 06, 15). This article clears the 8.5 bar cleanly and is markedly better illustrated on the phone than either comparison source. Both figures are portrait, stacked, viewBox <= 360, and fully visible at 390 px in both themes with no scroll-fade on any edge: Figure 1 (four stacked call-frame boxes under a dashed 'stack limit' line, annotation lines underneath, not beside) and Figure 2 (struct array as one inline block vs class array as refs pointing to separate boxed objects, each half labelled with its own byte count and a dashed rule between them) both read correctly and legibly at 390 px light and dark, and are not undersized islands at the 700 px desktop column either. Every byte-measurement output panel I checked (ReverseCopy/ReverseInPlace 80,024 B/0 B; the CountBytes n/bytes table; the stack-depth 1 MiB/4 MiB table; the RecursiveSumWithScratch table; quicksort/merge-sort n/quicksort/merge-sort table; the random/sorted max-depth pair; the Fibonacci heap-bytes and time-ms tables; struct[]/class[] 1,600,024 B/4,000,024 B; heap array/stackalloc 6,566/280 B/0 B) fits inside the ~40-column mobile window with no fade and no fused columns, including the largest numbers on the page (4,000,024 B, 63,443 frames). All four exercises are collapsed behind 'Show solution' in every screenshot and are distributed through the article at the section they belong to (after the total/auxiliary-space split, after Figure 1, after the quicksort-depth measurement, and at the natural end of the stackalloc section) rather than stacked at the bottom under a section literally titled 'Exercises' with a first item called 'Predict the trace' -- the pattern the binding pilot lesson forbids and that the amortized-analysis round-1 review flagged. Heading hierarchy is flat (## only, no ### to skip), and the prose/program/output/figure rhythm rarely runs more than two or three paragraphs without a code block, table or figure. Against the two comparison sources I could actually read, this page is far deeper: Wikipedia's Space Complexity article is ~1,500-2,000 words of formal definitions with no diagrams and no code at all, and Scaler's page is ~2,000-2,500 words with a static memory-size table but no diagrams and no executable/measured code -- both state 'auxiliary space' as a definition, neither shows a program proving a number. This page proves all thirty of its numbers with `GC.GetAllocatedBytesForCurrentThread`, plus a real thread-stack differencing technique for the part that counter cannot see. I found nothing I would call a blocking design issue.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Repeated `CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;` preamble and repeated `GC.GetAllocatedBytesForCurrentThread()` calls; most mobile code screenshots (e.g. mobile-dark-part02, part07, part09, part13, part15)",
+      "problem": "Both lines are clipped behind the fade on nearly every code block that has them, same as the pattern noted as a minor nit in the amortized-analysis round-1 review. This is legitimate boilerplate under WRITER_GUIDE section 7 ('longer lines are fine when the tail is boilerplate'), and `GC.GetAllocatedBytesForCurrentThread` is explained in full with a link at first use, so this does not block the score, but it is the one piece of visual repetition on an otherwise very clean page.",
+      "fixLooksLike": "Optional polish only: nothing required. If touched at all, a one-line explanation at first use plus dropping the culture line from blocks that print no culture-sensitive numbers would remove a little repeated clipped text, but this is not worth spending a round on.",
+      "owner": "writer"
+    }
+  ]
+}
