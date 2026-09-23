@@ -21,3 +21,12 @@ Raised in `docs/reviews/*/*.round-1.design.json` (owner "integrator") and by the
 8. `verify-page` reported `fig=4` for two figures. Status: done (counts `<figure>` elements in `<main>` only).
 9. Diagrams clipped (720 wide) or illegible (`diagram-narrow`) on phones. Status: done (shell renders every diagram at 0.92 to 1.2 px per viewBox unit and scrolls it if needed; `diagram-narrow` is now a no-op; new rules in writer guide section 5: aim for viewBox <= 360 wide, 12-unit minimum text, stacked layouts, annotations underneath). **Writers still have to redraw the pilot figures to those rules**: the shell makes them legible and scrollable, it cannot make a 490- or 720-wide drawing fit a phone.
 10. Phone-width guidance for code, output, inline code and tables. Status: done (writer guide section 7).
+
+## 2026-09-22 data-structures/tries — new glossary term
+
+`tries.md` (issue #107) is the first article to use the term "trie" as a core concept, and no glossary entry exists yet for it. Status: open.
+
+- **Term:** trie
+- **Definition:** A tree that stores a set of strings one character per edge, so every string that shares a prefix with another shares the path down to where they diverge; a node marks the end of a stored word, not necessarily a leaf, so one stored word can sit on the path to a longer one (`do` on the path to `dot`).
+- **Aliases:** prefix tree, digital tree
+- **Taught by:** `data-structures/tries`
