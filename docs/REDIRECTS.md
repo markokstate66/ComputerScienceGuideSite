@@ -1,8 +1,8 @@
 # Legacy redirects
 
-Source of truth: the `routes` array in `staticwebapp.config.json` (repo root). Each legacy path is listed once, with a trailing slash. All are 301s.
+Source of truth: the `routes` array in `staticwebapp.config.json` (repo root). Each legacy path is listed twice there, without and with a trailing slash; the table shows it once. All are 301s.
 
-(Until 2026-09-23 each path was listed twice, without and with a trailing slash — this was never actually deployed until then, and Azure Static Web Apps' deploy-time validator rejected it: with the file's own `trailingSlash: "always"` setting, Azure redirects any no-slash request to its slash form *before* route rules are evaluated, so the no-slash entry can never be reached and Azure treats it as a literal duplicate of the slash entry. Removed the no-slash half of each pair.)
+(2026-09-23, the first real production deploy: the root config used to also set `"trailingSlash": "always"`, which normalizes every request to its slash form *before* route rules are evaluated -- so Azure's deploy-time validator rejected the no-slash half of every pair as an unreachable duplicate of the slash half. Removing just the duplicates fixed the deploy, but `trailingSlash: "always"` turned out to have a second, worse effect that only showed up in production: it also appends a slash to *real files* with no route rule at all -- `/robots.txt`, `/sitemap.xml` and `/404.html` were all getting redirected to a slash-suffixed path that doesn't exist, breaking exactly the files crawlers fetch at literal paths. Fixed by removing `trailingSlash` entirely (real Astro-built pages already serve correctly both with and without a trailing slash under Azure's default, unset behavior -- verified live) and restoring the no-slash route entries, which are no longer duplicates once nothing normalizes them together.)
 
 ## How targets are resolved
 
