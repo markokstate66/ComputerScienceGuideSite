@@ -1,0 +1,33 @@
+{
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/linked-list-data-structure/",
+    "https://www.geeksforgeeks.org/dsa/what-is-linked-list/",
+    "https://www.programiz.com/dsa/linked-list"
+  ],
+  "justification": "For the target query 'linked list explained', the ranking GeeksforGeeks pages are index/gateway pages with no runnable code, one static node diagram, no doubly-linked/sentinel coverage and no measured data; Programiz has two static diagrams and node-creation/traversal snippets in four languages but no insert/delete code, no LRU cache, and only a textbook complexity table with no benchmarks. This article's design/UX is clearly ahead of both on every axis a design critic judges: three hand-drawn, theme-aware SVG diagrams (node chain, four-pointer splice, reverse step) that stay within a 360-wide viewBox and are confirmed legible with no scroll or fade at 390px in both mobile-light and mobile-dark; a consistent heading hierarchy (##/### only, present correctly in the 'On this page' rail); good rhythm alternating prose, code, output panels, diagrams and five varied exercises (find-the-bug, predict-two-edge-cases, extend-the-code, measure-it) with solutions correctly collapsed and no predict-exercise giving away its output before the fold; callouts (:::dotnet, :::warning, ::::exercise) used sparingly and appropriately; a clean 13-entry sources list; zero console errors, zero broken links (30 internal links, 13 external all resolving), zero horizontal overflow at 390px, and Lighthouse 92/100/100/100. The only real result the query surfaces that is genuinely comparable in depth (a full doubly-linked-list-plus-LRU-cache treatment) simply does not appear among the ranking pages checked, which makes this a case of the site outscoring its search competition rather than merely matching it. It falls short of a clean 10 only because of one recurring minor mobile-table friction (see issues) and because a couple of code blocks run long enough that a phone reader must scroll past the operative token before reaching the rest of the line in a few spots inside the doubly-linked-list and LRU listings -- neither rises above 'nit' on a page this otherwise disciplined.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "\"What each operation costs, and under what assumption\" section, the Operation/T[]/List<T>/LinkedList<T> cost table (also visible in mobile-dark-part07.png)",
+      "problem": "The table has four columns, and the Operation column's longest cells ('Insert/remove given a node you hold', 'Insert/remove at the front') run well past 20 characters. On the 390px screenshots the table scrolls and the T[]/List<T>/LinkedList<T> values for the wider rows sit past the visible fold, so a phone reader sees the operation name but has to scroll to see all three costs for it, working against WRITER_GUIDE's phone-table guidance ('prefer at most three columns... put the identifying column first').",
+      "fixLooksLike": "Either shorten the Operation labels (e.g. 'Insert/remove: front', 'Insert/remove: given node') so the identifying column takes less width and more of the data columns stay on-screen, or confirm this is an accepted sitewide pattern for cost-comparison tables in this pillar (arrays-and-dynamic-arrays likely has the same shape) and leave as-is; if it's accepted elsewhere, this can be downgraded to a non-issue.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Doubly-linked-list InsertBefore/Remove program (id=doubly) and the LRU cache Put method, viewed in mobile-dark-part06.png and mobile-dark-part18.png",
+      "problem": "A few lines (e.g. `var node = new Node(value) { Next = at, Prev = at.Prev };` and `TKey, LinkedListNode<(TKey Key, TValue Value)>> _index = new();`) run long enough that the part of the statement after the visible ~40 columns carries meaningful content (the object-initializer body, the dictionary's value type), not just boilerplate tail.",
+      "fixLooksLike": "Not blocking -- this is a common, reasonable trade-off for constructor/type-heavy C# lines and the fade cue correctly signals more content. Only worth revisiting if a future round wants every operative token on-screen; consider breaking the object initializer onto its own line or aliasing the LRU cache's tuple type if this article gets touched again.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 92,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
