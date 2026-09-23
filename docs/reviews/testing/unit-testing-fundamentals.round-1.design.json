@@ -1,0 +1,37 @@
+{
+  "article": "src/content/articles/testing/unit-testing-fundamentals.md",
+  "route": "/testing/unit-testing-fundamentals/",
+  "round": 1,
+  "critic": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices",
+    "https://xunit.net/docs/getting-started/v3/getting-started"
+  ],
+  "verifyNotes": "node tools/verify-page.mjs --drafts /testing/unit-testing-fundamentals/ : FAIL only on the expected NEEDS_MARKUS placeholder (3 occurrences: byline, bio, footer legal name). words=2051, code=16, figures=1, h1=1, internalLinks=28, broken=[], mobileOverflowPx=0, consoleErrors=[], consoleWarnings=[]. Lighthouse 99/100/100/100. Screenshots read: all 8 desktop-light parts, all 12 mobile-dark parts (plus both folds), desktop-dark fold+part03+part04+part06, mobile-light fold+part04+part06+part09 (diagram and both `fails` panels in every theme/width combination checked).",
+  "justification": "This clears the design bar comfortably. Rhythm is disciplined: short paragraphs, no wall of text, and a steady cadence of prose -> code -> output -> (diagram or exercise) all the way down; three exercises of genuinely different shapes (diagnose-a-failure, predict-then-verify, write-your-own-test) sit at natural pause points and every solution is correctly collapsed (`Show solution` triangle closed) in all four theme/width screenshot sets, including the nested exercise-inside-solution case in 'Find the bug'. Heading hierarchy is clean (only ##/### used, matches the on-this-page nav, no skipped levels). The single diagram (Figure 1, AAA test anatomy) follows the design system correctly: 360-wide portrait stack, annotations under each box rather than beside it, 12-14 unit text that stays crisp at 390px in both themes, a `d-box-accent` highlight on the Assert region that reads clearly against both light and dark backgrounds, and a caption that stands alone. Callouts (one pitfall, three exercises) are visually distinct from body text and from each other in dark mode, with no contrast problems. The two `fails`-flagged xUnit panels behave as the site's standard scroll-with-fade affordance intends rather than hard-clipping: the second one (summarize-after, a string-diff failure) is well-shaped for mobile — the test name is what scrolls off, but the load-bearing `Expected:`/`Actual:`/`pos 4` diff markers that the surrounding prose actually discusses all sit inside the visible ~40-column window in every screenshot. The first one (boundary-bug, a Theory-case failure) is very slightly worse: real xUnit renders the parameterized case name as one long line (`GradeCalculatorTests.LetterGrade_BoundaryScore_ReturnsExpectedGrade(average: 90, expected: 'A') [FAIL]`), which scrolls off past column ~40 on both mobile and desktop before the reader reaches `average: 90`; the `Expected: 'A'` / `Actual: 'B'` lines immediately below remain fully visible, so the pass/fail fact survives, but the specific input value the exercise and the following prose lean on ('the failing case name says it directly: average: 90, expected: 'A'') is not readable without scrolling on a phone. This is real captured tool output rather than something to reformat without becoming inaccurate, so it is a minor, isolated nit rather than the kind of repeated, central clipping that would cost more. Compared against two real top-ranking pages on this exact topic, the article is well ahead on the design/UX axis this review judges: Microsoft's own 'Unit testing best practices' page is static prose with code blocks and zero diagrams, zero interactivity, and no dark-theme or phone-specific design; xUnit's getting-started docs are plain reference documentation with no worked examples beyond isolated snippets and no exercises at all. This article's one hand-drawn, theme-correct diagram, three exercises with progressively-revealed solutions, and a real-vs-brittle-test worked comparison (with real, verified tool output, not paraphrased) is more illustrated and more interactive than either comparison source.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "`boundary-bug` output panel (Exercise 1 'Find the bug'), the failing-case line `GradeCalculatorTests.LetterGrade_BoundaryScore_ReturnsExpectedGrade(average: 90, expected: 'A') [FAIL]`; seen clipped in mobile-dark part06, mobile-light part06, and even desktop-light/desktop-dark part03-part04 where the box is much wider",
+      "problem": "The specific value the exercise hinges on ('average: 90') sits past the visible window of the output panel on every device width checked; only the class/method prefix is visible before the scroll fade. The `Expected: 'A'` / `Actual: 'B'` lines right below are fully visible, so the pass/fail fact is not lost, but a reader trying to solve the exercise from the output alone (rather than opening the solution) cannot see which of the three theory rows failed without manually scrolling the panel sideways.",
+      "fixLooksLike": "Not really fixable without altering real captured output (which the article correctly refuses to fake). Two options worth considering: (a) shorten `LetterGrade_BoundaryScore_ReturnsExpectedGrade` in this one exercise's test method to something a few characters shorter so `average: 90` lands inside the visible window, or (b) accept as-is since Expected/Actual still carries the pass/fail signal and the solution spells out the reasoning; not blocking."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Shell performance profile (lighthouse-full.json audits, not this article's markup)",
+      "problem": "Performance is 99 and clears the gate comfortably, but two sub-audits still fail outright: 'Page prevented back/forward cache restoration' scores 0 (2 failure reasons), and 'Reduce unused CSS' scores 0.5 (est. 14 KiB). Same shared-shell pattern already flagged in docs/reviews/testing/test-doubles.round-1.design.json.",
+      "fixLooksLike": "Integrator investigates the bfcache blocker (commonly an unload/beforeunload listener or a no-store cache header) and trims unused global CSS; a site-wide fix, not a per-article one."
+    }
+  ],
+  "lighthouse": {
+    "performance": 99,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
