@@ -1,18 +1,8 @@
 {
   "routes": [
     {
-      "route": "/guides/data-structures",
-      "redirect": "/data-structures/",
-      "statusCode": 301
-    },
-    {
       "route": "/guides/data-structures/",
       "redirect": "/data-structures/",
-      "statusCode": 301
-    },
-    {
-      "route": "/guides/algorithms",
-      "redirect": "/algorithms/",
       "statusCode": 301
     },
     {
@@ -21,18 +11,8 @@
       "statusCode": 301
     },
     {
-      "route": "/guides/oop",
-      "redirect": "/oop-design/",
-      "statusCode": 301
-    },
-    {
       "route": "/guides/oop/",
       "redirect": "/oop-design/",
-      "statusCode": 301
-    },
-    {
-      "route": "/guides/databases",
-      "redirect": "/databases/",
       "statusCode": 301
     },
     {
@@ -41,27 +21,12 @@
       "statusCode": 301
     },
     {
-      "route": "/guides/git-version-control",
-      "redirect": "/version-control/",
-      "statusCode": 301
-    },
-    {
       "route": "/guides/git-version-control/",
       "redirect": "/version-control/",
       "statusCode": 301
     },
     {
-      "route": "/guides/cs-basics",
-      "redirect": "/start-here/",
-      "statusCode": 301
-    },
-    {
       "route": "/guides/cs-basics/",
-      "redirect": "/start-here/",
-      "statusCode": 301
-    },
-    {
-      "route": "/guides/programming-fundamentals",
       "redirect": "/start-here/",
       "statusCode": 301
     },
@@ -71,17 +36,7 @@
       "statusCode": 301
     },
     {
-      "route": "/guides/system-design",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
       "route": "/guides/system-design/",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
-      "route": "/guides/api-design",
       "redirect": "/topics/",
       "statusCode": 301
     },
@@ -91,17 +46,7 @@
       "statusCode": 301
     },
     {
-      "route": "/guides/web-development",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
       "route": "/guides/web-development/",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
-      "route": "/guides/html-css",
       "redirect": "/topics/",
       "statusCode": 301
     },
@@ -111,17 +56,7 @@
       "statusCode": 301
     },
     {
-      "route": "/guides/javascript",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
       "route": "/guides/javascript/",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
-      "route": "/guides/react",
       "redirect": "/topics/",
       "statusCode": 301
     },
@@ -131,17 +66,7 @@
       "statusCode": 301
     },
     {
-      "route": "/guides/nodejs",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
       "route": "/guides/nodejs/",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
-      "route": "/guides/portfolio",
       "redirect": "/topics/",
       "statusCode": 301
     },
@@ -151,17 +76,7 @@
       "statusCode": 301
     },
     {
-      "route": "/guides/interview-prep",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
       "route": "/guides/interview-prep/",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
-      "route": "/guides",
       "redirect": "/topics/",
       "statusCode": 301
     },
@@ -171,18 +86,8 @@
       "statusCode": 301
     },
     {
-      "route": "/resources",
-      "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
       "route": "/resources/",
       "redirect": "/topics/",
-      "statusCode": 301
-    },
-    {
-      "route": "/roadmap",
-      "redirect": "/start-here/",
       "statusCode": 301
     },
     {
