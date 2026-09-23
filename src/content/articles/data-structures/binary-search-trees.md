@@ -50,7 +50,7 @@ sources:
     url: "https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/11599/clrsPython.zip"
     publisher: "MIT Press (code by Thomas H. Cormen and Linda Xiao)"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A [binary search tree](/glossary/#binary-search-tree) keeps values ordered using nothing but two pointers per node: every node's key is greater than everything in its left subtree and smaller than everything in its right subtree, so a query can throw away half of what remains at every step, the same idea [binary search](/algorithms/binary-search/) applies to a sorted array, except the tree updates itself as you insert and delete instead of needing a re-sort. The catch is in that update: a binary search tree only behaves like a fast structure if it stays roughly balanced, and nothing in the ordering rule above guarantees that. This article builds one, deletes from it fully, breaks it on purpose, fixes the break, and then looks at what .NET actually ships.
