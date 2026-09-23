@@ -1,0 +1,36 @@
+{
+  "article": "src/content/articles/complexity/best-average-worst-case.md",
+  "route": "/complexity/best-average-worst-case/",
+  "round": 2,
+  "role": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "docs/reviews/complexity/best-average-worst-case.round-1.design.json (this article's own prior round, the baseline for whether the two flagged issues are actually fixed)",
+    "docs/WRITER_GUIDE.md section 5 (diagram phone rules) and section 7 (phone width, including the table column-width guidance the round-1 fix follows almost verbatim)",
+    "docs/EDITORIAL_BRIEF.md's design bullets"
+  ],
+  "lighthouse": { "performance": 98, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-22T23:01:37.288Z",
+    "runs": 3,
+    "words": 3417,
+    "codeBlocks": 17,
+    "figures": 1,
+    "h1": 1,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, not an issue)"],
+    "lighthouseFailingAudits": ["first-contentful-paint 2.0 s (0.85)", "max-potential-fid 330 ms (0.29)", "unused-css-rules 12 KiB", "bf-cache", "document-latency-insight 139 KiB", "network-dependency-tree-insight"],
+    "note": "Ran node tools/verify-page.mjs --drafts /complexity/best-average-worst-case/ three times in a row, serially, nothing else running. All three runs scored identically: 98/100/100/100, with the same failing-audit set each time (first-contentful-paint, max-potential-fid, unused-css-rules, bf-cache, document-latency-insight, network-dependency-tree-insight). No noise this session, unlike round 1's 85/98/98 spread. Reporting 98/100/100/100 as the real, reproduced score. The failing sub-audits are the same shell-level performance items already on record from round 1 (not new, not writer-fixable, and not enough to pull the performance category below 90)."
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold, part09 (table)",
+    "desktop-dark": "fold, part09 (table)",
+    "mobile-light": "fold, parts 02, 03, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16",
+    "mobile-dark": "fold, part14 (table)"
+  },
+  "justification": "Both round-1 findings are fixed and nothing new broke. The table under 'Stating the bound so it survives a code review' now reads Case / Quicksort's bound / Holds for, exactly the fix round 1 suggested as one of two options: on mobile-light-part14 and mobile-dark-part14, at 390 px in both themes, the Case column and the Quicksort's bound column — the four Θ(n²)/Θ(n log n)/Θ(n log n)/O(n log n) results that are the section's actual payoff — are both fully visible with no fade cutting into either. Only the third column, 'Holds for', now sits partly under the fade, which is the right column to lose: a reader who stops scrolling still walks away with every case name and its bound. The 'Holds for' cells were also shortened to at most 29 characters ('Some input triggers it', 'All orderings equally likely', 'Any input, pivots randomized'), under the guide's ~30-char budget for a column meant to survive scrolling; on desktop (desktop-light-part09, desktop-dark-part09) all three columns sit comfortably in the column width with room to spare in both themes. This is a full reversal of the only major issue on record for this page. The CultureInfo boilerplate is now gone from four of the five programs that had it (mobile-light-part08 shows the randomized-fix block opening directly on `const int N = 8000;`, mobile-light-part03 shows recursion-depth opening on `Console.WriteLine($\"{\"n\",7}...`, mobile-light-part12 shows hash-flood opening on `const int Keys = 4000;`) — the first visible line of each of those blocks is now code the surrounding prose is actually discussing, not a repeated two-line culture-invariant preamble. The one prose sentence added to carry this (in the paragraph right after the first program's output, mobile-light-part03) reads naturally, states the fact once, and does not itself run long or wrap awkwardly on a phone. I checked every remaining screenshot pass for anything the writer's two targeted fixes might have disturbed and found nothing: mobileOverflowPx is 0, 0 console errors/warnings, 0 broken links (31 internal links, 8 external, all resolving), the single figure (two stacked partition trees, viewBox 360x622) still reads correctly in both themes with the 'empty left' annotation above its own dashed line and every node label legible at 390 px, all four exercises still use four different verb forms and stay collapsed by default with their output panels not spoiling the answer, heading levels are a flat, unbroken H2 run (8 sections, no H3 skipped down to or up from), and every other output panel (naive/randomized comparison table, hash-flood's hash/total-probes/per-key table) still keeps its columns inside about 40 characters. Lighthouse reproduced at 98/100/100/100 across three consecutive serial runs with an identical failing-audit set each time — no noise this session — comfortably clearing the ≥90-in-all-four-categories bar. Docking under a clean 9.5-10 only because the page still carries the same handful of shell-level Lighthouse sub-audit misses (FCP 2.0s, max-potential-fid, bf-cache, unused CSS, a couple of insight audits) that were already on record and are not the writer's to fix, and because the 'Holds for' column, while now within budget, is still the column a phone reader has to scroll for if they want the full sentence rather than just the bound — an acceptable, deliberate trade-off given what the table is for, not a defect.",
+  "issues": []
+}
