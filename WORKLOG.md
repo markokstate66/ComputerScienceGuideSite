@@ -2,6 +2,29 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-23 — First production deploy (issue #15): merged `adsense-rebuild` into `master`
+
+At the owner's explicit instruction. Owner confirmed proceeding despite low current traffic and accepted the batch-merge deviation from the normal playtest gate for this session's earlier 32-article merge (see the 2026-09-22 batch-merge entry).
+
+**Before merging**, closed the "obviously broken" gap the owner flagged: every article byline, the footer copyright, and the About page showed a literal `NEEDS_MARKUS(#n: ...)` marker. Fixed without inventing any fact: attributed to the publication name ("Computer Science Guide") instead of a person, omitted the bio paragraph. The owner then supplied real facts for Privacy/Terms/Contact (a `CLAUDE.md` danger zone, edited only after this explicit confirmation): legal operator Summit Technology Group LLC (stgengineer.com), contact mark@stgengineer.com, governing law Colorado, contact-form retention policy, and confirmed GA4 property `G-08FYJQ54RN`. Consent-management platform left honestly unresolved (owner will choose one once AdSense accepts the site). `docs/NEEDS_MARKUS.md` updated to reflect real status per item.
+
+**Deploy took 3 attempts** — the config had never actually been deployed before (`docs/SHELL_NOTES.md` item 2), so none of this was previously testable:
+1. First push failed at Azure's config validation: `staticwebapp.config.json` listed every legacy redirect twice (without and with a trailing slash) plus `trailingSlash: "always"`. Azure's route *matching* already ignores trailing-slash differences regardless of that setting, so the two entries per path always matched the same requests and Azure rejected the second as a literal duplicate.
+2. Second attempt: removed the no-slash duplicates but also removed `trailingSlash: "always"` and tried restoring all 46 entries in the same push — reintroduced the identical duplicate-route error, because nothing about removing `trailingSlash` changes how Azure matches routes.
+3. Third attempt (shipped): single entry per path (slash form, 27 routes total) **and** `trailingSlash` removed entirely. This combination was needed for a second reason discovered live: `trailingSlash: "always"` also canonicalizes *any* unmatched request, including real static files with no route rule — `/robots.txt`, `/sitemap.xml` and `/404.html` were each 301-redirecting to a slash-suffixed path that doesn't exist. Confirmed via direct `curl` against `www.computerscienceguide.com` before and after each attempt.
+
+**Post-deploy verification** (curl against `www.computerscienceguide.com` — the bare `computerscienceguide.com` domain forwards there via Squarespace DNS, expected and already correctly handled by `SITE.productionHosts`):
+- `/robots.txt` → 200, real content, correct `Sitemap:` line. `/sitemap.xml` → 200, `Content-Type: application/xml`, real URLs with real `lastmod` dates.
+- Every legacy redirect in `docs/REDIRECTS.md` → 301 to its listed target, confirmed **both with and without** the trailing slash (Azure's route matching normalizes this at match time, independent of any `trailingSlash` setting — corrected a wrong assumption written into `docs/REDIRECTS.md` earlier in this same session and then fixed once verified live).
+- Unknown URL → real 404 (custom 404 page, not a 200 fallback to the homepage). `/404.html` visited directly → 200 with `X-Robots-Tag: noindex`. `/styleguide/` and `/search/` → both `noindex`.
+- Security headers present on every response checked (`Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`).
+- GA4 loads client-side only (confirmed the compiled `_assets/hoisted.*.js` bundle contains the real property ID, the `productionHosts` check, and the GPC/DNT opt-out check — invisible to a plain `curl` since it's injected after page load, not present in server-rendered HTML).
+- `.github/ISSUE_TEMPLATE/*.yml` (article, bug, task, config) present on `master`, which is confirmed as the repo's default branch, so GitHub's issue-creation UI should now offer them.
+
+`adsense-rebuild` fast-forwarded to match `master` after each fix so the two branches stay in sync going forward.
+
+**Known limitation, not blocking:** none found — every acceptance criterion in issue #15 was verified live and passed on the third deploy.
+
 ## 2026-09-22 — Batch merge: 32 articles + 1 tooling PR, all open PRs cleared
 
 - At the owner's explicit instruction ("let's merge it all"), merged all 33 open PRs into `adsense-rebuild` in one pass, skipping the normal per-PR playtest gate for this batch. Confirmed first that every open PR targeted `adsense-rebuild` (none targeted `master`), none were drafts, and `gh pr list` reported all 33 as `CLEAN`/`MERGEABLE` before merging any of them.
