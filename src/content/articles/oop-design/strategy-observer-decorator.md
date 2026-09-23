@@ -50,7 +50,7 @@ sources:
     url: "https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480"
     publisher: "Addison-Wesley, 1994; publisher record, cited by chapter"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A custom `IComparer<T>` passed to `List<T>.Sort`, a C# `event` with two independent subscribers, and a `GZipStream` wrapped around a `MemoryStream` are not analogies for Strategy, Observer and Decorator — they are those patterns, already compiled into the base class library. This article opens each one where it already lives, names the pattern, and then builds a minimal version by hand so the mechanism behind the convenient syntax is visible.
