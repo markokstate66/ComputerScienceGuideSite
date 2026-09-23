@@ -50,7 +50,7 @@ sources:
     url: "https://docs.oracle.com/javase/tutorial/java/generics/erasure.html"
     publisher: "Oracle"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A part-tracking list that holds `object` compiles no matter what you put in it. A list that holds `T` rejects the wrong type before the program ever runs. That one difference — moving a check from runtime to compile time — is what generics are for, and it costs nothing at runtime because the CLR keeps the real type around instead of throwing it away.
