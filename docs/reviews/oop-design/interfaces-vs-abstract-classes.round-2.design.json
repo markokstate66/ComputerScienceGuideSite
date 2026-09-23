@@ -1,0 +1,33 @@
+{
+  "article": "src/content/articles/oop-design/interfaces-vs-abstract-classes.md",
+  "route": "/oop-design/interfaces-vs-abstract-classes/",
+  "round": 2,
+  "role": "design",
+  "score": 9.3,
+  "lighthouse": { "performance": 98, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verifyNotes": "Single serial run of `node tools/verify-page.mjs --drafts /oop-design/interfaces-vs-abstract-classes/` from PowerShell (no re-run needed, performance 98). Only failure: expected NEEDS_MARKUS placeholder (byline, bio, footer legal name), same as round 1. words=2871, codeBlocks=31, figures=1, h1=1, mobileOverflowPx=0, consoleWarnings=0, internalLinks=28 (0 broken), 7 external links listed (not independently re-checked for liveness; --external not run). Screenshots opened: all 17 mobile-dark parts, all 3 mobile-light parts covering the three fixed spots (part01, part08, part13) plus fold, all 11 desktop-light parts covering the diagram (part10), and mobile-dark part14 for the diagram. Heading hierarchy unchanged and still sound: one H1, H2 sections with H3 subsections only under the diamond-problem section, no skipped levels.",
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/interfaces",
+    "https://www.tutorialsteacher.com/csharp/csharp-interface"
+  ],
+  "justification": "All three round-1 mobile-rendering blockers are resolved and nothing new broke in the process. (1) The capability table's Interface/Abstract-class cells are now phrase-length ('Public by default' / 'Any modifier', 'Yes, usually protected', etc.) instead of full sentences; mobile-dark-part01 and mobile-light-part01 both now show the Capability column plus the full Interface column plus the start of the Abstract class column before the fade, versus round 1 where only Capability was visible -- confirmed fixed. (2) The `ThrottledNotifier` listing (id=throttled-notifier, mobile-dark/light-part08) and its `Reset()` exercise twin (id=throttled-notifier-reset, verified from the raw markdown since exercise solutions are collapsed by default and the screenshot capture does not expand them) now use `_max`/`_sent` instead of `_maxPerMinute`/`_sentThisMinute`, with constructor and class headers wrapped onto continuation lines (`sealed class EmailNotifier(int max)` / `: ThrottledNotifier(max)` on its own line) and the throttle check on one line, `if (_sent >= _max)`, fully visible with no faded right edge in either mobile theme -- confirmed fixed, and the Reset() twin uses the identical rename and wrapping pattern so it renders the same way. (3) In the diff exercise (mobile-dark/light-part13), the new member is renamed `History` and split as `+    IReadOnlyList<string> History` / `+        { get; }`, both lines fully visible with no clipping -- confirmed fixed. A fresh full pass over the rest of the article (all 17 mobile-dark parts, the matching mobile-light and desktop-light parts, the diagram at mobile-dark-part14 and desktop-light-part10, and the footer/sources/keep-reading tail) found no new mobile-width, heading, diagram or prose/code-rhythm issues: the flowchart diagram is still a clean 360-wide portrait figure with no scrolling and good contrast in both themes, every other code listing checked (default-interface-member walkthrough, diamond-problem sequence, generic-math IAddable/IMultipliable blocks, versioning CS0535 sequence) has no faded right edge, and headings/On-this-page still match exactly. Lighthouse is now 98/100/100/100 (performance up one point from round 1's 97, still all four categories well above the 90 gate), zero console errors, zero broken internal links (28/28), mobileOverflowPx is 0. The remaining gap to a higher score is minor and mechanical, not structural: the capability table's third column (Abstract class) is still mostly off-screen on a 390 px phone after the fix, showing only its first couple of characters, which is an inherent limit of a three-column table with two data columns at this width rather than a regression, and the `ThrottledNotifier`/`Reset()` bodies now rely more heavily on wrapped continuation lines (`protected abstract\\n    string Label`), which is legible but slightly busier to read than a single-line signature would be if column budget allowed it.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "First table, 'What can each one hold, build and expose?' (md 44-52); mobile-dark-part01, mobile-light-part01.",
+      "problem": "After shortening the cell text, the Abstract class column still starts past the 390 px fade on a phone -- only 'Ab'/a couple of characters of the header are visible, so a reader still has to scroll to compare the two constructs side by side, even though the Interface column is now fully readable without scrolling.",
+      "fixLooksLike": "Optional polish only, not blocking: consider a shorter header abbreviation ('Abstract' instead of 'Abstract class') or, if the design system supports it, pin the Capability column and let only the two data columns scroll horizontally together, so a reader always sees at least a sliver of both data columns."
+    }
+  ],
+  "crosslinksFile": "docs/crosslinks/oop-design/interfaces-vs-abstract-classes.md unchanged from round 1: two anchor/target/location lines to planned siblings (solid-principles for interface segregation, composition-over-inheritance) plus a boundaries section. Missing body links to those unpublished siblings are therefore not an issue.",
+  "notIssues": [
+    "NEEDS_MARKUS byline/bio/footer placeholders (expected)",
+    "draft: true",
+    "'Keep reading' shows only hub links because the sibling article is the only other published one in the pillar",
+    "7 external links not re-verified for liveness (no --external run; all are learn.microsoft.com URLs also listed in `sources`)",
+    "Reset() exercise (id=throttled-notifier-reset) solution stays collapsed in the screenshot capture; verified the fix from the raw markdown instead, which uses the identical _max/_sent rename and line-wrapping as the main listing"
+  ]
+}
