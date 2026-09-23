@@ -82,7 +82,7 @@ sources:
     url: "https://pages.cs.wisc.edu/~remzi/OSTEP/file-journaling.pdf"
     publisher: "Arpaci-Dusseau Books"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 The [virtual-memory article](/operating-systems/virtual-memory/)'s memory-mapped-file section stopped at the boundary where a page fault pulls a file's bytes into a process's address space; it never asked what a file actually is on the other side of that fault, or what has to happen for a byte a program just wrote to still be there after the machine restarts. This article starts on the disk side of that boundary and ends at the two C# calls application code actually has for crossing it: `FileStream.Flush` and a file rename.
