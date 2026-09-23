@@ -1,0 +1,67 @@
+{
+  "article": "src/content/articles/operating-systems/cpu-scheduling.md",
+  "route": "/operating-systems/cpu-scheduling/",
+  "round": 1,
+  "role": "design",
+  "score": 7.8,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/operating-systems/cpu-scheduling-in-operating-systems/",
+    "https://en.wikipedia.org/wiki/Scheduling_(computing)"
+  ],
+  "lighthouse": { "performance": 89, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-22T22:33:36.159Z",
+    "runs": 1,
+    "words": 3807,
+    "codeBlocks": 20,
+    "figures": 1,
+    "h1": 1,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": [
+      "placeholder text: NEEDS_MARKUS (expected, not an issue)",
+      "lighthouse performance 89 < 90"
+    ],
+    "lighthouseFailingAudits": [
+      "first-contentful-paint 3.0 s (0.49)",
+      "largest-contentful-paint 3.0 s (0.77)",
+      "max-potential-fid 260 ms (0.47)",
+      "unused-css-rules Est savings of 13 KiB (0.5)",
+      "bf-cache prevented, 2 failure reasons (0)",
+      "document-latency-insight Est savings of 277 KiB (0.5)",
+      "network-dependency-tree-insight (0)"
+    ]
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold + parts 01-15 (all)",
+    "mobile-dark": "fold + parts 01-23 (all)",
+    "desktop-dark": "fold, 09 (MLFQ diagram)",
+    "mobile-light": "fold, 04 (FCFS output), 15-17 (MLFQ output + diagram + comparison table), 21 (sources/footer)"
+  },
+  "justification": "A single verify-page run (nothing re-run) produced Lighthouse 89/100/100/100, 0 console errors, 0 console warnings, 0 broken links (9/9 external links resolved), mobileOverflowPx 0; failures were the expected NEEDS_MARKUS placeholder plus a real performance miss at 89 (<90 gate). Task notes other worktrees may build concurrently, and `tasklist` during this run showed unrelated node/vite processes (a SeeTheCityApp dev server) plus what looked like another verify-page capture running at the same time, so 89 may be noisy; FCP/LCP both sat at 3.0s with a prevented bfcache restoration, the same shape seen on other recently-reviewed articles in this batch (e.g. hash-tables scored 91 with an almost identical failing-audit list), which points at shared shell/hosting latency rather than this article's content. Recorded as a real, reproducible number from this run regardless; the consumer should re-verify serially per ARTICLE_GAUNTLET before the final pass/fail call. All 20 code blocks pass run-code-style expectations visually (consistent syntax highlighting, dark OUTPUT panel styling, Copy button) across every desktop-light and mobile-dark part read. The MLFQ diagram (Figure 1, viewBox 360x330) was checked in all four device/theme combinations (desktop-light part09, desktop-dark part09, mobile-light part16-17, mobile-dark part13) and is clean throughout: three stacked, clearly bordered level boxes (level 0 quantum 3 / level 1 quantum 6 / level 2 quantum 12), red downward 'quantum used up' demotion arrows, and a dashed curved boost arrow correctly returning to level 0, all labels legible at 390px in both themes with no horizontal scroll (fits the <=360 viewBox budget) and no overlap. Heading hierarchy is flat and correct -- one h1 (front matter), eleven `##` sections, zero `###`, no skipped levels -- and the prose/code/output/exercise rhythm never runs long without a break across this 3807-word, 20-code-block article; all four exercises (arithmetic prediction, quantum tuning, aging, find-the-bug) render as correctly collapsed 'Show solution' disclosures with no leaked solution text in any screenshot checked. Two real, reproducible mobile-readability issues were found, both centered on wide tabular content, and both independently confirmed by pixel-level crops (upscaled with sharp) rather than screenshot-glance alone, which matters because a first-pass look at both suggested 'no scroll cue' when a genuine fade gradient is actually present in the rendered pixels in both themes and both widths: (1) the closing five-algorithm comparison table shows only 'Algorithm' and 'Avg turnaround' before the fold on a 390px screen -- 4 of its 6 columns (Avg waiting, Avg response, Preemptive, Needs burst length) require a horizontal scroll the reader is not otherwise cued to make except by the (real, confirmed) edge fade, on a table whose entire purpose is side-by-side comparison across exactly those columns; the same fold happens at desktop width too (confirmed on desktop-light-part12: 'Needs burst length' clips to 'Needs burst lengt' behind a working fade). (2) every one of the five algorithms' PrintMetrics summary line -- 'avg turnaround X.X  avg waiting X.X  avg response X.X', 54 characters -- exceeds the ~40-column mobile window and is hard-wrapped-by-scroll right after 'avg waiting X.X' in all five sections (fcfs, sjf, rr, priority, mlfq) plus the closing find-the-bug exercise's output, hiding the avg response value that the article's own prose repeatedly cites as the headline number immediately afterward (e.g. 'average response time (4.0) beats every other algorithm above, including SJF'). WRITER_GUIDE section 7 states plainly that a cut-off tail is fine when it is boilerplate but not when it is the point, and here the point (the response-time comparison the whole article is building toward) is what gets cut six times. Both issues have a real fade/scroll affordance -- this is not the hash-tables-style silent, cue-less clip -- but the volume of hidden, on-point content (a comparison table and every single algorithm's headline metric) on a phone-first article is enough to hold the score under the 8.5 pass bar alongside the real Lighthouse miss. Illustration depth compares well against both external sources: GeeksforGeeks' CPU-scheduling page and Wikipedia's scheduling article both explain the same five classic algorithms with static example Gantt charts and formulas but no runnable code, no measured numbers, and (for GeeksforGeeks specifically) no coverage of a real multi-level feedback queue's demotion/boost mechanics beyond a name-check; neither source mentions that Linux replaced CFS with EEVDF as the SCHED_OTHER default in kernel 6.6 (2023), a distinction this article gets right by citing the kernel's own current scheduler docs against a stale man page. This article's five algorithms are all independently compiled, run, and cross-checked against a single shared workload with real numbers (not hand arithmetic, stated explicitly in-article), plus a concrete Windows priority-level/boost walkthrough with real base-priority numbers from Microsoft Learn -- illustration tied to real, current, cited facts that neither comparison source attempts at this depth.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Comparison table under '## Five algorithms, one workload, five different pictures'; confirmed mobile-light-part17, mobile-dark-part17, desktop-light-part12",
+      "problem": "The 6-column table (Algorithm / Avg turnaround / Avg waiting / Avg response / Preemptive / Needs burst length) only shows 2 of 6 columns before the fold at 390px (Algorithm, Avg turnaround); at desktop width the last column ('Needs burst length') is also clipped. A real fade/scroll cue is present in both themes and both widths (confirmed via pixel-level crop, not just a screenshot glance), so this is not the hash-tables-style silent clip, but a reader who does not drag sideways never sees Avg waiting, Avg response, Preemptive or Needs burst length -- 4 of the 6 columns that are the entire point of a side-by-side comparison table.",
+      "fixLooksLike": "Shorten headers to fit more columns before the fold (e.g. 'Turnaround' / 'Waiting' / 'Response' / 'Preempt?' / 'Needs burst?'), or drop/merge a column the prose doesn't lean on (e.g. combine Preemptive + Needs burst length into one short 'Notes' column), or split into two narrower tables (timing metrics; algorithm properties). Re-check at 390px in both themes that at least 3-4 columns are visible before scroll.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "PrintMetrics() output panels in run blocks id=fcfs, id=sjf, id=rr, id=priority, id=mlfq, and id=ex-bug-workload's completion-status output; confirmed mobile-light-part04/16, mobile-dark-part04/06/09/12/16/21",
+      "problem": "Every algorithm's one-line average-metrics summary ('avg turnaround X.X  avg waiting X.X  avg response X.X', 54 characters) exceeds the ~40-column mobile visible window and is cut off (behind a real, confirmed fade, not a silent clip) right after 'avg waiting X.X', hiding the avg response value. This recurs identically in all five algorithm sections plus the closing exercise, and in every case the article's own next paragraph explicitly cites the hidden number as evidence (e.g. MLFQ: 'average response time (4.0) beats every other algorithm above, including SJF'). WRITER_GUIDE section 7 says a cut-off tail is acceptable only when it's boilerplate, not when it's the point -- here it is the point, repeatedly.",
+      "fixLooksLike": "Narrow the format widths in the shared PrintMetrics()/inline summary line (e.g. shorter labels: 'turn', 'wait', 'resp' instead of 'avg turnaround'/'avg waiting'/'avg response'), or split the one line into two shorter Console.WriteLine calls so each fits under ~40 columns. Re-run node tools/run-code.mjs after any format-string change and re-check the mobile screenshots.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Shell: Lighthouse performance audits (first-contentful-paint, largest-contentful-paint, max-potential-fid, bf-cache, document-latency-insight, network-dependency-tree-insight) on this route",
+      "problem": "Performance scored 89/100, missing the >=90 gate, with FCP and LCP both at 3.0s and a prevented back/forward-cache restoration. Other node/vite processes (an unrelated project's dev server, plus what appeared to be a concurrent verify-page capture) were running on the machine during this measurement, and ARTICLE_GAUNTLET.md explicitly warns Lighthouse performance is unreliable under load; the failing-audit shape matches other recently-reviewed articles in this batch (e.g. hash-tables: FCP 2.8s/LCP 2.8s/bfcache prevented, scored 91) pointing at shared shell/hosting latency rather than this article's own content or images (it has only one lightweight inline SVG figure).",
+      "fixLooksLike": "No writer action on this article's content. The consumer should re-run node tools/verify-page.mjs --drafts serially, with nothing else running, before the final pass/fail decision; if 89 reproduces cleanly, file it once against the shared shell (document latency / bfcache / network dependency tree) via docs/INTEGRATOR_REQUESTS.md rather than per-article.",
+      "owner": "integrator"
+    }
+  ]
+}
