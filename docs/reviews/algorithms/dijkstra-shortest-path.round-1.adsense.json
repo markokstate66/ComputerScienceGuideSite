@@ -1,0 +1,37 @@
+{
+  "role": "adsense",
+  "article": "src/content/articles/algorithms/dijkstra-shortest-path.md",
+  "route": "/algorithms/dijkstra-shortest-path/",
+  "round": 1,
+  "score": 7.8,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/dijkstras-shortest-path-algorithm-greedy-algo-7/",
+    "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm",
+    "https://algs4.cs.princeton.edu/44sp/",
+    "https://algs4.cs.princeton.edu/24pq/",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.priorityqueue-2",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.priorityqueue-2.remove",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.priorityqueue-2.dequeue",
+    "https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/PriorityQueue.cs",
+    "https://doi.org/10.1007/BF01386390"
+  ],
+  "consoleErrors": null,
+  "brokenLinks": null,
+  "justification": "Originality is genuinely high, confirmed by fetching the field. GeeksforGeeks's 'Dijkstra's Shortest Path Algorithm' (the top result for the target query) offers five language ports, a lazy-deletion aside in one sentence, and no discussion of .NET's PriorityQueue, no decrease-key gap, no formal correctness proof, no A* connection (fetched and confirmed directly). Wikipedia's article covers theory and abstract priority-queue variants (Fibonacci heaps etc.) but no .NET API, no C# at all, and no lazy-deletion pattern (fetched and confirmed). This article's differentiator holds up: it derives a cut-argument proof of the greedy step, then grounds the entire implementation in what PriorityQueue<TElement,TPriority> documents about itself — no decrease-key member, Remove's linear scan, the plain-array backing store with no position index — and shows the lazy-deletion consequence with an actual pop trace (nine pops for six vertices, three caught as stale via visited.Add) rather than asserting it. The negative-edge section derives the failure from the same cut argument rather than just demonstrating it, and the A* section is earned (h=0 collapses to plain Dijkstra 'letter for letter,' verified by the code literally sharing one Search function). No overlap with the sibling breadth-first-and-depth-first-search.md: that article explicitly ends by handing off ('fewest edges and least total weight stop being the same question... which is what the next article in this pillar takes on'), and this one opens exactly there without re-deriving anything BFS already covers. All eight front-matter sources are cited inline. Every quote I checked against the live pages matched verbatim: the PriorityQueue class remarks ('implements an array-backed, quaternary min-heap' / 'does not guarantee first-in-first-out semantics for elements of equal priority'), the Remove method's 'linear-time scan of every element in the heap, removing the first value found to match the element parameter,' the Dequeue method's InvalidOperationException-on-empty, the backing store's plain array with no position index (confirmed against the GitHub source), Sedgewick & Wayne's binary-heap compare bounds, the full 'repeatedly relaxes and adds to the tree...' sentence, the DijkstraSP/IndexMinPQ and lazy-version-exercise text, and the Bellman-Ford and negative-weight-exception passages from algs4's Shortest Paths page. No ad code, no filler, no keyword stuffing, and the toolchain-disclosure sentence ('this trace — run on .NET 10 for this article — pops F before the stale D') is placed exactly where the tie-break claim needs it, not as an opening stamp. `node tools/run-code.mjs` passes (16 blocks, 8 executed). Exercises vary in form (predict, find-the-inefficiency, measure) and the one predict-the-output exercise correctly keeps its output block inside :::solution:::; the second exercise shows an output panel outside the solution, but the question it asks ('what is actually wrong with shipping this instead') is about relaxation cost, not the distances shown, so showing the (matching) distances isn't giving away the answer — this is the find-the-bug pattern, not the predict-the-output pattern the pilot rule targets. One issue keeps this below 8.5: the article uses its DOI-only Dijkstra (1959) citation for a specific, checkable claim rather than the well-known uncontroversial fact the sourcing rule limits paywalled/unopenable primary sources to.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Opening paragraph: '...the algorithm E. W. Dijkstra published in 1959 as a two-page solution to shortest paths in a graph ([Dijkstra, *A note on two problems in connexion with graphs*])'",
+      "problem": "The paper's own bibliographic record (Numerische Mathematik, vol. 1, 1959) gives its page range as 269-271, which is three pages, not two (confirmed against Wikipedia's citation of the same DOI, since the Springer landing page for the DOI itself sits behind an auth redirect). 'Two-page solution' is a specific, checkable numeric claim, not a well-known uncontroversial fact of the kind the sourcing rule permits attaching to a source the writer could not fully open — and it is not actually well-known, it is just wrong for this paper. This is exactly the risk the DOI-only-citation rule exists to guard against: a specific detail asserted on a source too hard to open to verify.",
+      "fixLooksLike": "Either drop 'two-page' and say 'a short solution' / 'a few-page solution' (the brevity itself is well documented and uncontroversial without a page count attached), or state the real range: 'a three-page solution (pp. 269-271)' if the writer wants the precision, sourced to a citation record rather than implied first-hand knowledge of the paywalled PDF.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "::::exercise[Find what makes this Dijkstra slower, not wrong] — the `text output` block showing the six distances, sitting between the code and the question 'What is actually wrong with shipping this instead?'",
+      "problem": "Not a violation of the pilot rule (the question tests reasoning about relaxation cost, not the distance values shown, so nothing is given away), but it is close enough to the predict-the-output shape that a reader skimming could momentarily think the exercise is 'guess these numbers.' Worth a one-line framing nudge so the ask is unambiguous before the reader reaches the code.",
+      "fixLooksLike": "Add a short lead-in before the code, e.g. 'The distances below match the lazy version exactly — the question is about what this costs to get there,' so the output block is clearly given as a premise, not a thing to predict.",
+      "owner": "writer"
+    }
+  ]
+}
