@@ -1,0 +1,37 @@
+{
+  "article": "src/content/articles/oop-design/solid-principles.md",
+  "route": "/oop-design/solid-principles/",
+  "round": 1,
+  "critic": "design",
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/architectural-principles",
+    "https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html"
+  ],
+  "verifyNotes": "node tools/verify-page.mjs --drafts /oop-design/solid-principles/ (serial, no other verify-page run concurrently from this session; the machine may have had other worktrees building in the background) : FAIL only on the expected NEEDS_MARKUS placeholder (3 occurrences: byline, bio, footer legal name). words=3389, code=26, figures=1, h1=1, internalLinks=27, broken=[], mobileOverflowPx=0, consoleErrors=[], consoleWarnings=[]. Lighthouse 96/100/100/100 (all four categories clear the 90 gate comfortably). Screenshots read: all 14 desktop-light parts + fold, all 21 mobile-dark parts + fold (full article, start to finish, in both of those sets). Spot-checked desktop-dark (fold, part03 SRP, part06 OCP/LSP boundary, part10 DIP diagram, part11 DI-container, part14 footer) and mobile-light (fold, part06 OCP, part09-10 LSP/ISP boundary, part14-15 DIP diagram) across the length of the article, not just the opening.",
+  "justification": "This is a long, structurally repetitive premise — five principles, each necessarily following violation → fix → lesson — and the writer manages the monotony risk better than most published treatments of this exact topic. Each principle gets a genuinely different narrative device rather than a re-skinned template: SRP is a flaky-test coupling bug, OCP is a code-review-blind-spot bug (StartsWith collision), LSP is a violation the .NET BCL itself ships with rather than an invented Bird/Penguin hierarchy, ISP is a batch job silently losing a queued item, and DIP is shared mutable static state plus the only diagram on the page plus a dedicated `###` subsection distinguishing the principle from DI containers. The exercises are six different shapes (spot-the-second-responsibility, predict-before-you-run, prove-it-with-a-narrower-type, add-a-format-without-breaking-anyone, find-the-bug-from-a-description-alone, decide-don't-guess) — one more than the brief's five, because the writer added a sixth in the closing 'Where SOLID gets over-applied' section, which is itself a different shape again (three argued sub-claims with citations rather than a sixth violation/fix pair), so the piece doesn't end on the same beat it's been running on for five sections. Every exercise solution I checked was correctly collapsed (closed 'Show solution' triangle) in every screenshot across all four theme/width combinations, including the one solution (Exercise 4, ISP) that embeds a full nested code-and-output block inside the `<details>` — that nested content stayed hidden too. Heading hierarchy is clean: one `##` per principle, a `###` nested correctly under Dependency Inversion for the DI-container digression, and one closing `##` for the over-application critique; the desktop 'On this page' nav (screenshot part01) matches exactly, no skipped levels. The single diagram (Figure 1, DIP before/after) follows the design system precisely and was checked in all four theme/width combinations (desktop-light part11, desktop-dark part10, mobile-light part14, mobile-dark part15): portrait stacked layout, well inside a 320-unit viewBox, annotations ('compile-time dependency', 'depends on', 'implements') sit under/beside their own arrows rather than in a side column, text stays legible at 390px in both themes, and the caption stands alone without requiring a scroll. Code blocks hold up well at the ~40-column mobile window across a representative spread of all five principles and the DI-container block: indentation is disciplined (arguments and chained members broken onto their own lines throughout, e.g. `FlatRate(\"Standard\", 1.0m)` blocks, `CheckFine(` calls), so the load-bearing parts of most lines — method names, output values, the specific evidence each paragraph discusses — survive inside the visible window; where a line does run past the fade (e.g. `numbers.AsReadOnly()`'s closing paren, the `#:package` NuGet directive, `provider.GetRequiredService<...>()`), it is consistently the boilerplate tail rather than the point the surrounding prose is making. `text output` panels are uniformly short and fit. Compared against two real, well-known treatments of this exact topic — Robert C. Martin's own 'Solid Relevance' (a conversational letter-format blog post: zero diagrams, zero code samples of any kind, zero exercises, pacing carried entirely by prose argument) and Microsoft's own architecture-guide chapter on these principles (prose plus two static, non-interactive dependency-graph images, no runnable code, no exercises) — this article is substantially more illustrated and interactive on every axis this review judges: a theme-correct hand-drawn diagram, 26 code blocks that actually compiled and ran with verified output (including two blocks that deliberately throw and one with genuinely silent/empty output, all correctly labelled), and six exercises with progressively-revealed solutions. Real Lighthouse (serial run) is 96/100/100/100, clearing the 90-in-every-category gate with room to spare; accessibility, best-practices and SEO are perfect.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "lighthouse-full.json performance sub-audits (shared shell, not this article's markup)",
+      "problem": "Performance is 96 and clears the gate comfortably, but three sub-audits score 0 outright: 'Page prevented back/forward cache restoration' (bf-cache), 'Forced reflow', and 'Network dependency tree'; Max Potential FID is also low (0.54). This is the same shared-shell pattern already flagged as integrator-owned in docs/reviews/testing/unit-testing-fundamentals.round-1.design.json and docs/reviews/testing/test-doubles.round-1.design.json, not something specific to this article's content.",
+      "fixLooksLike": "Site-wide investigation of the bfcache blocker (likely an unload/beforeunload listener or a no-store cache header) and the forced-reflow source; not a per-article fix. Not blocking — this article's own score is nowhere near the 90 threshold."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Article-wide: only Figure 1 (DIP section) is illustrated; SRP, OCP, LSP and ISP have no diagram",
+      "problem": "Not a defect — the design-system guidance explicitly warns against padding a diagram in just to have one — but worth naming: of five principle sections, only the one with genuinely spatial content (dependency direction, before/after) earns a diagram. The other four rely entirely on prose+code+output for visual variety, which the writer compensates for well with varied bug shapes and exercise types, but a reader skimming just the figures sees one illustration in a 22-minute article.",
+      "fixLooksLike": "No action required for this round; noting only in case a future round wants to consider a small diagram for ISP (capability-interface splitting has a natural before/after shape too). Not a reason to hold the round."
+    }
+  ],
+  "lighthouse": {
+    "performance": 96,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
