@@ -48,7 +48,14 @@ User-visible and repo-visible changes. Newest first.
 - Published article: `complexity/best-average-worst-case` (passed round 3: technical 8.8 / AdSense 8.7 / design 9.3).
 - Published article: `operating-systems/cpu-scheduling` (passed round 2: technical 9.2 / AdSense 9 / design 9).
 - Published article: `algorithms/breadth-first-and-depth-first-search` (passed round 2: technical 9.3 / AdSense 9 / design 8.8).
-- 24 articles remain unstarted (`state: planned` in `docs/STATUS.json`); 43 of 67 planned articles are now published.
+- Published article: `data-structures/binary-search-trees` (passed round 2: technical 9.2 / AdSense 9 / design 8.9).
+- Published article: `algorithms/dijkstra-shortest-path` (passed round 2: technical 9.3 / AdSense 9 / design 9.2).
+- Published article: `oop-design/strategy-observer-decorator` (passed round 1: technical 9.2 / AdSense 8.7 / design 9.4).
+- Published article: `csharp-dotnet/generics` (passed round 2: technical 9.3 / AdSense 8.8 / design 9.3).
+- Published article: `networking/tls-and-https` (passed round 2: technical 9 / AdSense 8.8 / design 9.4).
+- Published article: `operating-systems/file-systems` (passed round 2: technical 9.1 / AdSense 8.7 / design 9.3).
+- Published article: `testing/property-based-testing` (passed round 1: technical 9 / AdSense 8.7 / design 9.4).
+- 17 articles remain unstarted (`state: planned` in `docs/STATUS.json`, all wave B); 50 of 67 planned articles are now published. Wave A is fully complete.
 - Technical SEO: own `sitemap.xml` with real `lastmod`, corrected `robots.txt`, JSON-LD (Article with Person author, BreadcrumbList, WebSite, Organization), per-pillar OG images under 15 KB, `apple-touch-icon.png`, `logo.png`, 301s for every legacy URL, real 404.
 - Tools: `tools/verify-page.mjs`, `tools/run-code.mjs`, `tools/make-images.mjs`.
 - Project docs: `AUDIT.md`, `CONTENT_PLAN.md`, `WORKLOG.md`, `CLAUDE.md`, `docs/` (editorial brief, writer guide, gauntlet, status, reviews, cross-links, shell notes, redirects, owner inputs).

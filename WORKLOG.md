@@ -2,6 +2,18 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-23 — Second production deploy: 7 wave-A articles + the virtual-memory hotfix
+
+At the owner's explicit instruction, following the same pattern as the first deploy (batch merge, no individual playtest).
+
+- Merged PRs #97-#103 (strategy-observer-decorator, dijkstra-shortest-path, generics, tls-and-https, property-based-testing, binary-search-trees, file-systems) into `adsense-rebuild` via `gh pr merge --squash --delete-branch`. All 7 reported `CLEAN`/`MERGEABLE` beforehand; all 7 merged without conflict.
+- `npm ci` (main checkout's `node_modules` had emptied out again, same junction-fragility pattern seen earlier this session -- reinstalled, 448 packages) then `npm run build`: green, 73 pages (up from 66). Sanity-checked the generated `staticwebapp.config.json` for the duplicate-route bug that broke the first deploy: 27 routes, 0 duplicates, `trailingSlash` correctly absent.
+- Fast-forwarded `master` to `adsense-rebuild` (which already carried the earlier virtual-memory `draft: false` hotfix from this same session) and pushed. Deploy succeeded on the first attempt this time -- no repeat of the first deploy's config validation failures, since the underlying `staticwebapp.config.json` bugs were already fixed and this push didn't touch that file again.
+- **Verified live via curl** against `www.computerscienceguide.com`: two of the new articles (`/data-structures/binary-search-trees/`, `/operating-systems/file-systems/`) both return 200; `/operating-systems/virtual-memory/` (the earlier hotfix) now also returns 200, confirming the silent-missing-page gap from the first deploy is closed; homepage still 200.
+- `docs/STATUS.json` reconciled from the real per-round review JSON files now on disk for all 7 articles (each cross-checked: round count, final scores, Lighthouse from the last design review, open issues). Totals: passed 43 -> 50, notStarted 24 -> 17. **Wave A is now fully complete** -- every remaining unstarted article is wave B.
+- `CHANGELOG.md`: one line per newly-published article.
+- Did not re-run `pr-playtest.html`/issue-closing bookkeeping in this entry; that follows immediately after in a separate commit per article-issue-closing convention.
+
 ## 2026-09-23 — First production deploy (issue #15): merged `adsense-rebuild` into `master`
 
 At the owner's explicit instruction. Owner confirmed proceeding despite low current traffic and accepted the batch-merge deviation from the normal playtest gate for this session's earlier 32-article merge (see the 2026-09-22 batch-merge entry).

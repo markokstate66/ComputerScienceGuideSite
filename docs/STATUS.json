@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-22",
+  "updated": "2026-09-23",
   "passBar": {
     "criticMin": 8.5,
     "lighthouseMin": 90,
@@ -41,10 +41,10 @@
   },
   "totals": {
     "planned": 67,
-    "passed": 43,
+    "passed": 50,
     "inReview": 0,
     "drafted": 0,
-    "notStarted": 24,
+    "notStarted": 17,
     "cut": 0
   },
   "articles": [
@@ -531,13 +531,43 @@
       "wave": "A",
       "shape": "B",
       "title": "Binary Search Trees, Balance, and What SortedDictionary Uses",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": []
+      "state": "passed",
+      "round": 2,
+      "scores": {
+        "technical": 9.2,
+        "adsense": 9,
+        "design": 8.9
+      },
+      "codePass": true,
+      "lighthouse": [
+        99,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "[adsense] The archive's own README credits the code as written by \"Linda Xiao and Tom Cormen\" (that order); the article's front-matter publisher field reverses the order to \"Thomas H. Cormen and Linda Xiao.\" No"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-23",
+          "technical": 9.2,
+          "adsense": 7,
+          "design": 8.9,
+          "pass": false
+        },
+        {
+          "round": 2,
+          "date": "2026-09-23",
+          "technical": 9.2,
+          "adsense": 9,
+          "design": 8.9,
+          "pass": true
+        }
+      ],
+      "lighthouseNote": "from round 1 design review JSON",
+      "published": "2026-09-23"
     },
     {
       "pillar": "data-structures",
@@ -780,13 +810,41 @@
       "wave": "A",
       "shape": "B",
       "title": "Dijkstra's Algorithm with PriorityQueue",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
+      "state": "passed",
+      "round": 2,
+      "scores": {
+        "technical": 9.3,
+        "adsense": 9,
+        "design": 9.2
+      },
+      "codePass": true,
+      "lighthouse": [
+        93,
+        100,
+        100,
+        100
+      ],
       "openIssues": [],
-      "history": []
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-23",
+          "technical": 9.3,
+          "adsense": 7.8,
+          "design": 9.2,
+          "pass": false
+        },
+        {
+          "round": 2,
+          "date": "2026-09-23",
+          "technical": 9.3,
+          "adsense": 9,
+          "design": 9.2,
+          "pass": true
+        }
+      ],
+      "lighthouseNote": "from round 1 design review JSON",
+      "published": "2026-09-23"
     },
     {
       "pillar": "algorithms",
@@ -1029,13 +1087,38 @@
       "wave": "A",
       "shape": "W",
       "title": "Three Patterns You Already Use: Strategy, Observer, Decorator",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": []
+      "state": "passed",
+      "round": 1,
+      "scores": {
+        "technical": 9.2,
+        "adsense": 8.7,
+        "design": 9.4
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "[technical] The claim that `List<T>.Sort`'s introspective sort runs in O(n log n) time is standard, correct algorithms knowledge, but it is not itself present in the cited MS Learn page (source [2]), which lists ",
+        "[adsense] This is true for BufferedStream and GZipStream (both confirmed against their Microsoft Learn Remarks: GZipStream's constructor page states 'By default, GZipStream owns the underlying stream, so closin",
+        "[adsense] IObservable<T> is not part of this article's Strategy coverage — it is the BCL grounding for the Observer section ('The formal shape events hide: IObservable<T> and IObserver<T>'). Strategy's only BCL",
+        "[design] On desktop the 360-wide decorator-chain figure renders as a narrow centered column inside a much wider text measure, more noticeably than Figure 1 because it is taller (viewBox height 350) and this se"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-23",
+          "technical": 9.2,
+          "adsense": 8.7,
+          "design": 9.4,
+          "pass": true
+        }
+      ],
+      "lighthouseNote": "from round 1 design review JSON",
+      "published": "2026-09-23"
     },
     {
       "pillar": "oop-design",
@@ -1255,13 +1338,43 @@
       "wave": "A",
       "shape": "R",
       "title": "Generics in C#: Constraints, Variance and Why They're Fast",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": []
+      "state": "passed",
+      "round": 2,
+      "scores": {
+        "technical": 9.3,
+        "adsense": 8.8,
+        "design": 9.3
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "[adsense] This source is a leftover from the round-1 Sum/T.Zero generic-math demo that has since been replaced by Clamp/CreateChecked. It is listed in front matter but the URL never appears as an inline citatio"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-23",
+          "technical": 9.3,
+          "adsense": 7.8,
+          "design": 7.4,
+          "pass": false
+        },
+        {
+          "round": 2,
+          "date": "2026-09-23",
+          "technical": 9.3,
+          "adsense": 8.8,
+          "design": 9.3,
+          "pass": true
+        }
+      ],
+      "lighthouseNote": "from round 2 design review JSON",
+      "published": "2026-09-23"
     },
     {
       "pillar": "csharp-dotnet",
@@ -1807,13 +1920,43 @@
       "wave": "A",
       "shape": "Q",
       "title": "TLS and HTTPS: What the Padlock Guarantees",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": []
+      "state": "passed",
+      "round": 2,
+      "scores": {
+        "technical": 9,
+        "adsense": 8.8,
+        "design": 9.4
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "[technical] The article's only live certificate-error exercise demonstrates an untrusted root (RemoteCertificateChainErrors) via a local self-signed server; it still never attempts, mentions, or explains the abse"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-23",
+          "technical": 7.8,
+          "adsense": 7.5,
+          "design": 9.4,
+          "pass": false
+        },
+        {
+          "round": 2,
+          "date": "2026-09-23",
+          "technical": 9,
+          "adsense": 8.8,
+          "design": 9.4,
+          "pass": true
+        }
+      ],
+      "lighthouseNote": "from round 1 design review JSON",
+      "published": "2026-09-23"
     },
     {
       "pillar": "networking",
@@ -2038,13 +2181,44 @@
       "wave": "A",
       "shape": "Q",
       "title": "File Systems: From Bytes on Disk to Files and Folders",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": []
+      "state": "passed",
+      "round": 2,
+      "scores": {
+        "technical": 9.1,
+        "adsense": 8.7,
+        "design": 9.3
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "[technical] The cited page's actual sentence is 'It is continuous range of blocks large enough to contain sb.s_inodes_per_group * sb.s_inode_size bytes' (no 'a' before 'continuous', likely a grammar slip in the k",
+        "[adsense] The quoted clause 'a continuous range of blocks large enough to contain `sb.s_inodes_per_group * sb.s_inode_size` bytes' is not a character-exact copy of the live source. docs.kernel.org/filesystems/e"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-23",
+          "technical": 8.3,
+          "adsense": 6.5,
+          "design": 9.3,
+          "pass": false
+        },
+        {
+          "round": 2,
+          "date": "2026-09-23",
+          "technical": 9.1,
+          "adsense": 8.7,
+          "design": 9.3,
+          "pass": true
+        }
+      ],
+      "lighthouseNote": "from round 1 design review JSON",
+      "published": "2026-09-23"
     },
     {
       "pillar": "operating-systems",
@@ -2488,13 +2662,39 @@
       "wave": "A",
       "shape": "I",
       "title": "Property-Based Testing: Let the Computer Find Your Edge Cases",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": []
+      "state": "passed",
+      "round": 1,
+      "scores": {
+        "technical": 9,
+        "adsense": 8.7,
+        "design": 9.4
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "[technical] The quoted text is attributed to fscheck.github.io/FsCheck/, but that page's own text (fetched and stripped of HTML directly to rule out a rendering artifact) reads 'a minimal counter example' with no",
+        "[technical] This is arithmetically correct but not obviously so: the individual test values span -8 to 842 (850 wide, matching the sentence right before it), while 1,700 is the span of possible a - b results over",
+        "[adsense] The quoted string, with a hyphen in 'counter-example', is footnoted to https://fscheck.github.io/FsCheck/. I fetched that page's raw HTML directly: its actual sentence is 'When a property fails, FsChe",
+        "[design] Because every runnable block must be self-contained (a real constraint, not a style choice), the ~40-line Gen class and ~80-line Property/Shrink classes are retyped in full inside both exercise soluti",
+        "[design] Long lines in the framework code blocks (e.g. the ElementTowardZero binary search, the Property.Check signature) clip cleanly at the right edge of the mobile viewport with no visible graded fade in th"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-23",
+          "technical": 9,
+          "adsense": 8.7,
+          "design": 9.4,
+          "pass": true
+        }
+      ],
+      "lighthouseNote": "from round 1 design review JSON",
+      "published": "2026-09-23"
     },
     {
       "pillar": "testing",
