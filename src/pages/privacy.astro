@@ -3,7 +3,6 @@
 // src/scripts/site.ts (analytics), api/contact (form), or add any third-party resource, update this
 // page and its date in src/data/site-pages.ts in the same change.
 import PageLayout from '../layouts/PageLayout.astro';
-import NeedsMarkus from '../components/NeedsMarkus.astro';
 import { SITE } from '../lib/site';
 ---
 <PageLayout
@@ -13,7 +12,7 @@ import { SITE } from '../lib/site';
   lede="The short version: no accounts, no advertising, no tracking cookies. Analytics runs without cookies, and the contact form emails your message to the author."
 >
   <h2 id="who">Who is responsible</h2>
-  <p>This website, computerscienceguide.com, is operated by <NeedsMarkus n={4} what="legal or business name of the site owner" />. For any privacy question or request, use the <a href="/contact/?topic=privacy">contact form</a> and choose "A privacy or data request". <NeedsMarkus n={5} what="public contact email, if there is one" /></p>
+  <p>This website, computerscienceguide.com, is operated by <a href="https://stgengineer.com">Summit Technology Group LLC</a>. For any privacy question or request, use the <a href="/contact/?topic=privacy">contact form</a> and choose "A privacy or data request", or email <a href="mailto:mark@stgengineer.com">mark@stgengineer.com</a> directly.</p>
 
   <h2 id="summary">What is and is not collected</h2>
   <div class="table-scroll" tabindex="0" role="region" aria-label="Summary of data processing">
@@ -36,7 +35,7 @@ import { SITE } from '../lib/site';
   <p>The site is a set of static files hosted on Microsoft Azure Static Web Apps. To deliver a page, Microsoft's servers necessarily process your IP address and the details your browser sends with every request. The site's own code does not log or store this information. Microsoft's handling of it is described in the <a href="https://privacy.microsoft.com/privacystatement">Microsoft Privacy Statement</a>.</p>
 
   <h2 id="analytics">Analytics</h2>
-  <p>The site uses Google Analytics 4 (measurement ID <code>{SITE.gaId}</code>) to see which articles are read and how visitors find them. <NeedsMarkus n={7} what="confirm GA4 property G-08FYJQ54RN is correct and is the only analytics in use" /></p>
+  <p>The site uses Google Analytics 4 (measurement ID <code>{SITE.gaId}</code>) to see which articles are read and how visitors find them. It is the only analytics or tracking service in use.</p>
   <p>It is configured as follows:</p>
   <ul>
     <li><strong>No analytics cookies.</strong> Google's consent mode is set to "denied" for analytics and for all advertising purposes before the analytics script loads. In this mode Google Analytics does not set or read cookies (such as <code>_ga</code>) and does not use advertising identifiers; it sends cookieless measurement pings instead.</li>
@@ -48,7 +47,7 @@ import { SITE } from '../lib/site';
   <h2 id="contact-form">Contact form</h2>
   <p>When you submit the <a href="/contact/">contact form</a>, your browser sends the name, email address, subject and message you entered to a server function that belongs to this site (<code>/api/contact</code>, running on Azure Functions). The function checks that the fields are present, builds an email containing them, and sends it to the author through Azure Communication Services, Microsoft's email delivery service. The function does not write your message to a database or file.</p>
   <p>Your details are used only to read and answer your message. They are not added to a mailing list or shared with anyone else.</p>
-  <p><NeedsMarkus n={8} what="who receives contact-form email and how long messages are kept before deletion" /></p>
+  <p>Contact-form messages are sent to <a href="mailto:mark@stgengineer.com">mark@stgengineer.com</a>, the site operator's mailbox. Messages are kept only as long as needed to read and respond to them, then deleted.</p>
 
   <h2 id="local-storage">Storage in your browser</h2>
   <p>When you use the light/dark switch, the site saves your choice in your browser's local storage under the key <code>theme</code>, with the value <code>light</code> or <code>dark</code>. It is read by a script on each page to avoid a flash of the wrong colours. It is never transmitted, and you can remove it by clearing site data in your browser. This is the only thing the site itself stores on your device. The site sets no cookies.</p>
@@ -57,7 +56,7 @@ import { SITE } from '../lib/site';
   <p>Search uses a static index that your browser downloads from this site; matching happens on your device and your search terms are not sent anywhere. One caveat: if you open or share a link that already contains a search term in its address (for example <code>/search/?q=heap</code>), that address is requested from the host like any other page address and, if analytics is active, is included in the page address sent to Google Analytics.</p>
 
   <h2 id="advertising">Advertising</h2>
-  <p>The site does not show advertising and loads no advertising scripts. The author intends to apply for Google AdSense. If advertising is added, this policy will be updated before any advertising code is switched on, to describe the cookies and data sharing involved. Visitors in the European Economic Area, the United Kingdom and Switzerland will be asked for consent through a Google-certified consent management platform before any personalised advertising or advertising cookies are used. <NeedsMarkus n={9} what="which consent management platform will be used" /></p>
+  <p>The site does not show advertising and loads no advertising scripts. The author intends to apply for Google AdSense. If advertising is added, this policy will be updated before any advertising code is switched on, to describe the cookies and data sharing involved and to name the specific consent management platform in use. Visitors in the European Economic Area, the United Kingdom and Switzerland will be asked for consent through a Google-certified consent management platform before any personalised advertising or advertising cookies are used; no such platform is active today because no advertising is active today.</p>
 
   <h2 id="links">Links to other sites</h2>
   <p>Articles link to documentation, specifications and other sources on external websites. Those sites have their own privacy policies, and this policy does not cover them.</p>

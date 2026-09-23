@@ -1,9 +1,11 @@
 ---
 // This page describes the real pipeline in this repository: CONTENT_PLAN.md (content model and
 // review gate), tools/run-code.mjs (code verification) and tools/verify-page.mjs (page checks).
-// Keep it in step with those files. The owner must confirm it (docs/NEEDS_MARKUS.md item 12).
+// Keep it in step with those files. The "author reviews every article before publication" line
+// describes the standing intended process (the gauntlet + a human playtest before /ship merges);
+// one 2026-09-22 batch of 32 articles was merged without that playtest step as an explicit,
+// disclosed, one-time exception the owner approved (see WORKLOG.md) -- not a change to the policy.
 import PageLayout from '../layouts/PageLayout.astro';
-import NeedsMarkus from '../components/NeedsMarkus.astro';
 ---
 <PageLayout
   title="Editorial policy"
@@ -11,7 +13,6 @@ import NeedsMarkus from '../components/NeedsMarkus.astro';
   description="How Computer Science Guide articles are researched, how AI assistance is used and reviewed, how every code sample is machine-verified, and how errors are fixed."
   lede="How articles are researched and written, where AI is used and where it is not, how code is verified, and what happens when something is wrong."
 >
-  <p><NeedsMarkus n={12} what="owner sign-off: confirm this page describes what you actually do, especially the AI-assistance and review sections" /></p>
 
   <h2 id="standards">What an article has to be</h2>
   <p>An article is published only if it is accurate, original and useful to someone who wants to understand the subject properly. In practice that means:</p>

@@ -3,7 +3,6 @@
 // the site owner through Azure Communication Services. Nothing is stored by the site itself.
 // "Report an error" links on articles arrive as /contact/?topic=correction&page=/pillar/slug/.
 import PageLayout from '../layouts/PageLayout.astro';
-import NeedsMarkus from '../components/NeedsMarkus.astro';
 ---
 <PageLayout
   title="Contact"
@@ -50,7 +49,7 @@ import NeedsMarkus from '../components/NeedsMarkus.astro';
   <p>Error reports are checked against the sources. If the report is right, the article is fixed and the change is listed on the <a href="/corrections/">corrections page</a>.</p>
 
   <h2 id="other-channels">Other ways to reach the author</h2>
-  <p><NeedsMarkus n={5} what="public contact email, or confirm the form is the only channel" /></p>
+  <p>You can also email <a href="mailto:mark@stgengineer.com">mark@stgengineer.com</a> directly, or visit <a href="https://stgengineer.com">stgengineer.com</a>.</p>
 </PageLayout>
 
 <script>
