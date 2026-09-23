@@ -1,0 +1,44 @@
+{
+  "article": "complexity/analyzing-loops-and-recursion",
+  "route": "/complexity/analyzing-loops-and-recursion/",
+  "round": 1,
+  "critic": "technical",
+  "score": 7.0,
+  "comparedAgainst": [
+    {
+      "title": "Time Complexity and Space Complexity",
+      "publisher": "GeeksforGeeks",
+      "url": "https://www.geeksforgeeks.org/dsa/time-complexity-and-space-complexity/"
+    },
+    {
+      "title": "Time Complexity of Algorithms",
+      "publisher": "freeCodeCamp",
+      "url": "https://www.freecodecamp.org/news/time-complexity-of-algorithms/"
+    }
+  ],
+  "justification": "Against the two pages currently doing the job for this query, the article is a different class of work. GeeksforGeeks gives a five-step 'assign constant time, count operations, take worst case, drop constants' recipe, covers simple and nested loops (including one 'tricky case' with a dividing loop), but names neither recurrence relations nor the Master Theorem, and verifies nothing by running it. freeCodeCamp is weaker still: no procedure at all, two worked examples (linear/binary search), no recursion, no Master Theorem, no code execution, and it hand-waves numeric claims ('46 days') without checking them. Neither source would help a reader analyse a recursive divide-and-conquer function. This article does: it builds from sequential/nested/dependent-inner-bound loops through recursion trees to a correctly-stated three-case Master Theorem, derives all three cases plus the unequal-subproblem, subtract-not-divide, and genuine-gap-between-cases exceptions, and backs every derivation with an instrumented C# program whose counters match the algebra exactly. I re-derived every recurrence by hand: RecursiveMax's 2n-1 call count (case 1, p=1, f(n)=O(1)); the merge recurrence's exact n·log2(n) moves (case 2); the cross-pairs recurrence's case-3 regularity check (a·f(n/b)=n^2/8 = (1/2)·f(n), c=1/2 valid) and its correct explanation of why the measured ratio converges to n^2/2 rather than n^2/4 (geometric sum of the per-level shares, which I verified sums to exactly twice the root's own n^2/4); and the 'gap' recurrence T(n)=T(n/2)+O(log n), which I confirmed satisfies none of the three cases (f(n)=O(log n) is neither O(n^-eps), Theta(1), nor Omega(n^eps)) and whose recursion-tree sum over levels correctly gives Theta((log n)^2), matching the L(L+1)/2 table exactly. `node tools/run-code.mjs` passes clean (25 blocks, 12 executed, PASS). The NIST DADS citations (divide and conquer, easy split/hard merge, hard split/easy merge) and the two Microsoft Learn citations (Thread ctor's 1 MB default stack size, StackOverflowException's uncatchable/process-terminated wording) all check out verbatim against the primary pages I opened. Against that strength sits one real factual error: the `:::dotnet` callout claims RecursiveMax, 'a Theta(n) recursion,' allocates n stack frames at its deepest point rather than log n -- but RecursiveMax halves its range every call, so its recursion depth is Theta(log2 n), not n (n=256 in the table reaches depth 8, not 256). This directly contradicts the article's own, correct statement two sections earlier that halving 'describes how deep the recursion goes (about log2 n levels), not how many calls happen in total' -- the callout re-commits the exact error the article just taught the reader to avoid. Per the rubric, a factual error caps the score at 7, which is why an otherwise 9-to-9.5-calibre page (it is clearly deeper and better-verified than either comparison page) scores 7.0. Two sourcing gaps round out the findings: the CLRS chapter 7 (Quicksort) source is never cited inline anywhere in the body, and the Thread-constructor source backing the '1 megabyte' default-stack-size claim is never hyperlinked at the point that claim is made, unlike every other cited fact on the page.",
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "`:::dotnet` callout at the end of \"What is the Master Theorem, and how do you use it?\" (after the Case 3 subsection), sentence beginning \"A Θ(n) recursion — case 1 above, RecursiveMax included — allocates n stack frames at its deepest point, not log n...\"",
+      "problem": "Factually wrong, and self-contradicting. RecursiveMax halves its range on every call (mid = lo + (hi-lo)/2), so its recursion depth is Θ(log₂n), not Θ(n) — for n=256 (in the article's own table) the deepest point is 8 frames, not 256. The article itself states the correct fact two sections earlier: halving 'describes how deep the recursion goes (about log₂n levels), not how many calls happen in total.' The dotnet callout re-conflates total call count (genuinely Θ(n) for RecursiveMax) with stack depth (Θ(log n)), which is exactly the mistake the article warns against making.",
+      "fixLooksLike": "Either (a) correct the claim: RecursiveMax's stack depth is Θ(log₂n) even though its total call count is Θ(n), and make the space-complexity point ('depth, not call count, drives stack usage') with an example whose depth genuinely is Θ(n) — e.g. the quicksort worst case T(n)=T(n-1)+Θ(n) discussed later on the page, which really does recurse to depth n on sorted input — or (b) drop the 'RecursiveMax included' claim and speak generally about recursion depth vs. total work without misattributing a depth-n stack to a function that provably never exceeds log₂n frames.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Front matter `sources` (\"Introduction to Algorithms, 4th ed., chapter 7 (Quicksort)\") vs. the \"When does the Master Theorem not apply?\" section, quicksort paragraph (\"Quicksort's worst case doesn't divide the input at all...\").",
+      "problem": "CLRS chapter 7 is listed as a source but is never cited inline anywhere in the body. The quicksort worst-case paragraph — which presents exactly the T(n)=T(n-1)+Θ(n) analysis chapter 7 covers — cites only NIST DADS's 'hard split, easy merge' entry, with no mention of CLRS. Per the binding pilot-round lesson: 'A source in the list that is never cited inline... is a finding.'",
+      "fixLooksLike": "Add an inline attribution to CLRS chapter 7 where the sorted-input worst-case behavior and its recurrence are introduced (e.g. 'CLRS chapter 7 works through this same worst case for the first-element pivot'), or remove the chapter 7 entry from front matter if the paragraph is meant to stand on its own reasoning.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "`:::dotnet` callout, sentence \"The default thread stack size in .NET is documented as 1 megabyte...\"",
+      "problem": "This claim has no inline citation, even though the front-matter source 'Thread.Thread(ThreadStart, Int32) Constructor' exists specifically to support it — confirmed: that Microsoft Learn page states '...only fully trusted code can set maxStackSize to a value that is greater than the default stack size (1 megabyte).' Every other cited fact on the page is hyperlinked at the point it's used; this one isn't, which reads as an unsourced number next to a properly-linked StackOverflowException claim in the same sentence.",
+      "fixLooksLike": "Hyperlink '1 megabyte' (or 'documented') to the Thread constructor page already listed in front matter, matching how the StackOverflowException claim right next to it is linked.",
+      "owner": "writer"
+    }
+  ],
+  "runCodePass": true
+}
