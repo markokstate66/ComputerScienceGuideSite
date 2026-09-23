@@ -1,0 +1,52 @@
+{
+  "article": "src/content/articles/version-control/git-workflows.md",
+  "route": "/version-control/git-workflows/",
+  "round": 1,
+  "role": "technical",
+  "score": 6.0,
+  "runCodePass": true,
+  "comparedAgainst": [
+    "https://www.atlassian.com/git/tutorials/comparing-workflows",
+    "https://docs.github.com/en/get-started/using-github/github-flow",
+    "https://nvie.com/posts/a-successful-git-branching-model/",
+    "https://trunkbaseddevelopment.com/"
+  ],
+  "justification": "`node tools/run-code.mjs src/content/articles/version-control/git-workflows.md` (PowerShell environment, git 2.52.0.windows.1, matching the article's stated 'Git 2.52') passed 3/3 consecutive runs, always `PASS ... blocks=36 executed=18`, with no flakiness. I independently reproduced every repo (storefront, landing-page, ticketing) from scratch outside the harness, using the same pinned identity (Ada Example / ada@example.com) and dates (GIT_AUTHOR_DATE/GIT_COMMITTER_DATE = 2026-01-15T10:00:00Z, equivalent to run-code.mjs's own +00:00), and every command, commit hash, tag, and log output matched the article byte for byte. I also independently checked two non-obvious technical claims the harness doesn't directly surface: (1) that git's default merge-commit subject omits ' into <branch>' specifically for the branch the repo was initialized on but not for others ('main' vs 'develop') -- confirmed empirically in a fresh scratch repo; (2) the claim 'four merges into main and five more into develop' for the Git Flow walkthrough -- confirmed exactly via `git rev-list --count --merges` on both branches in a from-scratch replay (main=4, develop=5; the 5th on develop is the main-side release-1.0.0 merge commit riding in via the hotfix branch, which is not obvious and the article states correctly). The prose claims about git internals (content-addressed blob/tree IDs being machine-independent, annotated vs lightweight tags, `-d` vs `-D`'s merge check, squash merges not producing 2-parent commits) are all correct and match the git-scm.com reference pages. Structure is excellent: no filler intro/outro, five varied exercises that don't give away output before the solution, a comparison table that earns its place, and a crosslinks file for the one unpublished-sibling link. All 9 front-matter sources are real, were genuinely fetchable, and are all cited inline (no orphaned sources). However, I fetched all 9 sources directly and checked every distinct quoted excerpt against the live page text, and found a real, repeated citation-accuracy problem: several passages presented inside quotation marks as verbatim source text are not what the cited page says. Two are serious: the nvie.com quote at line 508 ('new small bugfixes ... other than that, no new features') does not appear anywhere on the cited post in any form -- I grepped the full raw page text for 'small', 'bugfixes', 'other than that', and 'no new features' and found no match; the real text is 'bug fixes may be applied in this branch ... Adding large new features here is strictly prohibited.' This is an invented quotation attached to a real citation, which is exactly what the brief's 'nothing fabricated / no invented quotes' hard rule and the pilot's binding 'cite where the claim is made, and make sure that page supports that clause' lesson forbid, even though the underlying substantive claim (release branches take only small fixes, not big features) is accurate. The git-tag quote at line 236 ('to release a software version') also does not appear anywhere on https://git-scm.com/docs/git-tag -- the actual sentence is 'Annotated tags are meant for release while lightweight tags are meant for private or temporary object labels.' Three more are minor verbatim-drift inside quotation marks: line 119 ('employ feature flags' vs the source's 'use feature flags'), line 696 ('regardless of what type is used' vs the Conventional Commits FAQ's 'regardless of type'), and line 224 (drops 'public' from semver.org's 'The public API SHOULD NOT be considered stable'). Per the brief, a single factual/sourcing error caps the score at 7; I found two clear misattributed quotes plus a pattern of three more minor ones, which is enough to pull this below that cap despite content that is otherwise deeper and more rigorously verified than any existing public comparison of these three models I know of (Atlassian's guide and GitHub's own docs don't execute or verify anything; nvie's post only covers Git Flow).",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Line 508: 'takes one last-minute confirmation the original post calls out by name: \"new small bugfixes ... other than that, no new features\"'",
+      "problem": "This exact phrase, in any combination, does not appear anywhere on the cited nvie.com post (checked by fetching the live page and grepping the full text for 'small', 'bugfixes', 'other than that', and 'no new features' -- zero matches). It reads as a direct quotation (quotation marks, an internal ellipsis suggesting an elision within one real sentence) but it is invented text attributed to a real, cited source. The actual sentence is: 'During that time, bug fixes may be applied in this branch (rather than on the develop branch). Adding large new features here is strictly prohibited.' The substantive claim the article is making is correct; only the quotation is fabricated.",
+      "fixLooksLike": "Replace with the real sentence, either quoted verbatim ('bug fixes may be applied in this branch... Adding large new features here is strictly prohibited. They must be merged into develop, and therefore, wait for the next big release.') or paraphrased in the article's own words with no quotation marks.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Line 236: '[git-tag](https://git-scm.com/docs/git-tag) recommends it for exactly this case, \"to release a software version.\"'",
+      "problem": "This phrase does not appear on https://git-scm.com/docs/git-tag (checked by fetching the live page and grepping its full text; no match for 'release a software version' anywhere on the page). The page's actual, adjacent sentence is: 'Annotated tags are meant for release while lightweight tags are meant for private or temporary object labels.' The article presents invented wording as a direct quote from a real, correctly-linked source.",
+      "fixLooksLike": "Quote the real sentence ('Annotated tags are meant for release while lightweight tags are meant for private or temporary object labels') or drop the quotation marks and paraphrase.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Line 119: teams \"employ feature flags in day to day development to allow for hedging on the order of releases\"",
+      "problem": "The source (trunkbaseddevelopment.com, the list item under 'branch by abstraction') reads '... use feature flags in day to day development to allow for hedging on the order of releases ...' -- the article substitutes 'employ' for 'use' inside quotation marks, so the quote is not verbatim even though the meaning is unchanged.",
+      "fixLooksLike": "Use the source's own word: \"use feature flags in day to day development to allow for hedging on the order of releases.\"",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Line 696: a breaking change → `MAJOR` \"regardless of what type is used.\"",
+      "problem": "The Conventional Commits FAQ says 'Commits with BREAKING CHANGE in the commits, regardless of type, should be translated to MAJOR releases' -- the article's quoted fragment adds 'what' and 'is used' that are not in the source.",
+      "fixLooksLike": "Quote the source's actual four words: \"regardless of type.\"",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Line 224: semver's own rule marks as fair warning: \"the API SHOULD NOT be considered stable.\"",
+      "problem": "semver.org's actual sentence is 'The public API SHOULD NOT be considered stable.' The article silently drops 'public' from inside the quotation marks without an ellipsis.",
+      "fixLooksLike": "Either quote in full ('The public API SHOULD NOT be considered stable') or mark the elision ('The [...] API SHOULD NOT be considered stable').",
+      "owner": "writer"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "article": "src/content/articles/version-control/git-workflows.md",
+  "route": "/version-control/git-workflows/",
+  "round": 1,
+  "role": "design",
+  "score": 7.6,
+  "comparedAgainst": [
+    "https://nvie.com/posts/a-successful-git-branching-model/",
+    "https://www.atlassian.com/git/tutorials/comparing-workflows"
+  ],
+  "lighthouse": { "performance": 98, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": null,
+  "verify": {
+    "command": "node tools/verify-page.mjs --drafts /version-control/git-workflows/",
+    "runs": 2,
+    "words": 3953,
+    "codeBlocks": 36,
+    "figures": 3,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": [
+      "placeholder text: NEEDS_MARKUS (expected, not an issue)",
+      "placeholder text: TBD x12 (NOT expected — false positive from Figure 1's diagram ids tbd-title/tbd-desc/tbd-arrow tripping the \\bTBD\\b placeholder regex; this is the only failure WRITER_GUIDE does not accept)"
+    ],
+    "screenshotsOpened": "desktop-light part01, part03, part12; desktop-dark part04, part13; mobile-light fold + parts 01,02,04,05,06,07,09,10,13,14,15,16,17,18,19,20; mobile-dark fold + parts 04,13,17,19"
+  },
+  "justification": "Real numbers from two verify runs, identical both times (the first run also printed a spurious 'build was canceled' line to stderr with no effect on the report): Lighthouse 98/100/100/100, 0 console errors, 0 console warnings, 0 broken links, 0 px page-level mobile overflow. Compared to nvie.com's original Git Flow post (one static PNG, no dark mode, no interactivity) and Atlassian's Comparing Workflows tutorial (nice diagrams but static images, no copy buttons, no measured evidence), this page is the stronger teaching artifact where it counts: a clean single-H2 hierarchy across 8 sections, a steady command -> output -> explanation rhythm with five well-placed exercises, and three diagrams that are all correctly sized for the writer guide's <=360 viewBox rule (320, 320, 340 units) — a real improvement over how-git-works round 1, which failed this exact check. All three figures render fully on a 390 px phone with no scroll-fade in either theme, and dark-mode retinting (accent strokes, arrow markers, good/warn box fills) is correct everywhere I looked. It does not reach 8.5 for four reasons, two of them major. First, verify-page does not cleanly pass: alongside the expected NEEDS_MARKUS failure it also fails on 12 false-positive 'TBD' placeholder matches, caused by Figure 1's own diagram ids (id=\"tbd-title\", id=\"tbd-desc\", six url(#tbd-arrow) references) — WRITER_GUIDE is explicit that the NEEDS_MARKUS failure is the only one accepted, so this is a real gate failure, not a nit, and it is trivially avoidable. Second, the closing 'Choosing a model by team and release style' table reads fine on desktop (three clear columns) but on mobile only the Situation column is visible at first paint; Fits and Why — the actual payload of the table, including every citation and code span — sit entirely behind the fade and need real horizontal scrolling to reach, because the cells are full sentences rather than the phrases WRITER_GUIDE §7 asks for. Third, Figure 1's bottom box ('release-0.2, tagged, deleted') is a genuine layout bug, not a mobile-only issue: the label text is wider than its own rounded rect in every theme and every device I checked, so the text visibly spills past the box border on both sides instead of sitting inside it. Fourth, a pervasive minor pattern: nearly every 'git log --oneline --graph' output panel on the page runs past ~40 visible columns on a phone, clipping the tail of the commit subject under the fade — in at least two spots (the row-count-fix hotfix commit, the gift-wrap feature commit) the clipped word is the exact phrase the following prose names a sentence later. None of this is visible on desktop, where the page would score about 9.",
+  "issues": [
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "Figure 1's <svg> ids: id=\"tbd-title\" (title), id=\"tbd-desc\" (desc), id=\"tbd-arrow\" (marker) and its six url(#tbd-arrow) references, around lines 152-180",
+      "problem": "verify-page's placeholder check matches \\bTBD\\b case-insensitively against the full page body (outside <pre>), and \"tbd-title\"/\"tbd-desc\"/\"tbd-arrow\" all contain \"tbd\" bounded by non-word characters (the surrounding quote and the hyphen), so the run reports 12 'tbd' placeholder hits and fails a check WRITER_GUIDE says only NEEDS_MARKUS is allowed to fail. This is an unintended collision between the diagram-id convention (prefix ids with the diagram's name — 'tbd' for trunk-based development) and the placeholder regex, not a real placeholder.",
+      "fixLooksLike": "Rename the id prefix from 'tbd' to something that does not embed the literal letters t-b-d as a whole word, e.g. 'trunk-title'/'trunk-desc'/'trunk-arrow' (mirrors 'ghf-*' and 'gf-*' already used for the other two figures). Update the title/desc ids, the marker id and all six url(#...) references together, then re-run verify-page and confirm the failures list drops to only the expected NEEDS_MARKUS line."
+    },
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "'Choosing a model by team and release style' table, near the end of the article (mobile-light/dark part17-18)",
+      "problem": "The table has three columns (Situation, Fits, Why) as WRITER_GUIDE recommends, but the cells are full sentences with citations and inline code (e.g. the Git Flow row's Why cell: \"`hotfix` branches patch `main` without pulling in whatever `develop` holds; nothing in the other two models separates 'in production' from 'in progress' the same way\"). On a 390 px phone this pushes Situation alone past the fold, so Fits and Why — where every row's actual reasoning lives — are completely off-screen at first paint and only reachable by scrolling the table sideways, which WRITER_GUIDE §7 calls out as the specific failure mode of long-sentence cells.",
+      "fixLooksLike": "Shorten Why to a phrase per WRITER_GUIDE's own guidance (\"keep cells to a phrase rather than a sentence\"), e.g. Git Flow's row could read \"hotfix patches main without touching develop's in-progress work\" instead of the full two-clause sentence with citation; move the quotes/citations that don't fit into the surrounding prose, which already makes each of these points in full elsewhere on the page. Re-check at 390 px that at least Situation and Fits are visible without scrolling."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Figure 1, bottom box \"release-0.2, tagged, deleted\" (all four screenshot combinations: desktop/mobile x light/dark)",
+      "problem": "The box is 140 units wide (x=20, width=140) but the d-small label \"release-0.2, tagged, deleted\" is about 29 characters, roughly 174 units wide when centred at x=90 per WRITER_GUIDE's own character-width budget — so the text runs past the box's left and right edges and visibly crosses the dashed border, on desktop as well as mobile (this is a geometry bug, not a phone-width scrolling issue like the how-git-works precedent).",
+      "fixLooksLike": "Either widen the box to fit the label (e.g. x=10, width=160, keeping the box centred and re-checking it stays inside the 320-unit viewBox with margin), or shorten the label (\"release-0.2, tagged\" or two stacked d-small lines: \"release-0.2\" / \"tagged, deleted\"). Confirm in both themes that the text sits fully inside the box after the fix."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Most `git log --oneline --graph` output panels on mobile, e.g. mobile-*-part04 (\"fix: guard against empty car[t]\", \"add discounts behind a[flag]\"), part09 (\"fix: correct signup label typ[o]\"), part13 (\"fix: correct main hall row co[unt]\", \"chore: seed the production bran[ch]\")",
+      "problem": "Commit-hash-plus-subject lines in `git log --graph` output routinely run 42-48 visible characters, a few past WRITER_GUIDE's ~40-column phone budget, so the last word of the commit subject sits under the fade. In at least two cases the clipped word is the one the surrounding prose names a sentence later (\"the row-count fix\" right after a panel that clips \"...row co\"; \"the flag, not the merge\" right after a panel that clips \"...behind a\"), which is the guide's specific exception for when clipping does matter.",
+      "fixLooksLike": "Not worth reworking every panel, but for the handful where the clipped word is the one prose immediately refers to, shorten just that commit message (e.g. 'fix: confirm seat count' instead of 'fix: confirm seat column count') so the operative word lands inside the first ~40 columns; leave the rest as-is since the tail there is decorative, not load-bearing."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "'Related articles' card list, end of article (mobile-light/dark part19)",
+      "problem": "Only 'How Git Works Inside' is shown even though the article also lists 'Branching and Merging' as a prerequisite and that article is published in the same pillar; a reader who wants the second prerequisite has to use 'Previous in Version Control' instead, which only surfaces one of the two.",
+      "fixLooksLike": "If the related-articles selection is tag/prerequisite driven and has room for more than one card, check why the second prerequisite didn't qualify (tag overlap vs. explicit prerequisite list) — otherwise leave as is, since it is not a broken feature, just a thinner list than it could be."
+    }
+  ]
+}
