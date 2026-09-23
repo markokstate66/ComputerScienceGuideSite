@@ -62,7 +62,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedfile.createnew"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 The article on processes and threads showed, from the outside, that a child process's write to what looked like "the same" array never reached its parent: the parent kept reading its own value, untouched. That article treated the process boundary as a given. This one opens it up: every address a program uses is a fiction the processor maintains on the operating system's behalf, and the machinery behind that fiction is also what a running process's memory numbers actually mean.
