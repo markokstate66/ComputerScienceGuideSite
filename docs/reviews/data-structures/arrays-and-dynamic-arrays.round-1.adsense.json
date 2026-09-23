@@ -1,0 +1,65 @@
+{
+  "role": "adsense",
+  "round": 1,
+  "article": "src/content/articles/data-structures/arrays-and-dynamic-arrays.md",
+  "score": 8.6,
+  "comparedAgainst": [
+    "GeeksforGeeks, Object and Dynamic Array in C# (https://www.geeksforgeeks.org/c-sharp/object-and-dynamic-array-in-c-sharp/): the kind of page that ranks for 'array vs list c#'; two toy programs, no memory layout, no measurements, no sources",
+    "Igor Ostrovsky, Gallery of Processor Cache Effects (https://igoro.com/archive/gallery-of-processor-cache-effects/): the best-known page for the cache-line and associativity experiments this article reproduces in C#",
+    "Ulrich Drepper, What Every Programmer Should Know About Memory, part 2 (https://lwn.net/Articles/252125/): checked the section numbers and figures cited (3.2 for 64-byte lines and 3/14/240 cycles, 3.3.1 associativity, 3.3.2 prefetch and sequential versus random); all match",
+    "Microsoft Learn, ArraySegment<T> (https://learn.microsoft.com/en-us/dotnet/api/system.arraysegment-1): 'returns the entire original array, not a copy' confirmed. Also compiled ArraySegment<int> passed to a ReadOnlySpan<int> parameter under C# 13 and 14: it works, so the article's implicit-conversion statement is right",
+    "Search results for 'array vs list c# dynamic array' (Medium posts, agirlcodes, tutorialspoint): generic Array-vs-List bullet lists with no measurements"
+  ],
+  "justification": "Against what actually ranks, this is not low-value content. The ranking pages for the target query are shallow feature lists; this article shows measured layout (Unsafe.ByteOffset offsets), a locality experiment with a table, an honest hedge on the 4096 anomaly ('this page did not measure cache misses directly'), a working DynamicArray<T>, timings for Insert(0) and RemoveAll with hand-checked arithmetic (I re-derived the 1.25 billion element moves and it is right), a Span/CollectionsMarshal hazard demonstration, and a rectangular versus jagged versus flat comparison that says what is an observation about .NET 10 and not a documented property. Sourcing is unusually strong: every one of the 10 listed sources is cited inline at the point of the claim, the Drepper section numbers and cycle figures check out, and the List.cs claims (uint cast trick, _version, RemoveAll two-index pass, GrowForInsertion) match the real design. Web searches for distinctive sentences found no copied text. Structure is not templated against siblings: heading sets, openings and exercise forms (work out by hand, measure, find the bug, extend the code) all differ, and the article defers the growth-policy proof to the published amortized-analysis article without repeating it. What keeps it under 9: (1) the stride exercise is the Ostrovsky 'every 16th int costs the same' experiment (64 MB int array, steps 1 to 16, same conclusion) and his power-of-two associativity observation is echoed by the 4096 discussion, yet Ostrovsky is not credited, which brushes against the 'do not reuse a source's running example' rule; (2) a few machine-cadence tics (Three things / Three facts / Three consequences / Two details, 'Each line has something to say'); (3) a closing paragraph and bullet list that partly summarise, one bullet introducing an unsupported pre-sizing claim; (4) a handful of generalisations or measurement claims stated without their evidence. No fabrication, invented experience or policy problems found.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Exercise 'Measure what one cache line buys' (after 'Why the column-first loop falls off a cliff') and its solution paragraph",
+      "problem": "The experiment (large int[], touch every k-th element, times flat for k = 1 to 16 because 16 ints fill a 64-byte line, then fall) is the first example of Igor Ostrovsky's widely linked 'Gallery of Processor Cache Effects', including the same conclusion that the cost is dominated by bringing lines in. The article neither cites it nor frames the exercise as a replication. An AdSense reviewer, or a reader who knows that page, sees a reused running example with no credit. The 4096 explanation is similarly the associativity example from that page, though Drepper is cited for it.",
+      "fixLooksLike": "Either replace the exercise with one that is unmistakably this article's own (for example: sum a jagged array whose rows were allocated interleaved with garbage versus allocated back to back, or time List<int> against LinkedList<int> at growing sizes), or keep it and say inline that it repeats a well-known experiment, credit Ostrovsky's page, and add it to the front-matter sources with an access date. It must be opened before being listed.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'One block of memory...', paragraph after the address formula: 'the reason indices start at 0: the index is the distance from the first element'",
+      "problem": "An unsourced historical or causal claim stated as fact. Why a language numbers from 0 is a design choice with a contested history; the formula explains why 0-based is convenient, not that it is the reason C# does it. The brief bans unscoped 'the reason' style generalisations.",
+      "fixLooksLike": "Scope it: 'and it is why 0-based indexing makes the arithmetic simplest: the index is the distance, in elements, from the first one.' Drop 'the reason'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Intro to the traversal program: 'Without it, dotnet run on a single file produced unoptimized code here, and the row-first loop ran almost three times slower.'",
+      "problem": "A measured claim given as a bare figure with no supporting run shown, plus a claim about dotnet run defaults with no source. The rest of the article shows its numbers; this one cannot be checked by a reader.",
+      "fixLooksLike": "Either give the two row-first ns figures (optimized and not) once, or soften to 'noticeably slower'. Cite the file-based apps documentation on the default configuration if kept.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Why the column-first loop falls off a cliff', paragraph 'Row-first is the best case... its cost per element stays flat from 40 KB to 64 MB'",
+      "problem": "The table above shows 1.16 ns at 100 x 100 against 0.73 to 0.89 ns at the other sizes, a spread of about 60 percent. 'Flat' overstates it and the small-grid figure is left unexplained (likely per-call overhead spread over few elements).",
+      "fixLooksLike": "Say 'stays between 0.7 and 0.9 ns from 1 MB up' and either explain the 1.16 at the smallest size or note it as fixed per-call overhead spread over few elements.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Signposting phrases: 'Three things need explaining', 'Each line has something to say', 'Two details are worth a second look', 'Three facts from it explain the table', 'Three consequences'",
+      "problem": "Count-announcing lead-ins recur five times in one article. They are empty signposts, and the count-then-list rhythm is the sort of uniform cadence a reviewer associates with generated text. The content underneath is good; the frames are formulaic.",
+      "fixLooksLike": "Cut 'Each line has something to say' and 'Two details are worth a second look' (go straight to the first detail). Vary the rest, or merge the 'Three things need explaining' paragraph into the observation it introduces, so at most one or two count-frames remain.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Final section 'Picking between an array, a list and a view': closing paragraph and the bullet 'Size known before filling: new List<T>(n), which skips every regrowth copy'",
+      "problem": "The closing paragraph restates the thesis the article has already argued twice (contiguous, in-order traversal wins), which the brief calls a conclusion that says little. The pre-sizing bullet makes a claim never demonstrated or cited in this article, and 'skips every regrowth copy' is an unscoped 'every'.",
+      "fixLooksLike": "Delete the closing paragraph, or replace it with one new, sourced point. Scope the pre-sizing bullet ('avoids regrowth copies as long as the final size is not exceeded') and link it to /complexity/amortized-analysis/, which is published and has a pre-sizing section.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Body links versus docs/crosslinks/data-structures/arrays-and-dynamic-arrays.md",
+      "problem": "Not a defect in itself: the crosslinks file exists and is sensible, and the article links to the published amortized-analysis article and to glossary entries that exist. Noted only because the page currently sends the reader nowhere further in the data-structures pillar; wiring is still pending.",
+      "fixLooksLike": "Integrator wires the six listed links in wave 3, including /complexity/big-o-notation/ in the opening paragraph as the crosslinks file already proposes.",
+      "owner": "integrator"
+    }
+  ]
+}

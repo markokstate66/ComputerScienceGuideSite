@@ -1,0 +1,54 @@
+{
+  "article": "src/content/articles/data-structures/arrays-and-dynamic-arrays.md",
+  "route": "/data-structures/arrays-and-dynamic-arrays/",
+  "round": 5,
+  "critic": "design",
+  "score": 7.5,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/arrays (Microsoft Learn, \"The array reference type\" — target query: c# arrays)",
+    "https://en.wikipedia.org/wiki/Dynamic_array (Wikipedia, \"Dynamic array\" — target query: dynamic array)",
+    "https://www.geeksforgeeks.org/dsa/what-is-array/ (GeeksforGeeks, \"Array Data Structure\" hub — target query: array data structure)"
+  ],
+  "justification": "This article is more thoroughly illustrated and far deeper than any of the three comparison pages: MS Learn's array reference is syntax-only (no memory-layout diagram, no cache/locality content, no List<T> internals, no measurements); Wikipedia's Dynamic Array article is conceptually thorough on growth factor and amortized cost but is explicitly image-sparse (one intro illustration, pseudocode only, no runnable code); GeeksforGeeks' array page is a shallow navigation hub with no diagrams or internals at all. This article's four hand-drawn diagrams are mobile-legible in both themes, its 35 runnable code blocks build to a real measured argument (row- vs column-major traversal, TLB/cache-line reuse distance, List<T> internals from the actual runtime source, Insert/RemoveAt exact element-move counts, a reproduced Span<T>-over-List<T> use-after-grow hazard), and its six exercises have real worked solutions rather than being given away. That content alone is 8.5-9 territory. Two things hold the design score below that. First, and most consequential for this round: the figure captions are out of document order (Figure 1, then Figure 4, then Figure 2, then Figure 3), a real, easily-reader-confusing production defect, not a nit. Second, Lighthouse performance measured 87, 89, 90, 89, 90 across five valid runs against the CURRENT article content (median 89) -- it clears 90 in only 2 of 5 runs, so the round-4 performance problem is improved but not reliably fixed, and this round's own measurement process was contaminated (see issue #1) in a way that casts real doubt on the earlier self-reported 87/89/90/90/91. Two minor mobile-layout nits (a 5-column results table crowding the phone edge, two unwrapped code lines with boilerplate tails cut off) round out the list. None of the four rubric anchors fit exactly: it is clearly deeper/better-illustrated than the best existing pages found (favoring 10), but it ships with a real, verifiable defect and an unreliable performance gate (against 8.5's 'only nits'). 7.5 reflects strong, above-competitor execution held back by one real editorial bug and a still-flaky Lighthouse number.",
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "tools/verify-page.mjs (private-build isolation and response compression) and the verification process for this round",
+      "problem": "Lighthouse performance across the five VALID runs (built from the current round-5 article content: words=5954, figures=4, code blocks=35) was 87, 89, 90, 89, 90 -- median 89, clearing >=90 in only 2 of 5 runs. Two additional runs I collected first (92 and 93) were built from STALE, pre-round-5 content (words=4486, figures=3, code blocks=28 -- an older, shorter version of this article) and are not valid data for this round; I discarded them. The cause: a leftover process from the previous writer pass, `tools/run-code.mjs src/content/articles/data-structures/arrays-and-dynamic-arrays.md` (PID 26500, started 09:41 the same morning), was still running/finishing when this round's verification began, so the 'machine is quiet, no other agents are working' precondition given for this round was not actually true at the start of it, and it directly inflated two of my first five performance numbers. Separately, even the best of the five valid runs (performance=90) still shows Lighthouse's document-latency-insight audit reporting the main HTML document served WITHOUT compression (`usesCompression: false`, 261,640 bytes / ~256 KiB flagged as wasted transfer) -- i.e. the round-4 root cause ('the measurement tool has since been fixed, it was serving previews uncompressed') is not reliably fixed; it is intermittent.",
+      "fixLooksLike": "(1) Before starting a verification round, confirm no other repo process is mid-run (check for lingering node processes touching this repo, not just 'no other agent was told to start'); consider having verify-page.mjs detect and refuse/wait rather than silently build from a content-collection cache that a concurrent process may be mutating. (2) Add a regression check (or a manual header inspection step) confirming the main document response from withCompression() in tools/verify-page.mjs actually carries Content-Encoding on every run, and find why it sometimes doesn't -- e.g. whether Astro's build output is ever streamed in a way that bypasses the res.write/res.end override. (3) Once both are addressed, re-run the five-Lighthouse-pass on a machine confirmed idle before this round's pass/fail is finalized; the current median (89) does not clear the gate.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "major",
+      "location": "figure captions at lines 249 (\"Figure 1\"), 405 (\"Figure 4\"), 748 (\"Figure 2\"), 1091 (\"Figure 3\") of arrays-and-dynamic-arrays.md",
+      "problem": "The four figures are captioned out of the order they appear in the document. Reading top to bottom: Figure 1 (int[] memory layout) is followed by a diagram captioned Figure 4 (row-first vs column-first cache-line reuse distance), then one captioned Figure 2 (Insert/RemoveAt element shift), then one captioned Figure 3 (rectangular vs jagged grid layout). This is almost certainly left over from inserting the new cache-line diagram during the round-5 revision without renumbering the figures that follow it, and it is exactly the kind of thing a reader (or a link/citation elsewhere) would trip over.",
+      "fixLooksLike": "Renumber the four figcaptions sequentially in document order: array layout stays Figure 1, the cache-line reuse-distance diagram becomes Figure 2, the Insert/RemoveAt shift diagram becomes Figure 3, the grids diagram becomes Figure 4. The one in-text figure cross-reference ('Figure 3. The rectangular array is Figure 1 with a wider index formula...') only points back to Figure 1, so it still reads correctly after the renumber.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "\"Same sum, two loop orders\" section, the Size / Ratio / Grid MB / Row ns / Col ns results table",
+      "problem": "The table has five numeric columns, exceeding WRITER_GUIDE section 7's phone guidance to prefer at most three columns. On mobile-light-part03.png the rightmost column, Col ns -- the raw per-element timings that are the direct evidence for the 'column-first falls off a cliff' claim -- sits right at the edge of the 358px visible column with almost no margin (Row ns is also tight). The headline Ratio column was already moved to sit second, right after Size, so the core claim is not actually invisible, but the supporting raw numbers crowd the edge of what a phone reader sees by default.",
+      "fixLooksLike": "Drop the least essential column -- Grid MB is already restated in prose immediately after ('tens of megabytes') -- or split into two three-column tables (Size/Ratio/Grid MB, and Size/Row ns/Col ns) so every column keeps comfortable margin at 390px.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "`offsets` code block (`Console.WriteLine($\"grid[2,3] holds {grid[2, 3]}\");`) and `containers` code block (the `Report(\"List<int> as span\", ...)` / `Report(\"LinkedList<int>\", ...)` calls)",
+      "problem": "A few lines are not wrapped per WRITER_GUIDE section 7 ('break long statements so the operative part is not clipped'). On mobile-light-part05.png and mobile-light-part15.png they cut off after '...holds {grid' and '...AsSpan(lis' / '...SumLinked' respectively. In each case the cut tail is closing-paren/argument boilerplate rather than the point of the line, and the values are shown in full in the output panel immediately below, so this reads as a nit rather than a comprehension problem -- but it is exactly the pattern the guide asks writers to avoid, and the round-4 fix already applied the same wrapping technique successfully elsewhere in this same code block (see the Show<T> method, confirmed correct below).",
+      "fixLooksLike": "Wrap the same way the round-4 fix wrapped the Show<T> WriteLine: split the interpolated string or move an argument to its own line so the operative text stays inside the first ~40 visible columns.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 89,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "allFiveLighthousePerformanceRuns": [87, 89, 90, 89, 90],
+  "lighthouseRunNotes": "Ran verify-page.mjs --drafts with Lighthouse 7 times back to back. Runs 1-2 (performance 93, 92) were built from stale pre-round-5 article content (words=4486, figures=3, code=28) due to a leftover tools/run-code.mjs process from the previous writer pass still finishing at session start; discarded as invalid. Runs 3-7 (performance 87, 89, 90, 89, 90) were built from the current round-5 content (words=5954, figures=4, code=35) and are the five reported above. Accessibility, best-practices and SEO were 100/100/100 on every one of the 7 runs, valid and discarded alike.",
+  "mobileShow<T>FixCheck": "Confirmed correct. The round-4 Show<T> WriteLine split (`Console.WriteLine(` / `$\"{type,-20}{one,4}\" +` / `$\"{three,5}\");`) renders on its own three lines with no clipping in both mobile-light-part04.png and mobile-dark-part04.png (390px viewport, 2x capture). Both interpolated-string halves stay well inside the visible column in both themes.",
+  "consoleErrors": [],
+  "brokenLinks": []
+}

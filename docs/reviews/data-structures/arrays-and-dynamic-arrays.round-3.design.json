@@ -1,0 +1,75 @@
+{
+  "article": "src/content/articles/data-structures/arrays-and-dynamic-arrays.md",
+  "route": "/data-structures/arrays-and-dynamic-arrays/",
+  "round": 3,
+  "role": "design",
+  "score": 8.4,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/arrays (fetched fresh this round: still a pure syntax reference for single-dimensional/multidimensional/jagged arrays — declaration and initialization code samples only, no memory layout, no cache locality, no complexity claims, no measurements, no diagrams anywhere on the page)",
+    "https://learn.microsoft.com/en-us/dotnet/standard/collections/selecting-a-collection-class (fetched fresh this round: a bulleted decision checklist by API shape/interface, no memory model, no measured performance, no diagrams, no code samples at all)"
+  ],
+  "justification": "Formed a fresh read of the current build, then checked it against both round-2 design majors. Both are genuinely fixed, not papered over. (1) The 'Picking between an array, a list and a view' section that used to be a table hiding its entire List<T> column at 390px is now a bulleted decision list; verified on mobile-dark part25-26 and mobile-light part25 that every bullet (Read/write, Append, Insert/remove, Contains/IndexOf, BinarySearch, and the six 'use this container when' bullets) shows both the T[] and the List<T> cost on screen, fully readable, no fade, no hidden column. This is a real structural fix, not a font-size tweak. (2) The two code walls are now genuinely paced differently: the opening traversal harness (66 lines) sits behind a collapsed <details>, immediately followed by a 12-line snippet excerpt of just the two loop-nesting bodies that differ, and the reader reaches the results table within one screen of the collapse; the Grids layout benchmark (110 lines, three near-identical Sum* methods) is likewise collapsed with three short snippet blocks showing only each layout's differing indexing line, then straight into the ranges table and discussion. Verified this rhythm on desktop-light parts 01, 15-16 and mobile-dark parts 01-02, 21-22: a reader on a phone now sees a paragraph, a collapsed-program affordance, a snippet, and a table in quick succession instead of three unbroken screens of scaffolding. Several round-2 minors are also fixed: the DropEvens exercise's for-loop header now wraps onto two lines and is fully visible (mobile-dark part19, matches the suggested fix verbatim); the three Best(n, () => SumRows(g, n)) style call sites in the tiled-grid program now break after the open paren and are fully visible (mobile-dark part09); 'The third field: catching edits during a loop' now sits directly after the DynamicArray field list and before the wrapper-speed benchmark, so the three-field structure reads as one unit (confirmed in the desktop-light-part01 'On this page' order and the part09-10 heading sequence); the console header strings that used to truncate mid-word ('ratio' -> 'r', 'Insert(0)' -> 'Insert') are effectively removed from the reader's direct view because their programs are now collapsed, and the visible replacement tables/output blocks use short headers that fit cleanly (verified 'Size/Ratio/Grid MB/Row ns/Col ns' on mobile-dark part03 and 'Layout/Rows ms/Cols ms' on mobile-dark part23, both fully on-screen). Figures 1-4 all read correctly and are correctly themed in every combination checked (desktop-light, desktop-dark, mobile-light, mobile-dark), colours and dashed/solid states hold, captions are legible and say what to notice, and mobileOverflowPx is 0. Not fixed, carried from rounds 1-2: inline citations to Drepper's paper ('Drepper, section 3.2', 'section 3.3.2', 'section 3.3.1') are still plain, unlinked text, not tied to the numbered Sources list; the mobile hero (title, 4-line description, byline, date row, INTERMEDIATE chip, collapsed TOC card, prerequisite card) still consumes essentially the whole first 844px screen; and there is still no visible scroll affordance on overflowing code blocks/tables at phone width, only the edge fade. Two small new clipping instances were found this round that neither prior critic flagged: in the 'offsets' program (id=offsets), the three $\"  [0,1] {Gap(ref grid[0, 0], ref grid[0, 1])}\"-style lines clip after 'ref gr', hiding the second index argument that is the actual point of each line, at 390px (mobile-dark part04); and in the tiled-grid program's closing Console.WriteLine, the two interpolated format-string lines ($\"n={n,4}  col/row {col / row,5:F1}\" and the tiled/row continuation) still clip at 390px even though the three Best(...) call sites immediately above them were fixed (mobile-dark part09-10). Both are minor: the output panel below each program shows the actual numbers either way, so no claim is left unsupported. The one number that moved against the article is Lighthouse performance, measured serially this run at 87 (report.json/lighthouse.json), down from round 2's provisional 91 and round 1's provisional 94, and below the pass gate's required 90; failing/near-failing items are First Contentful Paint 3.1s, Largest Contentful Paint 3.1s, back/forward cache blocked, ~255 KiB of document-request latency and ~11 KiB of unused CSS. The page has grown (35 code blocks and 4 figures now vs 28/3 at round 1, 5902 words vs 4486), which plausibly contributes, but FCP/LCP/bfcache/network-dependency-tree are shell-level metrics, not something the writer's Markdown can fix directly. Net effect: both majors that held the score at 7.9 are convincingly resolved, most minors are cleared, and what remains is a short list of true nits plus one shell-owned performance regression that keeps this just under a clean pass rather than a design-system defect.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Lighthouse performance category, measured serially this run: .verify/data-structures__arrays-and-dynamic-arrays/lighthouse.json and report.json",
+      "problem": "Performance scores 87, below the pass gate's required 90 in every category. Failing/borderline Lighthouse items: First Contentful Paint 3.1s (score 0.45), Largest Contentful Paint 3.1s (score 0.74), back/forward cache restoration blocked (score 0), ~255 KiB potential savings on document request latency, ~11 KiB unused CSS, and a failing network-dependency-tree insight. This is down from round 2's (provisional) 91 and round 1's (provisional) 94. Accessibility, best-practices and SEO are all 100.",
+      "fixLooksLike": "Re-measure serially with no other heavy jobs on the machine to confirm this is real and not load noise (the same caveat applied to rounds 1-2's higher numbers). If it holds, investigate the document-latency and network-dependency-tree findings (likely shell bundle/asset loading, not article content) and the back/forward-cache blockers; consider whether the growth in code blocks (35, up from 28 at round 1) and figures (4, up from 3) is adding render-blocking weight that the shell could defer or lazy-render below the fold.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "The 'offsets' program (id=offsets) in 'One block of memory, and the arithmetic that finds an element', the three $\"  [0,1] {Gap(ref grid[0, 0], ref grid[0, 1])}\"-style interpolated lines, at 390px (mobile-dark part04)",
+      "problem": "Each of the three lines clips after 'ref gr', hiding the second index argument (grid[0, 1], grid[1, 0], grid[2, 3]) that each line exists to show. The output panel below states the resulting byte offsets, so no claim is left unsupported, but the code that computes them is not fully visible on a phone.",
+      "fixLooksLike": "Break each interpolated line after the first ref argument, e.g. put 'ref grid[0, 1])}\"' on its own indented continuation line, the way the traversal harness's call sites were already wrapped elsewhere in the article.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Tiled-grid program (id=tiled) in 'The 4096 row', the closing Console.WriteLine's two interpolated format lines ($\"n={n,4}  col/row {col / row,5:F1}\" and the tiled/row continuation), at 390px (mobile-dark part09-10)",
+      "problem": "The three Best(n, () => SumRows(g, n)) style call sites immediately above are now correctly wrapped and fully visible (round 2's minor here is fixed), but the format-string lines right after them still clip at the fade. Low impact since the actual ratios are stated in prose right after the output panel.",
+      "fixLooksLike": "Split the two-line $-string the same way other long WriteLine calls in the article already are, e.g. put the tiled/row segment on its own line breaking after the '+' as done elsewhere.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Inline citations throughout 'Why the column-first loop falls off a cliff' and 'The 4096 row' (e.g. '(Drepper, section 3.2)', '(Drepper, section 3.3.2)', '(Drepper, section 3.3.1)'), carried from rounds 1-2, unaddressed",
+      "problem": "Citations are still plain text, not linked or numbered to the Sources list at the end of the article. A reader cannot jump from 'section 3.2' to source #3 without scrolling to the bottom and matching by author name.",
+      "fixLooksLike": "Add a bracketed number or superscript at each claim that links to the corresponding numbered Sources entry, e.g. '... 64 bytes on current processors [3, section 3.2]'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Mobile hero block (title, description, byline, published/updated, INTERMEDIATE chip, collapsed 'On this page', 'Before you read' card) — mobile-dark-fold and mobile-light-fold, carried from rounds 1-2, unaddressed",
+      "problem": "The hero still consumes essentially the whole first screen on a 390x844 viewport; the first paragraph of the hook is still not reached before the fold.",
+      "fixLooksLike": "Shell-level: put the level chip on the same row as the reading time, or tighten spacing between the TOC card and the prerequisite card, so the hook's first sentence is visible higher on a 390x844 screen.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Shell: overflowing code blocks and tables on mobile (all parts), carried from rounds 1-2, unaddressed",
+      "problem": "Wide code blocks still only signal overflow with a faint right-edge fade; there is no scrollbar or 'scroll for more' cue.",
+      "fixLooksLike": "Confirm this is already logged in docs/INTEGRATOR_REQUESTS.md from earlier rounds; if not, append a request for a visible thin horizontal scrollbar or small 'scroll →' affordance on code blocks and tables that overflow at phone width.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 87,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "note": "Measured this run via `node tools/verify-page.mjs --drafts /data-structures/arrays-and-dynamic-arrays/`, run serially. Failing/borderline items: First Contentful Paint 3.1s, Largest Contentful Paint 3.1s, back/forward cache restoration blocked, ~255 KiB document request latency savings, ~11 KiB unused CSS, failing network-dependency-tree insight. Down from round 2's provisional 91 and round 1's provisional 94; both prior rounds flagged their own numbers as unreliable under concurrent load, so re-measurement in isolation is worth doing before treating 87 as final."
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "mobileOverflowPx": 0,
+  "verifyPage": {
+    "words": 5902,
+    "codeBlocks": 35,
+    "figures": 4,
+    "internalLinks": 34,
+    "externalLinks": 12,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected: byline, bio and footer placeholders)", "lighthouse performance 87 < 90"]
+  },
+  "screenshotsReviewed": "desktop-light fold + parts 01-18 (all); desktop-dark fold, parts 02, 06, 09, 14, 16; mobile-dark fold + parts 01-27 (all); mobile-light fold, parts 06, 25"
+}

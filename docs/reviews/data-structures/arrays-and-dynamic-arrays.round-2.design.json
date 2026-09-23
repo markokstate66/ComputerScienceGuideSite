@@ -1,0 +1,86 @@
+{
+  "article": "src/content/articles/data-structures/arrays-and-dynamic-arrays.md",
+  "route": "/data-structures/arrays-and-dynamic-arrays/",
+  "round": 2,
+  "role": "design",
+  "score": 7.9,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/arrays (fetched fresh this round: still a pure syntax reference — declaration/initialization/jagged/multidimensional syntax and code samples only, no memory layout, no cache locality, no complexity claims, no measurements, no diagrams)",
+    "https://learn.microsoft.com/en-us/dotnet/standard/collections/selecting-a-collection-class (fetched fresh this round: still a decision checklist by API shape, no memory model, no measured performance, no diagrams)"
+  ],
+  "justification": "This round fixes two of round 1's three design majors cleanly and leaves the third genuinely open, so the score moves up from 7.6 but stays below the 8.5 pass bar. Fixed: (1) phone clipping — the flagship Add-vs-Insert(0) benchmark now puts `list.Add(i);` and `list.Insert(0, i);` on their own indented lines and both are fully visible at 390px; the `sizes` array wraps onto two visible lines; the `NsPerElement`/`SumRowFirst`/`SumColumnFirst` call sites and loop headers are legible; the `Report`/`Best` method signatures in the tiled-grid and jagged-grid programs sit on their own lines and are fully visible; output-panel wildcards are now spaced under their headers instead of glued to the preceding number. (2) The central cache-locality insight, which round 1 flagged as prose-only with no figure, now has Figure 4 (a cache-line reuse strip diagram): verified legible and correctly coloured in both mobile-dark and desktop-dark, its labels ('Row-first: next line, 64 B away', 'Column-first: next line is 16,000 B down, a whole row away', 'Back near the top only after n rows: that gap is the reuse distance') match the surrounding prose exactly, and it renders at a sensible size at 390px. Not fixed: reading rhythm / code walls. The 66-line opening harness (NsPerElement with warm-up and repetition arithmetic) still sits in front of the first result, and the 'Grids' section's layout benchmark (RectSum/JagSum/FlatSum plus a Report/Best wrapper, ~110 lines) is structurally unchanged from round 1 — each line is now legible, but the wall of near-identical scaffolding before the payoff is the same shape it was in round 1. That keeps this major open. A handful of new and carried-over minors round out the picture: the 'Picking between an array, a list and a view' comparison table hides its entire List<T> column on phone in both themes (confirmed on mobile-dark and mobile-light — the table box ends exactly at the T[] column with no visible List<T> header at all, which is worse than round 1's partially-cut Ratio column and is the actual point of the table); a few `Best(n, () => SumRows(g, ...))`-style call sites in the tiled and jagged-grid programs still clip their trailing arguments; the DropEvens exercise's `for` loop header clips `i++)` inside the narrower exercise-callout width; several `Console.WriteLine` header strings truncate mid-word on phone (cosmetic); and three round-1 minors (citations not linked to the numbered source list, no small figure for List<T> capacity growth, the mobile hero block eating most of the first screen) remain unaddressed. Lighthouse, console errors, broken links and mobile overflow are all clean (see below); the only report.json failure is the expected NEEDS_MARKUS placeholder.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Opening program in 'Same sum, two loop orders' (the full NsPerElement/SumRowFirst/SumColumnFirst harness, desktop-light parts 02-03, mobile-dark parts 02-05) and the layout benchmark in 'Grids: one rectangle or an array of rows' (RectSum/JagSum/FlatSum + Report/Best, desktop-light parts 13-14, mobile-dark parts 21-23)",
+      "problem": "Round 1's rhythm finding is unresolved. The opening program is still about two screens of measurement harness (warm-up, repetition-count arithmetic, five-run loop) before the reader reaches any result, and the output panel underneath is still only '[...]' placeholders. The Grids layout benchmark still walks through six nearly identical 5-line sum methods plus a Report/Best wrapper before the payoff paragraph. Every line in both blocks is now legible at 390px (the phone-clipping instances round 1 called out here are fixed), but the pacing problem itself — a wall of scaffolding in front of the insight — is the same shape as round 1.",
+      "fixLooksLike": "Lead each program with the two or three lines that actually differ (the loop bodies / the per-layout indexer), and either shorten the harness (fewer knobs, one shared helper reused via a lambda) or move it after a short teaser of the result. For the layout benchmark, show one representative rows/columns pair and say the other layouts differ only in the indexing expression, or fold the three Sum* variants into one method parameterised by an access delegate.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'Picking between an array, a list and a view' comparison table (5 rows x 3 columns: Operation / T[] / List<T>), confirmed on both mobile-dark part25 and mobile-light part25",
+      "problem": "On a 390px screen the table shows only the 'Operation' and 'T[]' columns; the 'List<T>' column — the actual point of a table comparing T[] against List<T> — is entirely off-screen with no visible header, no visible fade, and no indication that a third column exists. This is a stronger version of round 1's partially-cut Ratio column (which is now fixed via reordering) and defeats the table's purpose for a phone reader unless they think to scroll sideways.",
+      "fixLooksLike": "Either narrow the first column (many rows only need 2-3 words, e.g. 'Read/write', 'Append', 'Insert/remove') so all three columns fit within ~358px, or restructure as a definition list (one entry per operation, T[] and List<T> costs as a sub-line) which the writer guide recommends when a table's rows are really short paragraphs. If the table stays as-is, ask the integrator for a visible scroll cue (see the general scroll-affordance item below) so a reader knows a third column exists.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'The 4096 row' tiled-grid program (`double row = Best(n, () => SumRows(g, ...`) and the 'Grids' jagged/flat benchmark's Report method, both at 390px (mobile-dark parts 10 and 22)",
+      "problem": "The Best(...) call sites that pass lambdas (`Best(n, () => SumRows(g, n))`, `Best(n, () => SumCols(g, n))`, `Best(() => sum(true))`, etc.) run past ~40 visible characters and clip their closing parenthesis/trailing argument at the fade. The function name being called (SumRows, SumCols) stays visible, so this is less severe than round 1's Report/Best *signature* clipping (which is fixed), but the call is visibly incomplete.",
+      "fixLooksLike": "Break each call after the opening paren: `double row = Best(\\n    n, () => SumRows(g, n));` the same way the NsPerElement call sites were already wrapped elsewhere in the article.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Exercise 2 ('Find the bug, then the slow part' / DropEvens), the `for` loop inside the code fence, mobile-dark/mobile-light part19",
+      "problem": "`for (int i = 0; i < nums.Count; i++)` clips to `for (int i = 0; i < nums.Count;` at the callout's narrower ~34-character budget, dropping `i++)`. Round 1's complaint about this exercise (the values array and the DropEvens signature being cut) is fixed — both now sit on their own visible lines — but this one loop header inside the callout still clips.",
+      "fixLooksLike": "Break the loop header: `for (int i = 0;\\n     i < nums.Count; i++)` or shorten to `for (int i = 0; i < nums.Count; i++)` on two lines matching the indentation style used elsewhere in the article for long for-headers.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Several `Console.WriteLine` header strings used to label output columns: `\"size    row     col  ratio\"` (traversal program), `\"layout        rows     cols\"` (grids program), `\"n         Add   Insert(0)\"` (front-insert program), all at 390px",
+      "problem": "These header strings are wider than ~40 characters and truncate mid-word on phone (e.g. 'ratio' shows as 'r', 'Insert(0)' shows as 'Insert'). They are cosmetic — the data rows below them read fine and the prose explains the columns — but a truncated word looks like a rendering bug rather than an intentional cut.",
+      "fixLooksLike": "Shorten the header strings to fit ~40 characters (e.g. 'size  row   col  ratio' with tighter spacing, or drop a redundant word) so the printed header does not visibly truncate mid-word.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Inline citations throughout 'Why the column-first loop falls off a cliff' and 'The 4096 row' (e.g. '(Drepper, section 3.2)', '(Drepper, section 3.3.2)', '(Drepper, section 3.3.1)'), carried from round 1, unaddressed",
+      "problem": "Citations are still plain text, not linked or numbered to the Sources list at the end of the article. A reader cannot jump from 'section 3.2' to source #3 without scrolling to the bottom and matching by author name.",
+      "fixLooksLike": "Add a bracketed number or superscript at each claim that links to the corresponding numbered Sources entry, e.g. '... 64 bytes on current processors [3, section 3.2]'.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "'A list is an array with a counter' section, the Count/Capacity growth demonstration and the 'The third field: catching edits during a loop' H3, carried from round 1, unaddressed",
+      "problem": "Growth (capacity 4 doubling to 8) is still shown only as code plus a two-line output panel, with no figure, unlike every other structural change on the page (insert/remove has Figure 2, layout has Figures 1 and 3, cache reuse now has Figure 4). 'The third field' H3 still comes after the wrapper-speed benchmark subsection, so the three-fields promise made at the top of the section is still interrupted by an unrelated subsection before it is completed.",
+      "fixLooksLike": "Optional small figure: Capacity 4/Count 4 -> allocate Capacity 8 -> copy 4 elements across. Move 'The third field' directly after the field list (ahead of 'Does the wrapper make a list slower than an array?') so the three-field structure reads as one continuous unit.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Mobile hero block (title, description, byline, published/updated, INTERMEDIATE chip on its own row, collapsed 'On this page', 'Before you read' card) — mobile-dark-fold and mobile-light-fold, carried from round 1, unaddressed",
+      "problem": "The hero still consumes essentially the whole first screen on a 390x844 viewport; the fold screenshot shows the INTERMEDIATE chip still wrapping to its own line below the date row, and the first paragraph of the hook is not reached before the fold, same as round 1.",
+      "fixLooksLike": "Shell-level: put the level chip on the same row as the reading time, or tighten spacing between the TOC card and the prerequisite card, so the hook's first sentence is visible higher on a 390x844 screen.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Shell: overflowing code blocks and tables on mobile (all parts), including the List<T> column issue above, carried from round 1, unaddressed",
+      "problem": "Wide code blocks and tables still only signal overflow with a faint right-edge fade; there is no scrollbar or 'scroll for more' cue, so a reader can mistake genuinely hidden content (like the List<T> column in issue 2 above) for the block simply ending there.",
+      "fixLooksLike": "Append to docs/INTEGRATOR_REQUESTS.md (if not already present from round 1): a visible thin horizontal scrollbar or small 'scroll →' affordance on code blocks and tables that overflow at phone width.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 91,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "note": "From .verify/data-structures__arrays-and-dynamic-arrays/lighthouse.json, this run's numbers. Failing/borderline items reported: First Contentful Paint 2.8s, Largest Contentful Paint 2.8s, unused CSS ~12 KiB, back/forward cache blocked, document request latency ~239 KiB potential savings. Other agents may be sharing the machine, so treat 91 as provisional; the orchestrator should re-measure performance serially before relying on it for the pass gate."
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

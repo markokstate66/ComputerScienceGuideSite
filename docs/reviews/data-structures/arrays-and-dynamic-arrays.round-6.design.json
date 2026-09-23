@@ -1,0 +1,40 @@
+{
+  "article": "src/content/articles/data-structures/arrays-and-dynamic-arrays.md",
+  "route": "/data-structures/arrays-and-dynamic-arrays/",
+  "round": 6,
+  "critic": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/arrays (Microsoft Learn, \"The array reference type\" -- target query: \"array vs list c#\" / general C# arrays reference; re-fetched this round)",
+    "https://en.wikipedia.org/wiki/Dynamic_array (Wikipedia, \"Dynamic array\" -- target query: \"dynamic array\"; re-fetched this round)",
+    "https://www.geeksforgeeks.org/dsa/what-is-array/ (GeeksforGeeks, \"Array Data Structure\" hub -- carried over from round 5, not re-fetched this round)"
+  ],
+  "justification": "Re-fetching the two primary comparison pages confirms round 5's read of the field. MS Learn's array reference (2,594 words) is a syntax catalogue: single/multi-dimensional/jagged declaration forms, indexing, foreach order, implicitly typed arrays -- no memory-layout diagram, no cache/locality content, no List<T> internals, no measurements of any kind. Wikipedia's Dynamic Array article has real conceptual depth (geometric-expansion diagram, a 12-language growth-factor comparison table, an amortized-cost explanation) but stays at pseudocode: no runnable code, no C#-specific detail beyond naming List<T> in passing, no benchmarks. Neither page comes close to this article's four hand-drawn, theme-correct diagrams; its 35 runnable code blocks building a real measured argument (row- vs column-major traversal, TLB/cache-line reuse distance with a targeted band-tiling experiment, List<T> internals read from the actual dotnet/runtime source, exact Insert/RemoveAt element-move counts, a reproduced CollectionsMarshal.AsSpan-over-List<T> use-after-grow hazard); or its six exercises with real worked solutions. That alone places it in the 'clearly better than the best existing result' tier the 10-anchor describes. What holds it at 9.0 rather than higher: the round-5 blocker and major are both now genuinely resolved -- Lighthouse performance measured 99, 100, 100 across three serial runs this round (accessibility/best-practices/SEO 100/100/100 on every run, zero console errors, zero broken links), and the main document's network record this round shows transferSize 32,040 bytes against resourceSize 390,508 bytes (about 8.2%), confirming real compression is now applied rather than the intermittent failure round 5 caught; the four figure captions read 1 (int[] memory layout, part04), 2 (cache-line reuse distance, part08), 3 (Insert/RemoveAt shift, part16), 4 (rectangular vs jagged grids, part21-22) in that order both in the source and on screen, in both themes, with every label legible at 390px and no faded/scrolling edge on any of the four. But two round-5 minors were in scope for the writer and were not touched in this exception round: the five-column 'Same sum, two loop orders' table still crowds its rightmost (evidence) column against the phone edge, and the same handful of code lines (the grid[2,3] WriteLine in the offsets block; the List<int> as span / LinkedList<int> Report(...) calls and their SumSpan/SumLinked signatures in the containers block) still clip their tails on a 390px screen. Both are genuine, if minor, unresolved nits against WRITER_GUIDE section 7, which is why this stays at 9.0 and not a clean 10.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "\"Same sum, two loop orders\" section, the Size / Ratio / Grid MB / Row ns / Col ns results table (mobile-light-part03.png / mobile-dark-part03.png)",
+      "problem": "Unchanged from round 5: the table still has five numeric columns, exceeding WRITER_GUIDE section 7's phone guidance to prefer at most three. On a 390px viewport the rightmost column, Col ns -- the raw per-element timings that are the direct evidence for the 'column-first falls off a cliff' claim -- sits right at the edge of the visible column, with the header itself ('Col ns') clipped to 'Col n'. The values (1.20, 0.76, 0.82, 2.89, 5.17, 15.82) are still legible, so this is a nit rather than a comprehension failure.",
+      "fixLooksLike": "Drop the least essential column -- Grid MB is already restated in prose immediately after ('tens of megabytes') -- or split into two three-column tables (Size/Ratio/Grid MB, and Size/Row ns/Col ns) so every column keeps comfortable margin at 390px.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "`offsets` code block (`Console.WriteLine($\"grid[2,3] holds {grid[2, 3]}\");`, mobile-light-part05.png) and `containers` code block (`Report(\"List<int> as span\", ...)`, `Report(\"LinkedList<int>\", ...)` and the `SumSpan`/`SumLinked` signatures, mobile-light-part15.png)",
+      "problem": "Unchanged from round 5: these lines still clip their tails at 390px per WRITER_GUIDE section 7 ('break long statements so the operative part is not clipped'). The cut tails are call/argument boilerplate rather than the point of the line, and the values are shown in full in the output panel immediately below in the offsets case, so this remains a nit -- but it is exactly the pattern the guide asks writers to avoid, and the article already demonstrates the fix correctly elsewhere in the same code blocks (the Show<T> WriteLine in `offsets` wraps cleanly with no clipping in both themes).",
+      "fixLooksLike": "Wrap the same way the already-fixed Show<T> WriteLine was wrapped: split the interpolated string or move an argument to its own line so the operative text stays inside the first ~40 visible columns.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "allThreeLighthousePerformanceRuns": [99, 100, 100],
+  "lighthouseRunNotes": "Ran `node tools/verify-page.mjs --drafts /data-structures/arrays-and-dynamic-arrays/` three times back to back on an otherwise idle machine, as instructed. All three runs report words=5954, code=35, fig=4 (matching the current article content). Performance: 99, 100, 100. Accessibility/best-practices/SEO: 100/100/100 on all three runs. The only reported failure on every run was the expected placeholder check for NEEDS_MARKUS (byline), which is a known non-issue per instructions. Inspected lighthouse-full.json's network-requests audit for the main document on the last run: transferSize 32,040 bytes vs resourceSize 390,508 bytes (~8.2% ratio), confirming real content compression is being served, consistent with the reported tool fix.",
+  "figureOrderCheck": "Confirmed both from the article source (figcaptions at lines 249, 405, 748, 1091 read Figure 1/2/3/4 respectively, in ascending document order) and from screenshots: Figure 1 (int[] memory layout) on mobile-light-part04.png, Figure 2 (row-first vs column-first cache-line reuse distance -- the diagram that was previously mislabeled Figure 4) on mobile-light-part08.png / mobile-dark-part08.png immediately following the 'What actually explains the 2,000-to-4,000 range' subsection, Figure 3 (Insert/RemoveAt element shift) on mobile-light-part16.png / mobile-dark-part16.png, Figure 4 (rectangular vs jagged grids) on mobile-light-part21.png-part22.png. All four render correctly and with theme-appropriate colors in both light and dark, labels legible at 390px, no faded/scrolling edges (each diagram fits its declared viewBox width).",
+  "consoleErrors": [],
+  "brokenLinks": []
+}
