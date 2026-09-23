@@ -1,0 +1,46 @@
+{
+  "score": 7.4,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance",
+    "https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters"
+  ],
+  "justification": "Design/UX round 1 for /csharp-dotnet/generics/ (2142 words, 20 code blocks, 5 sections, 1 diagram, 0 exercises). Verified with `node tools/verify-page.mjs --drafts /csharp-dotnet/generics/`: Lighthouse 100/100/100/100 (a clean, uncontested serial run, all four categories well clear of the 90 gate), report.json confirms 0 console errors, 0 console warnings, 0 broken links (31 internal, 10 external, all resolved), mobileOverflowPx 0, and no placeholder failures at all — the byline resolved to a linked 'Computer Science Guide' author rather than a NEEDS_MARKUS marker, so even the usually-expected placeholder failure is absent. Read every desktop-light part (01-09) and every mobile-dark part (01-13) in full, plus the fold, the single figure, and the constraint table on mobile-light and mobile-dark. Heading hierarchy is clean: one h1, five flat h2 sections (What object costs you / Constraints / Reified at compile time and at runtime / Which direction does assignment compatibility flow? / Generic math), matching the 'On this page' TOC exactly, no skipped levels. Prose/code rhythm within each section is good — no code run exceeds roughly a block-plus-output before returning to explanatory prose, and the four `error=` compile-failure blocks (CS0452, CS0453, CS0310, CS0029, plus the two CS1961 pair) are each followed by a paragraph naming exactly what broke and why, never left to speak for themselves. The Figure 1 variance diagram (viewBox 360x550, stacked/portrait per WRITER_GUIDE section 5) is genuinely well executed: fits exactly at 390px with no horizontal scroll and no faded edge in either theme, every label (`IProducer<Circle>`, `IConsumer<Shape>`, etc.) stays crisp at the 12-14 viewBox-unit text sizes used, the purple accent and neutral box classes switch cleanly between light and dark, and on desktop it sits as a deliberately narrow, uncluttered island in the wide column rather than being padded out — exactly what the guide asks for. Against Microsoft's own 'Covariance and Contravariance in Generics' page (prose and a bullet list, no diagram at all) and the 'Constraints on type parameters' reference (a plain table, no interactivity, no compile-error reproductions), this article is ahead on illustration and on turning abstract rules into things a reader can watch fail with the exact compiler diagnostic. Two things hold this back from 8.5+: first, and most consequential, CONTENT_PLAN.md section 7 requires 'every article' to carry '3-6 exercises with solutions' and this article has zero `::::exercise` blocks — there is no predict-it, find-the-bug, or extend-it moment anywhere in 2142 words, so the reading rhythm the rubric cares about (prose, code, diagram, *and* an interactive checkpoint) is missing one whole category entirely, not just thin. Second, the 'base-class constraint and new() combine cleanly' code example — the one sample whose entire point is showing two constraints stacked in one `where` clause — has its payoff clipped on the phone screen (see issues). Neither problem shows up in Lighthouse or the automated checks, which is exactly why a human screenshot pass matters here.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Whole article — no `::::exercise` blocks anywhere (checked all 20 code blocks and all 13 mobile-dark parts)",
+      "problem": "CONTENT_PLAN.md section 7 states plainly: 'Every article carries: at least one original diagram unless marked *(no diagram needed)*, runnable code, 3-6 exercises with solutions, and a sources list.' This article has the diagram, the runnable code and the sources, but zero exercises. Besides being a hard completeness requirement, this removes the one kind of rhythm beat (an interactive, collapsed-solution checkpoint) that breaks up five sections of straight prose-then-code-then-prose, which is exactly the pattern the design rubric's 'reading rhythm' criterion is meant to catch.",
+      "fixLooksLike": "Add 3-6 `::::exercise[...]` blocks with collapsed `:::solution` per WRITER_GUIDE section 4, placed mid-section where they fit rather than bunched at the end (EDITORIAL_BRIEF section 7's 'vary the ending' rule). Natural spots already exist in the current structure: a predict-the-output on the ArrayList vs List<int> boxing section, a find-the-bug using a constraint the reader has to pick, and an extend-it on the generic-math Sum method (e.g. add a Min/Max or make it generic over a different INumber-family interface).",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Section 'Constraints: telling the compiler what T can do', the id=spawn-ok program, the `static T Spawn<T>() where T : GameEntity, new()` line (mobile-light part05, mobile-dark part13, both themes, confirmed identical clipping)",
+      "problem": "The line reads `static T Spawn<T>() where T : GameEntity, new()` (49 characters). At the ~40-column mobile window it cuts right after the comma — `static T Spawn<T>() where T : GameEntity,` is visible, but `new()`, the second half of the exact combination this code sample exists to demonstrate ('A base-class constraint and new() combine cleanly...'), is entirely off-screen with no fade cue that it's the payoff. This is the same pattern WRITER_GUIDE section 7 warns about: 'If the last column is the evidence for a claim, it must not be the one that is cut off.' The prose narrates the combination correctly, but a reader who trusts the code sample to show what the prose describes will not see it without deliberately scrolling the code block sideways.",
+      "fixLooksLike": "Wrap the where-clause onto its own continuation so `new()` lands within the first ~40 columns, e.g.:\n```\nstatic T Spawn<T>()\n    where T : GameEntity, new()\n```\nThis is a pure formatting change inside an executed `csharp run` block, so re-run `node tools/run-code.mjs` and `verify-page` afterward to confirm the reflow doesn't change anything else.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Constraints: telling the compiler what T can do', the constraint table, 'Requires' column, third row (mobile-light part03, mobile-dark part03, both themes)",
+      "problem": "The cell 'T has a public parameterless constructor' is 41 characters, one over the WRITER_GUIDE section 7 budget ('a column whose longest cell is 40 characters or fewer never wraps'). In practice this table already follows every other table rule (2 columns, phrases not sentences, identifying column first), and all five 'Requires' cells fade at the same right edge on phone regardless, with the fade acting as the documented scroll cue — so this is a minor over-budget nit on one cell rather than a broken table.",
+      "fixLooksLike": "Trim to 'T has a public no-arg constructor' (34 chars) or 'T has a public parameterless ctor' (34 chars) to bring the longest cell back under 40.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Reified at compile time and at runtime', the id=reified program's OUTPUT panel, first two lines (mobile-light part06, mobile-dark equivalent)",
+      "problem": "The lines 'System.Collections.Generic.List`1[System.Int32]' and the String equivalent are cut well before the type argument that actually varies between the two lines, so a reader relying only on what's visible on phone sees two identical-looking cut prefixes. This is lower severity than the Spawn example because the paragraph immediately below states the reference-equality claim in words, and the very next output line ('True') already proves distinct runtime types without needing the cut lines — but it's the same class of unbudgeted runtime-printed line as elsewhere in this codebase's articles.",
+      "fixLooksLike": "Either accept it (the claim is proven by the 'True' line and the two `typeof(T)` lines below, both of which are fully visible), or shorten via `ids.GetType().Name` instead of `GetType()` to drop the `System.Collections.Generic.` prefix and bring the operative part (`List\\`1[Int32]`) on-screen.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
