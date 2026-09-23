@@ -1,0 +1,53 @@
+{
+  "article": "src/content/articles/databases/transactions-and-acid.md",
+  "route": "/databases/transactions-and-acid/",
+  "round": 1,
+  "role": "design",
+  "score": 8.3,
+  "lighthouse": { "performance": 98, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "command": "node tools/verify-page.mjs --drafts /databases/transactions-and-acid/",
+    "runs": 1,
+    "checkedAt": "2026-09-22T22:42:31.038Z",
+    "words": 3411,
+    "codeBlocks": 26,
+    "figures": 2,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": ["placeholder text: NEEDS_MARKUS (expected, owner-supplied byline/legal name)"],
+    "lighthouseNotes": "Single serial run, nothing else building concurrently. Failing audits: FCP 1.9s (score 0.87), max-potential-FID 360ms (0.23, Lighthouse lab-only metric, not a real threat at this score), unused CSS 12 KiB (0.5), bf-cache blocked (0), document-latency 124 KiB est. savings (0.5), network-dependency-tree (0). All shell-level (same categories as prior articles' reviews), none article-specific; performance still cleared 90 easily at 98.",
+    "screenshotsOpened": "desktop-light fold + parts 01-13 (all), desktop-dark fold + parts 01-13 (all), mobile-light fold + parts 01-19 (all), mobile-dark fold + parts 01-19 (all)",
+    "note": "report.json: broken=[], consoleErrors=[], consoleWarnings=[], mobileOverflowPx=0. Only failure is the expected NEEDS_MARKUS byline placeholder."
+  },
+  "comparedAgainst": [
+    "https://www.postgresql.org/docs/current/transaction-iso.html (the article's own primary source for the anomaly table; a dense reference page, no figures)",
+    "https://jepsen.io/consistency (isolation/consistency model visualizations for a technical audience; strong on precise definitions, weak on a beginner on-ramp)",
+    "https://use-the-index-luke.com/sql/transaction-isolation (developer-facing isolation-level explainer with prose examples, no interactive code or real dual-connection demos)"
+  ],
+  "justification": "Real numbers from report.json/lighthouse.json: Lighthouse 98/100/100/100 on a single serial run, 0 console errors, 0 console warnings, 0 broken links, 0 px mobile overflow; the only verify failure is the expected NEEDS_MARKUS placeholder (byline + legal name, owner-supplied). As a designed page this is a clear improvement over the pilot's sql-joins round-1 pattern of pervasive mobile clipping: this writer pre-wrapped almost every SQL and C# line to roughly 30-40 columns, so the overwhelming majority of code and output panels are fully legible on a 390px phone in both themes (checked mobile-light/dark parts 01-19 in full). Both diagrams (Figure 1, the dirty-read timeline; Figure 2, the SQLite lock-cycle) are correctly numbered, captioned with what to notice, sit on canvases that fit 390px without horizontal scrolling of the page itself, and swap their accent/bad (blue/red) tokens correctly between light and dark theme with good text contrast in both. Exercises are embedded where the material lands (after atomicity, after the isolation table, after the deadlock demo) rather than dumped in a trailing 'Exercises' section, which is exactly the pilot lesson sql-joins was docked for violating; all three :::solution blocks render collapsed by default ('Show solution' triangle) on both desktop and mobile. Heading hierarchy is a clean flat list of specific, content-led H2 questions with no orphaned H3s, and the TOC nests correctly. Prose/code/output rhythm is tight: almost no paragraph runs past 6-7 desktop lines before the next code or output block. It does not clear 8.5 because of two concrete phone-width defects a reader will hit: (1) two OUTPUT panels print a SqliteException whose full text is 'SQLite Error 5: \\'database is locked\\'.' and are wide enough that the closing quote and message are clipped on mobile in both themes (mobile-dark/light part11, and mobile-dark/light parts16-17), and in both cases the very next paragraph explicitly quotes 'database is locked' in inline code -- a reader scrolling normally sees the output cut off exactly where the phrase the prose is about to name would have appeared; (2) the SQL-standard 4-column isolation-level table (Isolation level / Dirty read / Non-repeatable read / Phantom read) uses nowrap headers that do not fit 390px, so the initial mobile view shows only the first ~2.5 columns and the entire Phantom read column -- the one Exercise 2's answer depends on ('Repeatable Read still allows phantom reads -- only Serializable disallows them') -- is scrolled off past the right edge with no visual hint beyond the standard scroller mechanics that a 4th column exists. Both are one-round writer fixes.",
+  "issues": [
+    {
+      "severity": "major",
+      "owner": "writer",
+      "location": "OUTPUT panel after the `blocked-write` demo (article lines ~452-456: 'A's COMMIT: failed (5 SQLite Error 5: 'database is locked'.)'). Seen at mobile-dark part11, mobile-light part11. Recurs identically in the OUTPUT panel after the `lock-cycle` demo (article lines ~665-668, same message on both the A and B lines). Seen at mobile-dark parts16-17, mobile-light part16.",
+      "problem": "Both OUTPUT panels print the full .NET SqliteException text, which runs well past ~40 columns ('A's COMMIT: failed (5 SQLite Error 5: 'database is locked'.)'), so on a 390px phone the line is clipped mid-string at \"...SQLite Error 5: 'da\". In the blocked-write demo, the paragraph immediately after the panel explicitly quotes the clipped phrase in inline code -- `SQLITE_BUSY`, the code behind `'database is locked'` -- so the reader meets the exact string the prose is about to name only after it has already scrolled out of view in the panel above. Same defect, same message, in the lock-cycle demo's final output block.",
+      "fixLooksLike": "Shorten what gets printed rather than rewrapping raw text output (these are program-generated, not hand-typed SQL, so there is no natural line break to insert). Either print only `ex.SqliteErrorCode` without `ex.Message` (the code 5 plus the panel's own narration already carries the meaning), or split the WriteLine into two shorter lines ('...failed:' / '  SQLite Error 5, database is locked'), or truncate to `ex.Message[..30]`. Re-run run-code.mjs and verify-page.mjs afterward since this touches the generated output text the article quotes elsewhere."
+    },
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "SQL-standard isolation-level table (article lines 276-281, header row and 'Phantom read' column). Seen at mobile-dark part06, mobile-light part06 (and by extension every mobile screenshot showing this table); renders fully on desktop (desktop-dark part04).",
+      "problem": "The table's headers ('Isolation level', 'Dirty read', 'Non-repeatable read', 'Phantom read') use the site's standard nowrap table-header CSS, so on a 390px phone only 'Isolation level', 'Dirty read' and a sliver of 'Non-repeatable read' fit in the initial view; the entire 'Phantom read' column -- header and all four 'Possible'/'Not possible' cells -- is past the right edge. Exercise 2, immediately below the table, asks the reader to reason about phantom reads and its solution states the answer by pointing at that exact column ('Repeatable Read still allows phantom reads'), so a mobile reader has to discover the table scrolls before they can check the claim against the row it is about.",
+      "fixLooksLike": "This is the shared `.table-scroll` component (same nowrap-header behavior as other articles' tables), so a full fix may be shell-level, but the writer can narrow this specific table without waiting on that: shorten the three anomaly headers to their short forms used elsewhere in the article's own prose ('Dirty read' can stay, but 'Non-repeatable read' -> 'Non-repeatable' and 'Phantom read' -> 'Phantom' still reads unambiguously with 'read' already implied by the other two headers, or abbreviate the first column to 'Level'). That alone should bring all four columns inside 358px of content width on a 390px phone. If it still does not fit, consider putting an explicit 'Scroll to see Phantom read ->' affordance above the table (append a shell-level scroll-cue request to docs/INTEGRATOR_REQUESTS.md if a persistent fade/chevron is wanted site-wide)."
+    },
+    {
+      "severity": "minor",
+      "owner": "integrator",
+      "location": "Lighthouse detail (lighthouse.json 'failing' list): first-contentful-paint 1.9s (0.87), unused-css-rules 12 KiB (0.5), bf-cache blocked (0), document-latency-insight 124 KiB est. savings (0.5), network-dependency-tree-insight (0).",
+      "problem": "Same category of shell-level Lighthouse friction noted in the sql-joins reviews (unused CSS, FCP, bf-cache). None threaten the 90 threshold here (performance scored 98), and none are specific to this article's content.",
+      "fixLooksLike": "No writer action. If not already tracked from the sql-joins round, append a consolidated note to docs/INTEGRATOR_REQUESTS.md covering unused-CSS trimming and bf-cache eligibility across the article template generally, rather than per-article."
+    }
+  ]
+}
