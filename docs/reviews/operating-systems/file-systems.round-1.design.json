@@ -1,0 +1,42 @@
+{
+  "article": "src/content/articles/operating-systems/file-systems.md",
+  "route": "/operating-systems/file-systems/",
+  "round": 1,
+  "role": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/windows-server/storage/file-server/ntfs-overview",
+    "https://docs.kernel.org/filesystems/ext4/overview.html",
+    "https://www.geeksforgeeks.org/operating-systems/file-systems-in-operating-system/"
+  ],
+  "lighthouse": { "performance": 100, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-23T03:15:37.109Z",
+    "runs": 1,
+    "words": 3838,
+    "codeBlocks": 8,
+    "figures": 2,
+    "h1": 1,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": []
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold, 02, 03, 06 (all read)",
+    "desktop-dark": "fold, 02, 03, 07",
+    "mobile-light": "fold + parts 01-15 (all)",
+    "mobile-dark": "fold, 02, 03, 04, 05, 06, 07, 08"
+  },
+  "justification": "A single serial verify-page run (nothing else running) produced a clean pass: Lighthouse 100/100/100/100 across performance, accessibility, best practices and SEO; 0 console errors; 0 console warnings; 0 broken links (all 17 external sources resolved); mobileOverflowPx 0; report.json failures list is empty (no NEEDS_MARKUS placeholder needed here -- the front matter already carries a real author, so there was nothing pending). This is a materially better shell result than sibling reviews in this batch (cpu-scheduling scored 89 on performance under load); nothing here points at shared shell latency as a concern for this route. Both figures were checked in all four device/theme combinations. Figure 1 (inode/MFT record diagram, viewBox 360x245: a 'file record' box listing size/timestamps/block-list, with a red arrow fanning down to three block boxes 900/901/902) is crisp and fully legible at 390px in both mobile-light-part03 and mobile-dark-part03, and at full width in desktop-light-part02 and desktop-dark-part02 -- no overflow, no clipped labels, correct border/arrow color inversion between themes, caption present with the ext4/NTFS equivalence spelled out. Figure 2 (journal write-ahead sequence diagram, viewBox 360x350: four stacked steps -- write journal entry, write commit record, apply to real location, reclaim journal space -- with two labeled crash-timing arrows) was checked split across mobile-light-part05/06, mobile-dark-part05/06, and whole on desktop-light-part03 and desktop-dark-part03: every step box and both italic crash-annotation labels ('crash before this: nothing to replay' / 'crash after this: journal replays it') are legible at 390px in both themes, with the red-highlighted 'commit record' step correctly inverting to a dark red/pink border in dark mode, and no horizontal scroll on the figure itself in any of the four combinations. Code blocks use the same horizontal-scroll-with-fade pattern as the rest of the site; this was verified as a real rendered fade (not a silent clip) via a pixel-level crop of the flush-stages block's right edge in both themes (mobile-light-part07 crop and mobile-dark-part07 crop both show genuine alpha fade-out on the clipped glyphs, not an abrupt cut). Critically, the content that gets clipped in every code block checked is either a constructor-argument tail (e.g. 'FileMode.Cre...', 'FileShare.Rea...') or a boilerplate temp-path expression -- never the measured value a reader needs. The two OUTPUT panels that matter most (the flush-stages Peek() demo: 'before Flush(): 0 bytes visible...' / 'after Flush(): 20 bytes visible...', and the SaveAtomically demo: '{\"retries\":3}' / 'temp file still exists: False' / '{\"retries\":5}') both show their headline numbers before the fold, unlike the cpu-scheduling round's PrintMetrics issue where the cited number was the part hidden. Both exercises collapse correctly: grep across the article source confirms the only two `::::exercise` blocks each contain exactly one nested `:::solution` block with the runnable code and its OUTPUT panel inside the solution, and mobile-light-part06 (exercise 1) and mobile-light-part13 (exercise 2) both screenshot a collapsed 'Show solution' disclosure triangle with zero leaked code or output text above it -- confirming the writer's self-caught fix (moving the final exercise's code/output into the solution) actually landed and rendered correctly. Heading hierarchy is clean: one h1, correct nesting, headings are all content-specific questions rather than boilerplate. Rhythm of prose/code/figure/callout/exercise never runs long without a break across the full 15-part mobile scroll. Illustration depth compares well against the target query's usual top results: GeeksforGeeks' file-systems page and generic OS textbook chapters explain inodes and journaling with static, unlabeled or lightly-labeled diagrams and no runnable verification, where this article's two diagrams are paired with real .NET 10 programs that independently demonstrate the exact claim being illustrated (the Flush() two-stage gap, the atomic rename pattern) -- a bar the comparison sources do not clear. The only nit found, too small to move the score, is that the SaveAtomically code block's `using (var stream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, Fil...` line is clipped even at desktop width (visible in desktop-dark-part07); this is a single very long constructor call, not desktop-specific breakage, and the clipped tail (FileShare.None) is not something the surrounding prose asks the reader to read off the code.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "SaveAtomically code block (id present in article around 'How do you update a file so a crash can never leave it half-written?'); confirmed desktop-dark-part07, desktop-light-part06",
+      "problem": "The `using (var stream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))` line runs long enough to clip its last argument even at desktop width, not just at 390px mobile. The clipped tail (FileShare.None) is never referenced by the surrounding prose, so nothing load-bearing is hidden, but it is the one line in the article where the horizontal-scroll pattern kicks in outside the mobile viewport.",
+      "fixLooksLike": "Optional polish only: break the FileStream constructor call across two lines (e.g. put each named/positional argument on its own line, or extract the FileShare value to a short local first) so the full call is visible without scrolling at both desktop and mobile widths. Re-run node tools/run-code.mjs after any formatting change to reconfirm output is unchanged.",
+      "owner": "writer"
+    }
+  ]
+}
