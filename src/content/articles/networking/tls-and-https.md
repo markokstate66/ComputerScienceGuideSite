@@ -58,7 +58,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.ecdsa.signhash"
     publisher: "Microsoft Learn"
     accessed: 2026-09-22
-draft: true
+draft: false
 ---
 
 A padlock icon is a report on three specific properties, not a verdict on the site behind it. RFC 8446 defines TLS 1.3 as providing exactly these: the server side of the channel is always authenticated, data sent after the connection is set up is visible only to the two endpoints, and it cannot be modified in transit without detection ([RFC 8446, section 1](https://www.rfc-editor.org/rfc/rfc8446.html#section-1)). The [previous article on this pillar](/networking/how-the-internet-works/#band-3-the-same-request-inside-tls) measured a real TLS 1.3 handshake and named its three flights. This one goes one level lower: which cryptographic primitive buys which property, what each handshake message actually contains, how a certificate earns trust, and, as importantly, what none of this claims to do.
