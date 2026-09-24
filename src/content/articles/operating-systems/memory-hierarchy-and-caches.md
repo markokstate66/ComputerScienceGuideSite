@@ -41,7 +41,7 @@ draft: true
 
 ## Reading your own cache sizes before trusting anyone else's table
 
-Blog posts about caches love a table of "typical" sizes copied from one machine and reused for every reader's. Windows already knows the real numbers for the machine running this article, and .NET can ask for them without any native library beyond `kernel32.dll`. `GetLogicalProcessorInformation` fills a buffer with one `SYSTEM_LOGICAL_PROCESSOR_INFORMATION` record per core relationship it finds; the ones whose `Relationship` field is `RelationCache` carry a `CACHE_DESCRIPTOR` with `Level`, `Type`, `Size` and `LineSize` members ([CACHE_DESCRIPTOR](https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-cache_descriptor)). The function is called twice, once to ask how large a buffer it needs, exactly as its own reference example does ([GetLogicalProcessorInformation](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformation)):
+Blog posts about caches love a table of "typical" sizes copied from one machine and reused for every reader's. Windows already knows the real numbers for the machine running this article, and .NET can ask for them without any native library beyond `kernel32.dll`. `GetLogicalProcessorInformation` fills a buffer with one `SYSTEM_LOGICAL_PROCESSOR_INFORMATION` record per core relationship it finds; the ones whose `Relationship` field is `RelationCache` carry a `CACHE_DESCRIPTOR` with `Level`, `Type`, `Size` and `LineSize` members ([CACHE_DESCRIPTOR](https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-cache_descriptor)). The function is called twice, once to ask how large a buffer it needs and once to fill it — the same two calls its own reference example needs in the common case, though that example also loops back and retries if the size changes between calls ([GetLogicalProcessorInformation](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformation)):
 
 ```csharp run id=cacheinfo
 using System.Runtime.InteropServices;
@@ -107,7 +107,7 @@ L2 Unified size=524288 line=64 assoc=8
 L3 Unified size=16777216 line=64 assoc=16
 ```
 
-That is 48 KB of L1 data cache and 32 KB of L1 instructions per core, 512 KB of L2 per core, and 16 MB of L3 shared across every core on this machine — the same figures the [row- versus column-major measurement](/data-structures/arrays-and-dynamic-arrays/#why-the-column-first-loop-falls-off-a-cliff) in the arrays article found by asking Windows the same way. Every level reports a 64-byte `LineSize`, matching what Drepper's survey of cache designs calls the current norm, up from 32 bytes in early caches (["Part 2: CPU caches", §3.3.4](https://lwn.net/Articles/252125/)). A cache line, not a byte and not a word, is the unit that actually moves between a core and the memory behind it, and almost everything below follows from that one sentence.
+That is 48 KB of L1 data cache and 32 KB of L1 instructions per core, 512 KB of L2 per core, and 16 MB of L3 shared across every core on this eight-core machine (.NET 10.0.401, Windows 11, x64) — the same figures the [row- versus column-major measurement](/data-structures/arrays-and-dynamic-arrays/#why-the-column-first-loop-falls-off-a-cliff) in the arrays article found by asking Windows the same way. Every level reports a 64-byte `LineSize`, matching what Drepper's survey of cache designs calls the current norm, up from 32 bytes in early caches (["Part 2: CPU caches", §3.2](https://lwn.net/Articles/252125/)). A cache line, not a byte and not a word, is the unit that actually moves between a core and the memory behind it, and almost everything below follows from that one sentence.
 
 ## A ladder you can feel: timing a walk across those sizes
 
@@ -173,7 +173,7 @@ static double ChaseNsPerStep(int[] next, long steps)
   32768 KB  n=  8388608  [...] ns/access
 ```
 
-Repeated runs on this machine keep the same shape: a little under two nanoseconds a step while the whole array sits in L1, roughly double that once it only fits in L2, a further jump — noisier, since L3 is shared with whatever else the eight cores are doing — once it only fits in L3, and well over a hundred nanoseconds once the array is 32 MB and every step misses all three levels and waits on RAM. Nothing here claims exact multipliers, because the L3-resident row moved by more than 3x between two runs recorded while writing this page; what stays constant is the order of the four numbers and that the last step change dwarfs the first two. Drepper's own measurements, on a 2007 Pentium 4, describe the same shape in cycles rather than nanoseconds: roughly 3 cycles for an L1 hit, 14 for L2, and over 240 once main memory is involved, with the explicit caveat that the exact counts belong to that processor and only the "roughly an order of magnitude per level" pattern travels (["Part 2: CPU caches", §3.3.2–3.3.3](https://lwn.net/Articles/252125/)).
+**The shape holds even though the numbers move.** Repeated runs on this machine keep the same shape: a little under two nanoseconds a step while the whole array sits in L1, roughly double that once it only fits in L2, a further jump — noisier, since L3 is shared with whatever else the eight cores are doing — once it only fits in L3, and well over a hundred nanoseconds once the array is 32 MB and every step misses all three levels and waits on RAM. Nothing here claims exact multipliers, because the L3-resident row moved by more than 3x between two runs recorded while writing this page; what stays constant is the order of the four numbers and that the last step change dwarfs the first two. Intel's own published cost table, which Drepper quotes for a Pentium M rather than measuring himself, describes the same shape in cycles rather than nanoseconds: roughly 3 cycles for an L1 hit, 14 for L2, and over 240 once main memory is involved, with the explicit caveat that the exact counts belong to that processor and only the "roughly an order of magnitude per level" pattern travels (["Part 2: CPU caches", §3.2](https://lwn.net/Articles/252125/)).
 
 ## Locality is the only reason any of this is worth exploiting
 
@@ -356,7 +356,7 @@ padded (own line):    [...] ms
 unpadded is [...]x slower than padded
 ```
 
-Across repeated runs here the unpadded version consistently took two and a half to three times as long as the padded one, with four threads and no lock, semaphore or `Interlocked` call anywhere in either version — every counter belongs to exactly one thread, so there is nothing to synchronize. The slowdown is a property of the hardware's coherence protocol, not of the program's logic, which is exactly why it survives code review: nothing about `counters[id]++` looks wrong.
+**No lock anywhere, and the hardware still slows down.** Across repeated runs here the unpadded version consistently took two and a half to three times as long as the padded one, with four threads and no lock, semaphore or `Interlocked` call anywhere in either version — every counter belongs to exactly one thread, so there is nothing to synchronize. The slowdown is a property of the hardware's coherence protocol, not of the program's logic, which is exactly why it survives code review: nothing about `counters[id]++` looks wrong.
 
 <figure class="diagram">
 <svg viewBox="0 0 340 300" role="img" aria-labelledby="fs-title fs-desc">
@@ -488,7 +488,50 @@ struct-of-arrays:  [...] ns/particle
 AoS is [...]x slower than SoA
 ```
 
-Two million particles at 64 bytes each is 128 MB as an array of structs, well past this machine's 16 MB L3 either way, so both versions are bound by how fast the memory bus can deliver lines rather than by anything in L1 or L2. The struct-of-arrays version only ever fetches the four float arrays the loop touches — 32 MB total — while the array-of-structs version fetches the full 128 MB, three-quarters of it color, normal and id fields the physics step never reads, and it measured two to three times slower here across several runs. Choosing `struct` over `class` for `Particle` already matters on its own terms, laying the sixteen fields inline in one block instead of scattering `Particle` objects across the heap behind pointers, which the [space complexity](/complexity/space-complexity/#what-an-object-actually-costs-struct-vs-class-in-an-array) article measures directly; struct-of-arrays goes one step further and stops paying for fields a given loop never reads at all. Passing a slice of one of those parallel arrays to a helper without copying it is a separate article's subject in its own right, one this series has not reached yet.
+**Two million particles, one fetching four times as much as it needs.** Two million particles at 64 bytes each is 128 MB as an array of structs, well past this machine's 16 MB L3 either way, so both versions are bound by how fast the memory bus can deliver lines rather than by anything in L1 or L2. The struct-of-arrays version only ever fetches the four float arrays the loop touches — 32 MB total — while the array-of-structs version fetches the full 128 MB, three-quarters of it color, normal and id fields the physics step never reads, and it measured two to three times slower here across several runs. Choosing `struct` over `class` for `Particle` already matters on its own terms, laying the sixteen fields inline in one block instead of scattering `Particle` objects across the heap behind pointers, which the [space complexity](/complexity/space-complexity/#what-an-object-actually-costs-struct-vs-class-in-an-array) article measures directly; struct-of-arrays goes one step further and stops paying for fields a given loop never reads at all. Passing a slice of one of those parallel arrays to a helper without copying it is a separate article's subject in its own right, one this series has not reached yet.
+
+<figure class="diagram">
+<svg viewBox="0 0 340 300" role="img" aria-labelledby="soa-title soa-desc">
+<title id="soa-title">Array-of-structs fetches every field in the line; struct-of-arrays fetches only the fields a loop reads</title>
+<desc id="soa-desc">Top: one 64-byte Particle struct drawn as sixteen packed fields, four highlighted as the fields the physics step reads and twelve shown as unused payload the loop still has to fetch alongside them. Bottom: the same four fields as four separate arrays, with no unused payload sitting between them.</desc>
+<text x="10" y="18" class="d-bold">Array-of-structs: one 64-byte struct per particle</text>
+<rect x="10" y="26" width="20" height="30" class="d-box-good"/>
+<rect x="30" y="26" width="20" height="30" class="d-box-good"/>
+<rect x="50" y="26" width="20" height="30" class="d-box-good"/>
+<rect x="70" y="26" width="20" height="30" class="d-box-good"/>
+<rect x="90" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="110" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="130" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="150" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="170" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="190" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="210" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="230" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="250" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="270" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="290" y="26" width="20" height="30" class="d-box-bad"/>
+<rect x="310" y="26" width="20" height="30" class="d-box-bad"/>
+<text x="20" y="46" text-anchor="middle" class="d-mono d-small">X</text>
+<text x="40" y="46" text-anchor="middle" class="d-mono d-small">Y</text>
+<text x="60" y="46" text-anchor="middle" class="d-mono d-small">Vx</text>
+<text x="80" y="46" text-anchor="middle" class="d-mono d-small">Vy</text>
+<text x="10" y="76" class="d-small">Green: the four fields the physics step reads.</text>
+<text x="10" y="92" class="d-small">Red: color, normal, flags, id, scale, life — fetched</text>
+<text x="10" y="108" class="d-small">anyway because they share the same 64-byte line.</text>
+<text x="10" y="144" class="d-bold">Struct-of-arrays: four separate arrays</text>
+<rect x="10" y="152" width="70" height="34" class="d-box-good"/>
+<rect x="90" y="152" width="70" height="34" class="d-box-good"/>
+<rect x="170" y="152" width="70" height="34" class="d-box-good"/>
+<rect x="250" y="152" width="70" height="34" class="d-box-good"/>
+<text x="45" y="174" text-anchor="middle" class="d-mono d-small">X[]</text>
+<text x="125" y="174" text-anchor="middle" class="d-mono d-small">Y[]</text>
+<text x="205" y="174" text-anchor="middle" class="d-mono d-small">Vx[]</text>
+<text x="285" y="174" text-anchor="middle" class="d-mono d-small">Vy[]</text>
+<text x="10" y="210" class="d-small">Only the arrays a loop touches ever move; there is</text>
+<text x="10" y="226" class="d-small">no unused payload packed in next to them.</text>
+</svg>
+<figcaption>Figure 3. Array-of-structs fetches all sixteen fields of every line it touches; struct-of-arrays fetches only the four arrays the physics loop reads.</figcaption>
+</figure>
 
 :::pitfall
 Struct-of-arrays is not free. `p[i].X += p[i].Vx` becomes four array reads and two array writes at four different indices, the four arrays have to stay the same length by convention rather than by the type system, and a method that used to take one `Particle` now takes four parallel spans. It earns its complexity when a hot loop demonstrably reads a narrow slice of a wide record's fields, not as a default layout for every struct.

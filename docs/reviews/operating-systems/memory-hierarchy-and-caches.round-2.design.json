@@ -1,0 +1,35 @@
+{
+  "article": "operating-systems/memory-hierarchy-and-caches",
+  "route": "/operating-systems/memory-hierarchy-and-caches/",
+  "round": 2,
+  "role": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://www.abhik.ai/concepts/systems/cpu-cache-lines",
+    "https://timmastny.com/blog/false-sharing/"
+  ],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": true,
+  "screenshotsOpened": [
+    "desktop-light-fold.png", "desktop-light-part01.png", "desktop-light-part02.png", "desktop-light-part03.png",
+    "desktop-light-part04.png", "desktop-light-part05.png", "desktop-light-part06.png", "desktop-light-part07.png",
+    "desktop-light-part08.png", "desktop-light-part09.png", "desktop-light-part10.png", "desktop-light-part11.png",
+    "mobile-dark-fold.png", "mobile-dark-part01.png", "mobile-dark-part02.png", "mobile-dark-part03.png",
+    "mobile-dark-part04.png", "mobile-dark-part05.png", "mobile-dark-part06.png", "mobile-dark-part07.png",
+    "mobile-dark-part08.png", "mobile-dark-part09.png", "mobile-dark-part10.png", "mobile-dark-part11.png",
+    "mobile-dark-part12.png", "mobile-dark-part13.png", "mobile-dark-part14.png", "mobile-dark-part15.png",
+    "mobile-dark-part16.png", "mobile-dark-part17.png",
+    "desktop-dark-fold.png", "desktop-dark-part04.png", "desktop-dark-part09.png",
+    "mobile-light-fold.png", "mobile-light-part04.png", "mobile-light-part10.png"
+  ],
+  "justification": "Ran node tools/gate.mjs operating-systems/memory-hierarchy-and-caches from PowerShell (waited ~30s on the verify lock, held by the sql-injection-and-parameters article) and read .verify/operating-systems__memory-hierarchy-and-caches/gate.json: real Lighthouse 100/100/100/100 (up from round 1's 96/100/100/100), 0 console errors, 0 broken internal links, 0px mobile overflow, 60 screenshots captured. Opened every desktop-light and mobile-dark part plus fold, and fold + two parts each of desktop-dark and mobile-light (36 images total), reading the diagrams and callouts specifically at both the point right after the ladder section (where Figure 1 sits) and the struct-of-arrays section (where the new Figure 3 sits) in every combination. Before opening round 1's own review files, I formed an independent judgement: rendering is clean and consistent across all four theme/viewport combinations, the h1/lede/byline/TOC/'before you read' block line up correctly, code blocks keep syntax highlighting and a distinct monospace OUTPUT panel in both themes (mobile code blocks scroll horizontally within their own box rather than widening the page, which is this site's established convention, confirmed by 0px measured overflow), all three SVG diagrams (memory-hierarchy pyramid, false-sharing cache-line bounce, and the new array-of-structs-vs-struct-of-arrays field layout) stay legible at 390px with correct colors and borders in dark mode, the pitfall callout and all five exercise callouts use consistent theme-correct left-border styling with solutions correctly collapsed (verified no output or answer text leaks above the 'Show solution' disclosure in any of the five), and the sources list/attribution box/corrections link/prev-article card/related-articles cards/keep-reading grid/footer all render as on other published articles. Only then did I open round 1's three reviews: the design critic's two minor issues (no diagram for the struct-of-arrays section, and long sections with no scanning anchor) are both genuinely fixed rather than papered over -- a full Figure 3 SVG was added with the same box-diagram/caption convention as Figures 1-2, and bolded lead-in sentences were added to the ladder section, the false-sharing section, and (as a bonus, matching the pattern the locality section already used) the struct-of-arrays section too. The technical critic's citation-attribution finding and the AdSense critic's missing-toolchain finding are outside this role's remit but I confirm both are also fixed in the body text (the eight-core/.NET 10.0.401/Windows 11 sentence now appears where the cache sizes are first printed, and the L1/L2/RAM cost table is now correctly attributed to Intel/Pentium M with the right §3.2 citation). No new issues surfaced on this fresh pass. Compared against the two pages that currently rank for this topic: abhik.ai's 'CPU Cache Lines' guide (an interactive cache simulator, explicitly desktop-first, no confirmed dark mode) and timmastny.com's false-sharing post (a clean but plain single-diagram blog template with no dark mode and a benchmark table that would need horizontal scroll on phones). This article's rhythm of prose -> runnable code -> real OUTPUT panel -> diagram -> exercise, now with a diagram behind each of the three measured effects instead of two, together with genuinely tuned light/dark and desktop/mobile layouts and zero rendering defects, is at least as polished as timmastny.com's page and closes the one design gap round 1 found relative to it. It still does not attempt abhik.ai's bespoke interactive simulator, which is a deliberate scope difference rather than a defect and is the one thing keeping this below a 10; with round 1's two nits now resolved and nothing new found, the article clears 8.5 with real room to spare.",
+  "issues": [],
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-130-memory-hierarchy-and-caches\\docs\\reviews\\operating-systems\\memory-hierarchy-and-caches.round-2.design.json"
+}
