@@ -1,0 +1,47 @@
+{
+  "article": "src/content/articles/testing/code-coverage.md",
+  "route": "/testing/code-coverage/",
+  "round": 3,
+  "role": "design",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage",
+    "https://linearb.io/blog/what-is-branch-coverage"
+  ],
+  "lighthouse": { "performance": 100, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": true,
+  "screenshotsOpened": [
+    "desktop-light-fold",
+    "desktop-light-part01", "desktop-light-part02", "desktop-light-part03", "desktop-light-part04",
+    "desktop-light-part05", "desktop-light-part06", "desktop-light-part07", "desktop-light-part08",
+    "desktop-light-part09", "desktop-light-part10", "desktop-light-part11", "desktop-light-part12",
+    "desktop-light-part13",
+    "mobile-dark-fold",
+    "mobile-dark-part01", "mobile-dark-part02", "mobile-dark-part03", "mobile-dark-part04",
+    "mobile-dark-part05", "mobile-dark-part06", "mobile-dark-part07", "mobile-dark-part08",
+    "mobile-dark-part09", "mobile-dark-part10", "mobile-dark-part11", "mobile-dark-part12",
+    "mobile-dark-part13", "mobile-dark-part14", "mobile-dark-part15", "mobile-dark-part16",
+    "mobile-dark-part17", "mobile-dark-part18", "mobile-dark-part19",
+    "desktop-dark-fold", "desktop-dark-part01", "desktop-dark-part06", "desktop-dark-part11",
+    "mobile-light-fold", "mobile-light-part01", "mobile-light-part07", "mobile-light-part10", "mobile-light-part14"
+  ],
+  "verifyNotes": "node tools/gate.mjs testing/code-coverage (lockWaitSeconds=0, run-code 99.7s, verify-page 49s): check-article ok (0 errors, 20 warnings, all code-width on text/bash OUTPUT blocks, words=5634, prose=3052, code=40 blocks/20 run, fig=1, flesch=48.9 — one more executed block than round 2's 36/18 pair, consistent with the technical critic's round-2 fix to the mutant exercise). run-code ok (blocks=40, executed=20, 0 failures) — this is the actual gate.json evidence, read directly (not a claim). verify-page ok: lighthouse 100/100/100/100, consoleErrors=0, brokenInternalLinks=0, mobileOverflowPx=0, 68 screenshots. Evidence file: .verify/testing__code-coverage/gate.json.",
+  "justification": "Forming a fresh judgement first, independent of the prior rounds: this remains one of the strongest-rendering pages in the pillar and is still clearly ahead of the current top results for 'code coverage explained' on presentation. I re-fetched Microsoft Learn's own coverage tutorial again this round (plain prose, dotnetcli/csharp/xml blocks, Linux/Windows tabs, one lightboxed screenshot at the very end, no dark mode) and LinearB's 'What Is Branch Coverage' post (hero image, author photo, pull-quote images, 'Get started free'/'Book a Demo' CTAs, a single unexecuted Java snippet, no dark mode). This article instead opens on a runnable, falsifiable claim and keeps a tight code/output/prose rhythm with zero marketing chrome throughout. Heading hierarchy (six H2s, two H3s under 'What full branch coverage still can't tell you') matches the desktop 'On this page' TOC and the mobile collapsible TOC exactly. The single SVG diagram (Figure 1, two stacked number lines) is genuinely informative, stays inside the phone-width budget, keeps its caption directly under the figure, and is fully theme-correct: opened in both mobile-dark and desktop-dark, the boundary dot's `d-fill-bad` class remaps from a saturated red in light mode to a legible coral in dark mode with no hard-coded colors bleeding through. Output panels keep the operative comparison fields (`Expected:`/`Actual:`, the coverage percentages) inside the visible ~40-column phone window; only trailing `Skipped:`/`Not Run:`/`Time:` fields scroll off, matching the site's documented phone trade-off. Callouts (one `:::note`, four `:::exercise` blocks with collapsed solutions) render identically and correctly in all four theme/device combinations, and no exercise leaks its output above the fold. Sources, byline, breadcrumbs, prev/next, three related-by-tag cards and 'Keep reading' all render correctly. `docs/crosslinks/testing/code-coverage.md` still correctly documents that no planned-but-unpublished links were needed (both referenced siblings are published). Having formed that view, I opened all three round-2 reviews and re-checked their findings against the current article and this round's fresh gate run rather than taking the round-2 notes on faith. My own round-2 minor (long `FreezingTests`/`HeatAdvisoryTests` method names — `BelowThreshold_IsFreezing`, `AboveThreshold_NotFreezing` — clipping by a few characters on a 390px phone) is genuinely fixed, not papered over: every sibling test name in this section is now renamed to a shorter pattern (`Below32_IsFreezing` 18 chars, `Above32_NotFreezing` 19, `At32_IsFreezing` 15, `At35C_IsHeatAdvisory` 20, `At40C_IsExtremeHeat` 19, `At20C_IsNormal` 14, `At38C_IsExtremeHeat` 19, `Below0_IsSevere` 15), and I confirmed on mobile-dark-part07 through part13 and mobile-light-part07 that every one of these now renders in full, with no mid-word clipping in either the code block or its echoed OUTPUT panel line. The technical critic's round-2 blocker (the 'Predict which mutant survives' exercise wrongly claiming a 32->33 threshold mutation is killed) is also fixed at the article-content level in a way that materially affects this page's structure and rhythm: I read the current solution text directly (desktop-light-part06/mobile-dark-part06) and it now correctly states 'Mutation 1 survives... a tempting guess is \"killed\"... but the three tests' inputs are 20, 32 and 50... None of the three lands there' — a more honest, on-theme answer that reads better than a wrong one would have. run-code's executed-block count rose from 18 (round 2) to 20 (round 3), consistent with that fix. Forming my own independent view of the whole page turned up one small thing neither of the two prior design rounds flagged: the very first two runnable examples in the article ('weak' and 'tight', `TemperatureTests`) use `CelsiusToFahrenheit_BoilingPoint_ReturnsNonZero` and `CelsiusToFahrenheit_BoilingPoint_Returns212` — at 47-48 characters, these are longer than the `FreezingTests` names that were flagged and fixed, and they clip past their distinguishing suffix ('NonZero' vs '212') on mobile (mobile-dark-part01/02, mobile-light-part01), the same class of issue just fixed two sections later. It is a pre-existing, unchanged, and genuinely minor nit — each name appears in only one isolated code block (not stacked against a sibling the reader needs to tell apart, unlike the `FreezingTests` case), and the prose immediately below each block explains exactly what the test does regardless of its name — so it does not cap this round's score, but it is real and worth naming now that the fix pattern for the same problem is proven elsewhere on this very page. With the round-2 blocker and minor both resolved at the root, mechanical checks entirely clean, and only this one small pre-existing nit remaining, this page comfortably clears the 8.5 'ships with nits only' bar and edges toward the top of that band.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Lines ~52-57 and ~152-156 (`id=weak` and `id=tight` blocks, `TemperatureTests.CelsiusToFahrenheit_BoilingPoint_ReturnsNonZero` / `_Returns212`) — visible on desktop-light-part01/02, mobile-dark-part01/02 and mobile-light-part01",
+      "problem": "`CelsiusToFahrenheit_BoilingPoint_ReturnsNonZero` (48 chars) and `CelsiusToFahrenheit_BoilingPoint_Returns212` (44 chars) are longer than the `FreezingTests`/`HeatAdvisoryTests` method names this same round already shortened for exactly this reason. On a 390px phone the distinguishing suffix (`ReturnsNonZero` vs `Returns212`) clips out of view in both the code block and the echoed `TemperatureTests.CelsiusToFahrenheit_Boili...` OUTPUT line, the same failure mode round 2's design review flagged and this round fixed for the Freezing/HeatAdvisory examples.",
+      "fixLooksLike": "Apply the same shortening pattern already used two sections later, e.g. `BoilingPoint_NonZero` / `BoilingPoint_Returns212` (or `Boiling_NonZero` / `Boiling_212`), so the part that distinguishes the two tests stays visible without scrolling, consistent with how `Below32_IsFreezing`/`Above32_NotFreezing` were fixed."
+    }
+  ],
+  "crosslinksFile": "docs/crosslinks/testing/code-coverage.md exists and correctly explains that no planned-but-unpublished links were needed: both referenced siblings (unit-testing-fundamentals, property-based-testing) are already published. No penalty for missing body links.",
+  "round2IssuesVerified": {
+    "design.minor.long-method-names": "FIXED — FreezingTests/HeatAdvisoryTests method names shortened to 14-20 chars each; confirmed rendering in full on mobile-dark and mobile-light with no clipping",
+    "technical.blocker.wrong-mutant-answer": "FIXED (observed as a side effect while reading the article for my own review) — the 'Predict which mutant survives' solution now correctly says mutation 1 survives, with a corrected explanation; run-code executed-block count rose from 18 to 20 consistent with this edit",
+    "adsense.round2.no-open-issues": "Round 2 AdSense review had no open issues; nothing to re-verify there"
+  }
+}
