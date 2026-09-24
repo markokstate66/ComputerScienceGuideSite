@@ -173,7 +173,8 @@ CIDR notation writes a network as an address followed by `/` and a decimal prefi
 
 ```csharp run id=mask-table
 static uint MaskFor(int prefix) =>
-    prefix == 0 ? 0u : 0xFFFFFFFFu << (32 - prefix);
+    prefix == 0 ? 0u :
+        0xFFFFFFFFu << (32 - prefix);
 
 static string ToDotted(uint value) =>
     string.Join(".",
@@ -210,18 +211,20 @@ static uint ToUInt(IPAddress a) =>
 static IPAddress ToAddr(uint v) =>
     new(BitConverter.GetBytes(v).Reverse().ToArray());
 static uint Mask(int prefix) =>
-    prefix == 0 ? 0u : 0xFFFFFFFFu << (32 - prefix);
+    prefix == 0 ? 0u :
+        0xFFFFFFFFu << (32 - prefix);
 
 static void Describe(string cidr)
 {
     string[] parts = cidr.Split('/');
-    uint addr = ToUInt(IPAddress.Parse(parts[0]));
+    uint addr = ToUInt(
+        IPAddress.Parse(parts[0]));
     int prefix = int.Parse(parts[1]);
     uint mask = Mask(prefix);
     uint network = addr & mask;
     uint broadcast = network | ~mask;
-    long usable =
-        prefix >= 31 ? 0 : (1L << (32 - prefix)) - 2;
+    long usable = prefix >= 31 ? 0 :
+        (1L << (32 - prefix)) - 2;
     Console.WriteLine(cidr);
     Console.WriteLine($"  network   {ToAddr(network)}");
     Console.WriteLine($"  broadcast {ToAddr(broadcast)}");
@@ -265,9 +268,11 @@ static uint ToUInt(IPAddress a) =>
 static IPAddress ToAddr(uint v) =>
     new(BitConverter.GetBytes(v).Reverse().ToArray());
 static uint Mask(int prefix) =>
-    prefix == 0 ? 0u : 0xFFFFFFFFu << (32 - prefix);
+    prefix == 0 ? 0u :
+        0xFFFFFFFFu << (32 - prefix);
 
-uint addr = ToUInt(IPAddress.Parse("198.51.100.200"));
+uint addr = ToUInt(
+    IPAddress.Parse("198.51.100.200"));
 int prefix = 28;
 uint mask = Mask(prefix);
 uint network = addr & mask;
@@ -322,7 +327,7 @@ Both `TryParse` and the plain `Parse` accepted the misaligned pair and quietly n
 
 ## Classless addressing replaced three fixed sizes
 
-CIDR is called "classless" because it replaced a scheme with named, fixed-size classes. RFC 791 itself defines three of them by their leading bits: "in class a, the high order bit is zero, the next 7 bits are the network, and the last 24 bits are the local address," with class B taking 14 network bits and class C taking 21 ([RFC 791, section 3.2](https://www.rfc-editor.org/rfc/rfc791.html#section-3.2)). That gave exactly three possible network sizes: about 16 million addresses, 65,536, or 254. RFC 4632 spells out why that stopped working, and the gap between the last two sizes is the whole problem: "Class C, with a maximum of 254 host addresses, is too small, whereas Class B, which allows up to 65534 host addresses, is too large for most organizations but was the best fit available for use with subnetting" ([RFC 4632, section 2](https://www.rfc-editor.org/rfc/rfc4632.html#section-2)). An organization with, say, 300 hosts had no class sized for it: it either wasted a Class B built for 65,534 or split itself across multiple Class C blocks, and the resulting flood of separate Class B and Class C allocations threatened both the pool of remaining addresses and the size of the global routing table. A prefix length picks any network size, not just three, and two adjacent blocks of the same size can be summarized as one shorter prefix in a router's table (`203.0.112.0/24` and `203.0.113.0/24` aggregate to `203.0.112.0/23`), which is the "aggregation" half of what RFC 4632's title promises. Nothing about the bit arithmetic in this article needed classes to exist; they only explain why "network" used to mean one of three fixed shapes instead of a size you choose.
+CIDR is called "classless" because it replaced a scheme with named, fixed-size classes. RFC 791 itself defines three of them by their leading bits: "in class a, the high order bit is zero, the next 7 bits are the network, and the last 24 bits are the local address," with class B taking 14 network bits and class C taking 21 ([RFC 791, section 3.2](https://www.rfc-editor.org/rfc/rfc791.html#section-3.2)). That gave exactly three possible usable-host counts per network: about 16,777,214, 65,534, or 254. RFC 4632 spells out why that stopped working, and the gap between the last two sizes is the whole problem: "Class C, with a maximum of 254 host addresses, is too small, whereas Class B, which allows up to 65534 host addresses, is too large for most organizations but was the best fit available for use with subnetting" ([RFC 4632, section 2](https://www.rfc-editor.org/rfc/rfc4632.html#section-2)). An organization with, say, 300 hosts had no class sized for it: it either wasted a Class B built for 65,534 or split itself across multiple Class C blocks, and the resulting flood of separate Class B and Class C allocations threatened both the pool of remaining addresses and the size of the global routing table. A prefix length picks any network size, not just three, and two adjacent blocks of the same size can be summarized as one shorter prefix in a router's table (`203.0.112.0/24` and `203.0.113.0/24` aggregate to `203.0.112.0/23`), which is the "aggregation" half of what RFC 4632's title promises. Nothing about the bit arithmetic in this article needed classes to exist; they only explain why "network" used to mean one of three fixed shapes instead of a size you choose.
 
 ::::exercise[Find the bug in one line]
 This function is meant to compute a subnet mask for any prefix length from 0 to 32, the same idea as `MaskFor` earlier but written as a single expression, without the `prefix == 0` special case:
@@ -381,7 +386,8 @@ static int PrefixFor(int hostsNeeded)
     ("mgmt", 20),
 ];
 
-uint cursor = ToUInt(IPAddress.Parse("203.0.113.0"));
+uint cursor = ToUInt(
+    IPAddress.Parse("203.0.113.0"));
 Console.WriteLine("tier  need  cidr     range");
 foreach (var (name, hosts) in
     tiers.OrderByDescending(t => t.hosts))
@@ -398,8 +404,9 @@ foreach (var (name, hosts) in
         $"{name,-4}  {hosts,4}  {cidr,-8} {range}");
     cursor = network + size;
 }
-uint blockEnd =
-    ToUInt(IPAddress.Parse("203.0.113.0")) + 256;
+uint blockEnd = ToUInt(
+    IPAddress.Parse("203.0.113.0"))
+    + 256;
 Console.WriteLine(
     $"free     -  .{LastOctet(cursor)}, " +
     $"{blockEnd - cursor} addresses");
@@ -480,8 +487,8 @@ using System.Net;
 
 var block = IPNetwork.Parse(
     "172.16.0.0/12");
-uint mask =
-    0xFFFFFFFFu << (32 - block.PrefixLength);
+uint mask = 0xFFFFFFFFu <<
+    (32 - block.PrefixLength);
 uint baseValue = BitConverter.ToUInt32(
     block.BaseAddress.GetAddressBytes()
         .Reverse().ToArray());
