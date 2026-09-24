@@ -42,9 +42,9 @@
   "totals": {
     "planned": 67,
     "passed": 50,
-    "inReview": 10,
+    "inReview": 17,
     "drafted": 0,
-    "notStarted": 7,
+    "notStarted": 0,
     "cut": 0
   },
   "articles": [
@@ -1718,13 +1718,44 @@
       "wave": "B",
       "shape": "Q",
       "title": "Exception Handling That Helps You Debug",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": [],
+      "state": "in-review",
+      "round": 2,
+      "scores": {
+        "technical": 8.7,
+        "adsense": 9.3,
+        "design": 9.2
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "awaiting owner playtest and /ship (merge #124 first)",
+        "wave-3 cross-links"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-24",
+          "technical": 7.7,
+          "adsense": 8,
+          "design": 9.2,
+          "pass": false,
+          "commit": "fb0f0c9"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-24",
+          "technical": 8.7,
+          "adsense": 9.3,
+          "design": 9.2,
+          "pass": true,
+          "commit": "3073b8f"
+        }
+      ],
       "module": "A-11",
       "dependsOnHard": [],
       "linksSoft": [],
@@ -1732,8 +1763,10 @@
         "stack-trace output must wildcard paths/line numbers"
       ],
       "phaseWave": 1,
-      "issue": null,
-      "pr": null
+      "issue": 125,
+      "pr": 132,
+      "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
+      "batch": "fanout-2026-09-24"
     },
     {
       "pillar": "csharp-dotnet",
@@ -1742,13 +1775,35 @@
       "wave": "B",
       "shape": "I",
       "title": "Span<T> and Memory<T>: Slicing Without Allocating",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": [],
+      "state": "in-review",
+      "round": 1,
+      "scores": {
+        "technical": 9.2,
+        "adsense": 8.7,
+        "design": 9.2
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "awaiting owner playtest and /ship (merge #124 first)",
+        "wave-3 cross-links"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-24",
+          "technical": 9.2,
+          "adsense": 8.7,
+          "design": 9.2,
+          "pass": true,
+          "commit": "ddeccd9"
+        }
+      ],
       "module": "A-12",
       "dependsOnHard": [
         "csharp-dotnet/strings-and-unicode"
@@ -1758,8 +1813,10 @@
         "ref struct diagnostic IDs must come from a real compile"
       ],
       "phaseWave": 2,
-      "issue": null,
-      "pr": null
+      "issue": 126,
+      "pr": 133,
+      "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
+      "batch": "fanout-2026-09-24"
     },
     {
       "pillar": "databases",
@@ -2002,20 +2059,44 @@
       "wave": "B",
       "shape": "R",
       "title": "GROUP BY, HAVING and Window Functions",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": [],
+      "state": "in-review",
+      "round": 1,
+      "scores": {
+        "technical": 8.9,
+        "adsense": 9.2,
+        "design": 8.7
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "awaiting owner playtest and /ship (merge #124 first)",
+        "wave-3 cross-links"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-24",
+          "technical": 8.9,
+          "adsense": 9.2,
+          "design": 8.7,
+          "pass": true,
+          "commit": "4915008"
+        }
+      ],
       "module": "A-13",
       "dependsOnHard": [],
       "linksSoft": [],
       "flags": [],
       "phaseWave": 1,
-      "issue": null,
-      "pr": null
+      "issue": 127,
+      "pr": 134,
+      "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
+      "batch": "fanout-2026-09-24"
     },
     {
       "pillar": "databases",
@@ -2024,13 +2105,44 @@
       "wave": "B",
       "shape": "D",
       "title": "SQL Injection and Parameterized Queries in .NET",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": [],
+      "state": "in-review",
+      "round": 2,
+      "scores": {
+        "technical": 9,
+        "adsense": 9.2,
+        "design": 9.3
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "awaiting owner playtest and /ship (merge #124 first)",
+        "wave-3 cross-links"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-24",
+          "technical": 7,
+          "adsense": 9,
+          "design": 9.3,
+          "pass": false,
+          "commit": "0088a46"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-24",
+          "technical": 9,
+          "adsense": 9.2,
+          "design": 9.3,
+          "pass": true,
+          "commit": "d5a44d0"
+        }
+      ],
       "module": "A-14",
       "dependsOnHard": [],
       "linksSoft": [
@@ -2038,8 +2150,10 @@
       ],
       "flags": [],
       "phaseWave": 1,
-      "issue": null,
-      "pr": null
+      "issue": 128,
+      "pr": 135,
+      "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
+      "batch": "fanout-2026-09-24"
     },
     {
       "pillar": "networking",
@@ -2321,20 +2435,62 @@
       "wave": "B",
       "shape": "W",
       "title": "IP Addresses, Subnets and CIDR",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": [],
+      "state": "in-review",
+      "round": 3,
+      "scores": {
+        "technical": 9.3,
+        "adsense": 9.2,
+        "design": 8.7
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "awaiting owner playtest and /ship (merge #124 first)",
+        "wave-3 cross-links"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-24",
+          "technical": 6.5,
+          "adsense": 6,
+          "design": 8.7,
+          "pass": false,
+          "commit": "7369f36"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-24",
+          "technical": 8.7,
+          "adsense": 9.2,
+          "design": 8,
+          "pass": false,
+          "commit": "1a7df26"
+        },
+        {
+          "round": 3,
+          "date": "2026-09-24",
+          "technical": 9.3,
+          "adsense": 9.2,
+          "design": 8.7,
+          "pass": true,
+          "commit": "2e25ff4"
+        }
+      ],
       "module": "A-15",
       "dependsOnHard": [],
       "linksSoft": [],
       "flags": [],
       "phaseWave": 1,
-      "issue": null,
-      "pr": null
+      "issue": 129,
+      "pr": 136,
+      "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
+      "batch": "fanout-2026-09-24"
     },
     {
       "pillar": "operating-systems",
@@ -2590,13 +2746,45 @@
       "wave": "B",
       "shape": "I",
       "title": "The Memory Hierarchy and CPU Caches",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": [],
+      "state": "in-review",
+      "round": 2,
+      "scores": {
+        "technical": 8.8,
+        "adsense": 8.7,
+        "design": 9
+      },
+      "codePass": true,
+      "lighthouse": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "awaiting owner playtest and /ship (merge #124 first)",
+        "wave-3 cross-links",
+        "adsense major: Non-obvious factual claim about hardware prefetcher behavior has no inline citation link (unlike every other Drepper reference in the piece), and its vague back"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-24",
+          "technical": 6.5,
+          "adsense": 8.6,
+          "design": 8.7,
+          "pass": false,
+          "commit": "497f28c"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-24",
+          "technical": 8.8,
+          "adsense": 8.7,
+          "design": 9,
+          "pass": true,
+          "commit": "576c93f"
+        }
+      ],
       "module": "A-16",
       "dependsOnHard": [],
       "linksSoft": [],
@@ -2604,8 +2792,10 @@
         "latency figures must be cited or measured and labelled; cache-line size only if read from the machine or vendor docs"
       ],
       "phaseWave": 1,
-      "issue": null,
-      "pr": null
+      "issue": 130,
+      "pr": 137,
+      "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
+      "batch": "fanout-2026-09-24"
     },
     {
       "pillar": "version-control",
@@ -3075,13 +3265,53 @@
       "wave": "B",
       "shape": "D",
       "title": "Code Coverage: What the Number Means",
-      "state": "planned",
-      "round": 0,
-      "scores": null,
-      "codePass": null,
-      "lighthouse": null,
-      "openIssues": [],
-      "history": [],
+      "state": "in-review",
+      "round": 3,
+      "scores": {
+        "technical": 9,
+        "adsense": 9,
+        "design": 9
+      },
+      "codePass": true,
+      "lighthouse": [
+        99,
+        100,
+        100,
+        100
+      ],
+      "openIssues": [
+        "awaiting owner playtest and /ship (merge #124 first)",
+        "wave-3 cross-links"
+      ],
+      "history": [
+        {
+          "round": 1,
+          "date": "2026-09-24",
+          "technical": 4.5,
+          "adsense": 5,
+          "design": 8.5,
+          "pass": false,
+          "commit": "2726567"
+        },
+        {
+          "round": 2,
+          "date": "2026-09-24",
+          "technical": 7,
+          "adsense": 9,
+          "design": 8.5,
+          "pass": false,
+          "commit": "8762568"
+        },
+        {
+          "round": 3,
+          "date": "2026-09-24",
+          "technical": 9,
+          "adsense": 9,
+          "design": 9,
+          "pass": true,
+          "commit": "27d9d36"
+        }
+      ],
       "module": "A-17",
       "dependsOnHard": [],
       "linksSoft": [],
@@ -3089,8 +3319,10 @@
         "UNVERIFIED: coverage collection from a file-based xUnit program under run-code; prove in round 1 or use a real console transcript"
       ],
       "phaseWave": 1,
-      "issue": null,
-      "pr": null
+      "issue": 131,
+      "pr": 138,
+      "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
+      "batch": "fanout-2026-09-24"
     }
   ],
   "note": "Batch 1 stopped by the owner on 2026-09-18 to stay within the usage limit. Work continues through the GitHub issue queue (see .claude/commands/work-next.md and docs/ARTICLE_GAUNTLET.md).",
@@ -3120,7 +3352,7 @@
       "wave": 1,
       "score": null,
       "openIssues": [
-        "add 19 terms listed in docs/ARTICLES_PLAN.md §5"
+        "add terms requested in docs/INTEGRATOR_REQUESTS.md (2026-09-24 wave-B fan-out) plus ARTICLES_PLAN §5"
       ]
     },
     {
@@ -3245,6 +3477,10 @@
     {
       "article": "all",
       "text": "check-article warnings on published articles (British spellings in 8 places, 45 sources never linked inline, 131 long code-line blocks): review via node tools/check-article.mjs --all; not edited per the no-edit rule"
+    },
+    {
+      "article": "(tooling)",
+      "text": "dotnet-coverage was installed as a global .NET tool on the owner machine by the code-coverage writer (needed to produce real coverage reports)"
     }
   ]
 }

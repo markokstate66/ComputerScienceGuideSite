@@ -2,6 +2,15 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-24 — Plan, article harness, and parallel fan-out of the last 7 wave-B articles
+
+- `docs/ARTICLES_PLAN.md` written (17 unpublished articles as modules, core modules, definition of done, dependency graph, waves). `docs/STATUS.json` extended additively.
+- Harness: `tools/check-article.mjs` (0 errors on all 50 published articles), `tools/gate.mjs` (check-article + run-code + verify-page, one `gate.json`, machine-wide verify lock; tested concurrently and in a worktree), `tools/worktree.mjs` (safe removal that unlinks the `node_modules` junction first). The main checkout's `node_modules` was found completely empty at the start of the session and reinstalled with `npm ci`.
+- O-1 adopted at the owner's say-so: article PRs keep `draft: true`; `/ship` flips it (gauntlet, work-next, ship updated).
+- At the owner's request ("lets fan them"), ran the 7 not-started articles (#125–#131) as one workflow in 7 worktrees: 70 subagents (Sonnet writers/critics, Haiku checkpoint commits), 9.64M subagent tokens, about 2 h 6 min. All 7 passed within 3 rounds: exceptions r2 (8.7/9.3/9.2), span-and-memory r1 (9.2/8.7/9.2), aggregation-and-window-functions r1 (8.9/9.2/8.7), sql-injection-and-parameters r2 (9.0/9.2/9.3), ip-addresses-and-subnets r3 (9.3/9.2/8.7), memory-hierarchy-and-caches r2 (8.8/8.7/9.0), code-coverage r3 (9.0/9.0/9.0). Round-1 failures included a fabricated Fowler quote and a flaky test block in code-coverage, both caught by critics and fixed.
+- Orchestrator then ran `node tools/gate.mjs` serially on each branch: all 7 GATE PASS, Lighthouse 98–100 performance and 100 on the other three categories, 0 console errors, 0 broken links. Spot-opened two screenshots. PRs #132–#138 opened into `adsense-rebuild` (all based on #124), issues moved to `review`.
+- Side effect: the code-coverage writer installed `dotnet-coverage` as a global .NET tool on this machine.
+
 ## 2026-09-23 — Second production deploy: 7 wave-A articles + the virtual-memory hotfix
 
 At the owner's explicit instruction, following the same pattern as the first deploy (batch merge, no individual playtest).
