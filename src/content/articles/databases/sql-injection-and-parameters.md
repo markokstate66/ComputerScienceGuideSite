@@ -38,6 +38,14 @@ sources:
     url: "https://www.sqlite.org/rescode.html"
     publisher: "SQLite"
     accessed: 2026-09-24
+  - title: "Batching - Microsoft.Data.Sqlite"
+    url: "https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/batching"
+    publisher: "Microsoft Learn"
+    accessed: 2026-09-24
+  - title: "Datatypes In SQLite"
+    url: "https://www.sqlite.org/datatype3.html"
+    publisher: "SQLite"
+    accessed: 2026-09-24
 draft: true
 ---
 
@@ -150,7 +158,7 @@ The attacker still broke in with no valid password — `is_admin: 0` is Ada's ac
 
 ## The same gap reaches further than a login form
 
-A `WHERE` clause is not the only thing a closing quote can change. SQLite treats a semicolon as a statement separator inside a single batch of SQL text, and Microsoft.Data.Sqlite really will execute every statement it finds. Microsoft's own SQL injection guide shows the identical shape happening against SQL Server: submitting `Redmond';drop table OrdersTable--` builds a query where "the semicolon denotes the end of one query and the start of another," and the database "drops `OrdersTable`" right after the intended `SELECT` runs. Try the same idea against the account table:
+A `WHERE` clause is not the only thing a closing quote can change. SQLite treats a semicolon as a statement separator inside a single batch of SQL text, and [Microsoft.Data.Sqlite's batching guide](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/batching) documents exactly how far that goes: `ExecuteReader` "executes up to the first [statement] that returns results," each call to `NextResult()` runs statements up to the next one that returns results (or the end of the batch), and disposing the reader "executes any remaining statements that haven't been consumed by `NextResult()`" — so a batch is not optional extra work the library declines to do, it runs to completion as long as the reader is drained or disposed. Microsoft's own SQL injection guide names the identical shape against SQL Server: because "the semicolon (`;`) denotes the end of one query and the start of another," a single string closing a quote and adding a semicolon turns one intended query into two, and the database runs both. Try the same idea against the account table:
 
 ```csharp run id=stacked-query
 #:package Microsoft.Data.Sqlite@9.*
@@ -163,8 +171,9 @@ void Exec(string sql)
 {
     using var cmd = db.CreateCommand();
     cmd.CommandText = sql;
-    // Drain every batched statement so a later one's
-    // failure is not silently left unexecuted.
+    // NextResult() runs the batch's remaining statements
+    // one at a time; without draining it, a later statement
+    // never executes.
     using var reader = cmd.ExecuteReader();
     while (reader.NextResult()) { }
 }
@@ -493,7 +502,7 @@ Same payload, now bound as a parameter:
   []
 ```
 
-`$id` is bound as the text value `"1 OR 1=1"`, which SQLite compares against the integer `id` column and matches nothing — an empty result instead of the whole table. Unlike escaping, the fix does not depend on which character happens to be dangerous in a given spot: the value never enters the SQL text at all, so it makes no difference whether it contains a quote, a semicolon, or nothing special-looking whatsoever.
+`$id` is bound as the text value `"1 OR 1=1"`, and this is not a coincidence of that one payload failing to look like a number. [SQLite's own type documentation](https://www.sqlite.org/datatype3.html) sets the rule: comparing a value against an `INTEGER`-affinity column applies numeric affinity to the other side first, converting it *only if it looks like a well-formed number*; `"1 OR 1=1"` does not, so it stays `TEXT`, and SQLite's storage-class ordering says "an INTEGER or REAL value is less than any TEXT or BLOB value" — a `TEXT` value can never equal an `INTEGER` one, full stop. Bound as a parameter, no string the caller supplies can ever satisfy `id = $id` unless it is itself a valid integer literal, which is guaranteed by the comparison rule, not by this particular attack string missing a quote. The result is an empty set instead of the whole table. Unlike escaping, the fix does not depend on which character happens to be dangerous in a given spot: the value never enters the SQL text at all, so it makes no difference whether it contains a quote, a semicolon, or nothing special-looking whatsoever.
 
 ## What FromSqlInterpolated does that FromSqlRaw does not
 
@@ -721,4 +730,4 @@ Attacker instead reads every row with UNION:
   row: admin, p7q2vX9wZ4
 ```
 
-Error 8 is [`SQLITE_READONLY`](https://www.sqlite.org/rescode.html), "returned when an attempt is made to alter some data for which the current database connection does not have write permission." The destructive half of the attack genuinely fails: no table is dropped, no row is changed, because the connection itself cannot write, no matter what SQL text reaches it. The reader half fails to fail. A `UNION SELECT` needs no write permission at all, so the same injection that couldn't drop a table walks out with every stored password in the file, in one query, on a connection that was doing exactly what it was configured to do. [OWASP's guidance on minimizing privileges](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html) is about limiting what an attacker can reach once inside, not about stopping them from getting in, and [CWE-89's own list of consequences](https://cwe.mitre.org/data/definitions/89.html) still opens with reading confidential data — a read-only account was never going to be the thing that closes that door. That is the whole shape of least privilege as a defense: it changes what the bug is worth to whoever finds it, not whether the bug exists.
+Error 8 is [`SQLITE_READONLY`](https://www.sqlite.org/rescode.html), "returned when an attempt is made to alter some data for which the current database connection does not have write permission." The destructive half of the attack genuinely fails: no table is dropped, no row is changed, because the connection itself cannot write, no matter what SQL text reaches it. The reader half fails to fail. A `UNION SELECT` needs no write permission at all, so the same injection that couldn't drop a table walks out with every stored password in the file, in one query, on a connection that was doing exactly what it was configured to do. [OWASP's guidance on minimizing privileges](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html) is about limiting what an attacker can reach once inside, not about stopping them from getting in, and [CWE-89's own list of consequences](https://cwe.mitre.org/data/definitions/89.html) names exactly this split: it lists "Execute Unauthorized Code or Commands" first and "Read Application Data" second. A read-only connection removes the first consequence entirely — there is no write permission left to abuse — without touching the second at all, which is a sharper way to say the same thing: least privilege closes one of CWE-89's listed doors and leaves the other standing. That is the whole shape of least privilege as a defense: it changes what the bug is worth to whoever finds it, not whether the bug exists.
