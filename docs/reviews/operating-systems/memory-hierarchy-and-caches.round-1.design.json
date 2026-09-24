@@ -1,0 +1,50 @@
+{
+  "article": "operating-systems/memory-hierarchy-and-caches",
+  "route": "/operating-systems/memory-hierarchy-and-caches/",
+  "round": 1,
+  "role": "design",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://www.abhik.ai/concepts/systems/cpu-cache-lines",
+    "https://leimao.github.io/blog/CPU-Cache-False-Sharing/"
+  ],
+  "lighthouse": {
+    "performance": 96,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": true,
+  "screenshotsOpened": [
+    "desktop-light-fold.png", "desktop-light-part01.png", "desktop-light-part02.png", "desktop-light-part03.png",
+    "desktop-light-part04.png", "desktop-light-part05.png", "desktop-light-part06.png", "desktop-light-part07.png",
+    "desktop-light-part08.png", "desktop-light-part09.png", "desktop-light-part10.png", "desktop-light-part11.png",
+    "mobile-dark-fold.png", "mobile-dark-part01.png", "mobile-dark-part02.png", "mobile-dark-part03.png",
+    "mobile-dark-part04.png", "mobile-dark-part05.png", "mobile-dark-part06.png", "mobile-dark-part07.png",
+    "mobile-dark-part08.png", "mobile-dark-part09.png", "mobile-dark-part10.png", "mobile-dark-part11.png",
+    "mobile-dark-part12.png", "mobile-dark-part13.png", "mobile-dark-part14.png", "mobile-dark-part15.png",
+    "mobile-dark-part16.png",
+    "desktop-dark-fold.png", "desktop-dark-part04.png", "desktop-dark-part07.png",
+    "mobile-light-fold.png", "mobile-light-part04.png", "mobile-light-part10.png"
+  ],
+  "justification": "Ran node tools/gate.mjs operating-systems/memory-hierarchy-and-caches from PowerShell (waited on the verify lock, ~45s) and read the resulting .verify/operating-systems__memory-hierarchy-and-caches/gate.json: real Lighthouse 96/100/100/100, 0 console errors, 0 broken internal links, 0px mobile overflow. Opened every desktop-light and mobile-dark screenshot part plus fold and two parts each of desktop-dark and mobile-light. Rendering is clean and consistent across all four theme/viewport combinations: the h1/lede/byline/TOC/'before you read' block all line up correctly, code blocks keep their syntax highlighting and a distinct monospace OUTPUT panel in both themes, the two SVG diagrams (memory-hierarchy pyramid, false-sharing cache-line diagram) stay legible at 390px with their box borders and dashed 'bounces' arrow visible in dark mode too, the pitfall callout and the four exercise callouts use consistent, theme-correct left-border styling with collapsed 'Show solution' disclosure (solutions correctly hidden, not given away), the sources list/attribution box/corrections link/prev-article card/related-articles cards/keep-reading grid at the end all render as they do on other published articles, and the footer nav is intact. No clipped text, no page-level horizontal scroll (code blocks scroll internally, which is the site's established mobile convention for code, not a bug), no theme-color regressions. Compared against two pages that currently rank for this topic: abhik.ai's 'CPU Cache Lines' (an interactive simulator-driven page, desktop-first, explicitly says it's best viewed on desktop) and Lei Mao's false-sharing blog post (serif blog theme, code block plus one benchmark table). This article's rhythm of prose -> runnable code -> real OUTPUT panel -> diagram -> exercise is at least as considered as either, its two themes and mobile layout are demonstrably more carefully tuned than a blog template, and it does not rely on desktop-only interactivity to make its point. It is not clearly better than abhik.ai's page specifically because that page ships an interactive cache simulator this one doesn't attempt, which caps this below a 9+ score; everything actually shipped here renders correctly, so it clears the 8.5 'nits only' bar with room to spare.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "\"Struct-of-arrays: paying only for the fields the loop reads\" section (both AoS and SoA code blocks, all four screenshot sets)",
+      "problem": "This is the most spatially visual of the three measured effects (interleaved struct fields vs. four parallel arrays) but is the only one of the three major sections with no diagram; the cache-line-ladder section and the false-sharing section each get an SVG, so the reading rhythm briefly flattens into text+code+text+code for this section with nothing to look at.",
+      "fixLooksLike": "A small SVG showing one 64-byte Particle laid out as 16 packed fields (array-of-structs) next to four separate float arrays holding only X/Y/Vx/Vy (struct-of-arrays), following the same box-diagram style and caption convention as Figures 1 and 2.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Whole article, heading structure (check.json stats: h2: 7, h3: 0)",
+      "problem": "Several h2 sections (the cache-line ladder section, the false-sharing section) run long — prose, a full code block, an output block, and multi-paragraph discussion — with no sub-heading to let a scanning reader jump partway in from the 'On this page' TOC, which only lists the 7 top-level headings.",
+      "fixLooksLike": "Not necessarily new h3s (that would fight the site's 'vary the heading set' rule), but consider whether the ladder section's explanation-of-results paragraph and the false-sharing section's measurement paragraph could each get a one-line lead-in bolded phrase (as the locality section already does with 'Temporal locality' / 'spatial locality') so long sections still offer a visual anchor without adding TOC entries.",
+      "owner": "writer"
+    }
+  ],
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-130-memory-hierarchy-and-caches\\docs\\reviews\\operating-systems\\memory-hierarchy-and-caches.round-1.design.json"
+}
