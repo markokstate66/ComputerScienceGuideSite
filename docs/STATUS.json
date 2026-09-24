@@ -3145,14 +3145,17 @@
       "files": [
         "tools/run-code.mjs",
         "tools/verify-page.mjs",
-        "tools/check-article.mjs (to build)"
+        "tools/check-article.mjs",
+        "tools/gate.mjs",
+        "tools/worktree.mjs"
       ],
-      "state": "partial",
+      "state": "done",
       "wave": 0,
       "score": null,
       "openIssues": [
-        "phase 2: check-article.mjs (word count, front matter, headings, alt text, external links, glossary consistency, spelling, readability) + evidence JSON under docs/evidence/"
-      ]
+        "spelling check limited to British forms + doubled words (no offline dictionary)"
+      ],
+      "verified": "2026-09-24: check-article 50/50 published with 0 errors; gate PASS on algorithms/recursion (LH 100/100/100/100), concurrent lock test, worktree test"
     },
     {
       "id": "C-IMG",
@@ -3228,13 +3231,20 @@
     {
       "id": "O-1",
       "owner": "integrator",
-      "text": "Keep draft:true in article PRs until /ship; update docs/ARTICLE_GAUNTLET.md step 7 and .claude/commands/ship.md accordingly."
+      "text": "Keep draft:true in article PRs until /ship; update docs/ARTICLE_GAUNTLET.md step 7 and .claude/commands/ship.md accordingly.",
+      "status": "done 2026-09-24 (owner: do what you think): gauntlet, work-next and ship updated"
     },
     {
       "id": "O-2",
       "owner": "owner",
-      "text": "Brief said 13 remaining articles; repo has 17 unpublished. Plan covers all 17 — drop any you do not want."
+      "text": "Brief said 13 remaining articles; repo has 17 unpublished. Plan covers all 17 — drop any you do not want.",
+      "status": "resolved: owner confirmed the misunderstanding; plan covers 17"
     }
   ],
-  "publishedFixes": []
+  "publishedFixes": [
+    {
+      "article": "all",
+      "text": "check-article warnings on published articles (British spellings in 8 places, 45 sources never linked inline, 131 long code-line blocks): review via node tools/check-article.mjs --all; not edited per the no-edit rule"
+    }
+  ]
 }

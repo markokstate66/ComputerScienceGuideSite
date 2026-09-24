@@ -17,9 +17,9 @@ PR to ship: **$ARGUMENTS**
    - Not a draft. A draft PR is an article that has not passed the gauntlet; do not ship it. Say so.
    - Mergeable. If it conflicts, check out the branch, merge `adsense-rebuild` into it, resolve, rebuild, push, and re-check. Do not resolve conflicts inside an article's prose by guessing; ask.
    - `gh pr checks <n>` green if any checks exist (PRs into `adsense-rebuild` normally have none).
-   - For an article PR: the front matter says `draft: false`, and the last round's three review files in `docs/reviews/` are all ≥ 8.5. If not, stop and report.
+   - For an article PR: the last round's three review files in `docs/reviews/` are all ≥ 8.5. If not, stop and report. Since 2026-09-24 article PRs keep `draft: true` until this command (docs/ARTICLES_PLAN.md, O-1); PRs opened earlier already say `draft: false`.
 
-3. **Verify the merge result builds**, locally, before merging: `gh pr checkout <n>`, merge the latest `adsense-rebuild` in if behind, `npm run build`. For an article, also `node tools/run-code.mjs <file>`. A red build is a stop.
+3. **Verify the merge result builds**, locally, before merging: `gh pr checkout <n>`, merge the latest `adsense-rebuild` in if behind. For an article still on `draft: true`, this is the owner's approval: set `draft: false` (leave `published`, the date it passed the gauntlet, as is), commit `publish: <slug>` and push. Then `npm run build`. For an article, also `node tools/run-code.mjs <file>`. A red build is a stop.
 
 4. **Merge:** `gh pr merge <n> --squash --delete-branch`, squash title = PR title + ` (#<n>)`. Then `git checkout adsense-rebuild && git pull`.
 

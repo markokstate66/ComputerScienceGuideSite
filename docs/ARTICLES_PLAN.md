@@ -192,7 +192,9 @@ Wave 3 (after every article module is done or cut)
 
 These terms don't exist yet. The integrator writes each definition in its own words, pointing at the article that teaches the term: `np-complete` (A-01), `priority-queue` (A-02; `heap` exists), `adjacency-list` (A-03), `trie` (A-04), `greedy-algorithm` (A-06), `backtracking` (A-07), `design-pattern` (A-08), `dependency-injection` (A-09), `code-point` and `grapheme-cluster` (A-10), `exception` (A-11), `span` (A-12), `window-function` (A-13), `sql-injection` (A-14), `cidr` (A-15), `cache-line` and `false-sharing` (A-16), `code-coverage` and `mutation-testing` (A-17). Terms that already exist and must be used consistently include `big-o-notation`, `dynamic-programming`, `recursion`, `graph`, `heap`, `hash-table`, `value-type`, `reference-type`, `garbage-collection`, `transaction`, `primary-key`, `unit-test` and `call-stack`.
 
-## 6. Verification loop (to build in phase 2)
+## 6. Verification loop (built 2026-09-24, phase 2)
+
+**Built:** `tools/check-article.mjs`, `tools/gate.mjs` and `tools/worktree.mjs`, documented in `docs/WRITER_GUIDE.md` §8. Calibration: all 50 published articles pass `check-article` with zero errors, so no error rule raises false alarms, and `gate` passed end to end on published articles in the main checkout, concurrently (the lock queued the second run for 35 s) and inside a worktree. The spelling check is limited to British forms and doubled words, because no offline dictionary is installed. Evidence is written to the git-ignored `.verify/`, and critics cite it in their review JSON. The original plan below is kept for reference.
 
 Exists already, reused:
 
