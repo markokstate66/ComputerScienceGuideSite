@@ -133,7 +133,7 @@ No "Branch coverage" line prints at all — [reportgenerator](https://learn.micr
 
 ## Where that number actually comes from
 
-`dotnet-coverage` is a cross-platform .NET global tool that "enables the cross-platform collection of code coverage data of a running process" (["dotnet-coverage code coverage tool"](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/dotnet-coverage), Microsoft Learn). Its own documentation gives the exact pattern used above as a worked example: "Collect code coverage data for any .NET application (such as a console or Blazor application) by using the following command: `dotnet-coverage collect dotnet run`" (same source). A file-based xUnit v3 program — the kind this whole pillar's [unit tests](/testing/unit-testing-fundamentals/) are written as, with `#:package xunit.v3@1.*` at the top and no `.csproj` — is exactly that: a console application that happens to run its own tests and exit. `dotnet-coverage collect` doesn't know or care that the process it's watching is a test runner rather than a "Hello, World"; it instruments whatever .NET code that process loads and reports on it in the Cobertura XML format, an open, widely-supported layout that tools like [ReportGenerator](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage) turn into the kind of summary shown above. This is genuinely new ground for this pillar's other articles: earlier ones run `dotnet run` on a test file and read the pass/fail summary xUnit prints; this is the first one that wraps that same command in a second tool to measure what happened underneath it, and every coverage number on this page was produced exactly that way, with `dotnet-coverage` and `dotnet-reportgenerator-globaltool` installed once as .NET global tools (`dotnet tool install --global <name>`).
+`dotnet-coverage` is a cross-platform .NET global tool that "enables the cross-platform collection of code coverage data of a running process" (["dotnet-coverage code coverage tool"](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/dotnet-coverage), Microsoft Learn). Its own documentation gives the exact pattern used above as a worked example: "Collect code coverage data for any .NET application (such as console or Blazor) by using the following command: `dotnet-coverage collect dotnet run`" (same source). A file-based xUnit v3 program — the kind this whole pillar's [unit tests](/testing/unit-testing-fundamentals/) are written as, with `#:package xunit.v3@1.*` at the top and no `.csproj` — is exactly that: a console application that happens to run its own tests and exit. `dotnet-coverage collect` doesn't know or care that the process it's watching is a test runner rather than a "Hello, World"; it instruments whatever .NET code that process loads and reports on it in the Cobertura XML format, an open, widely-supported layout that tools like [ReportGenerator](https://github.com/danielpalme/ReportGenerator) turn into the kind of summary shown above. This is genuinely new ground for this pillar's other articles: earlier ones run `dotnet run` on a test file and read the pass/fail summary xUnit prints; this is the first one that wraps that same command in a second tool to measure what happened underneath it, and every coverage number on this page was produced exactly that way, with `dotnet-coverage` and `dotnet-reportgenerator-globaltool` installed once as .NET global tools (`dotnet tool install --global <name>`).
 
 :::note
 Every program on this page ran with the .NET 10 SDK on Windows 11, x64, resolving `#:package xunit.v3@1.*` to xUnit v3 1.1.0 and `dotnet-coverage` to version 18.11.
@@ -141,7 +141,7 @@ Every program on this page ran with the .NET 10 SDK on Windows 11, x64, resolvin
 
 ## The check that would have caught it
 
-Martin Fowler's bliki tells a short, specific story about a project that showed a client "extensive JUnit test coverage," except "there weren't any assertions in the JUnit tests" — every test called production code and checked nothing about the result. His point cuts straight to the demonstration above: "you can do this and have 100% code coverage - which is one reason why you have to be careful on interpreting code coverage data" (["AssertionFreeTesting"](https://martinfowler.com/bliki/AssertionFreeTesting.html), Martin Fowler). `Assert.True(result != 0)` is one step short of that extreme — it is an assertion, just one so loose that almost any wrong answer still satisfies it. Tightening it to check the actual expected value turns the same program from silently wrong to loudly failing:
+Martin Fowler's bliki tells a short, specific story about a project that "made a big point of using heavy testing with JUnit" and "proudly showed the client all the tests and the green bar," except "there weren't any assertions in the JUnit tests" (["AssertionFreeTesting"](https://martinfowler.com/bliki/AssertionFreeTesting.html), Martin Fowler) — every test called production code and checked nothing about the result. His point cuts straight to the demonstration above: "you can do this and have 100% code coverage - which is one reason why you have to be careful on interpreting code coverage data" (same source). `Assert.True(result != 0)` is one step short of that extreme — it is an assertion, just one so loose that almost any wrong answer still satisfies it. Tightening it to check the actual expected value turns the same program from silently wrong to loudly failing:
 
 ```csharp run id=tight fails
 #:package xunit.v3@1.*
@@ -226,7 +226,7 @@ using Xunit;
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowThreshold_ReturnsFreezing()
+    public void BelowThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(20));
     }
@@ -259,7 +259,7 @@ using Xunit;
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowThreshold_ReturnsFreezing()
+    public void BelowThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(20));
     }
@@ -309,13 +309,13 @@ using Xunit;
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowThreshold_ReturnsFreezing()
+    public void BelowThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(20));
     }
 
     [Fact]
-    public void Classify_AboveThreshold_ReturnsNotFreezing()
+    public void AboveThreshold_NotFreezing()
     {
         Assert.Equal("Not freezing", Freezing.Classify(50));
     }
@@ -346,13 +346,13 @@ using Xunit;
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowThreshold_ReturnsFreezing()
+    public void BelowThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(20));
     }
 
     [Fact]
-    public void Classify_AboveThreshold_ReturnsNotFreezing()
+    public void AboveThreshold_NotFreezing()
     {
         Assert.Equal("Not freezing", Freezing.Classify(50));
     }
@@ -432,19 +432,19 @@ using Xunit;
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowThreshold_ReturnsFreezing()
+    public void BelowThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(20));
     }
 
     [Fact]
-    public void Classify_AboveThreshold_ReturnsNotFreezing()
+    public void AboveThreshold_NotFreezing()
     {
         Assert.Equal("Not freezing", Freezing.Classify(50));
     }
 
     [Fact]
-    public void Classify_AtThreshold_ReturnsFreezing()
+    public void AtThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(32));
     }
@@ -462,7 +462,7 @@ xUnit.net v3 In-Process Runner [...]
   Discovering: boundary
   Discovered:  boundary
   Starting:    boundary
-    FreezingTests.Classify_AtThreshold_ReturnsFreezing [FAIL]
+    FreezingTests.AtThreshold_IsFreezing [FAIL]
       Assert.Equal() Failure: Strings differ
                  ↓ (pos 0)
       Expected: "Freezing"
@@ -486,19 +486,19 @@ using Xunit;
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowThreshold_ReturnsFreezing()
+    public void BelowThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(20));
     }
 
     [Fact]
-    public void Classify_AboveThreshold_ReturnsNotFreezing()
+    public void AboveThreshold_NotFreezing()
     {
         Assert.Equal("Not freezing", Freezing.Classify(50));
     }
 
     [Fact]
-    public void Classify_AtThreshold_ReturnsFreezing()
+    public void AtThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(32));
     }
@@ -534,19 +534,19 @@ using Xunit;
 public class HeatAdvisoryTests
 {
     [Fact]
-    public void Classify_35Celsius_ReturnsHeatAdvisory()
+    public void At35C_IsHeatAdvisory()
     {
         Assert.Equal("Heat advisory", HeatAdvisory.Classify(35));
     }
 
     [Fact]
-    public void Classify_40Celsius_ReturnsExtremeHeat()
+    public void At40C_IsExtremeHeat()
     {
         Assert.Equal("Extreme heat", HeatAdvisory.Classify(40));
     }
 
     [Fact]
-    public void Classify_20Celsius_ReturnsNormal()
+    public void At20C_IsNormal()
     {
         Assert.Equal("Normal", HeatAdvisory.Classify(20));
     }
@@ -580,7 +580,7 @@ using Xunit;
 public class HeatAdvisoryTests
 {
     [Fact]
-    public void Classify_38Celsius_ReturnsExtremeHeat()
+    public void At38C_IsExtremeHeat()
     {
         Assert.Equal("Extreme heat", HeatAdvisory.Classify(38));
     }
@@ -600,7 +600,7 @@ xUnit.net v3 In-Process Runner [...]
   Discovering: heat-boundary
   Discovered:  heat-boundary
   Starting:    heat-boundary
-    HeatAdvisoryTests.Classify_38Celsius_ReturnsExtremeHeat [FAIL]
+    HeatAdvisoryTests.At38C_IsExtremeHeat [FAIL]
       Assert.Equal() Failure: Strings differ
                  ↓ (pos 0)
       Expected: "Extreme heat"
@@ -668,13 +668,13 @@ using Xunit;
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowThreshold_ReturnsFreezing()
+    public void BelowThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(20));
     }
 
     [Fact]
-    public void Classify_AboveThreshold_ReturnsNotFreezing()
+    public void AboveThreshold_NotFreezing()
     {
         Assert.Equal("Not freezing", Freezing.Classify(50));
     }
@@ -700,22 +700,59 @@ xUnit.net v3 In-Process Runner [...]
 
 Both tests pass, identically to how they passed against the original, un-mutated `<` version earlier in this article. Nothing distinguishes the two versions from this suite's point of view — the mutant **survived** — which is exactly the situation Microsoft's documentation describes: the tests are green either way, so they aren't strong enough to prove which comparison operator is actually there. That is not a hypothetical risk; it is the same boundary bug from earlier in this article, expressed as a mutation instead of a bug report, and it survives for the identical reason: neither test supplies the input, 32, where the two operators disagree.
 
-A different mutation on the same two-test version — swapping which string each branch returns — does not survive:
+A different mutation on the same two-test version — swapping which string each branch returns — does not survive: both of the suite's tests reject it. They run as two separate programs below rather than one, because xUnit v3 does not guarantee which of two failing `[Fact]`s in the same class prints first, and this article only shows output it can reproduce exactly every time:
 
-```csharp run id=killed fails
+```csharp run id=killed-below fails
 #:package xunit.v3@1.*
 using Xunit;
 
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowThreshold_ReturnsFreezing()
+    public void BelowThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(20));
     }
+}
 
+// Mutant: the two branches' results are swapped.
+public static class Freezing
+{
+    public static string Classify(double fahrenheit) =>
+        fahrenheit < 32 ? "Not freezing" : "Freezing";
+}
+```
+
+```text output
+xUnit.net v3 In-Process Runner [...]
+  Discovering: killed-below
+  Discovered:  killed-below
+  Starting:    killed-below
+    FreezingTests.BelowThreshold_IsFreezing [FAIL]
+      Assert.Equal() Failure: Strings differ
+                 ↓ (pos 0)
+      Expected: "Freezing"
+      Actual:   "Not freezing"
+                 ↑ (pos 0)
+      Stack Trace:
+        [...]
+           [...]
+           [...]
+  Finished:    killed-below
+=== TEST EXECUTION SUMMARY ===
+   killed-below  Total: 1, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: [...]
+```
+
+The suite's other test fails against the same mutant too, for the mirror-image reason:
+
+```csharp run id=killed-above fails
+#:package xunit.v3@1.*
+using Xunit;
+
+public class FreezingTests
+{
     [Fact]
-    public void Classify_AboveThreshold_ReturnsNotFreezing()
+    public void AboveThreshold_NotFreezing()
     {
         Assert.Equal("Not freezing", Freezing.Classify(50));
     }
@@ -731,20 +768,10 @@ public static class Freezing
 
 ```text output
 xUnit.net v3 In-Process Runner [...]
-  Discovering: killed
-  Discovered:  killed
-  Starting:    killed
-    FreezingTests.Classify_BelowThreshold_ReturnsFreezing [FAIL]
-      Assert.Equal() Failure: Strings differ
-                 ↓ (pos 0)
-      Expected: "Freezing"
-      Actual:   "Not freezing"
-                 ↑ (pos 0)
-      Stack Trace:
-        [...]
-           [...]
-           [...]
-    FreezingTests.Classify_AboveThreshold_ReturnsNotFreezing [FAIL]
+  Discovering: killed-above
+  Discovered:  killed-above
+  Starting:    killed-above
+    FreezingTests.AboveThreshold_NotFreezing [FAIL]
       Assert.Equal() Failure: Strings differ
                  ↓ (pos 0)
       Expected: "Not freezing"
@@ -754,9 +781,9 @@ xUnit.net v3 In-Process Runner [...]
         [...]
            [...]
            [...]
-  Finished:    killed
+  Finished:    killed-above
 === TEST EXECUTION SUMMARY ===
-   killed  Total: 2, Errors: 0, Failed: 2, Skipped: 0, Not Run: 0, Time: [...]
+   killed-above  Total: 1, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: [...]
 ```
 
 Same two tests, same 100% branch coverage going in, two different one-line mutations: one killed outright, the other survived undetected. Coverage could not have predicted which — both mutated lines were fully covered before anyone touched them. Mutation testing's report is not "how much of the code ran" but "which of the changes a bug could look like would your tests actually notice."
@@ -780,7 +807,7 @@ None of this makes coverage useless — it makes it a tool for a narrower job th
 
 On what percentage to aim for, Fowler is specific rather than evasive: "If you are testing thoughtfully and well, I would expect a coverage percentage in the upper 80s or 90s," adding "I would be suspicious of anything like 100%" (same source) — a suspicion this article's own opening example earns honestly, since 100% line coverage was trivial to reach without writing a single correct assertion. He also credits colleague Brian Marick with the distinction that matters more than the number itself: "I expect a high level of coverage. Sometimes managers require one. There's a subtle difference" (same source). A team that treats a coverage percentage as a gate to pass will get a coverage percentage; a team that reads the report to find code nobody has thought to exercise gets something closer to what the number was supposed to mean in the first place.
 
-Mutation testing earns a parallel warning against its own perfect score. Having shown a five-mutant suite improved down to nearly all killed, Microsoft's guide adds: "Don't chase a 100% mutation score. Instead, focus on high risk or business critical areas where undetected bugs would be most costly" (["Mutation testing"](https://learn.microsoft.com/en-us/dotnet/core/testing/mutation-testing), Microsoft Learn). Running Stryker.NET (or, until this pillar's programs have project files, applying a handful of its documented mutation types by hand, the way this article just did) on the handful of functions where a wrong boundary or a flipped comparison would actually cost something is worth far more than mutating every line of a codebase and staring at one aggregate percentage. Fowler's closing line about coverage doubles as the honest summary of everything on this page: "If a part of your test suite is weak in a way that coverage can detect, it's likely also weak in a way coverage can't detect" (["TestCoverage"](https://martinfowler.com/bliki/TestCoverage.html), Martin Fowler) — a 43% line-coverage report always means something is genuinely untested, but a 100% report, on its own, has told you almost nothing about whether the tests you do have would catch a real bug.
+Mutation testing earns a parallel warning against its own perfect score. Having shown a five-mutant suite improved down to nearly all killed, Microsoft's guide adds: "Don't chase a 100% mutation score. Instead, focus on high risk or business critical areas where undetected bugs would be most costly" (["Mutation testing"](https://learn.microsoft.com/en-us/dotnet/core/testing/mutation-testing), Microsoft Learn). Running Stryker.NET (or, until this pillar's programs have project files, applying a handful of its documented mutation types by hand, the way this article just did) on the handful of functions where a wrong boundary or a flipped comparison would actually cost something is worth far more than mutating every line of a codebase and staring at one aggregate percentage. Fowler's page quotes Marick a second time on the way out, and it doubles as the honest summary of everything on this page: "If a part of your test suite is weak in a way that coverage can detect, it's likely also weak in a way coverage can't detect" (["TestCoverage"](https://martinfowler.com/bliki/TestCoverage.html), Brian Marick) — a 43% line-coverage report always means something is genuinely untested, but a 100% report, on its own, has told you almost nothing about whether the tests you do have would catch a real bug.
 
 ::::exercise[Extend the code and keep both numbers at 100%]
 Add a third branch to `Freezing.Classify`: below 0°F should report `"Severe freezing"`, 0°F up to the existing 32°F boundary stays `"Freezing"`, and above 32°F stays `"Not freezing"`. Write enough tests to reach 100% branch coverage on the three-way version, then check with `dotnet-coverage` whether you actually did.
@@ -795,19 +822,19 @@ using Xunit;
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowZero_ReturnsSevereFreezing()
+    public void BelowZero_IsSevereFreezing()
     {
         Assert.Equal("Severe freezing", Freezing.Classify(-5));
     }
 
     [Fact]
-    public void Classify_AtThreshold_ReturnsFreezing()
+    public void AtThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(32));
     }
 
     [Fact]
-    public void Classify_AboveThreshold_ReturnsNotFreezing()
+    public void AboveThreshold_NotFreezing()
     {
         Assert.Equal("Not freezing", Freezing.Classify(50));
     }
@@ -840,19 +867,19 @@ using Xunit;
 public class FreezingTests
 {
     [Fact]
-    public void Classify_BelowZero_ReturnsSevereFreezing()
+    public void BelowZero_IsSevereFreezing()
     {
         Assert.Equal("Severe freezing", Freezing.Classify(-5));
     }
 
     [Fact]
-    public void Classify_AtThreshold_ReturnsFreezing()
+    public void AtThreshold_IsFreezing()
     {
         Assert.Equal("Freezing", Freezing.Classify(32));
     }
 
     [Fact]
-    public void Classify_AboveThreshold_ReturnsNotFreezing()
+    public void AboveThreshold_NotFreezing()
     {
         Assert.Equal("Not freezing", Freezing.Classify(50));
     }

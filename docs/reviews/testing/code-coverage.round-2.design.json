@@ -1,0 +1,53 @@
+{
+  "article": "src/content/articles/testing/code-coverage.md",
+  "route": "/testing/code-coverage/",
+  "round": 2,
+  "role": "design",
+  "score": 8.5,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage",
+    "https://about.codecov.io/blog/line-or-branch-coverage-which-type-is-right-for-you/"
+  ],
+  "lighthouse": { "performance": 100, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": true,
+  "screenshotsOpened": [
+    "desktop-light-fold",
+    "desktop-light-part01", "desktop-light-part02", "desktop-light-part03", "desktop-light-part04",
+    "desktop-light-part05", "desktop-light-part06", "desktop-light-part07", "desktop-light-part08",
+    "desktop-light-part09", "desktop-light-part10", "desktop-light-part11", "desktop-light-part12",
+    "desktop-light-part13",
+    "mobile-dark-fold",
+    "mobile-dark-part01", "mobile-dark-part02", "mobile-dark-part03", "mobile-dark-part04",
+    "mobile-dark-part05", "mobile-dark-part06", "mobile-dark-part07", "mobile-dark-part08",
+    "mobile-dark-part09", "mobile-dark-part10", "mobile-dark-part11", "mobile-dark-part12",
+    "mobile-dark-part13", "mobile-dark-part14", "mobile-dark-part15", "mobile-dark-part16",
+    "mobile-dark-part17", "mobile-dark-part18", "mobile-dark-part19",
+    "desktop-dark-fold", "desktop-dark-part01", "desktop-dark-part06", "desktop-dark-part11",
+    "mobile-light-fold", "mobile-light-part01", "mobile-light-part07", "mobile-light-part10", "mobile-light-part14"
+  ],
+  "verifyNotes": "node tools/gate.mjs testing/code-coverage (lockWaitSeconds=0 this run, verify-page 59.9s): check-article ok (18 warnings, all code-width, words=5165, prose=2818, code=36/18 run, fig=1, flesch=50.7 — same shape as round 1's 17 warnings, one extra block from the killed-below/killed-above split), run-code ok (blocks=36, executed=18, 0 failures), verify-page ok (lh 100/100/100/100, console=0, brokenLinks=0, mobileOverflowPx=0, 68 screenshots). Because round 1's shared blocker was a run-code flake, I did not trust one green gate run: I additionally ran `node tools/run-code.mjs src/content/articles/testing/code-coverage.md` five more times in isolation (separate from gate.mjs, no other process touching this worktree) — five clean passes, exit 0 every time, six-for-six including the gate run. Screenshots read: every desktop-light part (fold + 01-13), every mobile-dark part (fold + 01-19), desktop-dark fold + parts 01/06/11, mobile-light fold + parts 01/07/10/14.",
+  "justification": "Forming a fresh judgement first: this is still one of the strongest-rendering pages in the pillar and clearly ahead of both current comparators on presentation. I re-fetched Microsoft Learn's own coverage tutorial directly this round: it is plain prose with dotnetcli/csharp/xml code blocks, Linux/Windows tabs, text Tip/Note callouts, a single embedded lightbox screenshot at the very end, and no dark mode. I also re-fetched Codecov's 'line or branch coverage' post: a hero image of power lines and birds, Python examples (not C#), Twitter/LinkedIn/Facebook share buttons, 'Get Started For Free'/'Get Demo' CTAs, and no dark mode either. This article instead opens on a runnable, falsifiable claim and alternates code/output/prose in short beats with zero marketing chrome. Heading hierarchy (six H2s, two H3s under 'What full branch coverage still can't tell you') matches the desktop 'On this page' TOC and the mobile collapsible TOC exactly. The single SVG diagram (Figure 1, two stacked number lines) is genuinely informative, stays inside the phone-width budget, keeps its caption directly under the figure, and remains theme-correct: I opened it in both mobile-dark and desktop-dark and the boundary dot's `d-fill-bad` class remaps from a saturated red in light mode to a legible coral in dark mode with no hard-coded colors bleeding through either theme. Output panels keep the operative comparison fields (`Expected:`/`Actual:`, the coverage percentages) inside the visible ~40-column phone window; only trailing `Skipped:`/`Not Run:`/`Time:` fields scroll off, matching the site's documented phone trade-off rather than violating it. Callouts (one `:::note`, four `:::exercise` blocks with collapsed solutions) render identically and correctly in all four theme/device combinations I checked, and no exercise leaks its output above the fold. Sources, byline, breadcrumbs, prev/next, three related-by-tag cards and the 'Keep reading' block all render correctly. `docs/crosslinks/testing/code-coverage.md` still correctly documents that no planned-but-unpublished links were needed. Having formed that view, I then opened all three round-1 reviews and checked their findings against the current article and a fresh gate run rather than taking the round-1 notes on faith. The shared blocker every round-1 critic raised — the `id=killed` block's expected stdout hard-coding one of two possible xUnit v3 execution orders — is genuinely fixed, not papered over: the article now splits that demonstration into two separate single-`[Fact]` blocks (`killed-below` at the old line ~705, `killed-above` immediately after), exactly the first fix option all three round-1 reviews suggested, and six independent `run-code.mjs` runs this round (one inside gate.mjs, five standalone) all passed. The technical and AdSense reviews' shared major (a Fowler quote misattributed to Fowler when martinfowler.com's own markup credits it to Brian Marick) is also fixed: the article now reads '(\"TestCoverage\", Brian Marick)' at the closing quote, consistent with the earlier, correctly-attributed Marick quote in the same paragraph. The technical review's other blocker (a fabricated quotation, 'extensive JUnit test coverage', attributed to Fowler's AssertionFreeTesting page) is fixed: the article now quotes only verbatim fragments ('made a big point of using heavy testing with JUnit', 'proudly showed the client all the tests and the green bar', 'there weren't any assertions in the JUnit tests'). The technical review's minor sourcing nit (an inexact quote of the dotnet-coverage docs, 'a console or Blazor application' vs. the real 'console or Blazor') is fixed to the exact wording. The AdSense review's minor nit (the ReportGenerator anchor pointing at the Microsoft Learn page instead of ReportGenerator's own project) is fixed to link github.com/danielpalme/ReportGenerator directly. My own round-1 minor issue — long xUnit method names clipping on a 390px phone — is improved but not fully resolved: `Classify_AtThreshold_ReturnsFreezing` and siblings have been shortened to `AtThreshold_IsFreezing`, `BelowThreshold_IsFreezing`, `AboveThreshold_NotFreezing`, which is real progress, but `BelowThreshold_IsFreezing` and `AboveThreshold_NotFreezing` are still one or two characters past the roughly-40-visible-column budget once the 4-space indent and `public void ` prefix are counted, so they still clip mid-word in both the code block and the echoed OUTPUT panel on every `FreezingTests` example from 'What a branch adds' onward. It remains cosmetic (the assertion values and pass/fail status stay fully visible) rather than a comprehension problem, and it is the one thing keeping this off a higher score this round, exactly as in round 1.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "Every `FreezingTests` example from 'What a branch adds that a line can't show' onward (one-branch, two-branch, boundary, freezing-fixed, survives, killed-below, killed-above, severe) — mobile-dark parts 05-19, mobile-light parts 07+, and the equivalent desktop-dark/desktop-light code blocks past that point",
+      "problem": "Test method names `BelowThreshold_IsFreezing`, `AboveThreshold_NotFreezing` (25 and 27 characters) still run a few characters past the roughly-40-visible-column budget at 390px once the 4-space indent and `public void ` prefix are counted, clipping mid-word in the code block and in the OUTPUT panel's echoed `FreezingTests.BelowThreshold_IsFreez...` line. This is a real improvement over round 1's much longer `Classify_AtThreshold_ReturnsFreezing`-style names (which the article no longer uses anywhere), and `AtThreshold_IsFreezing` (22 characters) already fits cleanly, so the fix was applied but not carried all the way through the two longer names.",
+      "fixLooksLike": "Shorten the two remaining long names to match the pattern that already fits, e.g. `BelowThreshold_Freezing` / `AboveThreshold_NotFreezing` -> `AboveFreezing_NotFreezing` or similar 22-character-or-shorter forms, so all three sibling test names in a given `FreezingTests`/`HeatAdvisoryTests` class clip consistently (fully visible) rather than two of three clipping and one not."
+    }
+  ],
+  "crosslinksFile": "docs/crosslinks/testing/code-coverage.md exists and correctly explains that no planned-but-unpublished links were needed: both referenced siblings (unit-testing-fundamentals, property-based-testing) are already published. No penalty for missing body links.",
+  "round1IssuesVerified": {
+    "design.blocker.run-order-flake": "FIXED — killed block split into killed-below/killed-above single-[Fact] blocks; 6/6 independent run-code.mjs executions passed this round",
+    "design.minor.long-method-names": "PARTIALLY FIXED — names shortened but two of three still clip by a few characters; kept open above",
+    "technical.blocker.run-order-flake": "FIXED (same fix as above)",
+    "technical.blocker.fabricated-quote": "FIXED — quotation now uses only verbatim Fowler text",
+    "technical.major.marick-misattribution": "FIXED — quote now attributed to Brian Marick",
+    "technical.minor.inexact-quote": "FIXED — quote now matches source exactly ('console or Blazor')",
+    "adsense.blocker.run-order-flake": "FIXED (same fix as above)",
+    "adsense.major.marick-misattribution": "FIXED (same fix as above)",
+    "adsense.minor.reportgenerator-link": "FIXED — anchor now points to github.com/danielpalme/ReportGenerator"
+  }
+}
