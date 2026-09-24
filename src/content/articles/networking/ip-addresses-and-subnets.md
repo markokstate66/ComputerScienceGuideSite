@@ -70,7 +70,8 @@ An IPv4 address is a 32-bit number; RFC 791 states it plainly: "addresses are fi
 ```csharp run id=bits
 using System.Net;
 
-IPAddress addr = IPAddress.Parse("203.0.113.80");
+IPAddress addr = IPAddress.Parse(
+    "203.0.113.80");
 byte[] octets = addr.GetAddressBytes();
 
 foreach (byte b in octets)
@@ -297,23 +298,31 @@ using System.Net;
 
 string cidr = "203.0.113.81/26";
 bool parsed = IPNetwork.TryParse(
-    cidr, out IPNetwork net);
-Console.WriteLine($"input   {cidr}");
-Console.WriteLine($"parsed  {parsed}");
-Console.WriteLine($"result  {net}");
+    cidr, out IPNetwork tryResult);
+IPNetwork parseResult =
+    IPNetwork.Parse(cidr);
+Console.WriteLine(
+    $"input        {cidr}");
+Console.WriteLine(
+    $"TryParse ok  {parsed}");
+Console.WriteLine(
+    $"TryParse ->  {tryResult}");
+Console.WriteLine(
+    $"Parse    ->  {parseResult}");
 ```
 
 ```text output
-input   203.0.113.81/26
-parsed  True
-result  203.0.113.64/26
+input        203.0.113.81/26
+TryParse ok  True
+TryParse ->  203.0.113.64/26
+Parse    ->  203.0.113.64/26
 ```
 
 Both `TryParse` and the plain `Parse` accepted the misaligned pair and quietly normalized it to `203.0.113.64/26`, the same network your own `Describe` function computed for that address. That is a friendlier outcome than an exception for a calculator that only ever reads addresses, but it is not the behavior the documentation on this same page describes, and it is exactly the kind of gap the editorial brief warns against treating as guaranteed: the documented contract says "will throw," a real run on this runtime does not, and a program that depended on the throw to reject bad input would not learn anything was wrong. Do not build validation on undocumented, and evidently unstable, exception behavior; check `network.BaseAddress == network` yourself if that distinction matters to your program, the way the next section's classifier checks membership rather than trusting normalization silently.
 
 ## Classless addressing replaced three fixed sizes
 
-CIDR is called "classless" because it replaced a scheme with named, fixed-size classes. RFC 791 itself defines three of them by their leading bits: "in class a, the high order bit is zero, the next 7 bits are the network, and the last 24 bits are the local address," with class B taking 14 network bits and class C taking 21 ([RFC 791, section 3.2](https://www.rfc-editor.org/rfc/rfc791.html#section-3.2)). That gave exactly three possible network sizes: about 16 million addresses, 65,536, or 254. RFC 4632 spells out why that stopped working: no size in between, so "an organization that needed slightly more than 254 host addresses would ... require a Class B address" thousands of times bigger than needed, and the resulting flood of separate Class B and Class C allocations threatened both the pool of remaining addresses and the size of the global routing table ([RFC 4632, section 2](https://www.rfc-editor.org/rfc/rfc4632.html#section-2)). A prefix length picks any network size, not just three, and two adjacent blocks of the same size can be summarized as one shorter prefix in a router's table (`203.0.112.0/24` and `203.0.113.0/24` aggregate to `203.0.112.0/23`), which is the "aggregation" half of what RFC 4632's title promises. Nothing about the bit arithmetic in this article needed classes to exist; they only explain why "network" used to mean one of three fixed shapes instead of a size you choose.
+CIDR is called "classless" because it replaced a scheme with named, fixed-size classes. RFC 791 itself defines three of them by their leading bits: "in class a, the high order bit is zero, the next 7 bits are the network, and the last 24 bits are the local address," with class B taking 14 network bits and class C taking 21 ([RFC 791, section 3.2](https://www.rfc-editor.org/rfc/rfc791.html#section-3.2)). That gave exactly three possible network sizes: about 16 million addresses, 65,536, or 254. RFC 4632 spells out why that stopped working, and the gap between the last two sizes is the whole problem: "Class C, with a maximum of 254 host addresses, is too small, whereas Class B, which allows up to 65534 host addresses, is too large for most organizations but was the best fit available for use with subnetting" ([RFC 4632, section 2](https://www.rfc-editor.org/rfc/rfc4632.html#section-2)). An organization with, say, 300 hosts had no class sized for it: it either wasted a Class B built for 65,534 or split itself across multiple Class C blocks, and the resulting flood of separate Class B and Class C allocations threatened both the pool of remaining addresses and the size of the global routing table. A prefix length picks any network size, not just three, and two adjacent blocks of the same size can be summarized as one shorter prefix in a router's table (`203.0.112.0/24` and `203.0.113.0/24` aggregate to `203.0.112.0/23`), which is the "aggregation" half of what RFC 4632's title promises. Nothing about the bit arithmetic in this article needed classes to exist; they only explain why "network" used to mean one of three fixed shapes instead of a size you choose.
 
 ::::exercise[Find the bug in one line]
 This function is meant to compute a subnet mask for any prefix length from 0 to 32, the same idea as `MaskFor` earlier but written as a single expression, without the `prefix == 0` special case:
@@ -389,8 +398,11 @@ foreach (var (name, hosts) in
         $"{name,-4}  {hosts,4}  {cidr,-8} {range}");
     cursor = network + size;
 }
+uint blockEnd =
+    ToUInt(IPAddress.Parse("203.0.113.0")) + 256;
 Console.WriteLine(
-    $"free     -  .{LastOctet(cursor)}/27");
+    $"free     -  .{LastOctet(cursor)}, " +
+    $"{blockEnd - cursor} addresses");
 ```
 
 ```text output
@@ -398,7 +410,7 @@ tier  need  cidr     range
 web    100  .0/25    .1-.126
 db      50  .128/26  .129-.190
 mgmt    20  .192/27  .193-.222
-free     -  .224/27
+free     -  .224, 32 addresses
 ```
 
 That is the table from the opening, derived rather than asserted: `PrefixFor` walks the prefix down from `/32` until the usable-host formula from the previous section clears the requirement, and the running `cursor` places each block immediately after the one before it, so `web`'s 128 addresses (`.0` to `.127`) leave `db` starting at `.128`, whose 64 addresses (`.128` to `.191`) leave `mgmt` starting at `.192`. The 32 addresses from `.224` to `.255` are left over, free for a fourth tier or future growth, out of the 256 the original `/24` held.
@@ -416,9 +428,9 @@ That is the table from the opening, derived rather than asserted: `PrefixFor` wa
 <text x="20" y="146" class="d-small d-bold">mgmt needs 20 -> /27</text>
 <rect x="20" y="152" width="76" height="22" class="d-box-accent"/>
 <text x="20" y="190" class="d-small d-muted">.193-.222 (30 usable, needs 20)</text>
-<text x="20" y="210" class="d-small d-bold">unassigned -> /27</text>
+<text x="20" y="210" class="d-small d-bold">unassigned space</text>
 <rect x="20" y="216" width="76" height="22" class="d-box-2"/>
-<text x="20" y="254" class="d-small d-muted">.224-.255 (30 addresses spare)</text>
+<text x="20" y="254" class="d-small d-muted">.224-.255 (32 addresses spare)</text>
 </svg>
 <figcaption>Figure 2. The bar for each tier is drawn to a length proportional to its usable-address count, so the web tier's 126 addresses take up exactly twice the width of the database tier's 62. The two smaller, equal-width bars are the management tier and what is still unassigned.</figcaption>
 </figure>
@@ -466,7 +478,8 @@ The `172.16.0.0/12` line is the one worth checking by hand, because "172-dot-som
 ```csharp run id=rfc1918-bounds
 using System.Net;
 
-var block = IPNetwork.Parse("172.16.0.0/12");
+var block = IPNetwork.Parse(
+    "172.16.0.0/12");
 uint mask =
     0xFFFFFFFFu << (32 - block.PrefixLength);
 uint baseValue = BitConverter.ToUInt32(
@@ -494,7 +507,7 @@ Because private addresses are not globally routable, a private network still nee
 `IsPrivate` above answers one yes/no question. Extend it into a `Classify` function that returns `"private"` for an RFC 1918 address, `"docs"` for an RFC 5737 or RFC 3849 address, and `"other"` for anything else, then run it on a private address, a documentation address, and an IPv6 documentation address.
 
 :::solution
-Adding the three documentation ranges to the same kind of lookup, and falling through to `"other"` when nothing matches, handles all three families with one loop; `IPNetwork.Contains` simply returns `false` for an address from a different address family instead of throwing, which is what lets the same list check an IPv6 address without a special case.
+Adding the three documentation ranges to the same kind of lookup, and falling through to `"other"` when nothing matches, handles all three families with one loop. Tested on the same .NET 10.0.401/Windows 11/x64 combination as the earlier `Parse` quirk, `IPNetwork.Contains` returns `false` for an address from a different address family rather than throwing, which is what lets the same list check an IPv6 address without a special case; Microsoft's reference page documents only `ArgumentNullException` for `Contains(IPAddress)` and says nothing about mixed-family input, so this is this run's observed behavior on this runtime, not a documented guarantee, and a program should not depend on it without its own test.
 
 ```csharp run
 using System.Net;
@@ -545,7 +558,8 @@ IPv6 keeps the network-bits-then-host-bits idea and quadruples the address size:
 using System.Net;
 
 IPAddress full = IPAddress.Parse(
-    "2001:0db8:0000:0000:0000:0000:0000:0001");
+    "2001:0db8:0000:0000:0000:" +
+    "0000:0000:0001");
 Console.WriteLine($"parsed   {full}");
 
 try
@@ -563,14 +577,17 @@ var subnet = IPNetwork.Parse(
 Console.WriteLine(
     $"network  {subnet.BaseAddress}/" +
     $"{subnet.PrefixLength}");
+
+IPAddress inSubnet = IPAddress.Parse(
+    "2001:db8:1234:5678::42");
+IPAddress outOfSubnet = IPAddress.Parse(
+    "2001:db8:1234:5679::1");
 Console.WriteLine(
-    "in range " + subnet.Contains(
-        IPAddress.Parse(
-            "2001:db8:1234:5678::42")));
+    "in range " +
+    subnet.Contains(inSubnet));
 Console.WriteLine(
-    "in range " + subnet.Contains(
-        IPAddress.Parse(
-            "2001:db8:1234:5679::1")));
+    "in range " +
+    subnet.Contains(outOfSubnet));
 ```
 
 ```text output
