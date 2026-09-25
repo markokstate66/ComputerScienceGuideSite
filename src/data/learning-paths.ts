@@ -34,11 +34,11 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       {
         article: 'data-structures/hash-tables',
-        why: 'The last of the core storage structures, and the one self-taught developers use constantly (Dictionary<TKey,TValue>) without necessarily knowing why lookups are fast; it builds directly on the array from step 2.',
+        why: 'The last of the core storage structures, and the one behind Dictionary<TKey,TValue>, explaining why its lookups are fast; it builds directly on the array from step 2.',
       },
       {
         article: 'algorithms/binary-search',
-        why: 'The first algorithm in the path, chosen because it is small enough to get exactly right and is the running example the next two steps depend on.',
+        why: 'The first algorithm in the path, chosen because it is small enough to get exactly right, and it is a listed prerequisite for the next two steps.',
       },
       {
         article: 'algorithms/recursion',
@@ -50,7 +50,7 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       {
         article: 'version-control/how-git-works',
-        why: 'A deliberate turn from algorithmic reasoning to the daily practice self-taught developers most often learn by rote: understanding what a commit, tree and ref actually are removes the need to memorize Git incantations.',
+        why: 'A deliberate turn from algorithmic reasoning to a daily practice that is easy to learn by rote instead of by understanding: knowing what a commit, tree and ref actually are removes the need to memorize Git incantations.',
       },
       {
         article: 'testing/unit-testing-fundamentals',
@@ -74,11 +74,11 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       {
         article: 'csharp-dotnet/value-types-vs-reference-types',
-        why: 'The distinction every later csharp-dotnet step in this path depends on: garbage collection, async state machines, LINQ, generics, strings and Span<T> all behave differently depending on whether their subject is a value or a reference.',
+        why: 'The distinction every later C# and .NET step in this path depends on: garbage collection, async state machines, LINQ, generics, strings and Span<T> all behave differently depending on whether their subject is a value or a reference.',
       },
       {
         article: 'csharp-dotnet/garbage-collection',
-        why: 'Builds directly on the previous step: what the GC actually collects, and how often, is a question about reference types specifically, not about the stack-allocated data value types often live in.',
+        why: "Builds directly on the previous step: what the GC actually collects, and how often, is a question about reference types specifically, not about value types, which the previous step showed do not always end up on the heap.",
       },
       {
         article: 'complexity/space-complexity',
@@ -86,11 +86,11 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       {
         article: 'operating-systems/processes-and-threads',
-        why: 'Introduces what a thread owns and costs before the path asks two threads to share memory (next two steps) or a C# method to suspend and resume across one (the async step later).',
+        why: 'Introduces what a thread owns and costs before the path asks two threads to share memory (later steps) or a C# method to suspend and resume across one (the async step later).',
       },
       {
         article: 'operating-systems/virtual-memory',
-        why: "Shares the previous step's prerequisite and answers a question the GC step left open: why a process's address space is a fiction the OS maintains, which is what makes a managed heap possible in the first place.",
+        why: "Builds on the previous step to explain the private address space every process gets: a mapping the OS and hardware maintain, page by page, over physical memory.",
       },
       {
         article: 'operating-systems/memory-hierarchy-and-caches',
@@ -98,11 +98,11 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       {
         article: 'operating-systems/concurrency-race-conditions-locks',
-        why: 'Follows directly from processes-and-threads (step 6): once two threads can run at once, this step is what happens when they touch the same memory without coordinating, and it sets up the synchronization vocabulary async/await complicates in the next step.',
+        why: 'Follows from the processes and threads step (step 6): once two threads can run at once, this is what happens when they touch the same memory without coordinating, and how locks fix it.',
       },
       {
         article: 'csharp-dotnet/async-await',
-        why: "Returns to value/reference types (step 3) and threads (step 6) to show what the compiler actually builds for `await`: a state machine, not a new thread, which is the single most common misconception about this feature.",
+        why: "Returns to value/reference types (step 3) and threads (step 6) to show what the compiler actually builds for await: a state machine, not a new thread.",
       },
       {
         article: 'csharp-dotnet/linq-deferred-execution',
@@ -110,15 +110,15 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       {
         article: 'csharp-dotnet/generics',
-        why: 'Builds on value-versus-reference types (step 3) to explain why a generic method over a value type does not box its argument the way object-typed code would, a runtime specialization detail most C# developers never see spelled out.',
+        why: 'Builds on value-versus-reference types (step 3) to explain why a generic method over a value type does not box its argument the way object-typed code such as ArrayList would.',
       },
       {
         article: 'csharp-dotnet/strings-and-unicode',
-        why: 'A value/reference-type question (step 3) applied to the type used constantly and understood least: why a string is immutable, and why .NET counting a "character" is three different numbers depending on which API asks.',
+        why: 'A value/reference-type question (step 3) applied to string: why a string is immutable, and why .NET counting a "character" is three different numbers depending on which API asks.',
       },
       {
         article: 'csharp-dotnet/span-and-memory',
-        why: 'The capstone: Span<T> only makes sense once value types (step 3), the string layout from the previous step, and the stack-versus-heap reasoning from the memory steps are all already in place, and it is the article that finally explains why some types cannot cross an await.',
+        why: 'The capstone: Span<T> only makes sense once value types (step 3), the string layout from the previous step, and the stack-versus-heap reasoning from the value-types and garbage-collection steps are all already in place, and it is the article that finally explains why some types cannot cross an await.',
       },
     ],
   },
@@ -126,27 +126,27 @@ export const LEARNING_PATHS: LearningPath[] = [
     id: 'interview-refresh',
     title: 'Interview-style fundamentals refresh',
     intro:
-      "For developers who already know this material from school or past study and need a fast, structured refresher before technical interviews: the complexity vocabulary, the data structures interviewers ask about by name, and the classic algorithm families (searching, sorting, dynamic programming, greedy, graph traversal). By the end you can reason about a new problem out loud, in the terms an interviewer expects. Fourteen articles.",
+      "For developers who already know this material from school or past study and need a fast, structured refresher before technical interviews: the complexity vocabulary, the core data structures, and the classic algorithm families (searching, sorting, dynamic programming, greedy, graph traversal). By the end you can reason about a new problem out loud, in the terms an interviewer expects. Fourteen articles.",
     steps: [
       {
         article: 'complexity/big-o-notation',
-        why: "The shared vocabulary for every step that follows; an interview answer that can't be expressed in Big-O terms will not land as one.",
+        why: "The shared vocabulary for every step that follows; every later article states its costs in this notation.",
       },
       {
         article: 'complexity/best-average-worst-case',
-        why: "Immediately sharpens step 1's vocabulary with the distinction interviewers probe hardest: an algorithm's Big-O is not one number but three, and quicksort is the standard example of why that gap matters.",
+        why: "Immediately sharpens step 1's vocabulary with a distinction worth being precise about: an algorithm's Big-O is not one number but three, and quicksort is the standard example of why that gap matters.",
       },
       {
         article: 'data-structures/arrays-and-dynamic-arrays',
-        why: 'The structure every other one in this refresh is compared against, and the one interview questions most often start from ("given an array...").',
+        why: 'The structure every other one in this refresh is compared against, and the starting point for problems phrased as "given an array...".',
       },
       {
         article: 'data-structures/hash-tables',
-        why: "Builds on the array from the previous step to deliver the O(1)-lookup structure ('use a hash map') that answers a large share of interview problems outright.",
+        why: "Builds on the array from the previous step to deliver the O(1)-lookup structure ('use a hash map') that many problems reduce to.",
       },
       {
         article: 'data-structures/linked-lists',
-        why: 'A classic interview structure precisely because it contrasts with the array from step 3; pointer manipulation (reversal, cycle detection) is easier to drill once that contrast is explicit.',
+        why: 'Contrasts directly with the array from step 3; pointer manipulation such as reversal is easier to drill once that contrast is explicit.',
       },
       {
         article: 'data-structures/stacks-and-queues',
@@ -154,11 +154,11 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       {
         article: 'algorithms/binary-search',
-        why: 'The canonical "get the details exactly right" interview algorithm, and a hard prerequisite for the recursion step that follows.',
+        why: 'Small enough to get exactly right, which is the whole challenge, and a listed prerequisite for the recursion step that follows.',
       },
       {
         article: 'algorithms/recursion',
-        why: 'Needed before trees, graph traversal, and dynamic programming all make sense in the steps ahead; interview questions on those topics assume this is already fluent.',
+        why: 'Needed before trees, graph traversal, and dynamic programming all make sense in the steps ahead.',
       },
       {
         article: 'data-structures/binary-search-trees',
@@ -166,23 +166,23 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       {
         article: 'data-structures/heaps-and-priority-queues',
-        why: "Pairs with the BST from the previous step as the other tree-shaped structure interviewers ask about by name, and is the structure behind 'find the k largest' and top-k interview questions.",
+        why: "Pairs with the BST from the previous step as the other tree-shaped structure in the refresh, and its bounded-heap section solves the keep-only-the-k-largest problem.",
       },
       {
         article: 'algorithms/breadth-first-and-depth-first-search',
-        why: 'Graph and tree traversal, the direct payoff of the recursion (step 8) and stack/queue (step 6) steps, and the prerequisite almost every graph interview question assumes.',
+        why: 'Graph and tree traversal, the direct payoff of the recursion (step 8) and stack/queue (step 6) steps.',
       },
       {
         article: 'algorithms/sorting-algorithms-compared',
-        why: "Revisits step 2's best/average/worst-case lens across a full family of algorithms, which is exactly how 'compare these sorts' interview questions are framed.",
+        why: "Revisits step 2's best/average/worst-case lens across a full family of algorithms, so sorts can be compared case by case rather than by one label.",
       },
       {
         article: 'algorithms/dynamic-programming',
-        why: 'Needs recursion (step 8) as a hard prerequisite and is the algorithm family interview candidates most often say they need to drill; placed near the end so the traversal and sorting vocabulary from the steps before it is available to describe subproblems.',
+        why: 'Needs recursion (step 8) as a hard prerequisite; placed near the end so the traversal and sorting vocabulary from the steps before it is available to describe subproblems.',
       },
       {
         article: 'algorithms/greedy-algorithms',
-        why: 'Closes the refresh by asking the question dynamic programming (previous step) leaves open: whether the locally-best choice is ever provably enough, which is the comparison interviewers most often ask candidates to make explicitly.',
+        why: 'Closes the refresh by asking the question dynamic programming (previous step) leaves open: whether the locally-best choice is ever provably enough to skip the full search.',
       },
     ],
   },

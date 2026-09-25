@@ -14,10 +14,10 @@ readingNotes:
   test-doubles: >-
     Follows directly because stubbing out a collaborator only makes sense once you can already write the test around it, which the first article covers.
   test-driven-development: >-
-    Needs both unit testing and test doubles already covered, since its five red-green-refactor laps write real xUnit tests against real collaborators.
+    Needs unit testing fundamentals already covered, since each of its red-green-refactor laps writes and runs a real xUnit test, one behavior at a time.
   testing-pyramid-and-integration-tests: >-
     Builds on test doubles specifically to ask when mocking a repository is the wrong call and a real SQLite-backed integration test is better.
   property-based-testing: >-
-    Comes after the pyramid article because it targets the same kind of example-based unit tests covered earlier, showing what a generated input finds that seven handwritten ones missed.
+    Targets the same example-based unit tests the first article introduced, showing what a generated input finds that seven handwritten ones missed.
   code-coverage: >-
-    Closes the pillar because judging what a coverage number means requires already knowing, from every earlier article, what a good test actually checks.
+    Closes the pillar because judging what a coverage number does and doesn't prove returns to the first article's point: a passing test proves only a narrow, chosen fact.

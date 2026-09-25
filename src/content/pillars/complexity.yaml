@@ -12,12 +12,12 @@ readingNotes:
   big-o-notation: >-
     The foundation for every complexity claim on the site: read this before any algorithm or data-structure article, since they all state costs in this notation without re-deriving it.
   analyzing-loops-and-recursion: >-
-    Turns Big-O from a definition into a procedure you can run on your own code, including the Master Theorem that the recursion-heavy articles in Algorithms lean on.
+    Turns Big-O from a definition into a procedure you can run on your own code, including the Master Theorem that Algorithms' recursion article points ahead to for Fibonacci's repeated calls.
   amortized-analysis: >-
     Answers a question the loop-counting procedure can't: why List<T>.Add is called O(1) when some individual calls clearly copy the whole array.
   space-complexity: >-
     Applies the same counting habit from the first two articles to memory instead of time, including the call-stack cost that recursion-heavy algorithms later pay.
   best-average-worst-case: >-
-    Uses quicksort, covered again in more depth in Algorithms, to show that a single Big-O label can hide wildly different behavior depending on the input.
+    Uses quicksort as a deeper case study than Algorithms' sorting comparison has room for; that article links back here for it, to show a single Big-O label can hide very different behavior depending on the input.
   p-vs-np: >-
     The hardest material in the pillar: what to do once none of the earlier techniques can turn a problem's cost into anything better than exponential.
