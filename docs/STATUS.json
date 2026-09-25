@@ -35,7 +35,6 @@
       ]
     },
     "openIssues": [
-      "NEEDS_MARKUS placeholders on trust pages, footer and bylines",
       "production redirects/headers/404 status unverifiable until deploy"
     ]
   },
@@ -3516,11 +3515,11 @@
         "JSON-LD components",
         "sitemap config"
       ],
-      "state": "exists",
+      "state": "done",
       "wave": 3,
       "score": null,
       "openIssues": [
-        "re-check after wave 3"
+        "shipped #139 (2026-09-24): Organization author, robots split, max-image-preview, og:locale en_US; production check after deploy"
       ]
     },
     {
