@@ -4,7 +4,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { SITE } from '../../lib/site';
-import { getLivePillars, articleUrl, pillarUrl, readingTime, LEVEL_LABEL, type Article, type Pillar } from '../../lib/content';
+import { getLivePillars, articleUrl, articleSlug, pillarUrl, readingTime, LEVEL_LABEL, type Article, type Pillar } from '../../lib/content';
 
 type Live = { pillar: Pillar; articles: Article[] };
 
@@ -69,6 +69,7 @@ const scope = (p: Pillar) => `--accent-light:${p.data.accent.light};--accent-dar
             <li>
               <h3><a href={articleUrl(a)}>{a.data.title}</a></h3>
               <p>{a.data.description}</p>
+              {hub.pillar.data.readingNotes[articleSlug(a)] && <p class="reading-why"><strong>Why here:</strong> {hub.pillar.data.readingNotes[articleSlug(a)]}</p>}
               <span class="card-meta"><span>{LEVEL_LABEL[a.data.level]}</span><span>{readingTime(a.body).minutes} min read</span></span>
             </li>
           ))}

@@ -75,6 +75,9 @@ const pillars = defineCollection({
     blurb: z.string().min(80),
     // Longer editorial introduction for the hub page; written in wave 3.
     hubIntro: z.string().optional(),
+    // Why each article sits where it does in the reading order, keyed by article slug (without the pillar).
+    // Rendered under the article on the hub. Keys must name articles in this pillar.
+    readingNotes: z.record(z.string(), z.string().min(40)).default({}),
     // One hue per pillar, given for each theme so text in the accent colour stays >= 4.5:1.
     accent: z.object({ light: hex, dark: hex }),
   }),

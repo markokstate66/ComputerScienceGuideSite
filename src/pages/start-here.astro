@@ -1,10 +1,14 @@
 ---
-// Wave 1 version: how the site works and how to run the examples. The three learning paths from
-// CONTENT_PLAN.md are added in wave 3, once the articles they link to exist.
+// How the site works, how to run the examples, and the three learning paths (src/data/learning-paths.ts).
 import PageLayout from '../layouts/PageLayout.astro';
 import { Content } from '../page-content/start-here.md';
-import { getLivePillars, pillarUrl } from '../lib/content';
+import { getArticles, getLivePillars, pillarUrl, articleUrl } from '../lib/content';
+import { LEARNING_PATHS } from '../data/learning-paths';
 const live = await getLivePillars();
+const byKey = new Map((await getArticles()).map((a) => [`${a.data.pillar}/${a.slug.split('/').slice(1).join('/')}`, a]));
+const paths = LEARNING_PATHS
+  .map((p) => ({ ...p, steps: p.steps.map((s) => ({ ...s, a: byKey.get(s.article) })).filter((s) => s.a) }))
+  .filter((p) => p.steps.length > 0);
 ---
 <PageLayout
   title="Start here"
@@ -14,6 +18,23 @@ const live = await getLivePillars();
   showUpdated={false}
 >
   <Content />
+  {paths.length > 0 && (
+    <>
+      <h2 id="learning-paths">Learning paths</h2>
+      <p>Three routes through the site for three different goals. Each step says why it comes where it does.</p>
+      {paths.map((p) => (
+        <>
+          <h3 id={p.id}>{p.title}</h3>
+          <p>{p.intro}</p>
+          <ol class="path-steps">
+            {p.steps.map((s) => (
+              <li><a href={articleUrl(s.a!)}>{s.a!.data.title}</a>: {s.why}</li>
+            ))}
+          </ol>
+        </>
+      ))}
+    </>
+  )}
   {live.length > 0 && (
     <>
       <h2 id="suggested-order">Suggested order through the topics</h2>
