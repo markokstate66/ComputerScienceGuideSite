@@ -1,0 +1,24 @@
+{
+  "article": "databases/sql-injection-and-parameters",
+  "route": "/databases/sql-injection-and-parameters/",
+  "round": 1,
+  "role": "adsense",
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/sql/relational-databases/security/sql-injection",
+    "https://snyk.io/blog/preventing-sql-injection-entity-framework/",
+    "https://www.acunetix.com/blog/web-security-zone/how-to-prevent-sql-injection-in-csharp/",
+    "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+  ],
+  "justification": "This clears the bar for its target query. It runs a genuine, self-contained exploit against an in-memory SQLite table (never a real system), then walks two full defense-in-depth layers that neither top-ranking competitor reaches: (1) it shows hand-written escaping failing on a *second, differently-shaped* injection point (a numeric id field with no quotes to double) rather than stopping at 'escaping is fragile', which is exactly the failure mode OWASP's cheat sheet warns about; (2) it demonstrates least privilege with a real SQLITE_READONLY error code and then shows the defense's actual limit -- a read-only connection still leaks every row via UNION SELECT -- a nuance absent from Microsoft Learn's own page and both fetched blog posts (Snyk, Acunetix), neither of which discusses least privilege's failure mode at all. The FromSqlRaw vs FromSqlInterpolated section runs both paths against the same attacker string and prints the leaked admin row, which is a stronger demonstration than any competitor's static code listing. All 7 inline quotes I checked against their live source pages (MITRE CWE-89, Microsoft's SQL Server injection guide, OWASP's cheat sheet twice, EF Core docs) are verbatim and support the exact claim they're attached to -- no fabricated or misattributed quotes. Headings are specific to the content, not templated ('Why does a closing quote change the question?', 'Escaping the quote closes one door, not the building'), and diverge from every sibling in src/content/articles/databases/ (transactions-and-acid, indexes, relational-model-and-keys) in phrasing, opening style and exercise wording -- no boilerplate Introduction/Conclusion, no restated title, no filler first sentence. Exercises are embedded mid-article per the brief's lesson (not dumped in a trailing 'Exercises' section), vary in form (predict-then-check, find-the-bug-style extension, write-a-fix), and their output panels sit inside the collapsed solution, not exposed above the question. run-code.mjs passes all 11 executable blocks and check-article.mjs reports zero errors/warnings. The one thing keeping this off a 10 is a minor originality nit (below): quoting Microsoft's own illustrative example verbatim, city name and table name included, before pivoting to the article's own case.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "\"The same gap reaches further than a login form\" section, the paragraph quoting Microsoft's SQL Server guide",
+      "problem": "The article quotes Microsoft's own worked example almost in full -- the exact payload `Redmond';drop table OrdersTable--`, the exact table name `OrdersTable`, and the exact city `Redmond` -- to introduce the stacked-query idea, before switching to its own account-table version. It's in quotation marks and cited, so it isn't presented as original work, but a policy reviewer skimming for 'how much of this is actually new' will notice a whole named example lifted intact from the cited source rather than just the two short doctrinal clauses ('the semicolon denotes...', 'drops OrdersTable') the article needs to support its claim.",
+      "fixLooksLike": "Trim the quotation to only the two clauses that carry the factual claim (semicolon = statement separator; the engine executes the dropped-table statement), and describe the shape in the article's own words ('Microsoft's SQL Server guide shows the same idea: a submitted value can carry a second statement past the semicolon') rather than walking through Microsoft's own city/table example end to end before switching to the account table.",
+      "owner": "writer"
+    }
+  ],
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-128-sql-injection-and-parameters\\docs\\reviews\\databases\\sql-injection-and-parameters.round-1.adsense.json"
+}
