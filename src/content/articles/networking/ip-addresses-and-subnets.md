@@ -50,7 +50,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/bitwise-and-shift-operators"
     publisher: "Microsoft Learn"
     accessed: 2026-09-24
-draft: true
+draft: false
 ---
 
 A cloud console hands you `203.0.113.0/24` (a documentation range stood in here for the block your provider would actually own) and asks for three subnets: 100 addresses for a web tier, 50 for a database tier, 20 for a management tier, none of them overlapping. This article builds the calculator that answers that, checks its arithmetic against .NET's own `System.Net.IPNetwork` type, and ends with the answer:
