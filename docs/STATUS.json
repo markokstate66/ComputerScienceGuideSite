@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-24",
+  "updated": "2026-09-25",
   "passBar": {
     "criticMin": 8.5,
     "lighthouseMin": 90,
@@ -3523,5 +3523,14 @@
     "commit": "b38c095",
     "run": 36145812148,
     "articles": 67
+  },
+  "finalGate": {
+    "doc": "docs/FINAL_GATE.md",
+    "shipped": "#143",
+    "audit": "passed (no blocking findings)",
+    "runCode": "67/67",
+    "verifyPage": "64/89 in loaded full run; all failures Lighthouse performance; strategy-observer-decorator reproducible (#142)",
+    "blindJudging": "not started (#141)",
+    "status": "open"
   }
 }
