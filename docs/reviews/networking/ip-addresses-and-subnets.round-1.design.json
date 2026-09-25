@@ -1,0 +1,45 @@
+{
+  "article": "networking/ip-addresses-and-subnets",
+  "route": "/networking/ip-addresses-and-subnets/",
+  "round": 1,
+  "role": "design",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://www.freecodecamp.org/news/subnet-cheat-sheet-24-subnet-mask-30-26-27-29-and-other-ip-address-cidr-network-references/ (fetched and read: heading hierarchy, CIDR reference tables, binary-octet diagrams, monospace IP formatting)",
+    "https://www.digitalocean.com/community/tutorials/understanding-ip-addresses-subnets-and-cidr-notation-for-networking (top-ranking result for the target query; WebFetch returned only nav/footer chrome twice, JS-rendered body not retrievable in this environment, so this comparison relies on the well-known DigitalOcean tutorial template: single-column article, left TOC sidebar, plain code blocks with a copy button, simple inline tables, no dark-mode diagram variants)",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.net.ipnetwork (IPNetwork Struct reference, cited in the article, used as the Microsoft Learn quality bar for code/output presentation)"
+  ],
+  "runCodePass": true,
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "screenshotsOpened": [
+    "desktop-light-fold.png", "desktop-light-part01.png", "desktop-light-part02.png", "desktop-light-part03.png", "desktop-light-part04.png", "desktop-light-part05.png", "desktop-light-part06.png", "desktop-light-part07.png", "desktop-light-part08.png", "desktop-light-part09.png", "desktop-light-part10.png",
+    "mobile-dark-fold.png", "mobile-dark-part01.png", "mobile-dark-part02.png", "mobile-dark-part03.png", "mobile-dark-part04.png", "mobile-dark-part05.png", "mobile-dark-part06.png", "mobile-dark-part07.png", "mobile-dark-part08.png", "mobile-dark-part09.png", "mobile-dark-part10.png", "mobile-dark-part11.png", "mobile-dark-part12.png", "mobile-dark-part13.png", "mobile-dark-part14.png", "mobile-dark-part15.png",
+    "desktop-dark-fold.png", "desktop-dark-part02.png", "desktop-dark-part07.png",
+    "mobile-light-fold.png", "mobile-light-part03.png", "mobile-light-part09.png"
+  ],
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "First run block, id=bits (\"Thirty-two bits, written as four decimal numbers\"), and similarly id=ipnetwork-quirk, id=rfc1918-bounds, and the IPv6 id=v6 block's `subnet.Contains(IPAddress.Parse(\"2001:db8:1234:5678::42\")))` lines, on the mobile viewport (390px)",
+      "problem": "Several single-line statements run past the roughly 40 characters visible at 390px and get clipped mid-argument before the reader scrolls horizontally, e.g. `IPAddress addr = IPAddress.Parse(\"203.0.1` is the on-screen state of the very first code example in the article (mobile-dark-part02.png), and `var block = IPNetwork.Parse(\"172.16.0.0/1` similarly clips the prefix in the RFC 1918 section (mobile-dark-part10.png).",
+      "fixLooksLike": "Break these specific statements across two lines the way other blocks in the same article already do (e.g. wrap after the opening paren: `IPAddress addr = IPAddress.Parse(\\n    \"203.0.113.80\");`) so the address/CIDR argument that is the point of the example is fully visible without scrolling on a phone.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "The opening \"web / database / management\" results table (desktop-light-part01.png, mobile-light-fold.png) and the `IsPrivate`/`Classify` output panels, at 390px",
+      "problem": "The three-column table's \"Usable addresses\" column and the widest output-panel rows are cropped at the right edge of the initial 390px viewport and need a horizontal scroll to read in full; this is a normal scrollable-overflow pattern (page-level mobileOverflowPx is 0) rather than a broken layout, but it is the very first content block a mobile reader meets.",
+      "fixLooksLike": "Either shorten the range format (`.1\\u2013.126` already is compact) enough to fit three columns at 390px, or let the range wrap to a second line inside its cell instead of relying on horizontal table scroll for the first thing on the page.",
+      "owner": "integrator"
+    }
+  ],
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-129-ip-addresses-and-subnets\\docs\\reviews\\networking\\ip-addresses-and-subnets.round-1.design.json",
+  "justification": "gate.mjs passed clean: check-article 0 errors/0 warnings, run-code 24/24 blocks executed with matching output, verify-page Lighthouse 100/100/100/100, 0 console errors, 0 broken internal links, 0px mobile overflow (.verify/networking__ip-addresses-and-subnets/gate.json). I opened all 11 desktop-light screenshots, all 16 mobile-dark screenshots, plus the fold and two interior parts each of desktop-dark and mobile-light (33 images total). The page reads as a well-built technical article at the level of Microsoft Learn's own reference pages, not a personal blog: consistent breadcrumb + collapsible \"On this page\" TOC (desktop sidebar / mobile accordion), a \"Before you read\" prerequisite box, syntax-highlighted C# with a copy button and a visually distinct dark output panel under every run block, two accessible SVG diagrams (both have <title>/<desc>, both keep the accent-vs-good color coding legible in dark mode with no washed-out contrast, both have captions that state what to notice rather than just labeling the picture), four exercise callouts with collapsed \"Show solution\" disclosures that do not leak the answer above the fold, and a real sources list plus prev/next and \"Keep reading\" footer navigation. Reading rhythm alternates prose / code / output / diagram / exercise well across all 8 h2 sections; there is no h3 skip, no wall of text longer than about 4-5 sentences, and no filler. Against the freeCodeCamp subnet cheat sheet (read via WebFetch: a table-and-diagram-heavy but blog-styled listicle) this article is clearly more polished and better organized around a single worked problem rather than a reference dump; against Microsoft Learn's IPNetwork page (whose own documented behavior the article empirically contradicts and cites correctly) the code/output presentation here is at parity. I could not retrieve the actual body of the top-ranking DigitalOcean tutorial through WebFetch (it returned only site chrome on two attempts), so that comparison leans on the well-known template for that site rather than a fresh read; that is a limitation of this review, not a claim about the DigitalOcean page's quality. The two issues found are both nits that ship: a handful of single-line statements clip an address/CIDR argument on a 390px phone until the reader scrolls (writer fix, cheap), and the first results table needs a horizontal scroll to see its third column on the same viewport (integrator/shell-level table behavior, also cheap). Neither is a blocker, nothing is broken in either theme, and the mechanical numbers are the best a page can post, so this clears the 8.5 \"ships with nits\" bar without inflating past it."
+}

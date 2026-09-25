@@ -1,0 +1,76 @@
+{
+  "article": "databases/sql-injection-and-parameters",
+  "route": "/databases/sql-injection-and-parameters/",
+  "round": 1,
+  "role": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/sql/relational-databases/security/sql-injection",
+    "https://snyk.io/blog/preventing-sql-injection-entity-framework/",
+    "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+  ],
+  "justification": "Mechanical gate is clean: Lighthouse 100/100/100/100, 0 console errors, 0 broken internal links, 0px mobile overflow (gate.json, checked 2026-09-24T20:20:42Z). I opened every desktop-light and mobile-dark screenshot (fold + all parts) plus the fold and two body parts each of desktop-dark and mobile-light. Heading hierarchy, code-block rendering, output-panel styling and the exercise callouts are all consistent with sibling database articles and correct in both themes. Figure 1 (concatenation vs. bound parameter) is the one diagram the CONTENT_PLAN row calls for; it has a real <title>/<desc>, a caption that states what to notice, and it stays legible and correctly colored (red/bad, green/good) at 390px in both light and dark screenshots -- I verified it directly in mobile-dark-part07/part08 and mobile-light-part06. All three exercises use the collapsed <details> 'Show solution' pattern, so nothing gives away the answer above the fold. None of the three comparison pages (Microsoft Learn's SQL Server injection article, Snyk's EF Core blog post, OWASP's cheat sheet) has a working dark theme, an interactive/collapsible exercise, a custom diagram, or per-viewport code-block handling; Microsoft Learn in particular is a dense, undifferentiated wall of prose, code and reference tables with no visual variety at all. On genuine UX polish this article is ahead of the best result the query currently returns, which is what a 9+ requires rather than an assumed pass.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Every C# code block, mobile viewport (e.g. mobile-dark-part01, mobile-light-part06)",
+      "problem": "Almost every run block has lines well past the ~40-character width that's visible at 390px before horizontal scrolling kicks in (e.g. \"CREATE TABLE account (username TEXT PRIMARY KEY, \" +\"), so a mobile reader scrolls sideways inside nearly every snippet on the page, more often than on the shorter-line sibling articles.",
+      "fixLooksLike": "Not a per-article fix: this is the shell's code-block behavior applied to genuinely long ADO.NET call chains. If it recurs across the pillar's SQL/ADO.NET articles, the integrator could consider a slightly smaller mobile code font-size step, or the writer could break a few of the longest concatenation lines (e.g. the CREATE TABLE strings) earlier so the operative keyword is visible without scrolling.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Front matter byline, rendered in the page header ('By Computer Science Guide') on every screenshot",
+      "problem": "The byline always renders as the site name rather than a person, on every article checked so far in this pillar; on this specific security-focused article a named, credentialed byline would read as slightly more trustworthy to a reader evaluating whether to trust the exploit code.",
+      "fixLooksLike": "No change needed for this article alone (this is the site-wide author-display pattern, and a real byline is an owner-level NEEDS_MARKUS decision, not something this article should invent). Flagging only in case the owner wants a consistent policy across the security-adjacent articles.",
+      "owner": "integrator"
+    }
+  ],
+  "screenshotsOpened": [
+    "desktop-light-fold.png",
+    "desktop-light-part01.png",
+    "desktop-light-part02.png",
+    "desktop-light-part03.png",
+    "desktop-light-part04.png",
+    "desktop-light-part05.png",
+    "desktop-light-part06.png",
+    "desktop-light-part07.png",
+    "desktop-light-part08.png",
+    "desktop-light-part09.png",
+    "desktop-light-part10.png",
+    "desktop-light-part11.png",
+    "mobile-dark-fold.png",
+    "mobile-dark-part01.png",
+    "mobile-dark-part02.png",
+    "mobile-dark-part03.png",
+    "mobile-dark-part04.png",
+    "mobile-dark-part05.png",
+    "mobile-dark-part06.png",
+    "mobile-dark-part07.png",
+    "mobile-dark-part08.png",
+    "mobile-dark-part09.png",
+    "mobile-dark-part10.png",
+    "mobile-dark-part11.png",
+    "mobile-dark-part12.png",
+    "mobile-dark-part13.png",
+    "mobile-dark-part14.png",
+    "mobile-dark-part15.png",
+    "mobile-dark-part16.png",
+    "desktop-dark-fold.png",
+    "desktop-dark-part04.png",
+    "desktop-dark-part08.png",
+    "mobile-light-fold.png",
+    "mobile-light-part06.png",
+    "mobile-light-part12.png"
+  ],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": true,
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-128-sql-injection-and-parameters\\docs\\reviews\\databases\\sql-injection-and-parameters.round-1.design.json"
+}

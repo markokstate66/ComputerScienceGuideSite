@@ -1,0 +1,22 @@
+{
+  "article": "operating-systems/memory-hierarchy-and-caches",
+  "route": "/operating-systems/memory-hierarchy-and-caches/",
+  "round": 1,
+  "role": "adsense",
+  "score": 8.6,
+  "comparedAgainst": [
+    "https://diveintosystems.org/book/C14-SharedMemory/cache_coherence.html",
+    "https://leimao.github.io/blog/CPU-Cache-False-Sharing/",
+    "https://lwn.net/Articles/256433/ (Drepper, Part 6 - the article's own cited primary source, spot-checked for accuracy)"
+  ],
+  "justification": "Genuinely original, high-value content: every number is either read live from the machine via a real P/Invoke call (GetLogicalProcessorInformation) or produced by a program shown in full, and the prose explicitly refuses to assert a single 'true' latency number where runs vary, which is more rigorous than either comparison page. It covers four related phenomena (measured cache sizes, a pointer-chase latency ladder, cache-line-granularity cost, false sharing, struct-of-arrays vs array-of-structs) against diveintosystems.org's one (false sharing only) and matches leimao.github.io's rigor (real benchmarked code, primary-source citation) while doing it idiomatically in C# for this site's audience. check-article.mjs passes clean (0 errors, 0 warnings) and run-code.mjs passes all 5 executable blocks. The Drepper false-sharing figures (390/734/1,147% overhead at 2/3/4 threads) were independently verified by web search against the cited LWN source and are quoted accurately with the 2007-hardware caveat intact - no fabrication found. Headings are distinctive and not templated against the other five operating-systems articles or against data-structures/arrays-and-dynamic-arrays.md and complexity/space-complexity.md (checked). Every cross-pillar anchor link (arrays-and-dynamic-arrays, virtual-memory TLB section, processes-and-threads context-switch section, concurrency-race-conditions-locks, space-complexity) resolves to a heading that actually exists in those files - no dead-end navigation. The docs/crosslinks file sensibly scopes the one unpublished-sibling link and explicitly negotiates boundaries with every sibling article to avoid near-duplicate coverage (e.g. explicitly defers the row/column-major measurement to arrays-and-dynamic-arrays rather than re-measuring it). No filler intro/outro, no restated-title opening, no keyword stuffing, no 'it's-not-X-it's-Y' or empty-signpost machine-text tells found. Exercises vary in form (predict, find-the-bug, extend, measure, prove) and correctly keep output hidden inside the solution blocks. This clears the bar of the two top-ranking pages I read and is close to shipping; the one real gap below is a binding, previously-costly lesson this project's own brief calls out, not a nit to wave through.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Whole article - no single sentence states the test environment; closest candidates are the intro (line 40, 'run with `dotnet run`') and the ladder discussion's aside about 'the eight cores' (the paragraph after the ladder's output block).",
+      "problem": "The article never states its toolchain (.NET runtime version, OS, CPU class) anywhere, unlike every other article in this pillar. `docs/EDITORIAL_BRIEF.md`'s 'Lessons from the pilot round (binding)' section requires this exactly ('State the toolchain once, where measurements appear... in your own words') and explicitly says this class of omission 'cost an article its pass' before. processes-and-threads.md, cpu-scheduling.md and virtual-memory.md all state '.NET 10.0.401, Windows 11, x64' once, in their own phrasing, near their first measurement; this article - which leans harder on 'this machine' than any of them, since its entire opening section is about reading this machine's real numbers - is the one place in the pillar where a reader cannot tell what machine 'this machine' is beyond an inferred 8 cores and the cache sizes it printed.",
+      "fixLooksLike": "Add one sentence, in the writer's own words (not a stamped opener), stating the runtime/OS/CPU class near the first measured output - e.g. worked into the paragraph right after the `GetLogicalProcessorInformation` output block ('...48 KB of L1 data cache and 32 KB of L1 instructions per core, 512 KB of L2 per core, and 16 MB of L3 shared across every core on this eight-core .NET 10.0.401 / Windows 11 x64 machine...') so it reads naturally rather than as a boilerplate provenance line.",
+      "owner": "writer"
+    }
+  ]
+}

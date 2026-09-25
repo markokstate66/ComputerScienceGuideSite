@@ -41,8 +41,8 @@
   },
   "totals": {
     "planned": 67,
-    "passed": 50,
-    "inReview": 17,
+    "passed": 67,
+    "inReview": 0,
     "drafted": 0,
     "notStarted": 0,
     "cut": 0
@@ -301,7 +301,7 @@
       "wave": "B",
       "shape": "Q",
       "title": "P, NP and NP-Completeness for Working Programmers",
-      "state": "in-review",
+      "state": "passed",
       "round": 2,
       "scores": {
         "technical": 9,
@@ -311,8 +311,6 @@
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -345,7 +343,13 @@
       "flags": [],
       "issue": 104,
       "pr": 121,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 121,
+        "commit": "502c3ec",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "data-structures",
@@ -614,7 +618,7 @@
       "wave": "B",
       "shape": "B",
       "title": "Binary Heaps and PriorityQueue<TElement,TPriority>",
-      "state": "in-review",
+      "state": "passed",
       "round": 2,
       "scores": {
         "technical": 9.2,
@@ -624,8 +628,6 @@
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -654,7 +656,13 @@
       "flags": [],
       "issue": 105,
       "pr": 119,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 119,
+        "commit": "c5cc7a6",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "data-structures",
@@ -663,7 +671,7 @@
       "wave": "B",
       "shape": "C",
       "title": "Representing Graphs: Adjacency Lists, Matrices and Trade-offs",
-      "state": "in-review",
+      "state": "passed",
       "round": 1,
       "scores": {
         "technical": 9,
@@ -673,8 +681,6 @@
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -694,7 +700,13 @@
       "flags": [],
       "issue": 106,
       "pr": 115,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 115,
+        "commit": "4726b9a",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "data-structures",
@@ -703,7 +715,7 @@
       "wave": "B",
       "shape": "W",
       "title": "Tries: Prefix Trees for Autocomplete",
-      "state": "in-review",
+      "state": "passed",
       "round": 2,
       "scores": {
         "technical": 9,
@@ -713,8 +725,6 @@
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -745,7 +755,13 @@
       "flags": [],
       "issue": 107,
       "pr": 123,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 123,
+        "commit": "dc79253",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "algorithms",
@@ -986,7 +1002,7 @@
       "wave": "B",
       "shape": "W",
       "title": "Dynamic Programming: From Recursion to Tables",
-      "state": "in-review",
+      "state": "passed",
       "round": 2,
       "scores": {
         "technical": 9.2,
@@ -996,8 +1012,6 @@
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -1026,7 +1040,13 @@
       "flags": [],
       "issue": 108,
       "pr": 122,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 122,
+        "commit": "17f2e7a",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "algorithms",
@@ -1035,7 +1055,7 @@
       "wave": "B",
       "shape": "D",
       "title": "Greedy Algorithms and How to Know When They Work",
-      "state": "in-review",
+      "state": "passed",
       "round": 1,
       "scores": {
         "technical": 9.2,
@@ -1045,8 +1065,6 @@
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -1069,7 +1087,13 @@
       "flags": [],
       "issue": 109,
       "pr": 114,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 114,
+        "commit": "7126c8a",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "algorithms",
@@ -1078,18 +1102,16 @@
       "wave": "B",
       "shape": "B",
       "title": "Backtracking: N-Queens, Sudoku and Pruning",
-      "state": "in-review",
+      "state": "passed",
       "round": 1,
       "scores": {
-        "technical": 9.3,
+        "technical": 9.2,
         "adsense": 9.2,
         "design": 9.3
       },
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -1112,7 +1134,13 @@
       "flags": [],
       "issue": 110,
       "pr": 117,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 117,
+        "commit": "79b14a1",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "oop-design",
@@ -1350,7 +1378,7 @@
       "wave": "B",
       "shape": "C",
       "title": "Creational Patterns: Factory, Builder, and the Trouble with Singleton",
-      "state": "in-review",
+      "state": "passed",
       "round": 2,
       "scores": {
         "technical": 9,
@@ -1360,8 +1388,6 @@
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -1392,7 +1418,13 @@
       "flags": [],
       "issue": 111,
       "pr": 116,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 116,
+        "commit": "7987ae3",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "oop-design",
@@ -1401,7 +1433,7 @@
       "wave": "B",
       "shape": "B",
       "title": "Dependency Injection from First Principles",
-      "state": "in-review",
+      "state": "passed",
       "round": 1,
       "scores": {
         "technical": 9.3,
@@ -1411,8 +1443,6 @@
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -1432,7 +1462,13 @@
       "flags": [],
       "issue": 112,
       "pr": 120,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 120,
+        "commit": "b7796bb",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "csharp-dotnet",
@@ -1667,7 +1703,7 @@
       "wave": "B",
       "shape": "I",
       "title": "Strings, Immutability and Unicode in .NET",
-      "state": "in-review",
+      "state": "passed",
       "round": 2,
       "scores": {
         "technical": 9,
@@ -1677,8 +1713,6 @@
       "codePass": null,
       "lighthouse": null,
       "openIssues": [
-        "awaiting owner playtest and /ship",
-        "front matter says draft:false in the unmerged PR (not live); see openItems O-1",
         "wave-3 cross-links"
       ],
       "history": [
@@ -1709,7 +1743,13 @@
       "flags": [],
       "issue": 113,
       "pr": 118,
-      "wave3": "apply soft links"
+      "wave3": "apply soft links",
+      "published": "2026-09-22",
+      "shipped": {
+        "pr": 118,
+        "commit": "d885ec3",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "csharp-dotnet",
@@ -1718,7 +1758,7 @@
       "wave": "B",
       "shape": "Q",
       "title": "Exception Handling That Helps You Debug",
-      "state": "in-review",
+      "state": "passed",
       "round": 2,
       "scores": {
         "technical": 8.7,
@@ -1733,7 +1773,6 @@
         100
       ],
       "openIssues": [
-        "awaiting owner playtest and /ship (merge #124 first)",
         "wave-3 cross-links"
       ],
       "history": [
@@ -1766,7 +1805,13 @@
       "issue": 125,
       "pr": 132,
       "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
-      "batch": "fanout-2026-09-24"
+      "batch": "fanout-2026-09-24",
+      "published": "2026-09-24",
+      "shipped": {
+        "pr": 132,
+        "commit": "fda4b1a",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "csharp-dotnet",
@@ -1775,7 +1820,7 @@
       "wave": "B",
       "shape": "I",
       "title": "Span<T> and Memory<T>: Slicing Without Allocating",
-      "state": "in-review",
+      "state": "passed",
       "round": 1,
       "scores": {
         "technical": 9.2,
@@ -1790,7 +1835,6 @@
         100
       ],
       "openIssues": [
-        "awaiting owner playtest and /ship (merge #124 first)",
         "wave-3 cross-links"
       ],
       "history": [
@@ -1816,7 +1860,13 @@
       "issue": 126,
       "pr": 133,
       "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
-      "batch": "fanout-2026-09-24"
+      "batch": "fanout-2026-09-24",
+      "published": "2026-09-24",
+      "shipped": {
+        "pr": 133,
+        "commit": "23a67ad",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "databases",
@@ -2059,7 +2109,7 @@
       "wave": "B",
       "shape": "R",
       "title": "GROUP BY, HAVING and Window Functions",
-      "state": "in-review",
+      "state": "passed",
       "round": 1,
       "scores": {
         "technical": 8.9,
@@ -2074,7 +2124,6 @@
         100
       ],
       "openIssues": [
-        "awaiting owner playtest and /ship (merge #124 first)",
         "wave-3 cross-links"
       ],
       "history": [
@@ -2096,7 +2145,13 @@
       "issue": 127,
       "pr": 134,
       "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
-      "batch": "fanout-2026-09-24"
+      "batch": "fanout-2026-09-24",
+      "published": "2026-09-24",
+      "shipped": {
+        "pr": 134,
+        "commit": "a99e52a",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "databases",
@@ -2105,7 +2160,7 @@
       "wave": "B",
       "shape": "D",
       "title": "SQL Injection and Parameterized Queries in .NET",
-      "state": "in-review",
+      "state": "passed",
       "round": 2,
       "scores": {
         "technical": 9,
@@ -2120,7 +2175,6 @@
         100
       ],
       "openIssues": [
-        "awaiting owner playtest and /ship (merge #124 first)",
         "wave-3 cross-links"
       ],
       "history": [
@@ -2153,7 +2207,13 @@
       "issue": 128,
       "pr": 135,
       "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
-      "batch": "fanout-2026-09-24"
+      "batch": "fanout-2026-09-24",
+      "published": "2026-09-24",
+      "shipped": {
+        "pr": 135,
+        "commit": "62acb52",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "networking",
@@ -2435,7 +2495,7 @@
       "wave": "B",
       "shape": "W",
       "title": "IP Addresses, Subnets and CIDR",
-      "state": "in-review",
+      "state": "passed",
       "round": 3,
       "scores": {
         "technical": 9.3,
@@ -2450,7 +2510,6 @@
         100
       ],
       "openIssues": [
-        "awaiting owner playtest and /ship (merge #124 first)",
         "wave-3 cross-links"
       ],
       "history": [
@@ -2490,7 +2549,13 @@
       "issue": 129,
       "pr": 136,
       "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
-      "batch": "fanout-2026-09-24"
+      "batch": "fanout-2026-09-24",
+      "published": "2026-09-24",
+      "shipped": {
+        "pr": 136,
+        "commit": "a249c56",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "operating-systems",
@@ -2746,7 +2811,7 @@
       "wave": "B",
       "shape": "I",
       "title": "The Memory Hierarchy and CPU Caches",
-      "state": "in-review",
+      "state": "passed",
       "round": 2,
       "scores": {
         "technical": 8.8,
@@ -2761,7 +2826,6 @@
         100
       ],
       "openIssues": [
-        "awaiting owner playtest and /ship (merge #124 first)",
         "wave-3 cross-links",
         "adsense major: Non-obvious factual claim about hardware prefetcher behavior has no inline citation link (unlike every other Drepper reference in the piece), and its vague back"
       ],
@@ -2795,7 +2859,13 @@
       "issue": 130,
       "pr": 137,
       "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
-      "batch": "fanout-2026-09-24"
+      "batch": "fanout-2026-09-24",
+      "published": "2026-09-24",
+      "shipped": {
+        "pr": 137,
+        "commit": "e659cf9",
+        "date": "2026-09-24"
+      }
     },
     {
       "pillar": "version-control",
@@ -3265,7 +3335,7 @@
       "wave": "B",
       "shape": "D",
       "title": "Code Coverage: What the Number Means",
-      "state": "in-review",
+      "state": "passed",
       "round": 3,
       "scores": {
         "technical": 9,
@@ -3280,7 +3350,6 @@
         100
       ],
       "openIssues": [
-        "awaiting owner playtest and /ship (merge #124 first)",
         "wave-3 cross-links"
       ],
       "history": [
@@ -3322,7 +3391,13 @@
       "issue": 131,
       "pr": 138,
       "lighthouseNote": "serial gate by orchestrator, 2026-09-24",
-      "batch": "fanout-2026-09-24"
+      "batch": "fanout-2026-09-24",
+      "published": "2026-09-24",
+      "shipped": {
+        "pr": 138,
+        "commit": "ee468b4",
+        "date": "2026-09-24"
+      }
     }
   ],
   "note": "Batch 1 stopped by the owner on 2026-09-18 to stay within the usage limit. Work continues through the GitHub issue queue (see .claude/commands/work-next.md and docs/ARTICLE_GAUNTLET.md).",

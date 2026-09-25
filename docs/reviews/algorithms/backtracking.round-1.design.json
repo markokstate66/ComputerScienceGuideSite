@@ -1,0 +1,42 @@
+{
+  "article": "src/content/articles/algorithms/backtracking.md",
+  "route": "/algorithms/backtracking/",
+  "round": 1,
+  "role": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/backtracking-algorithms/",
+    "https://en.wikipedia.org/wiki/Eight_queens_puzzle",
+    "https://en.wikipedia.org/wiki/Sudoku_solving_algorithms"
+  ],
+  "lighthouse": { "performance": 100, "accessibility": 100, "bestPractices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-23T04:28:51.540Z",
+    "runs": 1,
+    "words": 2395,
+    "codeBlocks": 14,
+    "figures": 1,
+    "h1": 1,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": []
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold, part03 (figure + wide code line)",
+    "desktop-dark": "part05 (figure)",
+    "mobile-light": "fold, part02, part04, part05, part06, part07, part11, part12, part15 (footer)",
+    "mobile-dark": "part05 (figure), part06 (pitfall + exercise 1)"
+  },
+  "justification": "Re-ran node tools/verify-page.mjs --drafts /algorithms/backtracking/ myself from PowerShell, full run WITH Lighthouse (the writer's own run had skipped it with --no-lighthouse), serially with nothing else running: PASS, words=2395, code=14, fig=1, h1=1, Lighthouse (perf/a11y/best-practices/seo) 100/100/100/100. report.json confirms: broken=[], placeholders=[] (front matter already has author: markus, so no NEEDS_MARKUS marker to except), mobileOverflowPx=0, consoleErrors=[], consoleWarnings=[], pass=true. This matches the writer's self-reported clean run and I independently reproduce the same clean numbers with Lighthouse included. Structure: the article follows the assigned deep build-up shape sensibly. Opening paragraph establishes the state-space-tree vocabulary before any heading (root/node/leaf), then '## Choose, explore, un-choose' states the template and shows the smallest version (3x3 column permutations) with an explicit callback to the un-choose bug that resurfaces later. '## Eight queens, checked early versus checked late' builds naive-vs-pruned N-Queens side by side sharing one measurement harness, contains the required state-space-tree figure immediately after the code and measurement paragraph, then a pitfall callout and Exercise 1 (find-the-bug on a dropped usedDiagDown check) placed inline right where the diagonal-tracking logic was just explained -- not bunched at the end. '## How much does checking early actually buy...' gives the n=4/6/8/10 ratio table as a formatted console output block. '## The same pattern on a grid of digits: a Sudoku solver' reuses the template on a different state shape, its '### With and without checking early, small enough to run both fully' subsection does the 4x4 naive-vs-pruned head-to-head and contains Exercise 2 (fill-order measurement) inline again, immediately after the code it depends on. The closing '## What these numbers do and don't prove' is a genuine complexity-honesty close: it proves pruned-node-count <= naive-node-count by construction, states plainly that four data points suggest but do not prove a trend, and explicitly separates 'pruning helps a lot in practice, on these inputs' from 'pruning lowers the worst-case order of growth' as different, only-the-first-supported claims. Both exercises read well in their mid-article placements: each sits directly after the code and prose it interrogates, each is collapsed with only the question and a 'Show solution' triangle visible (verified in mobile-light-part06/part12 and mobile-dark-part06 -- zero leaked code or output above the fold of either exercise), and their forms vary (find-the-bug, measure-it) rather than repeating a 'predict the output' pattern. Diagram: the single figure (Figure 1, viewBox=\"0 0 340 230\", exactly the required 340-wide canvas) is a 4-Queens state-space tree with one branch (column 0) expanded, using d-box-accent for the root and the expanded r0-c0 node, d-box for the three unexpanded siblings, d-box-bad for the pruned/attacked r1-c1 leaf and d-box-good for the two safe r1-c2/r1-c3 leaves, plus d-line/d-dashed connectors and d-mono/d-small/d-muted/d-text-bad/d-text-good text -- exactly the classes required and no literal fill/stroke colors. Grep of the figure block (lines 181-220 of the source) confirms zero blank lines inside it. Verified directly in mobile-light-part05 and mobile-dark-part05: the diagram fits entirely inside the 360-wide phone budget with no edge fade (no horizontal scroll), every label (empty board, r0 c0..c3, r1 c1..c3, attacked/safe) is legible at the rendered size in both themes, and the good/bad/accent colors invert cleanly in dark mode with no washed-out text; desktop-light-part03/desktop-dark-part05 show it centered at a sensible size, not stretched. The caption states the exact thing to notice (row 1 column 1 pruned without recursing, columns 2 and 3 explored) and nothing it references requires scrolling to see. Code formatting: all 7 run blocks use correct csharp run / csharp run id=... tags and every one is immediately followed by a text output block with nothing between, matching WRITER_GUIDE and run-code.mjs conventions -- confirmed both by source grep and by the passing verify-page run. I checked every text output panel's longest line against the ~40-column mobile budget: the widest lines are the ratio table's ' 10   9864101   35539   0.36%' and the closed-form line 'closed-form tree size for n=8: 109601' (38 chars), both comfortably inside budget and confirmed rendering with no fade in mobile-light-part11. Specifically checked the concern raised in the assignment (N-Queens/Sudoku board printouts clipping on mobile): the article never actually prints a board or grid as ASCII art anywhere -- every N-Queens and Sudoku program reports only counts, booleans and short summary lines (nodes visited, solutions found, givens, empty cells), so there is no wide board-printout risk to begin with; this is a good design choice by the writer, not an oversight. Code blocks that do run long (e.g. the SolvePruned signature with five parameters, desktop-light-part03) scroll horizontally inside their own box as intended, and the truncated tail is boilerplate (parameter continuation), not the point of the line, which matches the WRITER_GUIDE carve-out. Rhythm across the 15-part mobile scroll alternates prose/code/output/callout/figure/exercise without any long unbroken text wall. One minor typographic nit, not score-affecting: the article mixes exponent notations across two places -- unicode superscripts in inline code ('4⁰ + 4¹ + ... + 4⁸ = 87,381' in the Sudoku closed-form discussion) versus caret notation elsewhere ('side^(empty cells)' in the complexity-honesty close) -- and the unicode superscript zero renders visually close to a degree sign at the UI's monospace weight (checked directly in mobile-light-part07/part11), which a reader could misread for a half-second. This is a copy-editing consistency nit the writer could fix by using caret notation throughout, not a rendering defect (the page itself renders exactly what the source contains, correctly, in both themes) and not severe enough to withhold a pass. Against GeeksforGeeks' backtracking hub (prose-only, no runnable code, no diagrams) and the Wikipedia Eight-Queens/Sudoku-solving pages (static unlabeled images, no measured pruning comparison), this article is decisively ahead: one theme-correct, phone-fitting, mechanism-clarifying diagram; 7 runnable, verified C# programs; two well-placed, properly-collapsed exercises; and an honest, explicit separation of what the measurements prove from what they don't.",
+  "issues": [
+    {
+      "severity": "nit",
+      "location": "Section 'The same pattern on a grid of digits: a Sudoku solver' (inline code '4⁰ + 4¹ + ... + 4⁸') vs. section 'What these numbers do and don't prove' (inline code 'side^(empty cells)')",
+      "problem": "Two different exponent notations are used for the same kind of expression: unicode superscript digits in one place, caret notation in the other. The unicode superscript zero in particular renders close to a degree sign at the UI's monospace weight and could be misread for a moment.",
+      "fixLooksLike": "Use caret notation ('4^0 + 4^1 + ... + 4^8') consistently in both places, matching 'side^(empty cells)'.",
+      "owner": "writer"
+    }
+  ]
+}

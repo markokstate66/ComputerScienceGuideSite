@@ -1,0 +1,33 @@
+{
+  "article": "testing/code-coverage",
+  "route": "/testing/code-coverage/",
+  "round": 1,
+  "role": "adsense",
+  "score": 5.0,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage",
+    "https://martinfowler.com/bliki/TestCoverage.html"
+  ],
+  "justification": "Judged as a Google policy reviewer hunting low-value content, this article clears that bar easily on originality: it does not retell 'what is code coverage' the way the top results do. It builds a single running demonstration (Temperature -> Freezing -> HeatAdvisory) that lands a wrong-but-100%-covered program at three different layers (assertion strength, branch coverage, mutation testing), shows the real dotnet-coverage/reportgenerator output at each step, and even runs dotnet-stryker against a file-based program to honestly show it fails (exit 1, 'No .csproj or .fsproj file found') rather than asserting the limitation as a claim. That is a genuine value-add over Microsoft Learn's project-setup-focused tutorial and over Fowler's prose-only bliki post, and it is more than either of the generic blog posts that currently rank for 'code coverage explained' (thecoder.cafe, Codecov, LinearB) attempt. Headings are specific to the content (not templated against sibling testing articles: property-based-testing, test-doubles, testing-pyramid), exercises vary in form (predict, find-the-bug, predict-again, extend-and-verify) per the editorial brief's lesson, no exercise leaks its output above the solution, there is no filler intro/outro, no keyword stuffing, and I found no machine-text tells (no 'it's not X, it's Y' triplets, no empty signposting) on a targeted search. Sourcing is otherwise strong: I independently re-fetched every source quoted (Microsoft Learn's coverage and mutation-testing pages, Stryker.NET's intro, Coverlet's README, Fowler's bliki) and every quotation is verbatim and in context, with one exception below. However, this round cannot score higher than the rubric's own anchor for code that does not run: `node tools/run-code.mjs src/content/articles/testing/code-coverage.md` FAILS on the 'killed' block (line 705) because xUnit v3 does not guarantee test discovery/execution order, so the two failing-test stack traces print in the opposite order from what the article hard-codes as literal output. This is a page whose entire premise is 'every coverage number on this page was produced exactly that way' (line 136) and 'this is a real, current limitation... not a guess' (line 658) — the one place its own output block is not actually reproducible undercuts that premise in a way a policy reviewer or a skeptical reader who copies the block would notice immediately. Per the binding critic rubric ('a code sample that does not run caps it at 5'), the score is capped there this round regardless of the article's real strengths on originality and structure.",
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "lines 664-701 (the `killed` csharp run block and its `text output` block)",
+      "problem": "`node tools/run-code.mjs src/content/articles/testing/code-coverage.md` fails here: the article hard-codes `Classify_BelowThreshold_ReturnsFreezing` failing before `Classify_AboveThreshold_ReturnsNotFreezing`, but a fresh run of the identical program (verified twice in this review) prints them in the reverse order, because xUnit v3 does not guarantee test execution order across two independent `[Fact]` methods in one class. The article states elsewhere that 'every coverage number on this page was produced exactly that way' and treats its own reproducibility as the whole point of the page, so an output block that a reader cannot reliably reproduce by copy-pasting is a real defect, not a nit.",
+      "fixLooksLike": "Either make the order deterministic (e.g., collapse the two assertions into one `[Fact]` so there is only one method to schedule, or apply `[assembly: TestCollectionOrderer(...)]` / an explicit ordering technique already used elsewhere on the site) and re-verify with `run-code.mjs`, or, if order truly cannot be pinned down, wildcard the two test blocks in the output the same way timing values are wildcarded elsewhere on the site, and say in prose that xUnit does not guarantee the order. Either way this must turn `run-code.mjs` green before the article can ship."
+    },
+    {
+      "severity": "major",
+      "location": "line 783, the paragraph beginning \"Fowler's closing line about coverage doubles as the honest summary...\"",
+      "problem": "The sentence \"If a part of your test suite is weak in a way that coverage can detect, it's likely also weak in a way coverage can't detect\" is presented as Fowler's own words ('Fowler's closing line') and cited as `(\"TestCoverage\", Martin Fowler)`. I fetched the live page's markup directly: that exact sentence carries its own `quote-attribution -- Brian Marick` byline on martinfowler.com, identical in form to the earlier, correctly-attributed Marick quote two paragraphs above ('I expect a high level of coverage... subtle difference'). It is also not actually the page's closing content — Fowler's page ends by linking out to a separate Marick essay on the misuse of coverage. This is a real misattribution of authorship on a page that otherwise cites carefully, and the editorial brief is explicit that a citation must be checked against what the source page actually says.",
+      "fixLooksLike": "Attribute the quote to Brian Marick (as the article already correctly does for the earlier quote in the same section, e.g. 'Fowler closes by quoting Brian Marick a second time: \"...\"'), and drop the 'Fowler's closing line' framing since it is neither Fowler's sentence nor the page's actual ending."
+    },
+    {
+      "severity": "minor",
+      "location": "line 136, \"tools like [ReportGenerator](https://learn.microsoft.com/.../unit-testing-code-coverage)\"",
+      "problem": "The anchor text names the ReportGenerator tool but links to the Microsoft Learn coverage tutorial (which only mentions it in passing), not to ReportGenerator's own documentation or repository — which the Microsoft page itself links to (github.com/danielpalme/ReportGenerator). It reads as slightly imprecise sourcing next to the article's otherwise careful, specific citations.",
+      "fixLooksLike": "Point the ReportGenerator anchor at its own docs/repo (e.g. the GitHub project or the dotnet-reportgenerator-globaltool NuGet page), reserving the Microsoft Learn link for claims the Microsoft page itself makes."
+    }
+  ],
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-131-code-coverage\\docs\\reviews\\testing\\code-coverage.round-1.adsense.json"
+}
