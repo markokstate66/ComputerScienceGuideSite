@@ -1,0 +1,25 @@
+{
+  "article": "databases/aggregation-and-window-functions",
+  "route": "/databases/aggregation-and-window-functions/",
+  "round": 1,
+  "role": "adsense",
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://www.stratascratch.com/blog/the-ultimate-guide-to-sql-window-functions",
+    "https://www.dbvis.com/thetable/a-beginners-guide-to-sql-window-functions/",
+    "https://learnsql.com/blog/sql-window-functions-vs-group-by/",
+    "https://learn.microsoft.com/en-us/sql/t-sql/queries/select-over-clause-transact-sql",
+    "https://www.postgresql.org/docs/current/tutorial-window.html"
+  ],
+  "justification": "This clears the AdSense low-value-content bar comfortably and beats the top organic results for 'sql window functions' on depth, not just polish. StrataScratch's 'Ultimate Guide' (a top result) covers the same ranking-function ties but pads the piece with interview-prep framing ('Trust me when I say...', 'that's where you can easily fail your interview'), never demonstrates RANGE-vs-ROWS on real tied rows, and only gestures at the default-frame trap. dbVis's beginner guide uses maritime filler ('set sail', 'buckle up') and explicitly skips RANGE vs ROWS, LAG/LEAD, and top-N-per-group entirely. LearnSQL's GROUP BY-vs-window piece is accurate but shallow (two short datasets, no frame discussion). Microsoft Learn's OVER clause reference is the most rigorous competitor but is dry API documentation with no worked narrative and no running example a reader executes. This article's library-loan dataset is original (not reused from any cited source), and it is the only one of the compared pages that (a) runs a real query showing RANGE letting same-day loans double-count a running total, then fixes it with an explicit ROWS frame and shows the corrected output; (b) demonstrates, with an actual SQLite error message, why a window-function alias cannot be filtered in WHERE, then fixes it with a CTE; (c) documents that LAG/LEAD ignore the frame-spec while FIRST_VALUE/LAST_VALUE/NTH_VALUE respect it, a distinction none of the three blog competitors mention; and (d) cross-checks every rule against SQLite, PostgreSQL and SQL Server's own docs rather than one dialect. Structure is specific to this content (headings name the actual mechanic, not generic labels) and clearly distinct from sibling databases articles (sql-joins.md, indexes.md, transactions-and-acid.md, relational-model-and-keys.md, normalization.md all use their own, non-overlapping heading phrasing; exercise titles vary in form: predict, extend, find-the-bug, as required). check-article.mjs and run-code.mjs both pass clean (17/17 executed run blocks match, including the two deliberately-erroring blocks). Spot-checked five of the article's quoted primary-source sentences (rank()/dense_rank() definitions, the lag()/lead()-ignores-frame-spec line, the window-function-placement restriction, and the bare-column exception for min()/max()) directly against sqlite.org: all are verbatim, correctly scoped with ellipses, and cited at the point the claim is made, not just listed in front matter. No filler intro/outro, no keyword stuffing, no near-duplicate coverage of an existing pillar article, no invented experience or numbers, no machine-text tells (no 'it's not X, it's Y', no uniform paragraph cadence, no empty signposting). The closing 'vocabulary, side by side' section is a genuine two-branch synthesis appropriate to the assigned reference shape (R), not a padded restatement of headings. The 0.8 held back from a 10 is for one sourcing nit (see issues) and because a page this technical always has a small amount of headroom against a hypothetical perfect reference.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Line 147, \u201cAVG and MIN/MAX are the same: they skip NULLs and return NULL only when every value in the group was NULL.\u201d",
+      "problem": "This sentence makes a specific, checkable claim about avg()/min()/max() NULL handling but sits after only two quoted clauses (about count(X) and sum(X)) from the SQLite aggregate-functions page; nothing in the paragraph quotes or footnotes the avg/min/max behavior itself, so as written the claim reads as asserted rather than sourced, even though the same cited page does state it.",
+      "fixLooksLike": "Attach a short direct quote or explicit cite to that sentence from https://www.sqlite.org/lang_aggfunc.html (e.g. its wording for avg()/min()/max() and NULL), the same way the count(X)/count(*)/sum(X) clauses are quoted immediately before it.",
+      "owner": "writer"
+    }
+  ],
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-127-aggregation-and-window-functions\\docs\\reviews\\databases\\aggregation-and-window-functions.round-1.adsense.json"
+}
