@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-25 — Final gate audit shipped (#14 → #143)
+
+- Owner chose to split #14: this run did the audit and tool runs; blind A/B judging became #141 (7 batches of ~10), performance #142. 1 Sonnet critic subagent.
+- Crawl of dist/ (90 pages): max click depth 2, nothing unreachable, 0 NEEDS_MARKUS, 0 ad units, article prose min 2,506 / median 3,827 words, max article-pair 5-shingle Jaccard 0.049, byline Organization on 67/67. Critic: no blocking findings; should-fix: code-sample licence (NEEDS_MARKUS 13), About lede "one .NET developer", layout fixture in complexity/.
+- run-code --all 66/67; recursion.md failed on the known RejectedBuildResponse compiler-server line and passed alone (blocks=24 executed=12). verify-page --all 64 pass / 25 fail, all Lighthouse performance on a loaded machine (a11y/bp/SEO 100 everywhere); five worst re-run alone: four at 97-100, strategy-observer-decorator still 77 and 73 (TBT 1,350 ms). The other 20 not re-run in isolation.
+- Shipped as 5e65431; #14 closed by hand. Next: #142, then #141.
+
 ## 2026-09-25 — Third production deploy: 67 articles, AdSense, wave 3
 
 - At the owner's explicit instruction ("merge to master and deploy"), fast-forwarded `master` from 77bcdd5 to b38c095 (24 commits: #124, the 17 wave-B articles, #139 AdSense/consent/privacy/SEO, #140 wave 3) and pushed. Pre-deploy: clean build of b38c095, 90 pages; generated staticwebapp.config.json has 27 routes, 0 duplicates, no trailingSlash, no navigationFallback; dist carries the AdSense loader, ads.txt and the new robots.txt.
