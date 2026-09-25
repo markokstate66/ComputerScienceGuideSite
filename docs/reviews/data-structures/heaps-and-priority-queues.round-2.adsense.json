@@ -1,0 +1,41 @@
+{
+  "article": "src/content/articles/data-structures/heaps-and-priority-queues.md",
+  "route": "/data-structures/heaps-and-priority-queues/",
+  "round": 2,
+  "role": "adsense",
+  "recheckScope": "Narrow regression check only, per round-1 pass (9.2). Confirmed the two round-2 technical-fix-pass edits: (1) the heapify-cost paragraph under id=heapify-cost, (2) the guard added to IndexedMinHeap.DecreaseKey in the closing exercise's solution.",
+  "targetQuery": "heap data structure / priority queue c#",
+  "score": 9.2,
+  "changesVerified": [
+    {
+      "change": "heapify-cost paragraph rewrite",
+      "location": "Paragraph immediately following the id=heapify-cost code/output block ('`build/n` — comparisons per element for the bottom-up constructor...')",
+      "finding": "The unsourced average-case claim is gone. The paragraph now does exactly what the brief asks: reports the measured numbers (build/n flat ~1.85-1.87, insert/n drifting 2.14->2.24) and compares them only against a cited worst-case bound -- '1 + log2 n comparisons as the worst case for one insert (Sedgewick & Wayne, \"Priority Queues\")' -- computing that n=8,000 puts the worst case at roughly 14 comparisons/element, about six times the measured 2.24. Checked the arithmetic: 1 + log2(8000) ~= 13.97 ~= 14, and 14/2.24 ~= 6.25, both consistent with the prose. The paragraph reads naturally, not as filler or clickbait -- it states a direction ('build/n stays flat while insert/n keeps creeping upward') and explicitly frames it as a 'signature,' not a proof, matching the article's own upstream framing of the code block as measurement rather than derivation. No new unsupported claims introduced."
+    },
+    {
+      "change": "IndexedMinHeap.DecreaseKey guard",
+      "location": "Closing exercise ('Add decrease-key by tracking positions'), solution's id=indexed-heap block",
+      "finding": "DecreaseKey now throws ArgumentException when newPriority is not strictly smaller than the current stored priority, before mutating state or sifting. The accompanying prose explains why the guard is load-bearing rather than defensive filler: SiftUp only ever moves a node toward the root, so a larger-or-equal priority would silently break the heap property with 'nothing to signal it went wrong,' and the prose correctly attributes the same check to CLRS's DECREASE-KEY. The worked example in the same block only ever calls DecreaseKey with a strictly smaller value (5 -> 0), so the guard doesn't fire and the printed output (0: compact-index / 2: send-digest / 5: backup) still hand-verifies against the trace. This is a correctness fix presented as one, not dressed up as a bigger feature than it is -- no scope inflation, no invented benchmark, no ad-adjacent framing."
+    }
+  ],
+  "regressionCheck": "Re-read the full article top to bottom in the worktree copy. Grepped for adsbygoogle/googleads/ins-class-ad, lorem ipsum, NEEDS_MARKUS, TODO/FIXME, and 'placeholder' -- zero hits, same as round 1. Front matter (title, description, sources, draft flag) is unchanged from round 1. The empirically-grounded-O(n)-heapify angle and the honest-BCL-caveats angle (quaternary heap, no FIFO guarantee, no decrease-key, Remove's O(n)/non-deterministic-duplicate caveat, Dequeue's exception behavior) are both still fully intact and, if anything, the heapify argument is now more defensible since it no longer leans on an unsourced average-case claim. No new filler, no restated-title sentences, no boilerplate Introduction/Conclusion headings, no ad code of any kind, no new NEEDS_MARKUS markers.",
+  "carriedForwardFromRound1": [
+    {
+      "severity": "minor",
+      "location": "\"What `PriorityQueue<TElement,TPriority>` actually gives you\" section, the sentence beginning \"[Dijkstra's algorithm](/algorithms/dijkstra-shortest-path/) is the case most people hit this in:\"",
+      "problem": "Unchanged from round 1: \"the case most people hit this in\" is still an unsourced claim about what readers/programmers commonly encounter, the same shape the editorial brief's pilot-round lessons flag ('No \"what most people think\" claims unless sourced.'). Not load-bearing -- the mechanism the paragraph explains (visited-set lazy deletion) is accurate regardless -- but the framing sentence remains an unsupported popularity claim. This was out of scope for the round-2 technical-only fix pass (which touched only the heapify paragraph and the DecreaseKey guard), so it is carried forward rather than newly found.",
+      "fixLooksLike": "Rephrase to something the article can support without a source, e.g. \"Dijkstra's algorithm is a natural place to hit this:\" or \"Dijkstra's algorithm needs exactly this:\" -- drop the claim about what most people encounter.",
+      "owner": "writer"
+    }
+  ],
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "\"What `PriorityQueue<TElement,TPriority>` actually gives you\" section, the sentence beginning \"[Dijkstra's algorithm](/algorithms/dijkstra-shortest-path/) is the case most people hit this in:\"",
+      "problem": "Same as round 1 (see carriedForwardFromRound1) -- reproduced here so the issues array reflects the article's current state.",
+      "fixLooksLike": "Rephrase to something the article can support without a source, e.g. \"Dijkstra's algorithm is a natural place to hit this:\" -- drop the claim about what most people encounter.",
+      "owner": "writer"
+    }
+  ],
+  "justification": "This was a regression check, not a fresh review, and the article still delivers on its AdSense angle exactly as it did in round 1: an empirically grounded O(n) heapify argument (now on firmer footing than round 1, since the previously-flagged unsourced average-case phrasing is gone and the paragraph instead compares measured numbers to a cited worst-case bound with checkable arithmetic) and honest BCL caveats (quaternary heap, no FIFO guarantee, no decrease-key, Remove's linear-scan/non-determinism caveat, Dequeue's exception behavior), all still correctly cited to the same six front-matter sources. The DecreaseKey guard is a clean, well-explained correctness fix that reads as substance, not padding. No filler, clickbait, placeholder, or ad-code regressions found anywhere in the article. Score held at 9.2, unchanged from round 1: the two round-2 edits are both improvements or neutral from an AdSense standpoint, and the one open minor issue (the unsourced 'most people' framing sentence) was outside this round's fix scope and remains exactly as it was."
+}
