@@ -3517,5 +3517,11 @@
       "article": "testing/test-driven-development",
       "text": "says five red-green-refactor laps (description, line 40) but has four Lap headings plus a refactor section; owner to decide"
     }
-  ]
+  ],
+  "deployed": {
+    "date": "2026-09-25",
+    "commit": "b38c095",
+    "run": 36145812148,
+    "articles": 67
+  }
 }

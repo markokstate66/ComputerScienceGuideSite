@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-25 — Third production deploy: 67 articles, AdSense, wave 3
+
+- At the owner's explicit instruction ("merge to master and deploy"), fast-forwarded `master` from 77bcdd5 to b38c095 (24 commits: #124, the 17 wave-B articles, #139 AdSense/consent/privacy/SEO, #140 wave 3) and pushed. Pre-deploy: clean build of b38c095, 90 pages; generated staticwebapp.config.json has 27 routes, 0 duplicates, no trailingSlash, no navigationFallback; dist carries the AdSense loader, ads.txt and the new robots.txt.
+- GitHub Actions run 36145812148: success.
+- Verified live with curl on www.computerscienceguide.com: /, /start-here/, /algorithms/, /glossary/, /privacy/ and three new articles return 200; /guides/algorithms 301 to /algorithms/; an unknown path 404; ads.txt, robots.txt (GPTBot/ClaudeBot/Google-Extended blocked) and sitemap.xml (87 URLs) served. Home page HTML has the consent-mode defaults before the ca-pub-6676281664229738 loader, max-image-preview:large and og:locale en_US; article JSON-LD author is the Organization; the privacy page carries the AdSense cookie disclosure.
+- Not verifiable from here: real ad serving (needs AdSense approval), the consent message in the EEA, and production Lighthouse with ads loaded.
+
 ## 2026-09-24 — Wave 3 integration shipped (#13 → #140)
 
 - 8 Sonnet subagents: 5 wired docs/crosslinks requests by pillar pair (44 articles, 105 lines; front matter and code blocks verified byte-identical), 1 wrote hub intros + readingNotes + blurbs, 1 wrote learning paths + 22 glossary terms, 1 fact-checked the new copy (150 statements checked, 69 corrected after an orchestrator screenshot spot-check found false cross-article claims). Orchestrator fixed two stale "future article"/"not reached yet" phrases and two over-strong added sentences.
