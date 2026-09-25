@@ -1,0 +1,21 @@
+{
+  "article": "databases/aggregation-and-window-functions",
+  "route": "/databases/aggregation-and-window-functions/",
+  "round": 1,
+  "role": "design",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/sql/t-sql/queries/select-over-clause-transact-sql",
+    "https://www.sqlnoir.com/blog/sql-window-functions"
+  ],
+  "justification": "gate.mjs passed clean: lighthouse 100/100/100/100, 0 console errors, 0 broken internal links, 0px mobile overflow, 66 screenshots captured (.verify/databases__aggregation-and-window-functions/gate.json). I opened every desktop-light and mobile-dark part (fold + all parts, ~32 images) plus fold + 2 sampled parts each of desktop-dark and mobile-light. Typography, heading hierarchy, breadcrumbs, the collapsible 'On this page' TOC, 'Before you read' / exercise / sources / related-article callout boxes, and the three custom SVG diagrams (SELECT pipeline, GROUP BY-vs-OVER collapse, RANGE-vs-ROWS frame) all render correctly and legibly in both themes at both breakpoints, including at 390px mobile width, with captions that add real information rather than restating the figure. Code blocks (SQL and result panels) never overflow the viewport on desktop or mobile; syntax highlighting and the 'Statement fails' error-state styling are consistent with the rest of the site. This beats Microsoft Learn's OVER Clause reference, which is the top-ranking competing result for this query but is a dense, diagram-free wall of syntax boxes and plain tables with heavy front-matter clutter, and it's on par with SQLNoir's illustrated tutorial (the strongest independently-designed competitor found), whose ASCII-art figures are less polished and less theme-consistent than this page's vector SVGs. The one recurring nit: several result tables (member_total; fee_dense_rank/fee_row_num; previous_loan/days_since; running_total; moving_avg) are wider than the 390px mobile viewport and their trailing columns are simply clipped at the container edge with no visible scroll affordance (no fade, shadow, or scrollbar hint), so a mobile reader has to discover by trial that the panel scrolls horizontally rather than seeing that columns are missing. That's a shell-level output-panel behavior, not something this article's content controls, and it ships with nits only rather than blocking.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Mobile (390px) result panels throughout the article, e.g. the ranking query under 'Ranking: three functions, one set of ties' (mobile-dark-part11/12), the LAG/LEAD query under 'LAG and LEAD: comparing a row to its neighbor' (mobile-dark-part12), and both running-total/moving-average queries under 'Frames: which rows the aggregate actually sees' (mobile-dark-part14/15/16)",
+      "problem": "Result tables wider than the mobile viewport (e.g. member_id/loan_id/loaned_on/previous_loan/days_since, or total_fee/fee_rank/fee_dense_rank/fee_row_num) are clipped at the panel's right edge with no visual hint that more columns exist off-screen. mobileOverflowPx is 0 because the scroll is contained inside the panel, but there's no fade/shadow/scrollbar affordance, so a reader can easily believe the trailing column (days_since, fee_row_num, running_total's later values, moving_avg) was simply omitted.",
+      "fixLooksLike": "Add a subtle right-edge gradient fade (or a persistent thin scrollbar) to the output-result panel component whenever its content's scrollWidth exceeds its clientWidth, matching whatever affordance (if any) the SQL input code blocks already use, so mobile readers can tell there's more to scroll to.",
+      "owner": "integrator"
+    }
+  ]
+}

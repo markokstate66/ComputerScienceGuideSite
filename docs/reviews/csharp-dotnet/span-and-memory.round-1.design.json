@@ -1,0 +1,64 @@
+{
+  "article": "csharp-dotnet/span-and-memory",
+  "route": "/csharp-dotnet/span-and-memory/",
+  "round": 1,
+  "role": "design",
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/memory-and-spans/memory-t-usage-guidelines",
+    "https://www.stevejgordon.co.uk/an-introduction-to-optimising-code-using-span-t"
+  ],
+  "lighthouse": {
+    "performance": 98,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": true,
+  "screenshotsOpened": [
+    "desktop-light-fold.png",
+    "desktop-light-part01.png",
+    "desktop-light-part02.png",
+    "desktop-light-part03.png",
+    "desktop-light-part04.png",
+    "desktop-light-part05.png",
+    "desktop-light-part06.png",
+    "desktop-light-part07.png",
+    "desktop-light-part08.png",
+    "desktop-light-part09.png",
+    "mobile-dark-fold.png",
+    "mobile-dark-part01.png",
+    "mobile-dark-part02.png",
+    "mobile-dark-part03.png",
+    "mobile-dark-part04.png",
+    "mobile-dark-part05.png",
+    "mobile-dark-part06.png",
+    "mobile-dark-part07.png",
+    "mobile-dark-part08.png",
+    "mobile-dark-part09.png",
+    "mobile-dark-part10.png",
+    "mobile-dark-part11.png",
+    "mobile-dark-part12.png",
+    "mobile-dark-part13.png",
+    "mobile-dark-part14.png",
+    "desktop-dark-fold.png",
+    "desktop-dark-part03.png",
+    "desktop-dark-part06.png",
+    "mobile-light-fold.png",
+    "mobile-light-part04.png",
+    "mobile-light-part10.png"
+  ],
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Code blocks throughout, worst in 'What parsing an order line actually costs' and 'Crossing an await' (e.g. `Measure(\"string.Split\", () => TotalWithSplit(orderLines));`, `lines[i] = $\"SKU-{1000 + i % 500},{1 + i % 9},19.99\";`, `Span<byte> chunk = buffer.Span[..bytesRead];`) on mobile-dark/mobile-light",
+      "problem": "Several lines run well past the ~40-character mobile-visible budget the writer guide sets (WRITER_GUIDE.md §5), so the closing half of the statement (the lambda body, the interpolation tail, the slice expression) is clipped at the right edge of the phone screenshot with no visible affordance that the block scrolls horizontally. A reader skimming on a phone sees a truncated statement and has to know to swipe the code block sideways to get the rest.",
+      "fixLooksLike": "Break the worst offenders across two lines the way the rest of the article already does for long signatures, e.g. `Measure(\"string.Split\",\n    () => TotalWithSplit(orderLines));` and split the interpolated SKU string construction, so the part that carries the point (the label, the call being measured, the field being sliced) is visible without scrolling on a 390px screen.",
+      "owner": "writer"
+    }
+  ],
+  "justification": "Ran `node tools/gate.mjs csharp-dotnet/span-and-memory` from the worktree (waited briefly for the machine-wide verify lock, then it ran): check-article ok (0 errors, 1 known warning about the unmerged strings-and-unicode prerequisite), run-code ok (21 blocks, 13 executed, 0 failures), verify-page ok. Real numbers from .verify/csharp-dotnet__span-and-memory/gate.json: Lighthouse performance/accessibility/best-practices/seo = 98/100/100/100, consoleErrors = 0, brokenInternalLinks = 0, mobileOverflowPx = 0, 50 screenshots captured. I opened all 10 desktop-light screenshots (fold + 9 parts) and all 15 mobile-dark screenshots (fold + 14 parts) end to end, plus fold and two interior parts each of desktop-dark and mobile-light, specifically re-checking both diagrams (Figure 1's array/span-pointer box, Figure 2's Memory/Span await timeline) in every theme and viewport combination.\n\nAgainst the current top results for 'c# span' (Microsoft Learn's own Memory<T>/Span<T> usage-guidelines page, and Steve Gordon's well-regarded 'Introduction to Optimising Code Using Span<T>' post, both read via WebFetch), this page's design is a clear step up: Microsoft's own page has zero diagrams and leans on pseudo-code and a numbered rule list; this article has two purpose-built SVG diagrams that actually show the mechanism (a span as a pointer+length box over an array, and a Memory<T> field surviving an await while a Span<T> must be re-sliced), both of which follow the phone rules exactly (viewBox ≤360, portrait/stacked, annotations under the drawing, ≥12-unit text) and render correctly and legibly in both themes at both viewport widths I checked. Heading hierarchy is clean (h2→h3, no skipped levels, matches the 'On this page' TOC exactly). Code blocks, `text output` panels, `error=` diagnostic headers, the `:::pitfall`/`:::note` callouts and the collapsible exercise/solution blocks all have correct, consistent styling and contrast in light and dark. There is no table in this article, so mobile table behaviour doesn't apply. Rhythm of prose vs. code vs. figure is well paced — no wall of text, exercises are placed where the flow calls for them, and the two figures land right where a reader needs the visual. The only real nit is that a handful of code lines exceed the ~40-character mobile budget the site's own writer guide sets and get clipped rather than wrapped, which costs a fraction of a point but is a trivial writer-side fix, not a rendering defect. With zero console errors, zero broken links, zero mobile overflow, and Lighthouse comfortably clearing 90 in all four categories, this is materially better than the best existing result for the target query and ships with nits only.",
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-126-span-and-memory\\docs\\reviews\\csharp-dotnet\\span-and-memory.round-1.design.json"
+}
