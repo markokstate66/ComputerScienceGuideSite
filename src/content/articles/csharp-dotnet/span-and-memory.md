@@ -42,7 +42,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/standard/io/pipelines"
     publisher: "Microsoft Learn"
     accessed: 2026-09-24
-draft: true
+draft: false
 ---
 
 Parsing the line `"SKU-1042,3,19.99"` into a SKU, a quantity and a price with `line.Split(',')` costs four allocations before any arithmetic happens: the array `Split` returns, plus one new string for each of the three fields. Every one of those bytes already exists inside the original line. `Span<T>` is how C# lets code read them in place instead of copying them out first, and `Memory<T>` is what makes the same trick survive an `await`.
