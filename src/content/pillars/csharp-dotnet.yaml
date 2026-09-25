@@ -5,4 +5,23 @@ accent:
   light: "#7e22ce"
   dark: "#d8b4fe"
 blurb: >-
-  What the C# compiler and the .NET runtime do with your code: value and reference types, the garbage collector, the state machine behind async and await, deferred execution in LINQ, generics and variance, strings and Unicode, exceptions, and Span<T>. The articles rely on experiments you can run yourself, including allocation measurements and deliberate compile errors.
+  What the C# compiler and .NET runtime do with your code: value and reference types, the garbage collector, the async/await state machine, deferred LINQ execution, generics, strings and Unicode, exceptions, and Span<T>. Every claim is backed by a runnable measurement or a deliberate compile error.
+hubIntro: >-
+  These eight articles explain what the C# compiler and the .NET runtime actually do with code that looks simple: what gets copied on assignment, when the garbage collector runs, what await compiles into, when a LINQ query really executes, and what generics, strings and Span<T> cost underneath. Value types versus reference types comes first because every later article's measurements depend on knowing what gets copied and what gets allocated. Async/await, LINQ and generics are the everyday middle material; strings and exceptions round it out; Span<T> and Memory<T> close the pillar and assume you're comfortable with most of what came before.
+readingNotes:
+  value-types-vs-reference-types: >-
+    The starting point for the pillar: what gets copied and what gets allocated here is the fact every later article's measurements depend on.
+  garbage-collection: >-
+    Follows directly because it explains what happens to the heap allocations the previous article showed you creating, including the leaks a GC doesn't prevent.
+  async-await: >-
+    Needs value and reference types settled first, since the state machine it traces closes over variables the same way any other C# object does.
+  linq-deferred-execution: >-
+    Comes next because the yield-return machinery it rebuilds from scratch is the same iterator pattern behind IEnumerable that async code's loops also rely on.
+  generics: >-
+    Builds on the boxing costs measured for value types in the first article, this time showing how a generic method avoids paying them.
+  strings-and-unicode: >-
+    Revisits reference-type copying from the first article for the one type, string, whose immutability changes what a copy actually means.
+  exceptions: >-
+    Placed after the everyday mechanisms so its cost measurements and stack-trace behavior can be understood against a working knowledge of how methods and the stack already behave.
+  span-and-memory: >-
+    Closes the pillar because slicing without allocating only makes sense once you've seen, in the earlier articles, what an allocation and a copy actually cost.

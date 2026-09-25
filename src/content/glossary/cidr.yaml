@@ -1,0 +1,4 @@
+term: "CIDR"
+definition: "A way of writing an IP network as an address plus a slash and a prefix length (for example 10.0.0.0/16), where the prefix length says how many leading bits of the address are fixed for every host on that network. It replaced the older fixed-size class A/B/C system of assigning address blocks."
+aliases: ["Classless Inter-Domain Routing", "CIDR notation"]
+seeAlso: ["networking/ip-addresses-and-subnets"]

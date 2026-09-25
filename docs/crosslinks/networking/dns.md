@@ -2,7 +2,7 @@
 
 One line each: anchor text | target route | where in the article.
 
-- "messages carried by UDP are restricted to 512 bytes" / TCP retry on truncation | /networking/tcp-vs-udp/ | paragraph after the walk program's output, starting "Every query above went out as one UDP datagram"
+- "messages carried by UDP are restricted to 512 bytes" / TCP retry on truncation | /networking/tcp-vs-udp/ | paragraph after the walk program's output, starting "Every query above went out as one UDP datagram" — Status: wired (linked the quoted RFC phrase to /networking/tcp-vs-udp/ in that paragraph)
 
 ## Boundary with /networking/how-the-internet-works/
 
@@ -12,4 +12,4 @@ That article already exists and is linked directly in this article's second para
 
 ## Glossary terms wanted (first use in this article; definitions for the integrator to write)
 
-TTL (time to live, DNS sense — distinct from the IP-packet TTL glossary entry `how-the-internet-works.md` may request), NXDOMAIN, SERVFAIL, recursive resolver, authoritative server. First uses: "What is the hierarchy below the root?" (authoritative), "What's the difference between a recursive resolver and an iterative one?" (recursive resolver), "What does a TTL actually control?" (TTL), "What do DNS failure modes look like..." (NXDOMAIN, SERVFAIL).
+TTL (time to live, DNS sense — distinct from the IP-packet TTL glossary entry `how-the-internet-works.md` may request), NXDOMAIN, SERVFAIL, recursive resolver, authoritative server. First uses: "What is the hierarchy below the root?" (authoritative), "What's the difference between a recursive resolver and an iterative one?" (recursive resolver), "What does a TTL actually control?" (TTL), "What do DNS failure modes look like..." (NXDOMAIN, SERVFAIL). — Status: n/a (glossary term request for the integrator to write definitions elsewhere, not an article link)

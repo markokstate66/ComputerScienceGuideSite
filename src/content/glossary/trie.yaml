@@ -1,0 +1,4 @@
+term: "Trie"
+definition: "A tree that stores a set of strings one character per edge, so every string that shares a prefix with another shares the path down to where they diverge. A node marks the end of a stored word, not necessarily a leaf, so one stored word can sit on the path to a longer one."
+aliases: ["prefix tree", "digital tree"]
+seeAlso: ["data-structures/tries"]

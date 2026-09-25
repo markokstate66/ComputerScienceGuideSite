@@ -1,0 +1,4 @@
+term: "Mutation testing"
+definition: "A way of evaluating a test suite by deliberately inserting a small change (a mutant) into the code under test and checking whether any test then fails. A mutant that leaves every test passing is said to have survived, revealing a gap in the suite that coverage numbers alone could not show."
+aliases: []
+seeAlso: ["testing/code-coverage"]

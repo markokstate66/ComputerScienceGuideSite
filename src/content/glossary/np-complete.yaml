@@ -1,0 +1,4 @@
+term: "NP-complete"
+definition: "A decision problem that is both in NP (a proposed answer can be checked in polynomial time) and at least as hard as every other problem in NP, because every NP problem can be transformed into it by a polynomial-time reduction. Subset-sum and Boolean satisfiability are classic examples; no polynomial-time algorithm is known for any of them, and finding one for a single NP-complete problem would give one for all of them."
+aliases: ["NP-completeness"]
+seeAlso: ["complexity/p-vs-np"]

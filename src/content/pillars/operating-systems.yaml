@@ -5,4 +5,19 @@ accent:
   light: "#b91c1c"
   dark: "#fca5a5"
 blurb: >-
-  The operating-system concepts that application developers meet every day: processes and threads, race conditions and locks, virtual memory, CPU scheduling, file systems and durability, and CPU caches. The behaviour is observed from .NET code, including reproducible concurrency bugs and cache-effect measurements.
+  The operating-system concepts application developers meet every day: processes and threads, race conditions and locks, virtual memory, CPU scheduling, file systems and durability, and CPU caches. Behavior is observed from .NET code, including concurrency bugs and cache-effect measurements.
+hubIntro: >-
+  Operating-system concepts here are the ones an application developer actually collides with: what a process and a thread each own, the race conditions and deadlocks that follow from sharing memory across threads, virtual memory and paging, how the scheduler decides whose turn it is, how a file system survives a crash, and what a CPU cache line really costs. Processes and threads comes first because every other article assumes you know what's shared and what's private between them. Concurrency and virtual memory are the two articles most developers eventually need for debugging; scheduling, file systems and the memory hierarchy are the deeper, occasionally advanced, material.
+readingNotes:
+  processes-and-threads: >-
+    Opens the pillar with what a process and a thread each own, the fact every later article about scheduling, memory or locking depends on.
+  concurrency-race-conditions-locks: >-
+    Follows directly because the shared heap the first article described is exactly what makes two threads able to corrupt a counter without a lock.
+  virtual-memory: >-
+    Comes after concurrency because it explains the private address space each process gets, the isolation the first two articles took for granted.
+  cpu-scheduling: >-
+    Builds on processes and threads for its vocabulary and returns to the context-switch cost measured there, this time comparing five algorithms that decide when a switch happens.
+  file-systems: >-
+    Needs virtual memory's page and mapped-file concepts, since a memory-mapped file is how this article connects a file's bytes back into that same address space.
+  memory-hierarchy-and-caches: >-
+    Placed last and marked advanced because false sharing, its central example, is a cache-line-level version of the race condition covered earlier in the pillar.

@@ -5,4 +5,23 @@ accent:
   light: "#0f766e"
   dark: "#5eead4"
 blurb: >-
-  Arrays, linked lists, stacks, queues, hash tables, trees, heaps, graphs and tries: how each one is laid out in memory, what its operations cost, and when it is the wrong choice. Every structure is built from scratch in C# and then compared with the .NET type you would use in production, such as List<T>, Dictionary<TKey,TValue> and PriorityQueue<TElement,TPriority>.
+  Arrays, linked lists, stacks, queues, hash tables, trees, heaps, graphs and tries: how each is laid out in memory, what its operations cost, and when it's the wrong choice. Each is built from scratch in C# and compared with the .NET type you'd use in production, like List<T> and Dictionary.
+hubIntro: >-
+  A data structure is a decision about what you're willing to pay for later, and these eight articles build each one from scratch in C# so you can see exactly where that cost lives in memory, not just in a Big-O table. They assume the counting habits from Complexity and move roughly in the order you reach for them at work: arrays, linked lists, stacks and queues, then hash tables, trees, heaps, graphs and tries. Short on time? Arrays-and-dynamic-arrays and hash-tables alone explain the two structures quietly underlying List<T> and Dictionary<TKey,TValue>; the tree, heap, graph and trie articles hold the harder trade-offs.
+readingNotes:
+  arrays-and-dynamic-arrays: >-
+    The starting point for the pillar: contiguous memory explains why List<T> behaves the way it does, and every later structure here is compared back to an array's costs.
+  linked-lists: >-
+    Follows arrays directly so the pointer-chasing costs it measures can be compared against the contiguous layout just covered, rather than described in the abstract.
+  stacks-and-queues: >-
+    Builds on both the array and linked layouts just covered, since a stack or queue can be implemented on either one, and the article shows exactly what each costs.
+  hash-tables: >-
+    Introduces the second structure, besides the array, that the rest of the pillar leans on: graphs-representation later uses one for its adjacency-list storage.
+  binary-search-trees: >-
+    Needs recursion from Algorithms and the linked-list pointer techniques from earlier in this pillar to build a tree with a working recursive delete.
+  heaps-and-priority-queues: >-
+    Reuses the array-index arithmetic from the first article, this time to store a tree without pointers at all, and sets up Dijkstra's algorithm in Algorithms.
+  graphs-representation: >-
+    Combines the array and hash-table articles directly, since adjacency lists and matrices are built from exactly those two structures.
+  tries: >-
+    Placed last because it benchmarks itself against the sorted-array binary search from Algorithms, which the reading order has already covered by this point.

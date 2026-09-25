@@ -1,0 +1,4 @@
+term: "False sharing"
+definition: "A performance problem where two threads on different cores write to two different variables that happen to sit in the same cache line, so the line bounces between the cores' caches on every write even though the threads never touch each other's data. It happens because cache-coherence hardware tracks ownership per line, not per variable, and it is fixed by padding or otherwise separating the variables onto different lines."
+aliases: []
+seeAlso: ["operating-systems/memory-hierarchy-and-caches"]

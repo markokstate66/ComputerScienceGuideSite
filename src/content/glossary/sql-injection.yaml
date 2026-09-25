@@ -1,0 +1,4 @@
+term: "SQL injection"
+definition: "A vulnerability where untrusted input is concatenated directly into a SQL command's text instead of being kept separate from it, letting that input change the structure of the query the database runs rather than just supplying a value. Parameterized queries and prepared statements prevent it by sending the query text and each value to the database separately."
+aliases: []
+seeAlso: ["databases/sql-injection-and-parameters"]

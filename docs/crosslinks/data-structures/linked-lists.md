@@ -2,9 +2,9 @@
 
 One line each: anchor text | target route | where in the article. `/data-structures/arrays-and-dynamic-arrays/` exists as a file on this branch but is `draft: true` (unpublished) as of 2026-09-22, so the body does not link it yet; it is already listed in `prerequisites` in front matter, which will render once that article is published. Each sentence reads correctly with or without the link.
 
-- "Contiguous memory wins every measurement above" | /data-structures/arrays-and-dynamic-arrays/ | "Deciding when to reach for a linked list", first bullet ("Reading, or building once and reading many times").
-- "an array element sharing a block with its neighbors does not pay" | /data-structures/arrays-and-dynamic-arrays/ | "Two things worth measuring before you decide" / "What a node costs beyond its value", first paragraph.
-- "List<T>" (the first mention, in the opening paragraph, "the one shape of problem where it beats a `List<T>` outright") | /data-structures/arrays-and-dynamic-arrays/ | Opening paragraph. That article builds `DynamicArray<T>` and owns `List<T>`'s internals; this article only compares against it.
+- "Contiguous memory wins every measurement above" | /data-structures/arrays-and-dynamic-arrays/ | "Deciding when to reach for a linked list", first bullet ("Reading, or building once and reading many times"). — Status: dropped (target already linked earlier in this article, at the opening paragraph's `List<T>`; one-link-per-target rule)
+- "an array element sharing a block with its neighbors does not pay" | /data-structures/arrays-and-dynamic-arrays/ | "Two things worth measuring before you decide" / "What a node costs beyond its value", first paragraph. — Status: dropped (same reason: target already linked at the opening paragraph)
+- "List<T>" (the first mention, in the opening paragraph, "the one shape of problem where it beats a `List<T>` outright") | /data-structures/arrays-and-dynamic-arrays/ | Opening paragraph. That article builds `DynamicArray<T>` and owns `List<T>`'s internals; this article only compares against it. — Status: wired (opening paragraph, first occurrence of the target in the document)
 
 ## Boundaries with planned siblings (to avoid near-duplicate coverage)
 

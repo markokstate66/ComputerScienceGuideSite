@@ -2,7 +2,7 @@
 
 One line each: anchor text | target route | where in the article. Target was unpublished when this round was written (2026-09-22), so the body does not link it yet. The sentence reads correctly with or without the link.
 
-- "'Always take the biggest coin' is not a proof of anything; it is a habit that happens to work for some coin systems and not others" | /algorithms/greedy-algorithms/ | The opening paragraph, right after the greedy-coin-change code block shows 4 coins instead of 3. That planned article owns the exchange-argument proof technique for *when* greedy is correct; this one only needs the one-sentence observation that it can fail, to motivate why an exact method is worth building.
+- "'Always take the biggest coin' is not a proof of anything; it is a habit that happens to work for some coin systems and not others" | /algorithms/greedy-algorithms/ | The opening paragraph, right after the greedy-coin-change code block shows 4 coins instead of 3. That planned article owns the exchange-argument proof technique for *when* greedy is correct; this one only needs the one-sentence observation that it can fail, to motivate why an exact method is worth building. — Status: wired (body, opening paragraph)
 
 ## Boundaries with planned siblings
 

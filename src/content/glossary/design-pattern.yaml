@@ -1,0 +1,4 @@
+term: "Design pattern"
+definition: "A named, reusable solution to a recurring object-design problem, described by its intent and trade-offs rather than by one fixed implementation. Factory, Builder and Singleton are creational examples; Strategy, Observer and Decorator are examples parts of the .NET base class library itself follows, such as StringBuilder for Builder and C# events for Observer."
+aliases: []
+seeAlso: ["oop-design/factory-builder-singleton", "oop-design/strategy-observer-decorator"]

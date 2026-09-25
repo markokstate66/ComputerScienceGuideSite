@@ -1,0 +1,4 @@
+term: "Aggregate function"
+definition: "A SQL function such as COUNT, SUM, AVG, MIN or MAX that folds every row of a group (or, given an OVER clause, every row of a window frame) down to a single value. Used with GROUP BY, a query's SELECT list may only reference aggregate functions and the columns named in GROUP BY."
+aliases: []
+seeAlso: ["databases/aggregation-and-window-functions"]

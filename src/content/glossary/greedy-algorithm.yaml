@@ -1,0 +1,4 @@
+term: "Greedy algorithm"
+definition: "An algorithm that builds a solution one choice at a time, always taking whatever looks best at the current step and never revisiting that choice. It runs fast, but only produces an optimal answer for problems where an exchange argument shows the locally best choice is always safe; otherwise it can settle for a suboptimal result."
+aliases: []
+seeAlso: ["algorithms/greedy-algorithms"]

@@ -227,7 +227,7 @@ Chen   Hamlet
 
 `JOIN` on its own means `INNER JOIN`. Each result row is a *pair*: one member row glued to one loan row. It is not a member and it is not a loan, which is the first thing the circles get wrong.
 
-`ON` takes any Boolean expression, the same kind `WHERE` accepts. Equality between a foreign key and the key it points at is the usual condition, but a range or an inequality draws lines just as well, and one later section adds a second condition with `AND`.
+`ON` takes any Boolean expression, the same kind `WHERE` accepts. Equality between a [foreign key](/databases/relational-model-and-keys/) and the key it points at is the usual condition, but a range or an inequality draws lines just as well, and one later section adds a second condition with `AND`.
 
 When the two columns share a name, as they do here, `USING (member_id)` is shorthand for the equality. It also merges the two columns into one in the output, which is why the unqualified `member_id` below is not ambiguous:
 
@@ -789,7 +789,7 @@ Chen   5     5     0
 Dalia  0     0     0
 ```
 
-Each of the two `WITH` subqueries (common table expressions) has at most one row per member, so each left join attaches at most one row and the row count stays at four. The left joins also bring back Boris and Dalia, whom the buggy inner-join version dropped for having no payments.
+Each of the two `WITH` subqueries ([common table expressions](/databases/aggregation-and-window-functions/)) has at most one row per member, so each left join attaches at most one row and the row count stays at four. The left joins also bring back Boris and Dalia, whom the buggy inner-join version dropped for having no payments.
 
 Two checks expose this bug. Before joining on a column, ask whether it is unique on at least one side, and look when unsure:
 
@@ -1051,15 +1051,15 @@ Dalia  NULL
 ON ran 20 times
 ```
 
-Twenty tests for five output rows is fine here and hopeless at scale. With *n* rows on the outer side and *m* on the inner, this naive nested loop evaluates `ON` exactly *n* × *m* times, Θ(*n* · *m*) in [big-O terms](/glossary/#big-o-notation), no matter how few pairs match. Databases return the rows the definition demands without doing that work. The [PostgreSQL planner documentation](https://www.postgresql.org/docs/current/planner-optimizer.html#PLANNER-OPTIMIZER-GENERATING-POSSIBLE-PLANS) and [SQL Server's join documentation](https://learn.microsoft.com/en-us/sql/relational-databases/performance/joins?view=sql-server-ver17#understand-nested-loops-joins) describe the same three strategies. Below, *k* is the number of rows the join outputs, which every method must at least write out.
+Twenty tests for five output rows is fine here and hopeless at scale. With *n* rows on the outer side and *m* on the inner, this naive nested loop evaluates `ON` exactly *n* × *m* times, Θ(*n* · *m*) in [big-O terms](/complexity/big-o-notation/), no matter how few pairs match. Databases return the rows the definition demands without doing that work. The [PostgreSQL planner documentation](https://www.postgresql.org/docs/current/planner-optimizer.html#PLANNER-OPTIMIZER-GENERATING-POSSIBLE-PLANS) and [SQL Server's join documentation](https://learn.microsoft.com/en-us/sql/relational-databases/performance/joins?view=sql-server-ver17#understand-nested-loops-joins) describe the same three strategies. Below, *k* is the number of rows the join outputs, which every method must at least write out.
 
-- **Nested loops with an index.** Keep the outer loop, but replace the inner scan with a lookup in an [index](/glossary/#index-database) on the inner table's join column, using the current outer row's value as the search key. With a B-tree index each lookup costs O(log *m*), so the join costs O(*n* log *m* + *k*). It works for any condition the index can search, ranges included, and it is at its best when *n* is small; SQL Server's page calls it the fastest choice when one input is small and the other is large and indexed.
+- **Nested loops with an index.** Keep the outer loop, but replace the inner scan with a lookup in an [index](/databases/indexes/) on the inner table's join column, using the current outer row's value as the search key. With a B-tree index each lookup costs O(log *m*), so the join costs O(*n* log *m* + *k*). It works for any condition the index can search, ranges included, and it is at its best when *n* is small; SQL Server's page calls it the fastest choice when one input is small and the other is large and indexed.
 
-- **Hash join.** Read one input (the *build* side, ideally the smaller, which SQL Server's optimizer picks deliberately) into a [hash table](/glossary/#hash-table) keyed on the join column, then read the other input once and probe the table with each row. Expected cost is O(*n* + *m* + *k*), given a hash function that spreads the keys and a build side that fits in memory; when it does not fit, engines partition both inputs to disk first and pay extra passes.
+- **Hash join.** Read one input (the *build* side, ideally the smaller, which SQL Server's optimizer picks deliberately) into a [hash table](/data-structures/hash-tables/) keyed on the join column, then read the other input once and probe the table with each row. Expected cost is O(*n* + *m* + *k*), given a hash function that spreads the keys and a build side that fits in memory; when it does not fit, engines partition both inputs to disk first and pay extra passes.
 
   It applies to equality conditions only: a hash table can find "the same key" but not "a smaller key". PostgreSQL states the restriction in its [rules for hash-joinable operators](https://www.postgresql.org/docs/current/xoper-optimization.html#XOPER-HASHES): the operator "must represent equality".
 
-- **Merge join.** Sort both inputs on the join column, then walk the two sorted lists in step, advancing whichever side has the smaller key, as the merge step of merge sort does. The walk is O(*n* + *m* + *k*). If an input is not already in order (from an index on the join column, say), the engine sorts it first, which adds O(*n* log *n* + *m* log *m*). PostgreSQL's [rules for merge-joinable operators](https://www.postgresql.org/docs/current/xoper-optimization.html#XOPER-MERGES) again require the operator to "behave like equality".
+- **Merge join.** Sort both inputs on the join column, then walk the two sorted lists in step, advancing whichever side has the smaller key, as [the merge step of merge sort](/algorithms/sorting-algorithms-compared/) does. The walk is O(*n* + *m* + *k*). If an input is not already in order (from an index on the join column, say), the engine sorts it first, which adds O(*n* log *n* + *m* log *m*). PostgreSQL's [rules for merge-joinable operators](https://www.postgresql.org/docs/current/xoper-optimization.html#XOPER-MERGES) again require the operator to "behave like equality".
 
 SQLite is the small-engine case: it [implements every join as nested loops](https://www.sqlite.org/optoverview.html#joins) and chooses the loop order of inner joins to suit the available indexes. With no suitable index it may [build a temporary one](https://www.sqlite.org/optoverview.html#autoindex) for the one statement, at a cost it gives as O(*m* log *m*), and its documentation describes the result as almost the same thing as a hash join.
 

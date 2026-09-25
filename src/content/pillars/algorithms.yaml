@@ -5,4 +5,23 @@ accent:
   light: "#b45309"
   dark: "#fcd34d"
 blurb: >-
-  Searching, sorting, recursion, graph traversal, shortest paths, dynamic programming, greedy methods and backtracking. The articles focus on why each algorithm is correct and where implementations usually go wrong, with runnable C# that counts comparisons and visited nodes so the complexity claims can be checked rather than taken on trust.
+  Searching, sorting, recursion, graph traversal, shortest paths, dynamic programming, greedy methods and backtracking, each explained for why it's correct and where implementations go wrong. Runnable C# counts comparisons and visited nodes so complexity claims can be checked, not taken on trust.
+hubIntro: >-
+  These eight articles cover the algorithms a working developer actually runs into: searching, sorting, walking a graph, finding a shortest path, and the two general techniques, dynamic programming and greedy choice, for building your own. Each one instruments the code to count comparisons or visited nodes, so a claim like O(n log n) is something you can verify rather than memorize. Binary search and sorting come first because later articles reuse their vocabulary and their PriorityQueue<TElement,TPriority> underpinnings. Recursion and graph traversal follow; dynamic programming, greedy algorithms and backtracking, which assumes recursion is already comfortable, are the harder material at the end.
+readingNotes:
+  binary-search: >-
+    Opens the pillar because its loop-invariant technique for proving a search correct reappears in every later article that scans a sorted or ordered structure.
+  sorting-algorithms-compared: >-
+    Placed second so the O(n log n) lower bound proved here is already familiar once Dijkstra and dynamic programming lean on a sorted or heap-ordered structure.
+  recursion: >-
+    Comes before graph traversal and dynamic programming because both rely on the call-stack model and the tail-call measurements built here.
+  breadth-first-and-depth-first-search: >-
+    Needs binary search's queue-versus-stack framing and sets up Dijkstra directly, since Dijkstra is BFS with a priority queue in place of a plain queue.
+  dijkstra-shortest-path: >-
+    Builds directly on BFS from the previous article and the heap from Data Structures, replacing BFS's queue with a PriorityQueue to price in edge weights.
+  dynamic-programming: >-
+    Follows recursion because it starts from the same brute-force recursive solution and shows, with measured runtimes, why memoizing it is worth the trouble.
+  greedy-algorithms: >-
+    Sits after dynamic programming so the coin-change example can be reused to show where a greedy shortcut works and where only the earlier DP table gives the right answer.
+  backtracking: >-
+    Closes the pillar because its choose-explore-un-choose template is recursion, from the third article, applied to a search space too large to explore blindly.

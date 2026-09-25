@@ -1,0 +1,4 @@
+term: "Exception"
+definition: "An object, derived from System.Exception, that represents an error condition and carries it up the call stack until a matching catch clause handles it or the process ends. Throwing one interrupts normal control flow immediately and unwinds stack frames one at a time as it climbs, skipping any frame without a matching catch."
+aliases: []
+seeAlso: ["csharp-dotnet/exceptions"]

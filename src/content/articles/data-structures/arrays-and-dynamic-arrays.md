@@ -310,7 +310,7 @@ grid[2,3] holds 13
 ```
 
 - **`int[]` and `long[]`** step by 4 and 8 bytes, the sizes of the element types.
-- **`Sample[]`** steps by 16, although its fields add up to 8 + 4 + 1 = 13 bytes. The runtime pads the [value type](/glossary/#value-type) so that the `double` in every element stays aligned. The structs themselves are in the array, side by side. The padding is a choice of this runtime on x64, not a rule of the language.
+- **`Sample[]`** steps by 16, although its fields add up to 8 + 4 + 1 = 13 bytes. The runtime pads the [value type](/complexity/space-complexity/) so that the `double` in every element stays aligned. The structs themselves are in the array, side by side. The padding is a choice of this runtime on x64, not a rule of the language.
 - **`string[]`** steps by 8 whatever the length of the strings, because a string is a [reference type](/glossary/#reference-type). The array holds eight-byte references on this 64-bit runtime; the characters are in separate objects elsewhere on the heap. The references are contiguous. The things they refer to need not be.
 - **`int[3,5]`** is one block as well. Moving one column to the right moves 4 bytes; moving one row down moves 20 bytes, which is a whole row of five. Element `[2,3]` is 52 bytes in, which is (2 × 5 + 3) × 4.
 
@@ -624,7 +624,7 @@ The exception ("Collection was modified; enumeration operation may not execute")
 
 ### Does the wrapper make a list slower than an array?
 
-Every `list[i]` is a method call that checks the index against `_size` and then indexes `_items`, where the array's own bounds check happens as well. Whether that is measurable is an empirical question, so here is the measurement: summing 10 million `int` values held in an array, in a list, and in a list read through a span, plus the same values in a `LinkedList<int>`, where each element is a separate heap object pointing to the next.
+Every `list[i]` is a method call that checks the index against `_size` and then indexes `_items`, where the array's own bounds check happens as well. Whether that is measurable is an empirical question, so here is the measurement: summing 10 million `int` values held in an array, in a list, and in a list read through a span, plus the same values in a [`LinkedList<int>`](/data-structures/linked-lists/), where each element is a separate heap object pointing to the next.
 
 ```csharp run id=containers
 #:property Optimize=true
@@ -752,7 +752,7 @@ The documentation states the costs. [`Insert`](https://learn.microsoft.com/en-us
 
 `Insert(index, x)` makes room first, so it shifts every element from `index` to the old last slot: exactly `Count - index` elements, which is what Figure 3 shows moving. `RemoveAt(index)` closes a hole instead: the element that was at `index` is gone, and everything *after* it slides down one slot, so it moves `Count - index - 1` elements, one fewer than `Insert` at the same index. At `index = Count - 1`, that formula gives `Count - (Count - 1) - 1 = 0`, not 1: removing the last element moves nothing, which the first bullet below depends on. In `List.cs` each is a bounds check followed by one `Array.Copy` of the tail, sized accordingly.
 
-- At the end of the list, both are cheap: `Insert(Count, x)` shifts nothing (it is `Add`, amortized O(1)), and `RemoveAt(Count - 1)` shifts nothing. A list makes a good stack.
+- At the end of the list, both are cheap: `Insert(Count, x)` shifts nothing (it is `Add`, amortized O(1)), and `RemoveAt(Count - 1)` shifts nothing. [A list makes a good stack](/data-structures/stacks-and-queues/).
 - At the front, both move everything: `Insert(0, x)` shifts all `Count` elements, `RemoveAt(0)` shifts all `Count - 1` remaining ones. Either one in a loop is Θ(*n*²) in total.
 - `Remove(item)` is not cheaper than `RemoveAt`. In `List.cs` it is `IndexOf` followed by `RemoveAt`: a linear search, then the shift.
 

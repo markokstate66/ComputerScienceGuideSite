@@ -2,7 +2,7 @@
 
 One line each: anchor text | target route | where in the article. All targets are planned in CONTENT_PLAN.md section 7 and were unpublished when this round was written (2026-09-22), so the body does not link them yet. Each sentence reads correctly with or without the link.
 
-- "`Span<T>` and `Memory<T>`" | /csharp-dotnet/span-and-memory/ | "`Span<char>`: slicing without allocating", the closing paragraph about a loop that slices thousands of lines — that article is the deeper, general treatment of `Span<T>`/`Memory<T>` (the `ref struct` rules, `Memory<T>` for async, a full CSV-line parser); this page only needs enough `Span<char>` to show one allocation-free string slice.
+- "`Span<T>` and `Memory<T>`" | /csharp-dotnet/span-and-memory/ | "`Span<char>`: slicing without allocating", the closing paragraph about a loop that slices thousands of lines — that article is the deeper, general treatment of `Span<T>`/`Memory<T>` (the `ref struct` rules, `Memory<T>` for async, a full CSV-line parser); this page only needs enough `Span<char>` to show one allocation-free string slice. — Status: wired
 
 ## Boundaries with planned siblings
 

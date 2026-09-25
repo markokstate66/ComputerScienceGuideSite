@@ -1,0 +1,4 @@
+term: "Grapheme cluster"
+definition: "What a reader perceives as a single character on screen, called a text element in .NET. It can be built from more than one Unicode code point, such as a base letter plus a combining accent mark, or several code points joined by zero-width joiners into one emoji, so it does not correspond one-to-one with either a char or a Rune."
+aliases: ["text element"]
+seeAlso: ["csharp-dotnet/strings-and-unicode"]

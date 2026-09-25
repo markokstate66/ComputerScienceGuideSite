@@ -372,7 +372,7 @@ committer Ada Example <ada@example.com> 1768471200 +0000
 Plan day 1
 ```
 
-A **commit** is that text: one `tree` line, zero or more `parent` lines (none here, as this is a root commit; a merge has two or more), an author, a committer, optionally extra headers such as the `gpgsig` that `git commit -S` adds to a signed commit ([gitformat-signature](https://git-scm.com/docs/gitformat-signature)), a blank line and the message. There is no diff in it. A commit identifies a complete snapshot through its tree, and `git show` computes a diff on demand by comparing that tree with the parent's.
+A **commit** is that text: one `tree` line, zero or more `parent` lines (none here, as this is a root commit; [a merge has two or more](/version-control/branching-and-merging/)), an author, a committer, optionally extra headers such as the `gpgsig` that `git commit -S` adds to a signed commit ([gitformat-signature](https://git-scm.com/docs/gitformat-signature)), a blank line and the message. There is no diff in it. A commit identifies a complete snapshot through its tree, and `git show` computes a diff on demand by comparing that tree with the parent's.
 
 The two fields after the email address are the time, as seconds since 1970, and the author's UTC offset. Cut them out of the `author` line and hand the first to GNU `date` (on macOS, `date -u -r 1768471200`):
 
@@ -423,7 +423,7 @@ nothing to commit, working tree clean
 A **ref** is a name for an object ID, and a branch is a ref under `refs/heads/`. In the default storage format it is a text file holding 40 hex digits and a newline. With that one file in place, porcelain agrees that there is a branch with one commit and a clean working tree. The objects and the ref are what `git commit` would have produced from the same inputs. The one trace of the detour is in the reflog described next: `update-ref` was given no reason to record, so the first line of `.git/logs/refs/heads/main` has an empty message where `git commit` would have written `commit (initial): Plan day 1`.
 
 :::pitfall
-Writing the 40 digits into `.git/refs/heads/main` with `echo` would have produced the same file. `git update-ref` does more: it takes a lock, can verify the ref's old value before replacing it, and appends to the ref's *reflog*, a local log under `.git/logs/` of every value the ref has held, which is what later lets you recover from mistakes ([git-update-ref](https://git-scm.com/docs/git-update-ref), [git-reflog](https://git-scm.com/docs/git-reflog)). It also works when a ref is not an individual file, which is the state of every ref in this repository once `git gc` has run, as shown below.
+Writing the 40 digits into `.git/refs/heads/main` with `echo` would have produced the same file. `git update-ref` does more: it takes a lock, can verify the ref's old value before replacing it, and appends to the ref's [reflog](/version-control/undoing-things-in-git/), a local log under `.git/logs/` of every value the ref has held, which is what later lets you recover from mistakes ([git-update-ref](https://git-scm.com/docs/git-update-ref), [git-reflog](https://git-scm.com/docs/git-reflog)). It also works when a ref is not an individual file, which is the state of every ref in this repository once `git gc` has run, as shown below.
 :::
 
 ## `git commit` does the same, and reuses what did not change
@@ -513,7 +513,7 @@ Five objects became eight. The three new ones are a blob for the new `route.txt`
 
 Every arrow in the figure is an ID stored inside the object the arrow leaves, and an ID is a hash of content. Two properties follow.
 
-**Objects are immutable.** Changing one byte of an object would change its ID, so the result would be a different object. `git commit --amend` and `git rebase` never edit commits; they write new ones and move a ref.
+**Objects are immutable.** Changing one byte of an object would change its ID, so the result would be a different object. [`git commit --amend` and `git rebase` never edit commits](/version-control/rebase-vs-merge/); they write new ones and move a ref.
 
 **A commit ID vouches for its whole history.** The commit hashes its tree ID and parent IDs, the parent hashes *its* parents, and so on down. Altering any file in any ancestor would change every ID from there to the tip. The guarantee is only as strong as the hash function, a caveat taken up [below](#what-is-specified-and-what-is-an-implementation-detail).
 
@@ -639,7 +639,7 @@ Detached `HEAD` is the normal way to look around an old commit. The risk is spec
 
 ## The fourth object type: the annotated tag
 
-A lightweight tag (`git tag v0.1`) is a ref under `refs/tags/` holding a commit ID, a branch that nothing moves. An *annotated* tag is a real object:
+A lightweight tag (`git tag v0.1`) is a ref under `refs/tags/` holding a commit ID, a branch that nothing moves. An [annotated tag](/version-control/git-workflows/) is a real object:
 
 ```bash run
 git tag -a v0.1 \

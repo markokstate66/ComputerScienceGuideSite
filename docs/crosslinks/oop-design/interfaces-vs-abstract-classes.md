@@ -2,8 +2,8 @@
 
 One line each: anchor text | target route | where in the article. All targets are planned in `CONTENT_PLAN.md` section 7.4 and were unpublished when this round was written (2026-09-22), so the body does not link them yet. Each sentence reads correctly with or without the link.
 
-- "interface segregation principle" | /oop-design/solid-principles/ | "Choosing between them", first paragraph after the flowchart ("The middle question is a narrower stand-in for the interface segregation principle").
-- "prefer composition over inheritance" | /oop-design/composition-over-inheritance/ | Same paragraph, the sentence starting "The same capability table also explains why...".
+- "interface segregation principle" | /oop-design/solid-principles/ | "Choosing between them", first paragraph after the flowchart ("The middle question is a narrower stand-in for the interface segregation principle"). — Status: wired
+- "prefer composition over inheritance" | /oop-design/composition-over-inheritance/ | Same paragraph, the sentence starting "The same capability table also explains why...". — Status: wired
 
 ## Boundaries with planned siblings
 

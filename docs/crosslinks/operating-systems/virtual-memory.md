@@ -2,8 +2,8 @@
 
 One line each: anchor text | target route | where in the article. `processes-and-threads` is unpublished (draft, round 1, not yet reviewed) as of 2026-09-22, so the body does not link it yet. Each sentence reads correctly with or without the link.
 
-- "The article on processes and threads" | /operating-systems/processes-and-threads/ | Opening paragraph, first sentence.
-- "exactly analogous to two threads reaching the same heap array in the processes-and-threads article" | /operating-systems/processes-and-threads/ | "How does a memory-mapped file put a file's bytes directly into that address space?", first paragraph.
+- "The article on processes and threads" | /operating-systems/processes-and-threads/ | Opening paragraph, first sentence. — Status: wired (/operating-systems/processes-and-threads/, first occurrence of this target in the article)
+- "exactly analogous to two threads reaching the same heap array in the processes-and-threads article" | /operating-systems/processes-and-threads/ | "How does a memory-mapped file put a file's bytes directly into that address space?", first paragraph. — Status: dropped (duplicate target /operating-systems/processes-and-threads/, already linked earlier in the opening paragraph)
 
 ## Boundaries with planned siblings (to avoid near-duplicate coverage)
 

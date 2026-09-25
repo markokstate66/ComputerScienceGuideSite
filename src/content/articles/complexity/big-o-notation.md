@@ -199,7 +199,7 @@ and 1,000 · 999 / 2 is the 499,500 in the first row. Neither count depends on t
 
 Now read down the columns instead of across. Each time *n* doubles, the scan's count doubles and the pair count is multiplied by four. Those multipliers are the information Big-O keeps. The scan is O(*n*), "order *n*"; the pair search is O(*n*²).
 
-Choosing what to count as a step is called choosing a *cost model*; Sedgewick and Wayne's [analysis chapter](https://algs4.cs.princeton.edu/14analysis/) uses array accesses for its running example, and comparisons are the usual choice for sorting. *n* is the *input size*, here the number of laps. A function from input size to step count, such as *n*²/2 − *n*/2, is an algorithm's [time complexity](/glossary/#time-complexity); the same idea applied to memory is [space complexity](/glossary/#space-complexity).
+Choosing what to count as a step is called choosing a *cost model*; Sedgewick and Wayne's [analysis chapter](https://algs4.cs.princeton.edu/14analysis/) uses array accesses for its running example, and comparisons are the usual choice for sorting. *n* is the *input size*, here the number of laps. A function from input size to step count, such as *n*²/2 − *n*/2, is an algorithm's [time complexity](/glossary/#time-complexity); the same idea applied to memory is [space complexity](/complexity/space-complexity/).
 
 ## The count predicts growth, not milliseconds
 
@@ -470,7 +470,7 @@ All three arguments are sound, and all three are arguments about *large n*. The 
 Two classic sorts make the point. Both costs here are from Sedgewick and Wayne, measured in comparisons:
 
 - **Insertion sort** grows a sorted prefix by sliding each new item leftwards into place. On a randomly ordered array of distinct keys it uses about *n*²/4 comparisons on average; the worst case (reverse order) is about *n*²/2, and the best case (already sorted) is *n* − 1 ([section 2.1](https://algs4.cs.princeton.edu/21elementary/)). Worst case Θ(*n*²), no extra memory.
-- **Merge sort** sorts each half [recursively](/glossary/#recursion) and merges the two. Top-down merge sort uses between ½ *n* log₂ *n* and *n* log₂ *n* comparisons on any input ([section 2.2](https://algs4.cs.princeton.edu/22mergesort/)): Θ(*n* log *n*) in every case, at the price of a second array of *n* items to merge through.
+- **Merge sort** sorts each half [recursively](/algorithms/recursion/) and merges the two. Top-down merge sort uses between ½ *n* log₂ *n* and *n* log₂ *n* comparisons on any input ([section 2.2](https://algs4.cs.princeton.edu/22mergesort/)): Θ(*n* log *n*) in every case, at the price of a second array of *n* items to merge through.
 
 For large inputs merge sort wins without a contest. The program in the collapsed block below asks what happens for small ones. For each size it builds many random arrays (enough to total two million values), sorts copies of all of them with each algorithm, checks the results, and reports the best of five rounds as time per array.
 
@@ -777,8 +777,8 @@ The best cutoff is well below 256 because the earlier table asked the wrong ques
 
 Constants are the biggest thing the notation hides, but three more are worth a sentence each.
 
-- **Which input.** Big-O bounds a function, and an algorithm has several: its worst-case step count, its best case, its average over some distribution of inputs. "Insertion sort is O(*n*²)" is about the worst case; on already-sorted input the code above takes only *n* − 1 comparisons, one pass, the same shape as the fastest-lap scan at the top of this page. When no case is named, assume the worst case is meant, and check.
-- **What a step really costs.** The cost model used on this page charges the same for every array access, comparison and assignment. Hardware does not: an access that misses cache can cost tens of times an access that hits it, and Sedgewick and Wayne [warn](https://algs4.cs.princeton.edu/14analysis/) that their own analysis leaves out caching, garbage collection and just-in-time compilation for the same reason.
+- **Which input.** Big-O bounds a function, and an algorithm has several: its worst-case step count, its best case, its average over some distribution of inputs. "Insertion sort is O(*n*²)" is about the worst case; on already-sorted input the code above takes only *n* − 1 comparisons, one pass, the same shape as the fastest-lap scan at the top of this page. When no case is named, assume the worst case is meant, and check — [best, average and worst cases](/complexity/best-average-worst-case/) draws the full three-way distinction.
+- **What a step really costs.** The cost model used on this page charges the same for every array access, comparison and assignment. Hardware does not: an access that misses cache can cost tens of times an access that hits it — the effect [arrays and dynamic arrays](/data-structures/arrays-and-dynamic-arrays/) measures directly — and Sedgewick and Wayne [warn](https://algs4.cs.princeton.edu/14analysis/) that their own analysis leaves out caching, garbage collection and just-in-time compilation for the same reason.
 - **How big *n* gets.** If the input is the seven days of the week, every algorithm on this page is fast enough, and the clearest code is the right code; the growth-rate table two sections down only starts to matter once *n* is in the thousands.
 
 ## O, Ω and Θ: upper bound, lower bound, both
@@ -837,7 +837,7 @@ A handful of functions cover nearly every bound you will read. The most practica
 
 Each row has a familiar face. In .NET, [`HashSet<T>.Contains`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.contains) is documented as O(1), [`List<T>.BinarySearch`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.binarysearch) as O(log *n*), [`List<T>.Contains`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.contains) as O(*n*) and [`Array.Sort`](https://learn.microsoft.com/en-us/dotnet/api/system.array.sort) as O(*n* log *n*). Comparing every pair of *n* items is O(*n*²) and every triple O(*n*³); trying every subset of *n* items is O(2ⁿ), and every ordering of them O(*n*!).
 
-Two of the documented bounds carry conditions that the one-line form hides: binary search requires a list that is already sorted, and the O(1) for a [hash table](/glossary/#hash-table) lookup depends on the hash function spreading the items evenly across the table.
+Two of the documented bounds carry conditions that the one-line form hides: [binary search](/algorithms/binary-search/) requires a list that is already sorted, and the O(1) for a [hash table](/data-structures/hash-tables/) lookup depends on the hash function spreading the items evenly across the table.
 
 To get a feel for the distances between the rows, turn them into a budget. Assume, generously, that a step takes one nanosecond, so that one second buys a billion steps. The program finds the largest *n* each growth rate can handle in that second. Nothing here is measured; it is arithmetic on the assumption.
 
@@ -1131,4 +1131,4 @@ If the count were Θ(*n* log *n*), the last column would climb by about 3.3 for 
 :::
 ::::
 
-The nested-loop bound above is the last stop on the counting side of this page. Two threads are left open on purpose: nothing here proves that merge sort really is Θ(*n* log *n*) — that comes from solving the recursion, the subject of recurrences and the Master theorem, one level up from the rule-of-thumb list above — and nothing here compares insertion sort and merge sort against the rest of the sorting toolbox, or says which one `Array.Sort` actually runs for a given input shape. Both build directly on the counting and witness techniques used throughout this page, and on the same measure-first habit as the sorted closest-pair search that answered the opening hook.
+The nested-loop bound above is the last stop on the counting side of this page. Two threads are left open on purpose: nothing here proves that merge sort really is Θ(*n* log *n*) — that comes from solving the recursion, the subject of [recurrences and the Master theorem](/complexity/analyzing-loops-and-recursion/), one level up from the rule-of-thumb list above — and nothing here compares insertion sort and merge sort against the rest of the [sorting toolbox](/algorithms/sorting-algorithms-compared/), or says which one `Array.Sort` actually runs for a given input shape. Both build directly on the counting and witness techniques used throughout this page, and on the same measure-first habit as the sorted closest-pair search that answered the opening hook.

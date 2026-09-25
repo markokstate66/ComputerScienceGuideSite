@@ -2,8 +2,8 @@
 
 One line each: anchor text | target route | where in the article. All targets are planned in CONTENT_PLAN.md section 7 and were unpublished when this round was written (2026-09-22), so the body does not link them yet. Each sentence reads correctly with or without the link.
 
-- "What an index does to the cost of each of those joins" (or "How Database Indexes Work") | /databases/indexes/ | "When seven tables are the wrong answer", first paragraph after the five-join report query, sentence beginning "What an index does to the cost of each of those joins is a separate question...". That article owns `EXPLAIN QUERY PLAN`, seeks vs. scans, and composite index column order; this page only claims that normalization controls join *count*, not join *cost*.
-- "Isolation levels" or a mention of concurrent updates (optional) | /databases/transactions-and-acid/ | Could be added near the "When seven tables are the wrong answer" section if a sentence about concurrent writers to the normalized schema is ever added; not currently referenced in the body, so no specific anchor yet.
+- "What an index does to the cost of each of those joins" (or "How Database Indexes Work") | /databases/indexes/ | "When seven tables are the wrong answer", first paragraph after the five-join report query, sentence beginning "What an index does to the cost of each of those joins is a separate question...". That article owns `EXPLAIN QUERY PLAN`, seeks vs. scans, and composite index column order; this page only claims that normalization controls join *count*, not join *cost*. — Status: wired
+- "Isolation levels" or a mention of concurrent updates (optional) | /databases/transactions-and-acid/ | Could be added near the "When seven tables are the wrong answer" section if a sentence about concurrent writers to the normalized schema is ever added; not currently referenced in the body, so no specific anchor yet. — Status: n/a (no anchor text exists in the body; request is explicitly optional/speculative, not a request against current prose)
 
 ## Boundaries with planned siblings
 

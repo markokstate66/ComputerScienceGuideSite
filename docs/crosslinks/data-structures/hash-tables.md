@@ -2,9 +2,9 @@
 
 One line each: anchor text | target route | where in the article. All targets are planned in CONTENT_PLAN.md section 7 and were unpublished on 2026-09-22, so the body does not link them yet. Each sentence reads correctly with or without the link.
 
-- "exactly like indexing an array" | /data-structures/arrays-and-dynamic-arrays/ | "Direct addressing: when the key is already an index", first paragraph after the direct-addressing code block. It is the listed prerequisite.
-- "Linked list" (as an alternative collision-chain node shape) | /data-structures/linked-lists/ | "Building `HashMap<K,V>`: real chaining, not pseudocode", where `Node`/`Next` are introduced — the singly linked list built there is the same shape used per bucket here.
-- "`SortedDictionary`/`SortedSet`" (ordered alternative) | /data-structures/binary-search-trees/ | "Choosing chaining, open addressing, or `Dictionary<TKey,TValue>`" table, as a row for "keys must be enumerated in order" (a case this article does not cover, since chained hashing has no order).
+- "exactly like indexing an array" | /data-structures/arrays-and-dynamic-arrays/ | "Direct addressing: when the key is already an index", first paragraph after the direct-addressing code block. It is the listed prerequisite. — Status: wired
+- "Linked list" (as an alternative collision-chain node shape) | /data-structures/linked-lists/ | "Building `HashMap<K,V>`: real chaining, not pseudocode", where `Node`/`Next` are introduced — the singly linked list built there is the same shape used per bucket here. — Status: wired ("linked list" inside "each a singly linked list of `Node`s")
+- "`SortedDictionary`/`SortedSet`" (ordered alternative) | /data-structures/binary-search-trees/ | "Choosing chaining, open addressing, or `Dictionary<TKey,TValue>`" table, as a row for "keys must be enumerated in order" (a case this article does not cover, since chained hashing has no order). — Status: wired (added new bullet "Keys must be enumerated in order" to the list, since that row did not exist yet)
 
 ## Boundaries with siblings
 

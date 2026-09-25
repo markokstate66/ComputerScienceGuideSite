@@ -5,4 +5,21 @@ accent:
   light: "#0369a1"
   dark: "#7dd3fc"
 blurb: >-
-  Relational databases from the model up: keys and relationships, joins, indexes and query plans, normalization, transactions and isolation levels, window functions, and SQL injection. Every query is executed against SQLite and shown with its real result, with notes where SQL Server or PostgreSQL behave differently.
+  Relational databases from the model up: keys and relationships, joins, indexes and query plans, normalization, transactions and isolation levels, window functions, and SQL injection. Every query runs against SQLite and shows its real result, with notes on SQL Server and PostgreSQL differences.
+hubIntro: >-
+  Relational databases are covered here from the model up: what a table actually promises, how joins and indexes work row by row instead of as Venn diagrams, why normalization exists and where it can go too far, what a transaction guarantees when a step fails partway through, window functions for reporting queries, and how SQL injection actually happens. Start with the relational model and joins if you're new to SQL; indexes, normalization and transactions are the material that separates a query that works from one that scales; injection comes last because it assumes you can already read the queries it attacks.
+readingNotes:
+  relational-model-and-keys: >-
+    Opens the pillar with the vocabulary, keys and relationships, that every later article assumes: joins, indexes and normalization all talk in terms of it.
+  sql-joins: >-
+    Follows the model directly because a join is how the relationships from the first article, especially foreign keys, actually get queried back out.
+  indexes: >-
+    Needs joins already covered, since the query plans it reads are plans for the same join patterns, now measured on a 300,000-row table instead of two tiny ones.
+  normalization: >-
+    Comes after indexes and joins because decomposing a table into normal form is easiest to justify once you've seen how joining several small tables actually performs.
+  transactions-and-acid: >-
+    Placed after normalization because a normalized schema is exactly what makes a single update touch several tables at once, which is what a transaction protects.
+  aggregation-and-window-functions: >-
+    Builds on joins and indexes for its examples and comes late because GROUP BY and window functions are usually the last SQL feature a developer learns well.
+  sql-injection-and-parameters: >-
+    Closes the pillar because exploiting and then fixing a login query assumes you can already read the SQL and transactions covered in every earlier article.

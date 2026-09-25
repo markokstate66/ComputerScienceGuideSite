@@ -5,4 +5,21 @@ accent:
   light: "#be185d"
   dark: "#f9a8d4"
 blurb: >-
-  Object-oriented programming explained through the problems it solves: protecting invariants, virtual dispatch, the costs of inheritance, SOLID and where it is over-applied, and the design patterns that already appear in the .NET base class library. Examples use small business domains and full before-and-after refactorings instead of animal hierarchies.
+  Object-oriented programming through the problems it solves: protecting invariants, virtual dispatch, the cost of inheritance, SOLID and where it's over-applied, patterns already in the BCL, and the DI that replaced Singleton. Examples use small business domains, not animal hierarchies.
+hubIntro: >-
+  Object-oriented programming is presented here as a set of answers to specific problems, protecting invariants, avoiding rigid class hierarchies, wiring up dependencies, rather than as vocabulary to memorize. The seven articles move from the four pillars themselves through a real refactor away from inheritance, the SOLID principles and where they get overused, the choice between an interface and an abstract class, and the design patterns already hiding in the .NET base class library, ending with dependency injection and the container it replaced. Read four-pillars-of-oop first regardless of experience; everything after it assumes you know what encapsulation and polymorphism are actually doing at run time.
+readingNotes:
+  four-pillars-of-oop: >-
+    Opens the pillar because every later article assumes you know what encapsulation, polymorphism, inheritance and abstraction mean at the level of a virtual call, not just the definitions.
+  composition-over-inheritance: >-
+    Follows immediately because it dramatizes the cost of inheritance the first article only measured in the abstract, with a class hierarchy that breaks under a real feature request.
+  solid-principles: >-
+    Comes next because several violations shown here are the same rigid-hierarchy problem the composition article just fixed, generalized into five named principles.
+  interfaces-vs-abstract-classes: >-
+    Needs SOLID's dependency-inversion principle already in hand, since choosing between an interface and an abstract class is largely a decision about which one that principle points to.
+  strategy-observer-decorator: >-
+    Builds directly on interfaces vs. abstract classes, since Strategy, Observer and Decorator are all ways of using an interface to swap behavior without touching a base class.
+  factory-builder-singleton: >-
+    Follows the pattern article because Factory and Builder solve a different problem, object creation, and the section closes with Singleton, whose downsides the next article fixes.
+  dependency-injection: >-
+    Closes the pillar because it replaces the Singleton pattern from the previous article with an explicitly wired, testable lifetime, tying together composition and interfaces from earlier.

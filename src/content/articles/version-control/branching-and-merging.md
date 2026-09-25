@@ -247,9 +247,9 @@ The same message appears whenever you merge a branch that is behind yours, which
 When you merge a branch under Git's default configuration, a fast-forward happens if one is possible. Two options change that, and the `merge.ff` configuration key makes either of them the default, so a machine with `merge.ff=false` prints something different above ([git-merge](https://git-scm.com/docs/git-merge)):
 
 - `--no-ff` creates a merge commit even when a fast-forward would do. The history then records that these two commits arrived together as one branch, at the cost of a commit that carries no change of its own.
-- `--ff-only` fast-forwards or refuses with a non-zero exit status. It suits a branch that should never gain local merge commits, such as your copy of a shared `main` that you only ever update.
+- [`--ff-only`](/version-control/rebase-vs-merge/) fast-forwards or refuses with a non-zero exit status. It suits a branch that should never gain local merge commits, such as your copy of a shared `main` that you only ever update.
 
-Which of the two a team prefers is policy, not correctness: the resulting files are identical either way.
+[Which of the two a team prefers is policy](/version-control/git-workflows/), not correctness: the resulting files are identical either way.
 
 A third option, `--squash`, resembles a merge and, going by what it records, is not one. It leaves the index and working files as a merge would have, but makes no commit and does not record `MERGE_HEAD` ([git-merge](https://git-scm.com/docs/git-merge)), so nothing gives your next commit a second parent. The commit you then create has one parent, so the history does not show that the branch was merged, and `git branch -d` will still call the branch unmerged (checked in Git 2.52: "not fully merged").
 
@@ -991,9 +991,9 @@ Deleted branch rename-latte
 refused, exit status 1
 ```
 
-The refusal is a safety check on reachability, the same ancestor test as at the start of this page. `-D` overrides it. A deleted branch's reflog is deleted with it ([git-branch](https://git-scm.com/docs/git-branch)), so an unmerged branch removed with `-D` is recoverable only for as long as you can still find its tip's ID, for instance in `HEAD`'s reflog.
+The refusal is a safety check on reachability, the same ancestor test as at the start of this page. `-D` overrides it. A deleted branch's reflog is deleted with it ([git-branch](https://git-scm.com/docs/git-branch)), so an unmerged branch removed with `-D` is recoverable only for as long as you can still find its tip's ID, for instance in [`HEAD`'s reflog](/version-control/undoing-things-in-git/).
 
-Undoing a merge depends on whether anyone else has it. If not, move the branch back as the exercise above did, with `git reset --hard ORIG_HEAD` immediately afterwards or with the first parent's ID later. If the merge is already shared, `git revert -m 1 <merge>` adds a new commit that reverses the changes the merge brought in relative to parent 1, the mainline. The [git-revert documentation](https://git-scm.com/docs/git-revert) attaches a warning that matters later: a reverted merge still counts as merged, so merging the same branch again brings in only the commits made after the first merge, not the reverted ones. [Pro Git 7.8](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging) walks through the fix, which is to revert the revert before merging again.
+Undoing a merge depends on whether anyone else has it. If not, move the branch back as the exercise above did, with [`git reset --hard ORIG_HEAD`](/version-control/undoing-things-in-git/) immediately afterwards or with the first parent's ID later. If the merge is already shared, `git revert -m 1 <merge>` adds a new commit that reverses the changes the merge brought in relative to parent 1, the mainline. The [git-revert documentation](https://git-scm.com/docs/git-revert) attaches a warning that matters later: a reverted merge still counts as merged, so merging the same branch again brings in only the commits made after the first merge, not the reverted ones. [Pro Git 7.8](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging) walks through the fix, which is to revert the revert before merging again.
 
 ## What to check when a merge surprises you
 
