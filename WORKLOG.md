@@ -2,6 +2,13 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-24 — Shipped all 17 wave-B article PRs
+
+- At the owner's instruction ("ship all the articles"), shipped #114–#123 and #132–#138 into `adsense-rebuild` one at a time with a script following `/ship`: per PR a temporary worktree on the PR head, merge of the latest `adsense-rebuild` (shared bookkeeping conflicts took the integration branch's version; none touched an article), last-round reviews checked ≥ 8.5, `draft: true` → `false` for the 7 fan-out articles, `npm run build` and `node tools/run-code.mjs <article>` green, push, squash-merge. All 17 merged; five needed a second merge attempt because GitHub was still recomputing mergeability after the previous merge. Build grew from 73 to 90 pages.
+- #121 p-vs-np 502c3ec r2 9/8.8/9.2; #119 heaps-and-priority-queues c5cc7a6 r2 9.2/9.2/9.3; #115 graphs-representation 4726b9a r1 9/9/8.7; #123 tries dc79253 r2 9/8.8/9.1; #122 dynamic-programming 17f2e7a r2 9.2/9/9.4; #114 greedy-algorithms 7126c8a r1 9.2/9.1/9.4; #117 backtracking 79b14a1 r1 9.2/9.2/9.3; #116 factory-builder-singleton 7987ae3 r2 9/9/9; #120 dependency-injection b7796bb r1 9.3/9.2/8.9; #118 strings-and-unicode d885ec3 r2 9/9/8.7; #132 exceptions fda4b1a r2 8.7/9.3/9.2; #133 span-and-memory 23a67ad r1 9.2/8.7/9.2; #134 aggregation-and-window-functions a99e52a r1 8.9/9.2/8.7; #135 sql-injection-and-parameters 62acb52 r2 9/9.2/9.3; #136 ip-addresses-and-subnets a249c56 r3 9.3/9.2/8.7; #137 memory-hierarchy-and-caches e659cf9 r2 8.8/8.7/9; #138 code-coverage ee468b4 r3 9/9/9.
+- Checked afterwards: the squash merges changed nothing outside `src/content/articles`, `docs/reviews` and `docs/crosslinks`. One loss found and restored: #123's glossary request for "trie" in `docs/INTEGRATOR_REQUESTS.md` was dropped by the conflict rule; re-added here.
+- `Closes #N` does not fire on a non-default base branch, so the 17 issues were closed by hand with the final scores. Totals: 67 passed, 0 in review. Not yet in production: that is the owner's `adsense-rebuild` → `master` merge.
+
 ## 2026-09-24 — Plan, article harness, and parallel fan-out of the last 7 wave-B articles
 
 - Shipped #124 (plan, harness, draft-until-ship rule) into `adsense-rebuild` as e5b1091: head built green in a temporary worktree (73 pages), `check-article` sanity run green; worktree removed with the junction unlinked first, main `node_modules` intact.

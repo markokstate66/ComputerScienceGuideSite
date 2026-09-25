@@ -37,3 +37,12 @@ Raised by the writers of the seven new articles (full text in their workflow res
 - **networking/ip-addresses-and-subnets** (#129): Design round-2 minor (integrator-owned, unchanged since round 1): the opening web/database/management results table's "Usable addresses" column is cropped at the 390px mobile viewport (page-level mobileOverflowPx is 0, so it's the table component's own horizontal scroll, not a Markdown/layout break). Needs a shell/table-component fix — let the range wrap to a second line in its cell, or tighten the three columns to fit 390px — since this is the first content block a mobile reader hits and is outside what the writer's Markdown controls. Status: open
 - **testing/code-coverage** (#131): Glossary term needed: `code-coverage` — a measurement of how much of a program's source ran during testing, usually as lines, branches, or methods executed divided by the total; it says a line ran, never that its result was checked or correct. Taught by testing/code-coverage. Status: open
 - **testing/code-coverage** (#131): Glossary term needed: `mutation-testing` — evaluating a test suite by deliberately inserting a small, deliberate change (a 'mutant') into the code under test and checking whether any test then fails; a mutant that makes every test still pass 'survived' and reveals a gap the suite's coverage numbers couldn't show. Taught by testing/code-coverage. Status: open
+
+## 2026-09-22 data-structures/tries — new glossary term (restored 2026-09-24; dropped by the batch-ship conflict rule)
+
+`tries.md` (issue #107) is the first article to use the term "trie" as a core concept, and no glossary entry exists yet for it. Status: open.
+
+- **Term:** trie
+- **Definition:** A tree that stores a set of strings one character per edge, so every string that shares a prefix with another shares the path down to where they diverge; a node marks the end of a stored word, not necessarily a leaf, so one stored word can sit on the path to a longer one (`do` on the path to `dot`).
+- **Aliases:** prefix tree, digital tree
+- **Taught by:** `data-structures/tries`
