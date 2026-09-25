@@ -34,7 +34,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.structlayoutattribute"
     publisher: "Microsoft Learn"
     accessed: 2026-09-24
-draft: true
+draft: false
 ---
 
 "Cache-friendly" gets thrown around as praise for code nobody has actually timed. This page asks a machine, not a slide deck: how big are its caches, how much does missing one really cost, and does rearranging a handful of fields in C# change a measured number. Every figure below is either read from the operating system through a small P/Invoke call or printed by a program you can see in full, run with `dotnet run`. Where the timing varies between runs, the output blocks say so with `[...]`, and the prose describes the shape rather than inventing a single "true" number.
