@@ -1,0 +1,50 @@
+{
+  "article": "src/content/articles/csharp-dotnet/exceptions.md",
+  "route": "/csharp-dotnet/exceptions/",
+  "round": 1,
+  "role": "design",
+  "score": 9.2,
+  "scores": {
+    "structureFlow": 9.4,
+    "diagramQuality": 9.0,
+    "codeReadabilityFormatting": 9.1
+  },
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/exceptions/best-practices-for-exceptions",
+    "https://stackify.com/csharp-exception-handling-best-practices/"
+  ],
+  "lighthouse": { "performance": 100, "accessibility": 100, "best-practices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-24T20:18:14.853Z",
+    "runs": 1,
+    "words": 5012,
+    "proseWords": 3015,
+    "codeBlocks": 33,
+    "runBlocks": 17,
+    "figures": 1,
+    "h1": 1,
+    "h2": 9,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": [],
+    "fleschReadingEase": 49.1
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14 (all 15)",
+    "desktop-dark": "fold, 04, 10",
+    "mobile-light": "fold, 05, 18",
+    "mobile-dark": "fold, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 (all 22)"
+  },
+  "justification": "Ran node tools/gate.mjs csharp-dotnet/exceptions from PowerShell in the worktree; it queued behind another agent's browser pass (/networking/ip-addresses-and-subnets/, lockWaitSeconds=10 once it was my turn) and finished GATE PASS in full. Real numbers from .verify/csharp-dotnet__exceptions/gate.json (checkedAt 2026-09-24T20:18:14.853Z, git issue-125-exceptions@46a202d+dirty, host .NET 10.0.401 / Node v24.11.1 / Windows_NT 10.0.22631): check-article ok (errors=0, warnings=0, words=5012, prose=3015, h2=9, h3=0, figures=1, sources=6, flesch=49.1); run-code ok (blocks=33, executed=17, failures=[]); verify-page ok, Lighthouse performance/accessibility/best-practices/seo = 100/100/100/100, consoleErrors=0, brokenInternalLinks=0, mobileOverflowPx=0px, failures=[] (no NEEDS_MARKUS placeholder failure even -- the byline resolves to 'Computer Science Guide' rather than a placeholder marker, so there was nothing to except). 74 screenshots were produced; I opened every desktop-light part (fold + 01-14, all 15) and every mobile-dark part (fold + 01-21, all 22) as required, plus fold and two further parts each of desktop-dark (04, 10) and mobile-light (05, 18) -- rendering is pixel-consistent with desktop-light/mobile-dark across every part checked, in both themes, at both widths, with the theme-appropriate palette (dark backgrounds, light-teal/purple link and heading colors, correctly inverted diagram fills) and zero visible horizontal overflow or faded-edge surprises anywhere, matching the tool's own mobileOverflowPx=0.\\n\\nCompared against the two real top results for 'c# exception handling best practices' I opened and read: Microsoft Learn's own 'Best practices for exceptions' (which this article also cites six times) is thorough but is plain prose-and-code with no diagram, no dark mode, no measured numbers -- it asserts a throwing call 'can be orders of magnitude slower' and leaves it there. Stackify's blog piece is shallower (a hero image, vendor-tool callouts for Retrace/Prefix woven into the technical content, no measured benchmark). This article's design clears both: a real state-space-style propagation diagram, consistent light/dark theming, four progressively-placed exercises with collapsed solutions, and two real Stopwatch-measured benchmarks that turn 'orders of magnitude slower' into an actual run on a stated machine (.NET 10.0.12, Windows 11, x64, i7-11700K). That is a genuine value-add over both comparison pages, not just a restatement of them.\\n\\nStructure/flow (9.4): the article follows shape Q (question-headed sections) consistently -- all nine H2s are phrased as the specific question that section answers ('Which layer should catch this?', 'Does throw ex; really throw away the stack trace?', 'Do exception filters really run before the stack unwinds?', etc.), no boilerplate Introduction/Conclusion/Key-takeaways heading, headings never skip a level (h2=9, h3=0, confirmed by check.json and by grep of the source). The rhythm of prose -> run block -> output panel -> callout/figure/exercise never runs long without a break across either the 15-part desktop-light scroll or the 22-part mobile-dark scroll I fully opened; no walls of text anywhere. The four exercises are distributed through the body at the point each technique is introduced (predict-the-output after throw/throw-ex, find-the-bug after ExceptionDispatchInfo, extend-the-code after custom exceptions, measure-it after the cost benchmark) rather than dumped at the end, and each varies its form as the editorial brief asks; the closing section ('Practice: verifying the cost claim yourself') is a natural place for the last one, not a generic 'Exercises' dumping ground. The :::pitfall callout on throw ex; and the :::dotnet aside on await/using both earn their place immediately next to the claim they qualify.\\n\\nDiagram quality (9.0): the single Figure 1 (three-frame exception-propagation stack) is markup-correct and theme-correct in every screenshot opened -- viewBox 0 0 340 320 is within the 360-wide phone budget, renders with no faded edge (fits comfortably) in both mobile-light-part05-equivalent scroll position and every mobile-dark part it appears in, and the accent/bad/good box coloring (red 'no catch: keeps climbing' arrows, dashed neutral box for the frame with no try/catch, green box for the frame that finally handles it) inverts correctly and stays legible in dark mode. The caption states exactly what to notice (climbs frame by frame, skipping every frame without a matching catch) rather than merely describing the picture, and title/desc are present for accessibility. Docked to 9.0 rather than higher for the same reason as other single-diagram articles in this pillar: it is one clean, correct diagram illustrating one of several claims in a dense article (throw vs throw ex, filters-before-unwind, using-as-try/finally, and the cost benchmark all rely on nothing but code+prose+output to make their point), so its scope is narrow relative to how much of the article's content it actually visualizes.\\n\\nCode/readability formatting (9.1): every fence uses a run-code.mjs-recognized tag and run-code passed with 33 blocks / 17 executed and zero failures. An automated scan of every fenced csharp block found no line over 72 columns (the widest are comment lines and interpolated Console.WriteLine calls, both well under the pillar's ~85-column soft threshold used elsewhere), so none of the article's own C# code overflows meaningfully on a phone. Output panels are correctly wildcarded with [...] for paths/line numbers per the editorial brief, and in the stack-trace-heavy sections the class/method name -- the part the prose is actually talking about -- consistently sits within the first ~40 visible columns, with only the '[...]:line [...]' boilerplate tail cut off by the fade on mobile (confirmed directly in mobile-dark-part06/07/08), which is exactly the guide's stated exception for when a long line is acceptable. One real, minor exception to that: the deepest system-internal frame in the ExceptionDispatchInfo section's crash output, 'at System.Number.ThrowFormatException[TChar](ReadOnlySpan`1 value)' (69 columns, the widest line in the article), clips mid-token on mobile (confirmed in mobile-dark-part08) -- the clipped part is a runtime-internal frame the prose never names directly, so no specific claim depends on reading it, but it is the one place in the article where the fade lands inside a class/method name rather than in pure boilerplate. Exercises are well-formed four-colon/three-colon fences, collapsed by default with a single 'Show solution' disclosure and no leaked code above it, confirmed in both themes across the mobile screenshots. No printed board/table output that could clip informative columns; the widest output line elsewhere is comfortably inside the mobile budget.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "\"What if the rethrow has to happen somewhere else entirely?\" section, the `edi` run block's crash output panel (source ~line 356): `   at System.Number.ThrowFormatException[TChar](ReadOnlySpan\\`1 value)`",
+      "problem": "At 69 columns this is the widest line in the article, and on mobile the fade cuts it off mid-token (inside `[TChar]`) rather than at a clean boilerplate boundary -- confirmed in mobile-dark-part08. Every other stack-trace line in the article keeps the meaningful class/method name inside the visible ~40 columns and only truncates the `[...]:line [...]` boilerplate tail; this is the one line where that pattern slips, because it is a real, unedited runtime-internal frame with no path/line suffix to wildcard away.",
+      "fixLooksLike": "Low priority since the prose never refers to this specific frame by name (it only discusses `int.Parse` inside `LineParser.Parse`, a few lines below and fully visible). If it is worth tightening, a short prose note near the output ('the top two frames are runtime internals; the trace of interest starts at LineParser.Parse') would point the reader past the clipped line instead of leaving it as unexplained overflow."
+    }
+  ]
+}

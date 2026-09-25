@@ -1,0 +1,28 @@
+{
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/binary-heap/",
+    "https://www.programiz.com/dsa/heap-data-structure",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.priorityqueue-2"
+  ],
+  "justification": "Round-2 re-check only, per the gauntlet's narrow scope: round 1 already scored 9.3 with a full verify-page pass (Lighthouse 100/100/100/100, zero console errors, zero broken links across 34 internal / 6 external), and the round-2 writer pass touched exactly two things, both technical-only: (1) the 'Building a heap from n elements is O(n), not O(n log n)' section's prose (around the constructor-cost paragraph and the Sedgewick/Wayne + CLRS citation paragraph) was revised, and (2) a 2-line guard clause was added to IndexedMinHeap.DecreaseKey plus matching prose in the trailing exercise-solution paragraph. `node tools/run-code.mjs` on the article confirms PASS (blocks=23 executed=10), so nothing broke compilation or expected output. On design specifically: the prose edits are ordinary paragraph text with only short inline code spans (`SiftDown`, `h / 2^(h+1)`, `BUILD-MAX-HEAP`, `SiftUp`, all well under the 25-character inline-code-wrap threshold), and prose reflows at any viewport width, so there is no mobile clipping risk there. The new guard clause sits inside the exercise's `csharp run id=indexed-heap` code block (itself inside a collapsed `:::solution`, so it isn't shown by default): `if (_comparer.Compare(newPriority, _priorities[i]) >= 0)` (64 chars) shows its operative comparison — 'newPriority' being compared — within the ~40 visible characters before the phone fade; the `throw new ArgumentException(...)` line (119 chars) fades out well before its message string, but per WRITER_GUIDE.md's rule ('longer lines are fine when the tail is boilerplate; not fine when the tail is the point'), the message text is boilerplate — the guard's actual meaning ('reject any newPriority that isn't strictly smaller than what's already stored') is stated in the very next sentence of the solution's explanatory prose, which a phone reader reaches immediately after the code block. Neither new line causes page-level horizontal overflow (code blocks scroll sideways inside their own box by design, per WRITER_GUIDE section 7). No figure, table, or callout was touched by this pass. Score is unchanged from round 1: nothing regressed and nothing new was introduced that would move the score.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "'Merging k sorted lists' section, the 'csharp snippet of=merge-k' excerpt (MergeSorted), visible in mobile-light-part14.png / mobile-dark equivalent — carried over unchanged from round 1",
+      "problem": "The comparer line wraps across two source lines and the second one -- '(a, b) => a.Value != b.Value ? a.Value.CompareTo(b.Value) : a.ListIndex.Compare...' -- is exactly the tie-break logic the following paragraph explains ('The explicit IComparer breaks ties on ListIndex'), but on a 390px screen only 'var byValueThenList = Comparer<(int V' and '(a, b) => a.Value != b.Value ? a.' are visible before the fade, so the reader reaches the explanatory prose without having seen the ListIndex comparison itself in the excerpt. This section was not touched by the round-2 fix pass (confirmed identical source lines), so this is not a regression, just still present.",
+      "fixLooksLike": "Not blocking -- the prose fully explains the logic in words immediately after. If this article is touched again, breaking the ternary onto its own indented line (or aliasing the tuple type) would bring the ListIndex comparison on-screen without scrolling.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": true,
+  "note": "This is a round-2 regression re-check per the gauntlet's scoped instructions, not a full fresh verify-page.mjs run (round 1 already ran the full serial verify-page pass with the Lighthouse/console/link numbers reported above; the round-2 diff was prose-only plus a 2-line C# guard clause, neither of which plausibly changes build health, links, or Lighthouse scores). node tools/run-code.mjs was re-run directly against the changed file and passed."
+}

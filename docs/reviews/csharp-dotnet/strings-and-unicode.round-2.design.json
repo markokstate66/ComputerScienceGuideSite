@@ -1,0 +1,30 @@
+{
+  "article": "src/content/articles/csharp-dotnet/strings-and-unicode.md",
+  "route": "/csharp-dotnet/strings-and-unicode/",
+  "round": 2,
+  "critic": "design",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/base-types/character-encoding-introduction",
+    "https://learn.microsoft.com/en-us/dotnet/standard/base-types/best-practices-strings",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.string"
+  ],
+  "justification": "Design/UX round 2 re-check for /csharp-dotnet/strings-and-unicode/, verifying the round-1 fix (a third exercise) and re-running the full serial check. Ran `node tools/verify-page.mjs --drafts /csharp-dotnet/strings-and-unicode/` from PowerShell in the worktree (C:\\Users\\marko\\AppData\\Local\\Temp\\claude\\csg-worktrees\\issue-113-strings-and-unicode), one job at a time, nothing else running. Result: PASS, words=2505, code=20, fig=1, h1=1. report.json: lighthouse 100/100/100/100 (performance/accessibility/best-practices/seo), consoleErrors=[], consoleWarnings=[], broken=[] (28 internal links, 8 external, all resolved), placeholders=[], mobileOverflowPx=0, failures=[], pass=true -- identical to round 1's clean numbers, no regression. (The stray 'X [ERROR] The build was canceled' line printed to the terminal ahead of the PASS summary did not appear in report.json's failures and did not affect the artifacts produced; treating it as build-tool console noise, not a page defect.) I read every desktop-light part (01-08), every desktop-dark part (01-08), and the relevant mobile-light/mobile-dark parts spanning the new exercise, the 'Three ways to count a character' section, the Rune section, and the Turkish-I section (mobile-light/dark parts 06-08), plus the figure in both desktop themes (part03) to re-confirm the round-1 finding there. New exercise verified directly: ::::exercise[Predict the output: a family emoji] opens right after the paragraph that closes 'Three ways to count a character' (immediately following the StringInfo/.NET-5-bug sentence) and right before the 'The Rune type' heading -- a natural placement, since it reuses the exact three counting APIs (Len/Rune/Elem) the preceding section and its comparison table just introduced, extending that table's pattern to a ZWJ-joined emoji sequence instead of inventing a new context. Nesting is correct: four-colon outer `::::exercise[...]`, three-colon inner `:::solution` containing one `csharp run id=family-zwj` fence and its `text output` fence, closed `:::` then `::::`, matching WRITER_GUIDE.md section 4's example exactly. The solution renders collapsed ('> Show solution', not expanded) in every screenshot checked (desktop-light part04/05, desktop-dark part04, mobile-light part07, mobile-dark part06) -- no output or code from inside the solution leaks above the fold anywhere. The prompt itself does not give away the answer: it states the structural facts needed to reason about the answer (three person emoji, two ZWJ joiners, each person emoji is a surrogate pair, each ZWJ is one char) but never states or implies the three resulting numbers (Len=8, Rune=5, Elem=1) -- a reader has to do the arithmetic, which is the point of a predict-the-output exercise. The article now has three exercises total in document order (Exercise 1 'Measure it' after the concat benchmark, Exercise 2 'Predict the output: a family emoji' after the three-counts section, Exercise 3 'Find the bug' after the Turkish-I pitfall), satisfying CONTENT_PLAN.md's 3-6 minimum and resolving round 1's only major finding; the placements are spread across the article rather than clustered, so the 'vary the ending'/mid-article-exercises rule is still respected. The family emoji glyph itself renders as a normal colored emoji glyph in both the prompt text and nowhere is a bare/garbled fallback observed. Structure, hierarchy, and rhythm are otherwise unchanged from round 1 and remain strong: one h1, flat h2 sections, no code block runs more than one output block before returning to prose, every output panel immediately followed by explanatory prose. Figure 1 (JP flag emoji, code-unit/code-point/grapheme-cluster breakdown) is unchanged and still theme-correct in both light and dark (confirmed desktop-light part03, desktop-dark part03) -- boxes, arrows, hex values all correct and legible, diagram still genuinely load-bearing for the two sections that follow it. Per the task brief, the flag emoji still rendering as plain 'JP'/'jp' text rather than a flag pictograph (in the figure's top box and in the figcaption) is noted below as a non-blocking, already-acknowledged integrator/rendering-stack item, not scored against the article, consistent with round 1's disposition. No new overflow, clipping, or phone-width issues were introduced by the new exercise block or by the words/code-block count increase.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Figure 1 (\"What .Length is actually counting\" section) -- top box and figcaption; confirmed unchanged in desktop-light part03, desktop-dark part03",
+      "problem": "Still present from round 1, not a regression: the two regional-indicator code points render as the plain letters 'JP'/'jp' rather than a flag pictograph in this rendering stack's screenshots, so the figcaption's framing ('The flag emoji \"🇯🇵\"') describes a visual the reader does not see here. Left unfixed per the round-1 disposition -- an integrator/rendering-stack concern, not a content defect, and not weighed against this round's score.",
+      "fixLooksLike": "No writer action needed. If addressed at all, it belongs in docs/INTEGRATOR_REQUESTS.md as a shared rendering-stack question (verify-page's screenshot environment's emoji font coverage), since any other article using regional-indicator emoji would show the same gap.",
+      "owner": "integrator"
+    }
+  ],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}
