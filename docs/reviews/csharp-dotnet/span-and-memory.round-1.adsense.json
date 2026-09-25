@@ -1,0 +1,30 @@
+{
+  "article": "csharp-dotnet/span-and-memory",
+  "route": "/csharp-dotnet/span-and-memory/",
+  "round": 1,
+  "role": "adsense",
+  "score": 8.7,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/memory-and-spans/memory-t-usage-guidelines",
+    "https://www.stevejgordon.co.uk/an-introduction-to-optimising-code-using-span-t",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.span-1",
+    "https://learn.microsoft.com/en-us/dotnet/standard/io/pipelines"
+  ],
+  "justification": "This clears the bar for 'c# span'. Against the top-ranking Microsoft Learn 'Memory<T> and Span<T> usage guidelines' page (read in full): that page is broader on ownership/lease rules for library authors but never reproduces a single ref-struct compiler error and never measures an allocation; this article proves 'zero bytes' with GC.GetAllocatedBytesForCurrentThread three separate times (string.Split vs span slicing, ToString vs stackalloc, and a 100,000-iteration repeat) and reproduces four real diagnostics (CS0029, CS8175, CS8345, CS4007) instead of asserting the restrictions exist. Against a well-regarded personal blog (Steve Gordon's 'Introduction to Optimising Code Using Span<T>', read in full, which explicitly defers ref-struct restrictions, Memory<T>, async and stackalloc to 'a future post'): this article covers exactly the ground that post admits it skips, so it clears the 'decent blog' bar by a wide margin and stands close to the official docs' quality with a narrower, more concrete angle. No filler intro/outro (opening sentence states a concrete allocation count; closing paragraph states a real scope boundary, not a recap of headings). Heading and exercise-title phrasing was checked against five sibling articles (three in csharp-dotnet, two outside the pillar) and shows no shared template: every heading is content-specific, no 'Introduction'/'Conclusion' boilerplate, and the five exercise titles ('Measure it', 'Extend the code', 'Prove it', 'Find the bug', 'Predict the output') vary in form within the article, matching the site's own convention rather than repeating one shape. Spot-checked five distinctive sentences and all quoted/attributed material against their cited Microsoft Learn pages (Span<T> struct page, ref struct types reference, System.IO.Pipelines): every direct quotation is accurate and the source page supports the sentence it is attached to; nothing reads as copied or closely paraphrased without attribution. All eight sources are Microsoft Learn (no blogs, no Stack Overflow). Byline placeholder and the two draft/prerequisite-not-yet-published items are covered by docs/crosslinks/csharp-dotnet/span-and-memory.md and are not held against the article per the known-issues list. No ad code, no keyword stuffing, no invented statistics or experience. The two issues below are nits, not blockers.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Three separate GC.GetAllocatedBytesForCurrentThread before/after measurement blocks: 'order-line-cost' (~line 71), 'stackalloc-format' (~line 281), and the 'prove-zero-alloc' solution (~line 339)",
+      "problem": "The identical warm-up-then-measure idiom is spelled out in full three times in one article. Each use proves a genuinely different claim, so this is not filler, but a reader working through the page straight through sees the same six-line pattern three times, which reads slightly templated on a second and third pass.",
+      "fixLooksLike": "Keep the first occurrence's full walk-through, then shorten the later two to something like 'measured the same way as above' plus only the lines that differ, so the repetition reads as reuse of an established tool rather than a repeated block.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "\"The ref struct guarantee, and the errors that enforce it\" section, the sentence \"and internally it holds a `ref T` field pointing at its data rather than a normal reference\"",
+      "problem": "This specific implementation detail is attached to the ref-struct-types reference link, which documents ref fields as a general C# 11+ feature but does not itself describe Span<T>'s internals, and the Span<T> struct page cited earlier in the same sentence doesn't state it either (verified by reading both pages). The claim is true and well known, but as written the citation doesn't quite support the clause it's attached to.",
+      "fixLooksLike": "Cite the dotnet/runtime Span.cs source (already listed as a Source on the Span<T> API reference page) for the ref-field implementation detail, or soften to a claim the two existing citations do support (e.g., 'a reference to its data, implemented the same way a custom ref struct with a ref field would be').",
+      "owner": "writer"
+    }
+  ]
+}

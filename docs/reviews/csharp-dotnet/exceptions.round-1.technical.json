@@ -1,0 +1,45 @@
+{
+  "article": "csharp-dotnet/exceptions",
+  "route": "/csharp-dotnet/exceptions/",
+  "round": 1,
+  "role": "technical",
+  "score": 7.7,
+  "runCodePass": true,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/exceptions/best-practices-for-exceptions",
+    "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/exception-handling-statements",
+    "https://code-maze.com/difference-between-throw-vs-throwex-csharp/",
+    "https://grantwinney.com/rethrowing-an-exception-in-csharp/"
+  ],
+  "justification": "node tools/run-code.mjs src/content/articles/csharp-dotnet/exceptions.md passes (blocks=33, executed=17) and I re-read every program myself: the layered-catch example, throw vs throw ex, the mixed-rethrow exercise, ExceptionDispatchInfo (including the child-process relaunch to capture an unhandled crash), the exception-filter-vs-finally ordering, the custom InsufficientFundsException with the three-constructor pattern, using/finally disposal order (including the reverse-of-declaration case), Try-Parse vs throwing, and the TryParse-vs-Parse cost benchmark. Every one is idiomatic, edge cases are handled correctly, and the reasoning about *why* (unwinding cost, filter timing, nested finally) is technically sound and matches how the CLR actually implements these mechanisms. I fetched all six cited Microsoft Learn pages directly and checked every inline quotation against the live text. All complexity/behavioral claims re-derive correctly (CS0160 for an unreachable catch, CA2200 for throw ex, CA2201 for reserved exception types, the try/catch/filter/finally ordering, reverse-order Dispose). Against the field: I fetched the two highest-ranking dedicated results for the target query (Code Maze's throw-vs-throw-ex piece and Grant Winney's rethrow article) and both cover only the throw/throw-ex mechanic plus (Code Maze only) ExceptionDispatchInfo - neither touches exception filters, using/finally ordering, custom exception design, Try-Parse vs throwing, or measures a real performance cost the way this article does. On breadth, depth, and rigor (real code, real numbers, worked exercises with hidden solutions) this article is already ahead of the current top web results and roughly at the level of the Microsoft Learn pages it draws from, which is why it clears the 7 'decent blog' bar comfortably. It does not yet clear 8.5, because two of its source citations point readers to the wrong page for the exact sentence quoted - a violation of the editorial brief's binding pilot-round rule ('a citation attached to a sentence its page does not support is a finding'). The underlying facts are correct and each quote is a real, unmodified sentence from Microsoft Learn, just filed under the wrong URL, so this is a fixable citation-accuracy defect rather than a factual error, and I have not capped the score at 7 for it.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Body, section 'What does finally guarantee...', the sentence 'Framework guidance adds one restriction worth stating alongside finally's guarantee: \"don't raise exceptions in finally clauses\" ([Exception Throwing](.../design-guidelines/exception-throwing))'",
+      "problem": "The exact phrase \"Don't raise exceptions in finally clauses\" is a heading/sentence on the 'Best practices for exceptions' page (already cited elsewhere in this article and listed in front matter), not on the 'Exception Throwing' design-guidelines page linked here. That page instead says \"AVOID explicitly throwing exceptions from finally blocks\" - different wording, same idea, but not the sentence in quotation marks. A reader who follows the link to check the quote will not find it there.",
+      "fixLooksLike": "Point this citation at https://learn.microsoft.com/en-us/dotnet/standard/exceptions/best-practices-for-exceptions#dont-raise-exceptions-in-finally-clauses (where the quoted sentence actually appears), or keep the Exception Throwing link and quote its actual text ('avoid explicitly throwing exceptions from finally blocks').",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Body, section 'What does finally guarantee, and does using really become that?', the sentence 'the language reference states plainly that \"the compiler transforms a using statement into a try/finally statement\" ([using statement](.../statements/using))'",
+      "problem": "This exact sentence ('The compiler transforms a using statement into a try-finally statement') lives on the 'Exception-handling statements' page, inside its try-finally section, not on the 'using statement' page this citation links to. I fetched the 'using statement' page directly and that sentence does not appear on it.",
+      "fixLooksLike": "Cite https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/exception-handling-statements (already in this article's sources) for this specific sentence, or replace the quote with something the 'using' page actually says, e.g. its own statement that 'the using statement ensures that a disposable instance is disposed even if an exception occurs within the block.'",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Body, section 'When does a new exception type earn its keep?', the sentence about NullReferenceException/IndexOutOfRangeException/AccessViolationException/StackOverflowException being reserved and flagged by CA2201",
+      "problem": "This is a correct, exact fact from 'Best practices for exceptions' (which lists precisely these four types and CA2201), but the sentence carries no inline citation link, unlike almost every other factual claim on the page.",
+      "fixLooksLike": "Add an inline link to the Best practices for exceptions page (or its CA2201 rule page) on this sentence, matching the citation density used elsewhere in the article.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Body, section 'What does finally guarantee...', the sentence 'declaring several using locals disposes them \"in reverse order of declaration\" ([using statement](...))'",
+      "problem": "The quoted sentence on the 'using' page describes multiple resources declared inside one parenthesized using statement, e.g. using (var a = ..., b = ...). The code example this citation supports (id=usingorder) instead uses two separate using-declaration locals (using var a = ...; using var b = ...;). The end behavior is the same for a documented reason (each becomes a nested try/finally), and the article's own nesting explanation right after the quote is correct and sufficient, but the quote itself is written about a different syntactic form than the one shown.",
+      "fixLooksLike": "Either change the demonstration to the parenthesized multi-resource form the quote describes, or drop the direct quotation marks around 'in reverse order of declaration' and instead attribute the reverse-order behavior to the nested try/finally lowering the article already explains, since that reasoning - not the literal quoted sentence - is what actually applies to using var declarations.",
+      "owner": "writer"
+    }
+  ]
+}
