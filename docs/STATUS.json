@@ -3387,7 +3387,8 @@
       "openIssues": [
         "spelling check limited to British forms + doubled words (no offline dictionary)"
       ],
-      "verified": "2026-09-24: check-article 50/50 published with 0 errors; gate PASS on algorithms/recursion (LH 100/100/100/100), concurrent lock test, worktree test"
+      "verified": "2026-09-24: check-article 50/50 published with 0 errors; gate PASS on algorithms/recursion (LH 100/100/100/100), concurrent lock test, worktree test",
+      "shipped": "#124 e5b1091 2026-09-24"
     },
     {
       "id": "C-IMG",
@@ -3464,7 +3465,8 @@
       "id": "O-1",
       "owner": "integrator",
       "text": "Keep draft:true in article PRs until /ship; update docs/ARTICLE_GAUNTLET.md step 7 and .claude/commands/ship.md accordingly.",
-      "status": "done 2026-09-24 (owner: do what you think): gauntlet, work-next and ship updated"
+      "status": "done 2026-09-24 (owner: do what you think): gauntlet, work-next and ship updated",
+      "shipped": "#124"
     },
     {
       "id": "O-2",

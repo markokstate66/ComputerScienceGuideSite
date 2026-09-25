@@ -4,6 +4,7 @@ Newest first. Facts only: what was run, what it showed.
 
 ## 2026-09-24 — Plan, article harness, and parallel fan-out of the last 7 wave-B articles
 
+- Shipped #124 (plan, harness, draft-until-ship rule) into `adsense-rebuild` as e5b1091: head built green in a temporary worktree (73 pages), `check-article` sanity run green; worktree removed with the junction unlinked first, main `node_modules` intact.
 - `docs/ARTICLES_PLAN.md` written (17 unpublished articles as modules, core modules, definition of done, dependency graph, waves). `docs/STATUS.json` extended additively.
 - Harness: `tools/check-article.mjs` (0 errors on all 50 published articles), `tools/gate.mjs` (check-article + run-code + verify-page, one `gate.json`, machine-wide verify lock; tested concurrently and in a worktree), `tools/worktree.mjs` (safe removal that unlinks the `node_modules` junction first). The main checkout's `node_modules` was found completely empty at the start of the session and reinstalled with `npm ci`.
 - O-1 adopted at the owner's say-so: article PRs keep `draft: true`; `/ship` flips it (gauntlet, work-next, ship updated).
