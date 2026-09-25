@@ -5,6 +5,7 @@ User-visible and repo-visible changes. Newest first.
 ## Unreleased (branch `adsense-rebuild`, not deployed)
 
 ### Added
+- Article harness: `tools/check-article.mjs` (static editorial checks), `tools/gate.mjs` (one-command evidence gate with a machine-wide verify lock) and `tools/worktree.mjs` (safe parallel worktrees); `docs/ARTICLES_PLAN.md`. Article PRs now stay `draft: true` until `/ship` (#124).
 - New site shell: content collections with a validated front matter schema, topic hubs and article pages generated from Markdown, Shiki dual-theme code blocks with attached output panels and copy buttons, callouts, "On this page" contents, theme-aware SVG diagrams with phone-width scrolling, Pagefind search, responsive header with a real mobile menu.
 - Pages: Start here, Topics, Glossary (29 seed terms), Search, Editorial Policy, Corrections, Styleguide (noindex). About, Contact, Privacy and Terms rewritten.
 - Three published articles, each passed by three independent critics with all code machine-verified: `complexity/amortized-analysis`, `databases/sql-joins`, `version-control/how-git-works`.
