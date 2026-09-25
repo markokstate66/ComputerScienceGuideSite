@@ -1,0 +1,12 @@
+# Cross-links wanted by /csharp-dotnet/span-and-memory/
+
+One line each: anchor text, target route, where in the article. `csharp-dotnet/strings-and-unicode` is a hard dependency of this module (CONTENT_PLAN.md §7 row 8, ARTICLES_PLAN.md A-12) but is still unmerged (issue #113 / PR #118), so it does not exist in this build and the body does not link it yet.
+
+- Anchor text: "Strings, Immutability and Unicode in .NET" (or similar) | target `/csharp-dotnet/strings-and-unicode/` | intro paragraph or "What parsing an order line actually costs" — that article's own "`Span<char>`: slicing without allocating" section covers a single `Substring`-vs-span parse (`duration=125ms`) and the basic `ref struct` restriction in one sentence. This article is the deep dive it points to: multi-field parsing, all four `ref struct` compiler errors reproduced from a real compile, and the `Memory<T>`/async story. Once that article ships, add one sentence near the top naming it as the shorter first look at the same idea, so a reader who only needs the basics is not stuck here.
+- Reverse link already requested: `csharp-dotnet/garbage-collection`'s crosslinks file already asks to link *to* `/csharp-dotnet/span-and-memory/` from its large-object-heap section ("avoiding large temporary allocations"). No action needed here; that wiring happens on the garbage-collection side in wave 3.
+
+## Boundaries with planned siblings
+
+- `/csharp-dotnet/strings-and-unicode/` owns UTF-16 vs code points vs grapheme clusters, `StringBuilder` vs naive concatenation, and culture-sensitive comparison. This article does not repeat any of that; it starts from the point where a `Span<char>` already exists and goes into `ref struct` mechanics, `stackalloc`, and `Memory<T>` for async, none of which the strings article covers beyond one closing paragraph.
+- `/csharp-dotnet/garbage-collection/` owns generations, the large object heap, and `WeakReference`. This article only cites `GC.GetAllocatedBytesForCurrentThread` as a measurement tool; it does not re-explain how the collector decides what to reclaim.
+- `/csharp-dotnet/async-await/` owns the `async`/`await` state machine mechanism itself (what fields it holds, how continuations are scheduled). This article treats the state machine as a given — "everything that survives an `await` lives in a field of it" — and cites that fact rather than re-deriving it, so it does not duplicate that article's content.

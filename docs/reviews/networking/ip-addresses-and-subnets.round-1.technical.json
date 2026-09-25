@@ -1,0 +1,37 @@
+{
+  "article": "networking/ip-addresses-and-subnets",
+  "route": "/networking/ip-addresses-and-subnets/",
+  "round": 1,
+  "role": "technical",
+  "score": 6.5,
+  "runCodePass": true,
+  "comparedAgainst": [
+    "https://aws.amazon.com/what-is/cidr/",
+    "https://www.geeksforgeeks.org/computer-networks/introduction-to-subnetting/",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.net.ipnetwork"
+  ],
+  "justification": "node tools/check-article.mjs networking/ip-addresses-and-subnets: PASS (words=4495 prose=2742 run=12 fig=2 sources=10 flesch=54.9 errors=0 warnings=0). node tools/run-code.mjs src/content/articles/networking/ip-addresses-and-subnets.md: PASS (blocks=24 executed=12) — every csharp run block's real output matches the article verbatim, including the deliberately 'wrong' /0 shift-bug exercise and the documented-vs-actual IPNetwork.Parse divergence. I re-derived every bit-arithmetic claim by hand (mask-for-prefix table, network/broadcast/usable-host formula, the /31 and /32 edge cases against RFC 3021, the 172.16.0.0/12 boundary math, the VLSM packing of /25+/26+/27 into 203.0.113.0/24, and both IPv6 /64 and /48 containment checks) and all of them check out. I opened and cross-checked every quoted primary source (RFC 791 s3.2, RFC 4632 s2/s3.1, RFC 1918 s2, RFC 3021 s2.1, RFC 3022 Abstract/s2/s2.2, RFC 4291 s2/s2.2/s2.5.1, the IPNetwork Struct remarks, and the C# bitwise-and-shift-operators reference), and every quotation is verbatim and supports the sentence citing it EXCEPT ONE: the RFC 4632 s2 'quote' about an organization needing 'slightly more than 254 host addresses' does not appear anywhere in RFC 4632 (I grepped the full RFC text for 'slightly', 'require a Class B address', and '254 host' — the only matching passage is 'Class C, with a maximum of 254 host addresses, is too small, whereas Class B, ... is too large for most organizations'). That is a fabricated quotation dressed up with an ellipsis and quotation marks, which is exactly what hard rule 1 (nothing fabricated, no invented quotes) forbids, and it caps the score per the rubric's 'a single factual error caps the technical score at 7' — I am scoring slightly under that cap because a misattributed quotation is worse than an ordinary factual slip. Everything else in the article is genuinely strong: the .NET-specific angle (checking hand-rolled bit arithmetic against System.Net.IPNetwork, and catching a real, verifiable gap between IPNetwork's documented 'will throw' contract and its actual non-throwing behavior on .NET 10.0.401) is original, well-caveated, and something none of the comparable top-ranking pages attempt. Against the current top results for 'subnetting explained' / 'what is CIDR', I read AWS's 'What is CIDR?' (no bit-level mask computation, no network/broadcast derivation, no VLSM detail, no RFC 1918 coverage, no runnable code) and GeeksforGeeks' 'Introduction to Subnetting' (covers masks and one worked Class-C example but has no VLSM, no IPv6, no private ranges, no NAT, no runnable/verified code) — this article is deeper and more rigorous than both on every axis except the one fabricated citation. Exercises are well-varied (hand-compute-then-verify, find-the-bug, extend-the-code, membership-test) and none leak their output above the solution fold, satisfying the pilot-round lessons. Toolchain is stated once, inline, exactly where the runtime-dependent claim appears, not as an opening provenance sentence. Word count (4,495) is within the 4,000-7,000 band.",
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "\"Classless addressing replaced three fixed sizes\" section, the sentence beginning \"RFC 4632 spells out why that stopped working\"",
+      "problem": "The article quotes RFC 4632 section 2 as saying \"an organization that needed slightly more than 254 host addresses would ... require a Class B address\", presented in quotation marks as a verbatim citation. No such sentence exists anywhere in RFC 4632 (verified by fetching and full-text-searching the RFC for \"slightly\", \"require a Class B address\", and \"254 host\"). The actual section 2 text is: \"Class C, with a maximum of 254 host addresses, is too small, whereas Class B, which allows up to 65534 host addresses, is too large for most organizations but was the best fit available for use with subnetting.\" This is a fabricated quotation attributed to a real primary source, which hard rule 1 (nothing fabricated, including invented quotes) explicitly forbids, and it misrepresents what the cited page says, which the pilot-round lessons call out by name (\"a citation attached to a sentence its page does not support is a finding\").",
+      "fixLooksLike": "Replace the fabricated quotation with the real RFC 4632 wording, either quoted verbatim (\"Class C, with a maximum of 254 host addresses, is too small, whereas Class B, ... is too large for most organizations\") or restated in the writer's own words with no quotation marks, keeping the same citation link to RFC 4632 section 2.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Exercise \"Extend the classifier\", solution paragraph after the code/output block (the sentence about `2001:db8::9`)",
+      "problem": "The solution states as settled fact that \"IPNetwork.Contains simply returns false for an address from a different address family instead of throwing\". Microsoft's IPNetwork.Contains(IPAddress) reference documents only one exception (ArgumentNullException for a null address) and says nothing about mixed-family behavior; this claim is inferred purely from the one run in this article. Earlier in the same article, a very similar situation (IPNetwork.Parse's actual behavior diverging from its documented contract) is carefully labeled \"tested on .NET 10.0.401 on Windows 11, x64\" and flagged as undocumented and evidently unstable — this claim gets no such caveat, so a reader has no way to tell it apart from a guaranteed contract.",
+      "fixLooksLike": "Add the same caveat pattern used for the IPNetwork.Parse quirk: state that cross-family Contains() returning false (rather than throwing) is what was observed on the stated .NET/OS combination, that the Contains() reference documents no such guarantee (only ArgumentNullException is documented), and that a program should not rely on it without its own test.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "\"Solving the worked problem\" section, the VLSM code block's final `Console.WriteLine($\"free     -  .{LastOctet(cursor)}/27\");` line",
+      "problem": "Every other prefix printed in the table is computed by `PrefixFor`; the final \"free\" line's `/27` is hardcoded rather than derived, even though the surrounding prose specifically emphasizes that the table is \"derived rather than asserted\". It is only correct here because 100+50+20's rounded-up blocks (128+64+32) happen to leave a remainder that is itself exactly the size of a /27; a reader who changes the tier sizes and re-runs the block would get a silently wrong hardcoded prefix on the free-space line.",
+      "fixLooksLike": "Either drop the specific prefix from the free-space line (print the starting address and the remaining address count instead) or compute it the same way the other three lines are computed, so the line stays correct if the tier sizes change.",
+      "owner": "writer"
+    }
+  ]
+}

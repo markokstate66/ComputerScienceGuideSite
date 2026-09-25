@@ -1,0 +1,26 @@
+{
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/binary-heap/",
+    "https://www.programiz.com/dsa/heap-data-structure",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.priorityqueue-2"
+  ],
+  "justification": "For 'binary heap' / 'priority queue C#', GeeksforGeeks' Binary Heap page has one static tree-only diagram (no array-mapping figure, no sift-down before/after), a short unverified-looking C++/Java/Python snippet set, and no measured cost data. Programiz's Heap page has two static images and a single insert/delete code sample with no PriorityQueue coverage at all, no decrease-key discussion, and no runnable-and-checked output. Neither treats .NET's PriorityQueue's quaternary arity, missing decrease-key or its lack of FIFO stability, which this article covers with concrete, run C# and cited primary sources. On structure: the article follows a clean shape-B build-up across 8 non-boilerplate headings -- array/index mechanics, sift-up/down, the O(n) heapify proof (prose + diagram + measured comparisons-per-element), the real PriorityQueue's arity/stability/decrease-key gaps, then three escalating applications (generation counter, stability tie-break, bounded top-k, k-way merge) -- with two well-placed, well-formed exercises (a predict-the-output whose output panel is correctly hidden inside the collapsed solution, and an extend-the-code IndexedMinHeap/DecreaseKey exercise with a full worked solution). On diagrams: all 3 required figures are present (fig=3 confirmed by verify-page), theme-aware (checked in both light and dark desktop/mobile screenshots), portrait-oriented with reasonable viewBoxes (340x300, 320x340, 340x260, all at or under the 360-wide budget), captioned with a specific 'notice this' sentence each, and I verified none of the three has a blank line inside its <figure> block in the raw markdown (the known past issue). Figure 2's before/after sift-down redraw is genuinely clear at 390px in both themes: the swapped node (7) and moved node (2) are colour-coded consistently between the two trees, the arrow shows the swap direction, and the annotation sentences sit under each tree rather than beside it -- no fade, no scroll, nothing the caption references is cut off. Figure 1's tree-to-array correspondence and Figure 3's per-level heapify accounting are equally legible on phone screenshots. The snippet/run ordering the writer said they fixed is verified correct in the final file: both 'csharp snippet of=topk-heap' (line 658) and 'csharp snippet of=merge-k' (line 783) appear after their named 'csharp run id=topk-heap' (line 565) and 'csharp run id=merge-k' (line 691) blocks respectively, as tools/run-code.mjs requires. Code fencing matches WRITER_GUIDE/run-code.mjs conventions throughout (csharp run id=..., matching text output blocks with no interposed content, csharp snippet of=... excerpts, one illustrative text block for the geometric-series derivation) and the two long listings (topk-heap, merge-k) use the collapsed <details><summary>Full program</summary> pattern exactly as in arrays-and-dynamic-arrays.md, with a blank line after <summary> and before the closing </details>. verify-page.mjs run live against the draft (--drafts, then --drafts --external --no-lighthouse) confirms zero console errors, zero broken internal links (34) and zero broken external links (6, all resolving), zero mobile horizontal overflow, and Lighthouse 100/100/100/100. This clears 8.5 comfortably and would need essentially nothing to be a clean 10 published result.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "'Merging k sorted lists' section, the 'csharp snippet of=merge-k' excerpt (MergeSorted), visible in mobile-light-part14.png / mobile-dark equivalent",
+      "problem": "The comparer line wraps across two source lines and the second one -- '(a, b) => a.Value != b.Value ? a.Value.CompareTo(b.Value) : a.ListIndex.Compare...' -- is exactly the tie-break logic the following paragraph explains ('The explicit IComparer breaks ties on ListIndex'), but on a 390px screen only 'var byValueThenList = Comparer<(int V' and '(a, b) => a.Value != b.Value ? a.' are visible before the fade, so the reader reaches the explanatory prose without having seen the ListIndex comparison itself in the excerpt.",
+      "fixLooksLike": "Not blocking -- the prose fully explains the logic in words immediately after, and this is the same class of long-constructor-line trade-off already accepted as a minor nit in the linked-lists round-1 design review. If this article is touched again, breaking the ternary onto its own indented line (or aliasing the tuple type) would bring the ListIndex comparison on-screen without scrolling.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0
+}

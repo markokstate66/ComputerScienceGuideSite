@@ -1,0 +1,39 @@
+{
+  "article": "operating-systems/memory-hierarchy-and-caches",
+  "route": "/operating-systems/memory-hierarchy-and-caches/",
+  "round": 1,
+  "role": "technical",
+  "score": 6.5,
+  "comparedAgainst": [
+    "https://www.abhik.ai/concepts/systems/cpu-cache-lines",
+    "https://www.geeksforgeeks.org/computer-organization-architecture/computer-organization-locality-and-cache-friendly-code/",
+    "https://lwn.net/Articles/252125/",
+    "https://lwn.net/Articles/255364/",
+    "https://lwn.net/Articles/256433/",
+    "https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformation",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-cache_descriptor",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.structlayoutattribute"
+  ],
+  "runCodePass": true,
+  "justification": "Ran `node tools/check-article.mjs`, `node tools/run-code.mjs`, and `node tools/gate.mjs` myself: all green (run-code blocks=11 executed=5, gate Lighthouse 100/100/100/100, 0 console errors, 0 broken links). The empirical craft is genuinely excellent: cache sizes are read live via a correct P/Invoke of GetLogicalProcessorInformation (I checked the CACHE_DESCRIPTOR field order and the reference example against Microsoft Learn -- the struct layout in the code is byte-for-byte correct), the pointer-chase, cache-line-stride, false-sharing and struct-of-arrays benchmarks are all real, runnable, correctly reasoned about (MESI ownership, RFO, prefetcher, InlineArray caveat), and every output block properly wildcards machine-dependent numbers instead of inventing single 'true' values, exactly as the brief demands. Compared with the two best-ranking competing pages I actually read (abhik.ai's 'CPU Cache Lines' guide, which is conceptual with a generic reference table and no real measured numbers, and GeeksforGeeks's locality/cache-friendly-code page, which cites nothing and asserts an unsupported '20x' claim), this article is clearly deeper and more rigorous -- it is the kind of page that would rank above both. However, I re-derived the two citations around the L1/L2/RAM cycle-cost table by fetching the actual LWN page and reading the raw section headers, and both are wrong in a way that matters: the article calls the ~3/~14/~240-cycle numbers 'Drepper's own measurements, on a 2007 Pentium 4' and cites '§3.3.2–§3.3.3', but the source page states verbatim 'these are the numbers Intel lists for a Pentium M' -- a vendor-published spec table for a different processor, not Drepper's own benchmark -- and the table itself sits in §3.2 ('Cache Operation at High Level'), not §3.3.2/§3.3.3 (Drepper's own Pentium 4 benchmark, in §3.3.2, actually reports different numbers: ~4 cycles L1d, ~9 apparent cycles for L2 due to prefetching, 200+ for memory). The cache-line-size citation a few paragraphs earlier has the same section-number error (cites §3.3.4, actual location §3.2). This is exactly the class of finding the brief's pilot-round lessons call out ('a citation attached to a sentence its page does not support'), and per the rubric a factual/citation error caps the technical score at 7, so I am scoring below that cap despite the otherwise strong execution.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Section 'A ladder you can feel: timing a walk across those sizes', the sentence beginning \"Drepper's own measurements, on a 2007 Pentium 4, describe the same shape in cycles...\"",
+      "problem": "Misattributes the ~3/~14/~240-cycle table to 'Drepper's own measurements, on a 2007 Pentium 4' and cites §3.3.2–§3.3.3. I fetched the raw LWN page: that exact table is introduced with 'Finally, we should at least give an impression of the costs associated with cache hits and misses. These are the numbers Intel lists for a Pentium M' -- a vendor spec table for a different processor (Pentium M, not Pentium 4), not something Drepper measured himself, and it sits in §3.2 ('Cache Operation at High Level'), before §3.3 begins. Drepper's own Pentium 4 benchmark is a real thing in this paper (§3.3.2, 'Measurements of Cache Effects') but reports different numbers (~4 cycles L1d, ~9 apparent L2 cycles due to prefetching, 200+ for memory), so the article has conflated two different pieces of the source.",
+      "fixLooksLike": "Either (a) attribute the ~3/~14/~240 table correctly: \"Intel's own published cost table, which Drepper quotes for a Pentium M (['Part 2: CPU caches', §3.2](https://lwn.net/Articles/252125/))\", or (b) switch to Drepper's actual measured Pentium 4 numbers from §3.3.2 (~4 cycles L1d, ~9 cycles apparent L2, 200+ cycles memory) and cite §3.3.2 for those. Either fix keeps the 'roughly an order of magnitude per level' point intact without misstating whose numbers they are or which processor they describe."
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Reading your own cache sizes before trusting anyone else's table', the sentence \"matching what Drepper's survey of cache designs calls the current norm, up from 32 bytes in early caches (['Part 2: CPU caches', §3.3.4])\"",
+      "problem": "Same source, wrong section number: the '32 bytes... now the norm is 64 bytes' sentence is in §3.2 ('Cache Operation at High Level'), not §3.3.4 (which is 'Multi-Processor Support', where MESI is introduced -- the article's other citation to §3.3.4, for MESI in the false-sharing section, is correct).",
+      "fixLooksLike": "Change the citation to §3.2."
+    },
+    {
+      "severity": "minor",
+      "location": "Section 'Reading your own cache sizes...', the sentence \"The function is called twice, once to ask how large a buffer it needs, exactly as its own reference example does\"",
+      "problem": "Microsoft's own reference example (linked) uses a retry loop (call, check for ERROR_INSUFFICIENT_BUFFER, reallocate, call again) rather than an unconditional two-call sequence; in the ordinary case it does resolve in two calls, but 'exactly as its own reference example does' overstates the correspondence -- the real example is defensive against the buffer-size answer changing between calls.",
+      "fixLooksLike": "Soften to something like \"in the common case, the same number of calls its own reference example needs\" or briefly note the reference example loops defensively."
+    }
+  ]
+}

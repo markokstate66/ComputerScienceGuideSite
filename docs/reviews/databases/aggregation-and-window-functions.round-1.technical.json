@@ -1,0 +1,40 @@
+{
+  "article": "databases/aggregation-and-window-functions",
+  "route": "/databases/aggregation-and-window-functions/",
+  "round": 1,
+  "role": "technical",
+  "score": 8.9,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/sql/t-sql/queries/select-over-clause-transact-sql (Microsoft Learn, OVER Clause reference)",
+    "https://www.postgresql.org/docs/current/tutorial-window.html and https://www.postgresql.org/docs/current/functions-window.html (PostgreSQL Window Functions tutorial + reference)",
+    "https://learnsql.com/blog/sql-window-functions-vs-group-by/ (representative top blog-style result for the target query)"
+  ],
+  "runCodePass": true,
+  "justification": "node tools/check-article.mjs databases/aggregation-and-window-functions -> PASS (words=5367, run=17, fig=3, sources=10, errors=0, warnings=0). node tools/run-code.mjs src/content/articles/databases/aggregation-and-window-functions.md -> PASS (blocks=35, executed=17), including both 'sql run error' blocks, so the two declared SQLite error messages ('misuse of aggregate: COUNT()' and 'misuse of aliased window function rn') are mechanically verified against a real SQLite 3.50.4 engine (matches node:sqlite's bundled version, confirming the article's stated toolchain). I re-derived every query by hand against the inserted data (GROUP BY sums/counts per member, the bare-column accidents, the MIN/MAX exception, RANK/DENSE_RANK/ROW_NUMBER over the two ties, the FIRST_VALUE gap column, LAG/day-count arithmetic, the RANGE-vs-ROWS running-total tie pitfall, the centered moving average including edge clipping, and the ROW_NUMBER-in-a-CTE top-N fix) and all match the article's stated output. I fetched and diffed the article's inline quotations against the live pages for all three vendors: sqlite.org/lang_select.html (group generation rule, bare-column undefined behavior, the exact-one min()/max() exception, the 'considered a feature, not a bug' line), sqlite.org/lang_aggfunc.html (count(X)/count(*)/sum(X) NULL handling), sqlite.org/windowfunctions.html (rank()/dense_rank() definitions, FILTER clause, the default frame-spec 'RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW EXCLUDE NO OTHERS' and 'current row and its peers', the lag()/lead() frame-spec-ignored line, the result-set/ORDER-BY-only restriction, FIRST_VALUE's definition), postgresql.org/docs/current/tutorial-window.html and sql-select.html (window function vs. aggregate contrast, which rows a window function sees, the WHERE-vs-HAVING contrast, the ungrouped-column rule, the default RANGE frame and peer definition), and learn.microsoft.com's SELECT, GROUP BY, ranking-functions and OVER-clause pages (logical processing order list, the nondeterministic-ranking-functions line, and the nonaggregate-expression GROUP BY rule). Every quote matched its source almost verbatim except one (see issues). Compared against Microsoft's own OVER Clause reference and PostgreSQL's official window-function docs, this article covers the same ground plus a concrete, single-dataset worked pitfall (same-day loans producing an inflated RANGE running total) that neither vendor page demonstrates with before/after output; compared against a representative top blog result for 'sql window functions' (LearnSQL.com), it is substantially deeper, fully primary-sourced, and includes a demonstrated error-and-fix for the top-N-per-group case that the blog only describes prose-wise. No factual errors and no failing code were found, so neither score cap applies. The deductions below are citation-precision and depth nits, not correctness problems.",
+  "issues": [
+    {
+      "location": "Section 'What a bare column means once rows have collapsed', the sentence quoting SQL Server's GROUP BY reference ('must appear in the `GROUP BY` clause' if used in 'any nonaggregate expression in the... select list')",
+      "problem": "The quoted fragment 'must appear in the GROUP BY clause' is presented in quotation marks as if verbatim, but the live Microsoft Learn page actually reads 'you must include each table or view column in the GROUP BY list if you use it in any nonaggregate expression in the <select> list' — a different verb and noun ('include... in the list' vs. 'appear in the clause'). The second quoted fragment matches closely and is fine.",
+      "fixedLooksLike": "Either quote the source's actual wording ('you must include each table or view column in the GROUP BY list...') or drop the quotation marks around that fragment and paraphrase it in the article's own words, keeping only the fragment that is a true verbatim match.",
+      "severity": "minor"
+    },
+    {
+      "location": "Section 'Every row collapses into its group', the paragraph on SUM/COUNT and NULL ('A member with three loans and one unrecorded fee would get COUNT(late_fee) of 3 but COUNT(*) of 4...')",
+      "problem": "The running example's `loan.late_fee` column is declared `INTEGER NOT NULL DEFAULT 0`, so this NULL-vs-zero scenario can never actually occur in the article's own dataset — the claim is correct in general SQL but is asserted as a bare hypothetical with no code demonstrating it, unlike almost every other claim on the page.",
+      "fixedLooksLike": "Add a short throwaway query against a temporary table (or a copy of `loan` without the NOT NULL constraint) that inserts one NULL late_fee and shows COUNT(late_fee) vs COUNT(*) diverging, the way the rest of the article demonstrates every other claim with a run block.",
+      "severity": "minor"
+    },
+    {
+      "location": "Section 'HAVING filters groups; WHERE never sees an aggregate', the FILTER paragraph ('COUNT(*) FILTER (WHERE late_fee > 0) counts only the late loans, in the same row as an unfiltered COUNT(*), without a HAVING clause at all.')",
+      "problem": "FILTER is introduced with the same weight as every other technique on the page but, uniquely, is never demonstrated with a `sql run` block — the reader has to take the claim on faith instead of seeing it against the `loan` data like everything else.",
+      "fixedLooksLike": "Add a short `sql run` block showing `SELECT member_id, COUNT(*) AS loans, COUNT(*) FILTER (WHERE late_fee > 0) AS late_loans FROM loan GROUP BY member_id` so the reader sees the two counts diverge in the same row.",
+      "severity": "minor"
+    },
+    {
+      "location": "Intro paragraph, 'Window functions need SQLite 3.25 or later; the results here come from SQLite 3.50.'",
+      "problem": "The 3.25 version claim is correct (confirmed against sqlite.org/windowfunctions.html §6 History: 'Window function support was first added to SQLite with release version 3.25.0 (2018-09-15)') and that page is already in the article's own sources list, but the sentence carries no inline citation, unlike every other non-obvious factual claim on the page.",
+      "fixedLooksLike": "Add the existing SQLite: Window Functions citation to this sentence, e.g. '... 3.25 or later ([SQLite: Window Functions](https://www.sqlite.org/windowfunctions.html#history))'.",
+      "severity": "minor"
+    }
+  ]
+}

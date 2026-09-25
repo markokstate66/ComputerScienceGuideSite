@@ -1,0 +1,37 @@
+{
+  "article": "src/content/articles/oop-design/factory-builder-singleton.md",
+  "route": "/oop-design/factory-builder-singleton/",
+  "round": 2,
+  "role": "design",
+  "score": 9.0,
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100
+  },
+  "consoleErrors": [],
+  "brokenLinks": [],
+  "mobileOverflowPx": 0,
+  "verifyNotes": "Ran `node tools/verify-page.mjs --drafts /oop-design/factory-builder-singleton/` from PowerShell directly in the worktree (C:\\Users\\marko\\AppData\\Local\\Temp\\claude\\csg-worktrees\\issue-111-factory-builder-singleton), which has its own node_modules and the article uncommitted on branch issue-111-factory-builder-singleton. It ran a real private build, screenshots (12 desktop parts x2 themes, 18 mobile parts x2 themes) and Lighthouse. Console showed one cosmetic 'X [ERROR] The build was canceled' NativeCommandError line from PowerShell's stderr wrapping of the Astro preview-server teardown after the check completed -- the tool's own final line was `PASS /oop-design/factory-builder-singleton/ words=2647 code=20 fig=3 lh(p/a/bp/seo)=100/100/100/100` and .verify/oop-design__factory-builder-singleton/report.json (read directly) confirms pass:true, mobileOverflowPx:0, consoleErrors:[], consoleWarnings:[], broken:[], placeholders:[], lighthouse 100/100/100/100. Also visually inspected mobile-light/mobile-dark/desktop-light/desktop-dark PNGs for the three figures, the lazy-singleton code block, and the 'Find the missing guarantee' exercise.",
+  "comparedAgainst": [
+    "Round 1's own comparison set (refactoring.guru/design-patterns/factory-method; learn.microsoft.com service-lifetimes doc) -- unchanged this round since scope is a re-check of four named findings plus a live verify-page run, not a fresh originality pass",
+    "docs/EDITORIAL_BRIEF.md critic rubric and docs/WRITER_GUIDE.md diagram/exercise/phone-width mechanics, read this round to check the writer's fixes and the exercise-variety reasoning against the actual fence/exercise rules"
+  ],
+  "justification": "All three blocking findings from round 1 are verifiably fixed in the current file, and this round had real verify-page.mjs data to check them against rather than a static read alone. (1) The duplicated setup paragraph in 'Find the missing guarantee' is gone: lines 464-468 now read as a single clean paragraph ('This rewrite of AppConfiguration replaces LazyThreadSafetyMode.ExecutionAndPublication with LazyThreadSafetyMode.None in the Lazy<T> field initializer, reasoning that a lambda with no side effects other than the constructor \"can't race.\"') immediately followed by the question sentence -- confirmed in the raw Markdown and visually in mobile-light-part11.png, which shows one prompt paragraph, no redundant restatement. (2) The lazy-singleton field initializer is reformatted exactly as claimed: md lines 411-414 now read `private static readonly Lazy<AppConfiguration> _lazy =` / `    new(` / `        () => new AppConfiguration(),` / `        LazyThreadSafetyMode.ExecutionAndPublication);`, and a column check (awk) confirms both the lambda and the mode argument start at column 13, well inside the ~40-column visible window on a 390px phone -- a large improvement over round 1's column ~43. report.json's mobileOverflowPx is 0 for the whole page (a real, page-wide horizontal-overflow measurement, not available last round), and mobile-light-part10.png / mobile-dark-part10.png both show the mode constant readable without scrolling. (3) Figure 1's 'resolved by the runtime type' annotation (md line 166) is now `class=\"d-small d-muted\"` with no `d-mono`, matching the code-vs-prose annotation convention Figures 2 and 3 already used; 'calls CreateWriter()' just above it correctly keeps `d-mono` since it names a literal method call. Confirmed both in the SVG source and visually in mobile-light-part04.png and mobile-dark-part04.png, where the annotation now renders in the same sans-serif weight as Figures 2/3's prose notes, distinct from the monospace product-family text in the boxes above and below it. (4) Exercise form variety: all three exercises ('Break the guarantee', 'Find the missing guarantee', 'Judge the other two') remain prose explain-the-reasoning questions -- the writer's claimed reasoning holds up under inspection. The exercise directive itself (docs/WRITER_GUIDE.md section 4) is plain Markdown with no code-fence requirement, but every 'extend the code' example actually in the codebase (e.g. sorting-algorithms-compared.md's 'Extend the code: a stable selection sort') embeds a full new `csharp run` program plus a verified `text output` block inside the `:::solution`, which is more than a targeted line-edit -- it is new, run-code.mjs-verified content. Since round 1 explicitly scored this issue as 'Not blocking' and only a minor optional nit, leaving it as-is is an acceptable call this round too; it does not by itself justify holding the score below 8.5. Net effect: every issue that actually gated the 7.8 score is resolved, verified with live data this time (Lighthouse 100 across all four categories, zero console errors, zero broken links, zero mobile overflow, no placeholders), and a further visual scan of all three figures and the surrounding code blocks in both themes and both viewport classes turned up no regressions. The remaining exercise-variety nit keeps this at 9.0 rather than higher -- a genuinely 10/10 page would show at least one different exercise form -- but it clears the 8.5 'equal to MDN/Real Python quality with only nits' bar comfortably.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "All three exercises (Break the guarantee, Find the missing guarantee, Judge the other two)",
+      "problem": "All three exercises remain the same 'explain the reasoning in prose' shape; none is extend-the-code, measure-it, or predict-the-output. Carried over unchanged from round 1, where it was explicitly flagged as non-blocking.",
+      "fixLooksLike": "Not blocking. If a future round wants variety, 'Break the guarantee' could ask the reader to write the HighContrastWidgetFactory implementation themselves as a verified csharp run block in the solution (extend-the-code) rather than only explain what it would need."
+    }
+  ],
+  "crosslinksFile": "docs/crosslinks/oop-design/factory-builder-singleton.md exists (uncommitted, alongside the article, in the same worktree) -- not re-audited line by line this round since that is outside this design/UX re-check's four-item mandate and the AdSense/technical critics' lane, but its presence means the integrator has a file to consult if the body references an unpublished sibling.",
+  "notIssues": [
+    "draft: true (still expected pre-gauntlet-pass state)",
+    "The single 'X [ERROR] The build was canceled' line in the PowerShell transcript is a NativeCommandError wrapper around the preview server's own shutdown after verify-page.mjs finished successfully -- not a console error surfaced during the page check itself; report.json's consoleErrors array is empty",
+    "Figure 1's minor text-vs-box overlap noted as unverifiable in round 1's notIssues is now checked against a real screenshot (mobile-light-part04.png, desktop equivalents) and does not visibly clip or overflow in either theme or viewport"
+  ]
+}

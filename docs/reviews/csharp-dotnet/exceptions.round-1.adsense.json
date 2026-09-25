@@ -1,0 +1,48 @@
+{
+  "article": "csharp-dotnet/exceptions",
+  "route": "/csharp-dotnet/exceptions/",
+  "round": 1,
+  "role": "adsense",
+  "score": 8.0,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/exceptions/best-practices-for-exceptions",
+    "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/exception-handling-statements",
+    "https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/exception-throwing",
+    "https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/exceptions-and-performance",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.runtime.exceptionservices.exceptiondispatchinfo",
+    "https://stackify.com/csharp-exception-handling-best-practices/"
+  ],
+  "justification": "This clears the low-value-content bar comfortably and beats every top-ranking result for 'c# exception handling best practices' on originality and depth: it runs throw-vs-throw-ex side by side and shows the real, wildcarded stack traces (Stackify, InfoWorld and the c-sharpcorner/Medium results all just assert the rule with no trace shown); it demonstrates ExceptionDispatchInfo with a genuinely engineered repro (relaunching itself as a child process to capture an unhandled-exception crash) that none of the surveyed blogs attempt; and it measures the 'exceptions are slow' folklore with an actual benchmark (200,000 iterations, TryParse vs throw/catch) where Microsoft's own design-guidelines page only asserts 'orders of magnitude slower' with no number. check-article and run-code both pass green (5,012 words, 17/17 run blocks executed), all six front-matter sources are cited inline (none orphaned), and the exercises (predict/find-the-bug/extend/measure) are pedagogically sound with solutions correctly hidden. I did not find copied or closely paraphrased prose against the sources I opened — quoted material is set off in quotation marks and mostly matches the cited page verbatim. What keeps this off an 8.5+ pass is a small cluster of concrete sourcing and precision defects that are exactly what this rubric exists to catch: two quotations that don't verbatim-match the page they're cited to (one is attributed to the wrong Microsoft Learn page entirely), one confusing/incorrect equivalence claim about exception object identity, and an exercise sequence that mirrors a sibling article's structure closely enough that a reviewer comparing the pillar's articles side by side would notice the template. None of these make the article wrong or unusable, so it isn't a 7 or below, but they are real, fixable defects rather than nits, so it isn't an 8.5 'ship with nits only' either.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Line 687, section \"What does `finally` guarantee, and does `using` really become that?\": the sentence ending '\"don't raise exceptions in finally clauses\" ([Exception Throwing](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/exception-throwing)).'",
+      "problem": "The quoted phrase is cited to the 'Exception Throwing' design-guidelines page, but I fetched that page and it does not contain this sentence — it says '\u2764 AVOID explicitly throwing exceptions from finally blocks. Implicitly thrown exceptions resulting from calling methods that throw are acceptable.' The exact phrase \"Don't raise exceptions in finally clauses\" is instead a section heading on the already-cited 'Best practices for exceptions' page. This is a citation attached to a sentence its named page does not support, which the editorial brief calls out by name as a pilot-round finding.",
+      "fixLooksLike": "Either (a) quote the guidance actually on the Exception Throwing page ('avoid explicitly throwing exceptions from finally blocks') and keep that citation, or (b) keep the current quoted wording and re-point the citation to 'Best practices for exceptions', where it verbatim-matches a heading.",
+      "owner": "writer"
+    },
+    {
+      "severity": "major",
+      "location": "Line 724, section \"Exception or return value: which one reports this failure?\": '...is explicit that \"the following practice is important: if the member fails for any reason other than the well-defined try, the member must still throw a corresponding exception,\" and that a library should \"provide an exception-throwing member for each member using the Try-Parse Pattern\"'",
+      "problem": "The clause 'the following practice is important:' is presented inside quotation marks as if verbatim from the cited 'Exceptions and Performance' page, but that page actually says 'When using this pattern, it is important to define the try functionality in strict terms.' The rest of the first quoted sentence and the second quoted phrase ('provide an exception-throwing member...') do verbatim-match the page, so this is a partial fabrication grafted onto a real quote rather than a wholesale invention, but it still puts words in the source's mouth that the source didn't say.",
+      "fixLooksLike": "Quote only the sentence that is actually on the page ('If the member fails for any reason other than the well-defined try, the member must still throw a corresponding exception.') and move 'the following practice is important' outside the quotation marks as your own framing, or drop it.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Line 240, section \"Does `throw ex;` really throw away the stack trace?\": 'There is no runtime difference between that and writing `throw new InvalidOperationException(ex.Message)`; the object is the same reference either way, but its `StackTrace` property has been overwritten.'",
+      "problem": "This reads as factually backwards: `throw new InvalidOperationException(ex.Message)` constructs a brand-new exception instance, which is a different object reference from the original `ex` (and drops `InnerException`, `Data`, and the runtime exception type if `ex` wasn't already an `InvalidOperationException`). Only `throw ex;` keeps the same reference. As written, 'the object is the same reference either way' asserts something untrue of the comparison being drawn, which a sharp reader (this article's stated audience) will catch.",
+      "fixLooksLike": "Clarify what's actually being claimed as equivalent — e.g. 'the caller-visible effect is the same: a trace that appears to start at this line' — and state plainly that the two differ in object identity, InnerException and Data, even though both erase the original frames.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "The article's four `::::exercise[...]` blocks (lines 246, 366, 561, 791): Predict it \u2192 Find the bug \u2192 Extend it \u2192 Measure it",
+      "problem": "This is the exact same count, order and label set as `async-await.md`'s four exercises (Predict it \u2192 Find the bug \u2192 Extend it \u2192 Measure it), and it's the third sibling article in `csharp-dotnet/` (with async-await and garbage-collection) to open its exercise run with a 'Predict it' label. The editorial brief's pilot-round lessons explicitly warn against this: 'vary the first exercise's form' — three of six published articles in this pillar currently don't.",
+      "fixLooksLike": "Reorder so the sequence doesn't mirror async-await.md's 1:1 (e.g. lead with the 'Find the bug' exercise on the mixed-rethrow chain instead of 'Predict it'), or reword the opening label so it isn't the third 'Predict it' opener in the pillar.",
+      "owner": "writer"
+    }
+  ],
+  "runCodePass": true,
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-125-exceptions\\docs\\reviews\\csharp-dotnet\\exceptions.round-1.adsense.json"
+}

@@ -1,0 +1,76 @@
+{
+  "article": "databases/sql-injection-and-parameters",
+  "route": "/databases/sql-injection-and-parameters/",
+  "round": 2,
+  "role": "design",
+  "score": 9.3,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/sql/relational-databases/security/sql-injection",
+    "https://www.stackhawk.com/blog/net-sql-injection-guide-examples-and-prevention/",
+    "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+  ],
+  "justification": "Mechanical gate is clean: Lighthouse 100/100/100/100, 0 console errors, 0 broken internal links, 0px mobile overflow (gate.json, checked 2026-09-24T20:44:24Z, run fresh this round). I opened every desktop-light and mobile-dark screenshot (fold + all 11 / all 16 parts respectively) plus the fold and two body parts each of desktop-dark (part04, part08) and mobile-light (part06, part12). Heading hierarchy (6 h2s, no h3s, matching the 6 sections) is clean and consistent with sibling database articles. Code blocks render correctly in both themes with working copy buttons and distinct dark output panels; the collapsed <details> 'Show solution' pattern is used for all three exercises in both themes, styled as a green-accented callout, and never spoils an answer above the fold. Figure 1 (concatenation vs. bound parameter) is the one diagram the CONTENT_PLAN row calls for; it has a real title/desc, red/bad vs green/good boxes that stay correctly colored and legible at 390px in mobile-dark-part07 and mobile-light-part12, and a caption that states what to notice. I re-fetched two of the pages that currently rank for the target query as fresh comparisons this round: Microsoft's own SQL Server injection guide (a dense text-and-table wall, static non-runnable C#/SQL snippets, no dark mode, no diagrams beyond two small reference tables) and StackHawk's .NET SQL injection guide (a light-only marketing page with static, non-executable snippets and no interactive elements at all). Neither comes close to this article's runnable code + verified output panels + working dark theme + collapsible exercises + custom diagram, which is what a 9+ requires rather than an assumed pass. I then opened all three round-1 reviews. The two round-1 design issues (mobile code-block horizontal scroll on long ADO.NET lines; byline rendering as the site name rather than a person) are both explicitly scoped to the integrator/owner, not the writer, and both are unchanged and still visible this round (confirmed directly in the mobile-dark and mobile-light screenshots opened above) -- carried forward rather than double-counted as new findings. The round-1 technical and adsense fixes (CWE-89 ordering claim, missing batching citation, the trimmed Microsoft SQL Server quote) were all textual/citation changes with no visual side effects, and none introduced a new design regression: word count, section count, and screenshot part counts are essentially unchanged from round 1.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "Every C# code block, mobile viewport (e.g. mobile-dark-part02, mobile-light-part06)",
+      "problem": "Almost every run block still has lines well past the ~40-character width visible at 390px before horizontal scrolling kicks in (e.g. the CREATE TABLE / INSERT concatenation lines), so a mobile reader scrolls sideways inside nearly every snippet on the page. Unchanged from round 1.",
+      "fixLooksLike": "Not a per-article fix: this is the shell's code-block behavior applied to genuinely long ADO.NET call chains. If it recurs across the pillar's SQL/ADO.NET articles, the integrator could consider a slightly smaller mobile code font-size step, or the writer could break a few of the longest concatenation lines (e.g. the CREATE TABLE strings) earlier so the operative keyword is visible without scrolling.",
+      "owner": "integrator"
+    },
+    {
+      "severity": "minor",
+      "location": "Front matter byline, rendered in the page header ('By Computer Science Guide') on every screenshot",
+      "problem": "The byline still renders as the site name rather than a person, on every article checked so far in this pillar; on this specific security-focused article a named, credentialed byline would read as slightly more trustworthy to a reader evaluating whether to trust the exploit code. Unchanged from round 1.",
+      "fixLooksLike": "No change needed for this article alone (this is the site-wide author-display pattern, and a real byline is an owner-level NEEDS_MARKUS decision, not something this article should invent). Flagging only in case the owner wants a consistent policy across the security-adjacent articles.",
+      "owner": "integrator"
+    }
+  ],
+  "screenshotsOpened": [
+    "desktop-light-fold.png",
+    "desktop-light-part01.png",
+    "desktop-light-part02.png",
+    "desktop-light-part03.png",
+    "desktop-light-part04.png",
+    "desktop-light-part05.png",
+    "desktop-light-part06.png",
+    "desktop-light-part07.png",
+    "desktop-light-part08.png",
+    "desktop-light-part09.png",
+    "desktop-light-part10.png",
+    "desktop-light-part11.png",
+    "mobile-dark-fold.png",
+    "mobile-dark-part01.png",
+    "mobile-dark-part02.png",
+    "mobile-dark-part03.png",
+    "mobile-dark-part04.png",
+    "mobile-dark-part05.png",
+    "mobile-dark-part06.png",
+    "mobile-dark-part07.png",
+    "mobile-dark-part08.png",
+    "mobile-dark-part09.png",
+    "mobile-dark-part10.png",
+    "mobile-dark-part11.png",
+    "mobile-dark-part12.png",
+    "mobile-dark-part13.png",
+    "mobile-dark-part14.png",
+    "mobile-dark-part15.png",
+    "mobile-dark-part16.png",
+    "desktop-dark-fold.png",
+    "desktop-dark-part04.png",
+    "desktop-dark-part08.png",
+    "mobile-light-fold.png",
+    "mobile-light-part06.png",
+    "mobile-light-part12.png"
+  ],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "runCodePass": true,
+  "reviewFileWritten": "C:\\Users\\marko\\AppData\\Local\\Temp\\csg-worktrees\\issue-128-sql-injection-and-parameters\\docs\\reviews\\databases\\sql-injection-and-parameters.round-2.design.json"
+}
