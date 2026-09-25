@@ -1,4 +1,28 @@
+# Search engines and AI search/answer engines that send readers here: allowed.
 User-agent: *
 Allow: /
+
+# AI crawlers that only collect training data and send no visitors: blocked.
+# Blocking Google-Extended does not affect Google Search or ranking (Google's crawler documentation).
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: meta-externalagent
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
 
 Sitemap: https://www.computerscienceguide.com/sitemap.xml

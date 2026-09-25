@@ -5,11 +5,11 @@ export const STATIC_PAGES = {
   '/start-here/': '2026-09-18',
   '/glossary/': '2026-09-18',
   '/search/': '2026-09-18',
-  '/about/': '2026-09-18',
+  '/about/': '2026-09-24',
   '/contact/': '2026-09-18',
-  '/privacy/': '2026-09-18',
-  '/terms/': '2026-09-18',
-  '/editorial-policy/': '2026-09-18',
+  '/privacy/': '2026-09-24',
+  '/terms/': '2026-09-24',
+  '/editorial-policy/': '2026-09-24',
   '/corrections/': '2026-09-18',
 } as const;
 

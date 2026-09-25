@@ -30,6 +30,10 @@ import lighthouse from 'lighthouse';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outRoot = path.join(root, '.verify');
+// Google's ad and analytics hosts. Stubbed in the screenshot passes and blocked in Lighthouse, so console errors
+// and scores reflect this site's own code and the checks run the same offline.
+const THIRD_PARTY = /googletagmanager|googlesyndication|google-analytics|doubleclick|adtrafficquality|fundingchoicesmessages/;
+const THIRD_PARTY_PATTERNS = ['*googletagmanager.com*', '*googlesyndication.com*', '*google-analytics.com*', '*doubleclick.net*', '*adtrafficquality.google*', '*fundingchoicesmessages.google.com*'];
 
 const args = process.argv.slice(2);
 const flags = new Set(args.filter((a) => a.startsWith('--')));
@@ -221,7 +225,8 @@ async function main() {
         await page.evaluateOnNewDocument((t) => { try { localStorage.setItem('theme', t); } catch {} }, theme);
         // Third-party analytics/ads are blocked here so console logs reflect our own code only.
         await page.setRequestInterception(true);
-        page.on('request', (req) => (/googletagmanager|googlesyndication|google-analytics|doubleclick/.test(req.url()) ? req.abort() : req.continue()));
+        // Answered with an empty script rather than aborted, so the blocking itself does not log console errors.
+        page.on('request', (req) => (THIRD_PARTY.test(req.url()) ? req.respond({ status: 200, contentType: 'application/javascript', headers: { 'Access-Control-Allow-Origin': '*' }, body: '' }) : req.continue()));
         page.on('console', (m) => { if (['error', 'warning'].includes(m.type())) consoleLog.push({ device, theme, type: m.type(), text: m.text() }); });
         page.on('pageerror', (e) => consoleLog.push({ device, theme, type: 'pageerror', text: String(e) }));
         page.on('requestfailed', (req) => { if (req.url().startsWith(origin)) consoleLog.push({ device, theme, type: 'requestfailed', text: req.url() }); });
@@ -254,7 +259,10 @@ async function main() {
     if (flags.has('--external')) report.externalBroken = await checkExternal(report.external);
 
     if (!flags.has('--no-lighthouse')) {
-      const lh = await lighthouse(origin + route, { port: debugPort, output: 'json', logLevel: 'error', onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'] });
+      // Lighthouse scores the site's own code: Google's ad and analytics hosts are blocked here too. With AdSense live,
+      // production best-practices is lower (third-party cookies, unused ad JavaScript, no back/forward cache); that is
+      // the known cost of ads, not a regression in the site.
+      const lh = await lighthouse(origin + route, { port: debugPort, output: 'json', logLevel: 'error', onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'], blockedUrlPatterns: THIRD_PARTY_PATTERNS });
       const cats = lh.lhr.categories;
       report.lighthouse = Object.fromEntries(Object.entries(cats).map(([k, v]) => [k, Math.round((v.score ?? 0) * 100)]));
       const failing = Object.values(lh.lhr.audits)
