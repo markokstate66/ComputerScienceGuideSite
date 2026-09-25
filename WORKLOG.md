@@ -2,6 +2,12 @@
 
 Newest first. Facts only: what was run, what it showed.
 
+## 2026-09-24 — Wave 3 integration shipped (#13 → #140)
+
+- 8 Sonnet subagents: 5 wired docs/crosslinks requests by pillar pair (44 articles, 105 lines; front matter and code blocks verified byte-identical), 1 wrote hub intros + readingNotes + blurbs, 1 wrote learning paths + 22 glossary terms, 1 fact-checked the new copy (150 statements checked, 69 corrected after an orchestrator screenshot spot-check found false cross-article claims). Orchestrator fixed two stale "future article"/"not reached yet" phrases and two over-strong added sentences.
+- Verified: build 90 pages; check-article 67/67 (0 errors); click-depth max 2 over 87 sitemap pages; verify-page --all 90/90; after the fact-check, /, /topics/, /start-here/, /glossary/ and all 10 hubs re-verified at Lighthouse 100/100/100/100. run-code --all 67/68: algorithms/recursion failed only because a bash block printed "Compiler server returned unexpected response: RejectedBuildResponse"; the machine had about 774 leftover dotnet processes (about 29 GB) from the runs of the day. Not killed (owner decision).
+- Shipped as 65c0854; #13 closed by hand ("Closes #" does not fire on a non-default base). Open for the owner: test-driven-development says "five laps" but has four Lap headings plus a refactor section; optional /guides/interview-prep redirect retarget (risk:high).
+
 ## 2026-09-24 — Shipped all 17 wave-B article PRs
 
 - Shipped #139 (AdSense loader, consent mode, privacy/terms/about/editorial text, publication byline, robots, SEO) as c8351bb at the owner's /ship after merging the latest `adsense-rebuild`: build green (90 pages); verify-page PASS on /testing/code-coverage/ (99/100/100/100), /databases/sql-injection-and-parameters/ and /privacy/ (100/100/100/100), 0 console errors; built HTML carries the ca-pub-6676281664229738 loader and an Organization author. Real ad serving, the consent message and production Lighthouse are only verifiable after the owner deploys.

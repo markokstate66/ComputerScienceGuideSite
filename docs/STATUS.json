@@ -70,7 +70,6 @@
       ],
       "openIssues": [
         "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/",
         "hero subtitle still breaks math fragment mid-line at desktop width (integrator, open since round 1)"
       ],
       "history": [
@@ -172,8 +171,7 @@
         100
       ],
       "openIssues": [
-        "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/"
+        "byline NEEDS_MARKUS placeholder (owner input)"
       ],
       "history": [
         {
@@ -309,9 +307,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -626,9 +622,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -679,9 +673,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -723,9 +715,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -784,8 +774,7 @@
         100
       ],
       "openIssues": [
-        "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/"
+        "byline NEEDS_MARKUS placeholder (owner input)"
       ],
       "history": [
         {
@@ -1010,9 +999,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -1063,9 +1050,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -1110,9 +1095,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -1164,7 +1147,6 @@
       ],
       "openIssues": [
         "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/",
         "level: beginner front matter doesn't fully match the CoreCLR-internals depth in the back half (mitigated by inline definitions and a skip-ahead signpost)"
       ],
       "history": [
@@ -1386,9 +1368,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -1441,9 +1421,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -1492,7 +1470,6 @@
       ],
       "openIssues": [
         "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/",
         "an exercise ('Find the lost update') prints its output before the collapsed solution, unlike the article's other three exercises"
       ],
       "history": [
@@ -1711,9 +1688,7 @@
       },
       "codePass": null,
       "lighthouse": null,
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -1771,9 +1746,7 @@
         100,
         100
       ],
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -1833,9 +1806,7 @@
         100,
         100
       ],
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -1890,7 +1861,6 @@
       ],
       "openIssues": [
         "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/",
         "two SQL error-message output panels fade past ~40 columns on phone (exact-match output, can't shorten)"
       ],
       "history": [
@@ -1938,8 +1908,7 @@
         100
       ],
       "openIssues": [
-        "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/"
+        "byline NEEDS_MARKUS placeholder (owner input)"
       ],
       "history": [
         {
@@ -2122,9 +2091,7 @@
         100,
         100
       ],
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -2173,9 +2140,7 @@
         100,
         100
       ],
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -2237,7 +2202,6 @@
       ],
       "openIssues": [
         "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/",
         "networking glossary terms (DNS, TCP, TLS, RTT, port, packet) requested since round 1, still unfilled"
       ],
       "history": [
@@ -2508,9 +2472,7 @@
         100,
         100
       ],
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -2825,7 +2787,6 @@
         100
       ],
       "openIssues": [
-        "wave-3 cross-links",
         "adsense major: Non-obvious factual claim about hardware prefetcher behavior has no inline citation link (unlike every other Drepper reference in the piece), and its vague back"
       ],
       "history": [
@@ -2888,8 +2849,7 @@
         100
       ],
       "openIssues": [
-        "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/"
+        "byline NEEDS_MARKUS placeholder (owner input)"
       ],
       "history": [
         {
@@ -2945,8 +2905,7 @@
         100
       ],
       "openIssues": [
-        "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/"
+        "byline NEEDS_MARKUS placeholder (owner input)"
       ],
       "history": [
         {
@@ -3177,8 +3136,7 @@
         100
       ],
       "openIssues": [
-        "byline NEEDS_MARKUS placeholder (owner input)",
-        "wave-3 cross-links in docs/crosslinks/"
+        "byline NEEDS_MARKUS placeholder (owner input)"
       ],
       "history": [
         {
@@ -3348,9 +3306,7 @@
         100,
         100
       ],
-      "openIssues": [
-        "wave-3 cross-links"
-      ],
+      "openIssues": [],
       "history": [
         {
           "round": 1,
@@ -3422,12 +3378,11 @@
       "files": [
         "src/content/glossary/"
       ],
-      "state": "exists",
+      "state": "done",
       "wave": 1,
       "score": null,
-      "openIssues": [
-        "add terms requested in docs/INTEGRATOR_REQUESTS.md (2026-09-24 wave-B fan-out) plus ARTICLES_PLAN §5"
-      ]
+      "openIssues": [],
+      "shipped": "#140 65c0854 2026-09-24"
     },
     {
       "id": "C-TMPL",
@@ -3484,13 +3439,12 @@
       "files": [
         "docs/crosslinks/ (requests)"
       ],
-      "state": "pending",
+      "state": "done",
       "wave": 3,
       "score": null,
       "issue": 13,
-      "openIssues": [
-        "apply crosslink requests incl. soft links between the 17; needs owner approval (touches published articles)"
-      ]
+      "openIssues": [],
+      "shipped": "#140 65c0854 2026-09-24"
     },
     {
       "id": "C-NAV",
@@ -3500,11 +3454,12 @@
         "src/pages/",
         "src/content/pillars/"
       ],
-      "state": "pending",
+      "state": "done",
       "wave": 3,
       "score": null,
       "issue": 13,
-      "openIssues": []
+      "openIssues": [],
+      "shipped": "#140 65c0854 2026-09-24"
     },
     {
       "id": "C-SEO",
@@ -3557,6 +3512,10 @@
     {
       "article": "(tooling)",
       "text": "dotnet-coverage was installed as a global .NET tool on the owner machine by the code-coverage writer (needed to produce real coverage reports)"
+    },
+    {
+      "article": "testing/test-driven-development",
+      "text": "says five red-green-refactor laps (description, line 40) but has four Lap headings plus a refactor section; owner to decide"
     }
   ]
 }
