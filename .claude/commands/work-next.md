@@ -38,7 +38,7 @@ Requested issue (optional): **$ARGUMENTS**
    - **Owner-only / external work** (facts only the owner has, AdSense or Azure portal, a production deploy) → step 5b.
 
 5-article. **Run exactly one gauntlet round** as `docs/ARTICLE_GAUNTLET.md` describes: branch `issue-<N>-<slug>` from `adsense-rebuild` (or reuse it), writer pass if due, three critics in parallel as separate subagents, then your own **serial** `run-code` and `verify-page --drafts` run. Commit the article, crosslinks and review files with `git add <specific files>` (never `-A`), push, and comment the round's real scores on the issue.
-   - Passed → flip `draft: false`, open the PR with `gh pr create --base adsense-rebuild --title "<article title>" --body "Closes #<N> ..."`, then `gh issue edit <N> --add-label review --remove-label in-progress`.
+   - Passed → keep `draft: true` (the owner's `/ship` flips it; docs/ARTICLES_PLAN.md O-1), set `published`/`updated` to today, open the PR with `gh pr create --base adsense-rebuild --title "<article title>" --body "Closes #<N> ..."`, then `gh issue edit <N> --add-label review --remove-label in-progress`.
    - Not passed, rounds remain → open/update a **draft** PR (`--draft`), then `gh issue edit <N> --add-label todo --remove-label in-progress` so the next run takes the next round.
    - Failed round 4 → cut it as the gauntlet doc describes and close the issue as not planned.
 
