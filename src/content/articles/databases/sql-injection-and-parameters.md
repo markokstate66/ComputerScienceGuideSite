@@ -46,7 +46,7 @@ sources:
     url: "https://www.sqlite.org/datatype3.html"
     publisher: "SQLite"
     accessed: 2026-09-24
-draft: true
+draft: false
 ---
 
 A login endpoint checks a username and password against a database table by building the `WHERE` clause with string concatenation. It passes every test a developer runs by hand: real accounts log in, mistyped passwords are rejected. Then someone submits `admin' -- ` as the username and any text at all as the password, and gets back an administrator's row with no working password in sight. Nothing about the check changed. Only what one of the two strings contained did.
