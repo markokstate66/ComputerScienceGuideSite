@@ -1,0 +1,42 @@
+{
+  "article": "src/content/articles/complexity/p-vs-np.md",
+  "route": "/complexity/p-vs-np/",
+  "round": 2,
+  "role": "design",
+  "score": 9.2,
+  "comparedAgainst": [
+    "https://en.wikipedia.org/wiki/P_versus_NP_problem (Wikipedia, P versus NP problem; same comparison basis as round 1: 22 numbered sections, two Euler diagrams plus one empirical knapsack-timing graph, no runnable code, no exercises, moves from an informal Sudoku-style example to formal Turing-machine definitions)",
+    "General knowledge of the genre (GeeksforGeeks/tutorial-style P vs NP explainers: text-only class definitions, little to no diagram, no runnable/verified code, no exercises) used only as background, not cited as a source read this round"
+  ],
+  "justification": "Re-ran node tools/verify-page.mjs --drafts /complexity/p-vs-np/ myself from PowerShell, serially, with Lighthouse enabled, nothing else running concurrently: PASS, words=3850, code=17, fig=2, Lighthouse 100/100/100/100, 0 console errors, 0 console warnings, 0 broken links (30 internal + 15 external, all resolved), mobileOverflowPx=0, placeholders=[]. Performance moved from 96 (round 1) to 100 (round 2) — an improvement, not a regression; lighthouse.json's only non-perfect entries are bf-cache and network-dependency-tree-insight, the same shell-level (framework/hydration) characteristics flagged as out-of-scope in round 1, unchanged by this round's article-only edit. Both round-1 mobile-clipping fixes are confirmed working by direct visual inspection at 390px, light and dark: (1) in the subset-sum-verifier block (mobile-light-part03/04.png, mobile-dark-part03.png), the `correctPick`/`wrongPick` boolean arrays are now split across three lines each (`bool[] correctPick =` / `[true, false, false, false,` / ` false, false, true, true];`) with the explanatory comment moved to its own line above (`// candidate A: 8 + 21 + 4`) — every boolean value and both comments are fully visible with no right-edge fade/clipping, so a phone reader can see why candidate A is valid and candidate B is not without side-scrolling; (2) in the subset-sum-dp-scaling block (mobile-light-part08.png, mobile-dark-part08.png), the `targets` array is now wrapped onto two lines of three values each (`[50_000, 100_000, 200_000,` / ` 400_000, 800_000, 1_600_000];`) and all six values are fully visible, matching the values already shown a few lines later in the OUTPUT and TEXT blocks. Nothing else regressed: I re-opened both diagrams at 390px and desktop, light and dark — Figure 1 (reduction) and Figure 2 (Venn/Euler diagram) render identically to round 1's confirmed-fixed state (mobile-light/dark-part12.png: the halting-problem dot still sits clearly above the caption text in both themes, no overlap), the `<figure>` markup hygiene and theme-aware classes are unchanged, structure is unchanged (same 11 h2 sections, shape Q, no boilerplate headings, opening paragraph unchanged), all four exercise forms still correctly nested and none gives away its answer under the question, the four other timing code blocks (subset-sum-brute, subset-sum-dp scaling table already covered, plus the witness/buggy-verifier/fixed-verifier trio) still follow the wildcard-output-then-real-run-text pattern with real numbers inside 40 columns, and the sources/footer/corrections/keep-reading rail at the end of the page (mobile-light/dark-part16.png) renders cleanly in both themes with no placeholder text. The word count rose from 3764 to 3850 (86 words), consistent with moving two comments onto their own lines rather than adding new prose. This is a clean, verified fix of both round-1 nits with a measured Lighthouse improvement and no new issues found anywhere else on the page — above an 8.5-equal-to-best-existing-result bar and clearly still ahead of a text-only, diagram-light, non-runnable reference page like Wikipedia's or a typical tutorial-site explainer on every design-rubric axis (code readability at phone width, diagram legibility and theme-correctness, structure/flow, rhythm of text vs. code vs. figures).",
+  "issues": [],
+  "lighthouse": {
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "note": "Measured with the full serial run (node tools/verify-page.mjs --drafts /complexity/p-vs-np/ from PowerShell), nothing else running concurrently. Up from round 1's 96/100/100/100 (performance). lighthouse.json's only non-1.0 audits are bf-cache (score 0, 'Page prevented back/forward cache restoration') and network-dependency-tree-insight (score 0) — the same shell-level characteristics round 1 flagged as not article content; neither pulls performance below 100 in the category rollup this run."
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "otherMeasured": {
+    "consoleWarnings": 0,
+    "mobileOverflowPx": 0,
+    "words": 3850,
+    "codeBlocks": 17,
+    "figures": 2,
+    "internalLinks": 30,
+    "externalLinks": 15,
+    "verifyPagePass": true,
+    "verifyPageFailures": [],
+    "round1FixesConfirmed": {
+      "subsetSumVerifierBooleanArrays": "fixed — correctPick/wrongPick each split across 3 lines (<=31 cols per continuation line), comments moved above the declaration; every boolean value and both comments fully visible at 390px, no right-edge clipping, confirmed in mobile-light-part03/04.png and mobile-dark-part03.png",
+      "subsetSumDpScalingTargetsArray": "fixed — targets array wrapped onto 2 lines of 3 values each (<=34 cols per line); all six target values (50_000 through 1_600_000) fully visible at 390px, confirmed in mobile-light-part08.png and mobile-dark-part08.png"
+    },
+    "round1DiagramFixesStillHolding": {
+      "haltingProblemDotVsCaption": "still fixed — dot sits clearly above the 'halting problem' caption text with visible gap, both themes, confirmed in mobile-light-part12.png and mobile-dark-part12.png",
+      "reductionArrowsVsAnnotationText": "unchanged from round 1, no regression"
+    },
+    "screenshotsRead": "desktop-light fold; mobile-light parts 03, 04, 08, 09, 10, 11, 12, 16, 17; mobile-dark parts 03, 04, 08, 11, 12, 16"
+  }
+}

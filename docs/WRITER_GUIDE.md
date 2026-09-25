@@ -295,3 +295,19 @@ node tools/verify-page.mjs --external /<pillar>/<slug>/        (also checks exte
 Expected for now: every article page fails the placeholder check because the byline shows `NEEDS_MARKUS(#1 ...)` until the owner supplies the author name. That single failure is accepted; nothing else is.
 
 `npm run build` must stay green. A schema error in one article breaks the build for everyone, so build before you hand off.
+
+### The one-command gate
+
+```text
+node tools/check-article.mjs <pillar>/<slug>     static checks, about a second, no build
+node tools/gate.mjs <pillar>/<slug>              check-article + run-code + verify-page --drafts, one evidence file
+node tools/gate.mjs <pillar>/<slug> --no-lighthouse     faster while you are still writing
+```
+
+`check-article` reports **errors** (a written rule is broken: front-matter limits, unknown keys, fewer than 2 sources, an `#` H1, skipped heading levels, boilerplate headings such as "Conclusion", filler phrases from the editorial brief, an `<svg>` without `role="img"`/`<title>`/`<desc>`, images without alt text, glossary links to terms that do not exist, internal links to planned-but-unpublished or non-existent pages, `csharp`/`sql`/`bash` fences that are neither `run` nor `snippet`) and **warnings** for critics to weigh (a source never linked in the body, British spellings, doubled words, code lines over 72 characters, total length outside the 4,000–7,000-word guide band, `draft: false` before `/ship`). It also prints a Flesch reading-ease score, which is reported only; technical prose scores low by nature.
+
+`gate` writes `.verify/<pillar>__<slug>/gate.json` with the git commit, every result and the screenshot list, and exits 0 only when all three tools pass (the `NEEDS_MARKUS` byline placeholder is the one accepted failure). Its browser pass takes a machine-wide lock, so when several agents gate at once they queue rather than skewing each other's Lighthouse numbers. A passing gate is not a passing article: critics still score it, and someone still has to open the screenshots.
+
+### Parallel work in worktrees
+
+`node tools/worktree.mjs add <branch> [--from adsense-rebuild]` prints the path of a worktree under the OS temp folder, with `node_modules` junctioned to the main checkout. Remove it **only** with `node tools/worktree.mjs remove <branch>`: a recursive delete can follow the junction and empty the main checkout's `node_modules`, which has happened in this project.
