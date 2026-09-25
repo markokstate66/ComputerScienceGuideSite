@@ -34,7 +34,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/dotnet/api/system.runtime.exceptionservices.exceptiondispatchinfo"
     publisher: "Microsoft Learn"
     accessed: 2026-09-24
-draft: true
+draft: false
 ---
 
 A stack trace that points at the wrong line has usually been edited, not lied to. Something upstream re-threw the exception, or caught it and built a new one, and the frames that would have shown where the failure really started are gone. None of this is mysterious once you know which statements throw away information and which ones keep it. This page works through the handful of C# constructs that decide what a caught exception still remembers by the time a human reads it: `throw` versus `throw ex`, exception filters, `ExceptionDispatchInfo`, and `finally`/`using`. It ends by measuring what a `throw` actually costs on this machine, because "exceptions are slow" is usually stated as folklore rather than a number.
