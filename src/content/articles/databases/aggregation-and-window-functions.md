@@ -50,7 +50,7 @@ sources:
     url: "https://learn.microsoft.com/en-us/sql/t-sql/queries/select-group-by-transact-sql"
     publisher: "Microsoft Learn"
     accessed: 2026-09-24
-draft: true
+draft: false
 ---
 
 The `loan` table below logs eleven checkouts from a small library. Two questions about it sound almost the same but call for different SQL. "How many loans did each member make, and what do they owe in late fees?" collapses those eleven rows down to five, one per member. "What did each member owe running after every individual loan?" needs all eleven rows, in order, each carrying its own number. `GROUP BY` answers the first question; a window function answers the second. Reach for the wrong one and the query still runs, but it hands back the wrong shape of answer, or a number that only looks right.
