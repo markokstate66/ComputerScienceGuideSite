@@ -1,0 +1,4 @@
+term: "Adjacency list"
+definition: "A graph representation that stores, for each vertex, the list of vertices it connects to directly (each paired with a weight if the graph is weighted). It uses memory proportional to the number of vertices and edges, which makes it the usual choice for a sparse graph, at the cost of a linear scan to check whether two particular vertices are connected."
+aliases: []
+seeAlso: ["data-structures/graphs-representation"]

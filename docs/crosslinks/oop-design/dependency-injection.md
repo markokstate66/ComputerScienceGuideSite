@@ -2,7 +2,7 @@
 
 One line each: anchor text | target route | where in the article. `/oop-design/factory-builder-singleton/` is planned in `CONTENT_PLAN.md` §7 row 6 and was unpublished (being written concurrently this round) when this article was written, so the body does not link it yet. The sentence reads correctly with or without the link.
 
-- "A companion article on creational patterns" | /oop-design/factory-builder-singleton/ | "Lifetimes: transient, scoped, and singleton, precisely" section, the paragraph right after the three lifetime definitions, contrasting the container's Singleton lifetime with the classic Singleton design pattern ("This is a different idea from the classic Singleton design pattern... A companion article on creational patterns covers that version and why DI lifetimes have mostly replaced it").
+- "A companion article on creational patterns" | /oop-design/factory-builder-singleton/ | "Lifetimes: transient, scoped, and singleton, precisely" section, the paragraph right after the three lifetime definitions, contrasting the container's Singleton lifetime with the classic Singleton design pattern ("This is a different idea from the classic Singleton design pattern... A companion article on creational patterns covers that version and why DI lifetimes have mostly replaced it"). — Status: wired (that paragraph, "A companion article on creational patterns" linked)
 
 ## Inbound: pending crosslinks other articles already wrote for this one
 

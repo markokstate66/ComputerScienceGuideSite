@@ -65,7 +65,7 @@ sources:
 draft: false
 ---
 
-A node in a linked list is one heap object holding two things: a value, and a reference to the next node. There is no block, no index arithmetic, no fixed size. To reach the fifth element you read the first, then the second, then the third and the fourth, because that reference is the only way from one node to the next. Everything below — what a linked list can do quickly, what it cannot do at all, and the one shape of problem where it beats a `List<T>` outright — follows from that one sentence.
+A node in a linked list is one heap object holding two things: a value, and a reference to the next node. There is no block, no index arithmetic, no fixed size. To reach the fifth element you read the first, then the second, then the third and the fourth, because that reference is the only way from one node to the next. Everything below — what a linked list can do quickly, what it cannot do at all, and the one shape of problem where it beats a [`List<T>`](/data-structures/arrays-and-dynamic-arrays/) outright — follows from that one sentence.
 
 ## Building the simplest version: one node, one pointer forward
 

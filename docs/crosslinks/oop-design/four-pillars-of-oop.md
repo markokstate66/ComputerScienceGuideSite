@@ -2,12 +2,12 @@
 
 One line each: anchor text | target route | where in the article. All targets are planned in CONTENT_PLAN.md section 7 and were unpublished on 2026-09-18, so the body does not link them yet. Each sentence reads correctly with or without the link.
 
-- "favoring object composition" | /oop-design/composition-over-inheritance/ | "What does inheritance cost?", second paragraph (the Gamma et al. sentence). Also a good target for "hold an object of the other class in a private field and call it" under "So when is inheritance the right tool?".
-- "Liskov substitution principle" | /oop-design/solid-principles/ | "An override can break a promise the base class made", last paragraph after the PromoPlan program (the sentence naming the principle and the Liskov and Wing paper).
-- "An interface gives the same substitutability" (or just "interface") | /oop-design/interfaces-vs-abstract-classes/ | "Do you need inheritance to get polymorphism?", first paragraph.
-- "a delegate is a single replaceable method" | /oop-design/strategy-observer-decorator/ | same paragraph; that article treats delegates as lightweight strategy.
-- "a test double counts" | /oop-design/dependency-injection/ | "How is abstraction different from encapsulation?", last paragraph; `Collector(IPaymentGateway gateway)` is constructor injection.
-- "Template Method pattern" | /oop-design/strategy-observer-decorator/ | only if that article ends up mentioning template method; otherwise leave unlinked.
+- "favoring object composition" | /oop-design/composition-over-inheritance/ | "What does inheritance cost?", second paragraph (the Gamma et al. sentence). Also a good target for "hold an object of the other class in a private field and call it" under "So when is inheritance the right tool?". — Status: wired (that paragraph, "favoring object composition" linked; the second candidate skipped, same target already linked once — anti-duplicate rule)
+- "Liskov substitution principle" | /oop-design/solid-principles/ | "An override can break a promise the base class made", last paragraph after the PromoPlan program (the sentence naming the principle and the Liskov and Wing paper). — Status: wired
+- "An interface gives the same substitutability" (or just "interface") | /oop-design/interfaces-vs-abstract-classes/ | "Do you need inheritance to get polymorphism?", first paragraph. — Status: wired
+- "a delegate is a single replaceable method" | /oop-design/strategy-observer-decorator/ | same paragraph; that article treats delegates as lightweight strategy. — Status: wired
+- "a test double counts" | /oop-design/dependency-injection/ | "How is abstraction different from encapsulation?", last paragraph; `Collector(IPaymentGateway gateway)` is constructor injection. — Status: wired
+- "Template Method pattern" | /oop-design/strategy-observer-decorator/ | only if that article ends up mentioning template method; otherwise leave unlinked. — Status: n/a (strategy-observer-decorator does not mention Template Method, per its own crosslinks file; left unlinked as instructed)
 
 ## Boundaries with planned siblings (to avoid near-duplicate coverage)
 

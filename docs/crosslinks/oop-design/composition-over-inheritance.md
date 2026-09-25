@@ -2,8 +2,8 @@
 
 One line each: anchor text | target route | where in the article. Both targets are planned in CONTENT_PLAN.md section 7 and were unpublished on 2026-09-22, so the body does not link them yet. Each sentence reads correctly with or without the link.
 
-- "Strategy pattern" | /oop-design/strategy-observer-decorator/ | "Behaviors as objects the enemy holds, not base classes it extends", the paragraph right after the composed `Enemy` listing (the "Two things worth naming here" paragraph).
-- "dependency injection" | /oop-design/dependency-injection/ | same paragraph, same sentence.
+- "Strategy pattern" | /oop-design/strategy-observer-decorator/ | "Behaviors as objects the enemy holds, not base classes it extends", the paragraph right after the composed `Enemy` listing (the "Two things worth naming here" paragraph). — Status: wired (that paragraph, "Strategy pattern" linked)
+- "dependency injection" | /oop-design/dependency-injection/ | same paragraph, same sentence. — Status: wired (same paragraph, "dependency injection" linked)
 
 ## Boundaries with planned siblings (to avoid near-duplicate coverage)
 

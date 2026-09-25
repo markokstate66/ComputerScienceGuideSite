@@ -2,10 +2,10 @@
 
 One line each: anchor text | target route | where in the article. All targets are planned in CONTENT_PLAN.md section 7 and were unpublished when this round was written (2026-09-22), so the body does not link them yet. Each sentence reads correctly with or without the link.
 
-- "adjacency-list representation" | /data-structures/graphs-representation/ | "What both cost", the sentence introducing "which every algorithm in this article assumes."
-- "adjacency matrix" | /data-structures/graphs-representation/ | "What both cost", the sentence about the O(V^2) bound for a matrix representation.
-- "`Queue<T>`, `Stack<T>` internals" | /data-structures/stacks-and-queues/ | The `:::dotnet` callout in "The one-line swap: `Queue<T>` for a `Stack<T>`" — that article covers the ring-buffer and array-growth internals of both types in depth; this one only cites the documented complexity.
-- "the next article in this pillar" | /algorithms/dijkstra-shortest-path/ | "What both cost", closing sentence about weighted shortest paths.
+- "adjacency-list representation" | /data-structures/graphs-representation/ | "What both cost", the sentence introducing "which every algorithm in this article assumes." — Status: wired (body, "What both cost")
+- "adjacency matrix" | /data-structures/graphs-representation/ | "What both cost", the sentence about the O(V^2) bound for a matrix representation. — Status: dropped (duplicate target — already linked earlier in "What both cost" via "adjacency-list representation"; site policy is first occurrence only)
+- "`Queue<T>`, `Stack<T>` internals" | /data-structures/stacks-and-queues/ | The `:::dotnet` callout in "The one-line swap: `Queue<T>` for a `Stack<T>`" — that article covers the ring-buffer and array-growth internals of both types in depth; this one only cites the documented complexity. — Status: wired (body, `:::dotnet` callout in "The one-line swap"; exact anchor text wasn't present in prose, so added the smallest natural closing clause pointing to the sibling article)
+- "the next article in this pillar" | /algorithms/dijkstra-shortest-path/ | "What both cost", closing sentence about weighted shortest paths. — Status: wired (body, "What both cost", closing sentence)
 
 ## Boundaries with planned siblings
 

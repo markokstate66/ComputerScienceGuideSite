@@ -546,7 +546,7 @@ class ExitGate(
 }
 ```
 
-The three constructor parameters are interfaces, and each real implementation is a problem for a [unit test](/glossary/#unit-test). The real clock gives a different answer on every run. The real ticket store is a database. The real payment terminal moves money. Because `ExitGate` receives them through its constructor instead of creating them, a test can hand it something else. That hand-over point is called a *seam*, and passing dependencies in like this (dependency injection) is the usual way to create one ([*Software Engineering at Google*, chapter 13](https://abseil.io/resources/swe-book/html/ch13.html)).
+The three constructor parameters are interfaces, and each real implementation is a problem for a [unit test](/glossary/#unit-test). The real clock gives a different answer on every run. The real ticket store is a database. The real payment terminal moves money. Because `ExitGate` receives them through its constructor instead of creating them, a test can hand it something else. That hand-over point is called a *seam*, and passing dependencies in like this ([dependency injection](/oop-design/dependency-injection/)) is the usual way to create one ([*Software Engineering at Google*, chapter 13](https://abseil.io/resources/swe-book/html/ch13.html)).
 
 `Tariff.FeeFor` is a pure function: the first 30 minutes are free, then 2.00 per started hour. Nothing about it is awkward, so the tests use the real one. A double is for collaborators that are slow, nondeterministic, unavailable or dangerous, not for every class the code touches.
 
@@ -1251,4 +1251,4 @@ The production store's own test project calls the same `Contract.Run` with a fac
 :::
 ::::
 
-Doubles make a unit test possible, but they also mean the gate has never been tested against a real terminal or a real database. Meszaros makes the same point in his description of the pattern (chapter 23): a test that uses doubles exercises a configuration that production never runs, so at least one test should cover the real assembly. That is the job of an integration test, and it is the one check no double can replace.
+Doubles make a unit test possible, but they also mean the gate has never been tested against a real terminal or a real database. Meszaros makes the same point in his description of the pattern (chapter 23): a test that uses doubles exercises a configuration that production never runs, so at least one test should cover the real assembly. That is the job of an [integration test](/testing/testing-pyramid-and-integration-tests/), and it is the one check no double can replace.

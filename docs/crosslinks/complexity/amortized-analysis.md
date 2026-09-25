@@ -2,12 +2,12 @@
 
 One line each: anchor text | target route | where in the article. All targets are planned in CONTENT_PLAN.md section 7 and were unpublished on 2026-09-18, so the body does not link them yet. Each sentence reads correctly with or without the link.
 
-- "Big-O terms" | /complexity/big-o-notation/ | Opening paragraph, first O(1). Currently links to the glossary entry /glossary/#big-o-notation; switch to the article (it is also the listed prerequisite).
-- "arrays and dynamic arrays" | /data-structures/arrays-and-dynamic-arrays/ | "Watch the capacity move", first paragraph, sentence "Indexing, insertion and removal in arrays and dynamic arrays are a data-structures topic".
-- "best, average and worst cases" | /complexity/best-average-worst-case/ | "Amortized is not average-case", the quicksort paragraph, sentence beginning "How the best, average and worst cases of a single algorithm are defined".
-- "hash table" | /data-structures/hash-tables/ | "Amortized is not average-case", the Dictionary paragraph. Currently links to the glossary entry /glossary/#hash-table; switch to the article.
-- "A stack with `MultiPop(k)`" (or just "stack") | /data-structures/stacks-and-queues/ | "The same argument elsewhere: multipop and a binary counter", second paragraph.
-- "space complexity" | /complexity/space-complexity/ | "Why the array doubles instead of growing by a fixed amount", last paragraph before the exercise ("a trade between time and memory"). Currently links to the glossary entry /glossary/#space-complexity; switch to the article.
+- "Big-O terms" | /complexity/big-o-notation/ | Opening paragraph, first O(1). Currently links to the glossary entry /glossary/#big-o-notation; switch to the article (it is also the listed prerequisite). — Status: wired (opening paragraph, "Big-O terms" now links to /complexity/big-o-notation/)
+- "arrays and dynamic arrays" | /data-structures/arrays-and-dynamic-arrays/ | "Watch the capacity move", first paragraph, sentence "Indexing, insertion and removal in arrays and dynamic arrays are a data-structures topic". — Status: wired (same sentence, "arrays and dynamic arrays" linked)
+- "best, average and worst cases" | /complexity/best-average-worst-case/ | "Amortized is not average-case", the quicksort paragraph, sentence beginning "How the best, average and worst cases of a single algorithm are defined". — Status: wired (same sentence)
+- "hash table" | /data-structures/hash-tables/ | "Amortized is not average-case", the Dictionary paragraph. Currently links to the glossary entry /glossary/#hash-table; switch to the article. — Status: wired (Dictionary paragraph, switched from glossary to article)
+- "A stack with `MultiPop(k)`" (or just "stack") | /data-structures/stacks-and-queues/ | "The same argument elsewhere: multipop and a binary counter", second paragraph. — Status: wired ("A stack" linked in "A stack with `MultiPop(k)`")
+- "space complexity" | /complexity/space-complexity/ | "Why the array doubles instead of growing by a fixed amount", last paragraph before the exercise ("a trade between time and memory"). Currently links to the glossary entry /glossary/#space-complexity; switch to the article. — Status: wired (switched from glossary to article)
 
 ## Boundaries with planned siblings (to avoid near-duplicate coverage)
 

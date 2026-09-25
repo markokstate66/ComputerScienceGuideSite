@@ -49,7 +49,7 @@ Console.WriteLine($"greedy: {string.Join(" + ", picked)} = {used} coins");
 greedy: 5 + 5 + 1 + 1 = 4 coins
 ```
 
-Four coins, but three 4s also add up to 12. "Always take the biggest coin" is not a proof of anything; it is a habit that happens to work for some coin systems and not others, and nothing about this run tells you which one you are in. Finding the true minimum means considering the possibilities, not guessing at one. The recursive definition of "fewest coins for amount *n*" says exactly what those possibilities are: 0 coins if *n* is 0, otherwise the best of trying each coin *c* and paying one coin plus however many the same question needs for *n − c*. That translates into code directly.
+Four coins, but three 4s also add up to 12. ["Always take the biggest coin" is not a proof of anything; it is a habit that happens to work for some coin systems and not others](/algorithms/greedy-algorithms/), and nothing about this run tells you which one you are in. Finding the true minimum means considering the possibilities, not guessing at one. The recursive definition of "fewest coins for amount *n*" says exactly what those possibilities are: 0 coins if *n* is 0, otherwise the best of trying each coin *c* and paying one coin plus however many the same question needs for *n − c*. That translates into code directly.
 
 ```csharp run id=coin-brute
 int[] coins = [1, 4, 5];

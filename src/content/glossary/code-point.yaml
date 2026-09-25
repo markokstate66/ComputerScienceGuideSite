@@ -1,0 +1,4 @@
+term: "Code point"
+definition: "A single Unicode-assigned value, from U+0000 to U+10FFFF, that identifies one character or other unit of text. A code point above U+FFFF needs more than 16 bits, so .NET represents it as a surrogate pair of two char (UTF-16 code unit) values rather than one."
+aliases: []
+seeAlso: ["csharp-dotnet/strings-and-unicode"]

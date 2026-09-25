@@ -65,7 +65,7 @@ sources:
 draft: false
 ---
 
-The article on processes and threads showed, from the outside, that a child process's write to what looked like "the same" array never reached its parent: the parent kept reading its own value, untouched. That article treated the process boundary as a given. This one opens it up: every address a program uses is a fiction the processor maintains on the operating system's behalf, and the machinery behind that fiction is also what a running process's memory numbers actually mean.
+[The article on processes and threads](/operating-systems/processes-and-threads/) showed, from the outside, that a child process's write to what looked like "the same" array never reached its parent: the parent kept reading its own value, untouched. That article treated the process boundary as a given. This one opens it up: every address a program uses is a fiction the processor maintains on the operating system's behalf, and the machinery behind that fiction is also what a running process's memory numbers actually mean.
 
 ## Why does every process act like it owns the whole address space?
 

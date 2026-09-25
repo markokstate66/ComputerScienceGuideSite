@@ -45,7 +45,7 @@ sources:
 draft: false
 ---
 
-Parsing the line `"SKU-1042,3,19.99"` into a SKU, a quantity and a price with `line.Split(',')` costs four allocations before any arithmetic happens: the array `Split` returns, plus one new string for each of the three fields. Every one of those bytes already exists inside the original line. `Span<T>` is how C# lets code read them in place instead of copying them out first, and `Memory<T>` is what makes the same trick survive an `await`.
+Parsing the line `"SKU-1042,3,19.99"` into a SKU, a quantity and a price with `line.Split(',')` costs four allocations before any arithmetic happens: the array `Split` returns, plus one new string for each of the three fields. Every one of those bytes already exists inside the original line. `Span<T>` is how C# lets code read them in place instead of copying them out first, and `Memory<T>` is what makes the same trick survive an `await`. [Strings, Immutability and Unicode in .NET](/csharp-dotnet/strings-and-unicode/) is the shorter first look at the same idea, for a single string slice; this article is the deeper dive, into the `ref struct` rules a span carries and the `Memory<T>` story for code that has to hold one across an `await`.
 
 ## What parsing an order line actually costs
 

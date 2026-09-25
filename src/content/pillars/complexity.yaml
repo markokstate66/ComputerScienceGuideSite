@@ -5,4 +5,19 @@ accent:
   light: "#4338ca"
   dark: "#a5b4fc"
 blurb: >-
-  How to reason about the cost of code before you run it: what Big-O notation measures and what it leaves out, how to derive the running time of loops and recursive functions, amortized and space analysis, and what it means in practice for a problem to be NP-hard. Each claim is checked against operation counts and measurements from real C# programs.
+  How to reason about the cost of code before you run it: counting loop and recursion steps, why List<T>.Add is O(1) amortized, space complexity, best/average/worst case, and what makes a problem NP-hard. Every claim is checked against measurements from real C# programs.
+hubIntro: >-
+  Complexity analysis answers a question every developer eventually needs to answer without a profiler: will this code still be fast when the input is ten times larger? These six articles build that judgment step by step, from counting loop iterations to predicting a recursive function's cost to labeling a problem as provably hard. Start with Big-O notation itself, then how to analyze loops and recursion, since every other pillar on this site states its costs in that language without re-deriving it. Amortized analysis, space complexity and P vs. NP are the harder material, best read once counting steps by eye feels automatic.
+readingNotes:
+  big-o-notation: >-
+    The foundation for every complexity claim on the site: read this before any algorithm or data-structure article, since they all state costs in this notation without re-deriving it.
+  analyzing-loops-and-recursion: >-
+    Turns Big-O from a definition into a procedure you can run on your own code, including the Master Theorem that Algorithms' recursion article points ahead to for Fibonacci's repeated calls.
+  amortized-analysis: >-
+    Answers a question the loop-counting procedure can't: why List<T>.Add is called O(1) when some individual calls clearly copy the whole array.
+  space-complexity: >-
+    Applies the same counting habit from the first two articles to memory instead of time, including the call-stack cost that recursion-heavy algorithms later pay.
+  best-average-worst-case: >-
+    Uses quicksort as a deeper case study than Algorithms' sorting comparison has room for; that article links back here for it, to show a single Big-O label can hide very different behavior depending on the input.
+  p-vs-np: >-
+    The hardest material in the pillar: what to do once none of the earlier techniques can turn a problem's cost into anything better than exponential.

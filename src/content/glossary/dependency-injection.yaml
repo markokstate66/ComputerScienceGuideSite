@@ -1,0 +1,4 @@
+term: "Dependency injection"
+definition: "A technique where an object receives the things it depends on from outside, typically as constructor parameters typed as interfaces, instead of constructing them internally. It lets a composition root decide which concrete implementation to wire up and a test supply a substitute, and a DI container automates that wiring and manages each dependency's lifetime (transient, scoped or singleton)."
+aliases: ["DI"]
+seeAlso: ["oop-design/dependency-injection"]

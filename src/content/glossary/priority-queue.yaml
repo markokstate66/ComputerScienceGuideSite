@@ -1,0 +1,4 @@
+term: "Priority queue"
+definition: "An abstract data type that holds a set of items each tagged with a priority and supports two operations: inserting an item with its priority, and removing the item with the smallest (or largest) priority. A binary heap is the data structure normally used to implement both operations in O(log n)."
+aliases: []
+seeAlso: ["data-structures/heaps-and-priority-queues"]

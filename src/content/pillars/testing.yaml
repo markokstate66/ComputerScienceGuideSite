@@ -6,3 +6,18 @@ accent:
   dark: "#bef264"
 blurb: >-
   How to test code so that the tests are worth having: unit-test structure with xUnit, test doubles, a complete test-driven development example, integration tests, property-based testing, and what a code-coverage number does and does not tell you.
+hubIntro: >-
+  Testing is covered here as a practical skill, not a rulebook: how to write a unit test that actually proves something with xUnit, the five kinds of test double and when a mock is the wrong choice, a complete test-driven development example built lap by lap, where unit tests stop and integration tests start, letting a computer generate edge cases instead of writing them by hand, and what a coverage percentage does and doesn't tell you. Read unit-testing-fundamentals first regardless of background; everything else in the pillar assumes you can already write and run one.
+readingNotes:
+  unit-testing-fundamentals: >-
+    Opens the pillar because Arrange-Act-Assert and a runnable xUnit test are what every later article's examples are built on.
+  test-doubles: >-
+    Follows directly because stubbing out a collaborator only makes sense once you can already write the test around it, which the first article covers.
+  test-driven-development: >-
+    Needs unit testing fundamentals already covered, since each of its red-green-refactor laps writes and runs a real xUnit test, one behavior at a time.
+  testing-pyramid-and-integration-tests: >-
+    Builds on test doubles specifically to ask when mocking a repository is the wrong call and a real SQLite-backed integration test is better.
+  property-based-testing: >-
+    Targets the same example-based unit tests the first article introduced, showing what a generated input finds that seven handwritten ones missed.
+  code-coverage: >-
+    Closes the pillar because judging what a coverage number does and doesn't prove returns to the first article's point: a passing test proves only a narrow, chosen fact.

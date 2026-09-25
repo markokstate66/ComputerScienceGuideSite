@@ -5,4 +5,21 @@ accent:
   light: "#0369a1"
   dark: "#7dd3fc"
 blurb: >-
-  Relational databases from the model up: keys and relationships, joins, indexes and query plans, normalization, transactions and isolation levels, window functions, and SQL injection. Every query is executed against SQLite and shown with its real result, with notes where SQL Server or PostgreSQL behave differently.
+  Relational databases from the model up: keys and relationships, joins, indexes and query plans, normalization, transactions and isolation levels, window functions, and SQL injection. Every query runs against SQLite and shows its real result, with notes on SQL Server and PostgreSQL differences.
+hubIntro: >-
+  Relational databases are covered here from the model up: what a table actually promises, how joins work row by row instead of as Venn diagrams, how an index turns a full scan into a quick seek, why normalization exists and where it can go too far, what a transaction guarantees when a step fails partway through, window functions for reporting queries, and how SQL injection actually happens. Start with the relational model and joins if you're new to SQL; indexes make a query fast, normalization and transactions keep it correct as more tables and more concurrent writers get involved; injection comes last because it assumes you can already read the queries it attacks.
+readingNotes:
+  relational-model-and-keys: >-
+    Opens the pillar with the vocabulary, keys and relationships, that every later article assumes: joins, indexes and normalization all talk in terms of it.
+  sql-joins: >-
+    Follows the model directly because a join is how the relationships from the first article, especially foreign keys, actually get queried back out.
+  indexes: >-
+    Uses the keys from the first article, then builds a 300,000-row table to show in real query plans how an index turns a full scan into a search.
+  normalization: >-
+    Comes after joins because it weighs each decomposition by how many joins a query then needs, and treats what an index does to a join's cost as a separate question.
+  transactions-and-acid: >-
+    Needs only the keys from the first article: a transfer between two rows of one wallet table is enough to show what a transaction guarantees when a step fails.
+  aggregation-and-window-functions: >-
+    Works on one table of library loans, using GROUP BY to collapse rows per member and window functions to compute a value for every row without collapsing them.
+  sql-injection-and-parameters: >-
+    Closes the pillar by exploiting and then fixing a login query, which only assumes you can read the plain SELECT and WHERE queries the earlier articles use.

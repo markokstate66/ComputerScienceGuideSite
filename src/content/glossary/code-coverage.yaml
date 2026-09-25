@@ -1,0 +1,4 @@
+term: "Code coverage"
+definition: "A measurement of how much of a program's source ran during testing, usually expressed as the lines, branches, or methods executed divided by the total. It says a line or branch ran, never that its result was checked or correct, so a high number is not proof of a thorough test suite."
+aliases: []
+seeAlso: ["testing/code-coverage"]

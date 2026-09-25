@@ -1,0 +1,4 @@
+term: "Backtracking"
+definition: "Depth-first search over a state-space tree of partial solutions, where each node is a partial assignment reached by a sequence of choices. At each node the algorithm chooses an option, explores by recursing one level deeper, and then undoes that choice before trying the next option, abandoning a branch as soon as it cannot possibly lead to a valid solution."
+aliases: []
+seeAlso: ["algorithms/backtracking"]

@@ -5,4 +5,19 @@ accent:
   light: "#047857"
   dark: "#6ee7b7"
 blurb: >-
-  What happens between typing a URL and seeing a page: DNS, IP addressing and subnets, TCP and UDP, HTTP, and TLS. Each protocol is explained from its specification and then exercised from C# with sockets, TcpClient and SslStream, so you can watch the bytes instead of memorising a layer diagram.
+  What happens between typing a URL and seeing a page: DNS, IP addressing and subnets, TCP and UDP, HTTP, and TLS. Each protocol is explained from its specification and then exercised from C# with sockets, TcpClient and SslStream, so you can watch the bytes instead of memorizing a layer diagram.
+hubIntro: >-
+  These six articles follow one web request from a typed URL to a rendered page, then go back and open each layer it touched: TCP and UDP's different guarantees, HTTP's methods and status codes, DNS's resolution hierarchy, TLS's handshake, and IP addressing and subnetting underneath all of it. Start with how the internet works, since it is the map the other five articles each fill in one region of. DNS and TLS take apart steps that the opening walkthrough only summarizes; subnetting at the end is the most self-contained and can be read anytime.
+readingNotes:
+  how-the-internet-works: >-
+    The map for the whole pillar: it walks one request through DNS, TCP, TLS and HTTP once. Four later articles each expand one of those steps; subnetting expands the addressing this page only shows in passing.
+  tcp-vs-udp: >-
+    Expands the transport step from the first article, showing exactly what TCP's reliability and ordering promises cost in bytes and round trips.
+  http-explained: >-
+    Builds on TCP from the previous article, since the minimal HTTP server it writes runs directly on TcpListener rather than a framework.
+  dns: >-
+    Returns to the first step of the opening walkthrough for a full treatment of the resolver hierarchy that the introduction only summarized.
+  tls-and-https: >-
+    Expands the third step of the opening walkthrough: the TLS handshake that encrypts a plain TCP connection and proves who is at the other end.
+  ip-addresses-and-subnets: >-
+    Placed last and the most self-contained: it expands the IP addressing the opening walkthrough only shows in passing, into subnets and CIDR prefixes.

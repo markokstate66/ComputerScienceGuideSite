@@ -1,0 +1,4 @@
+term: "Private IP address"
+definition: "An address from one of the three blocks RFC 1918 reserves (10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16) for use inside a single organization's network. These addresses are never assigned to a single global owner and are not routed on the public internet, which is why a device using one needs NAT to reach it."
+aliases: []
+seeAlso: ["networking/ip-addresses-and-subnets"]

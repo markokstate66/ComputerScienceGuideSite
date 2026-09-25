@@ -1,0 +1,4 @@
+term: "Span"
+definition: "A lightweight, type-safe view over a contiguous block of memory (an array, a string's characters, or stack memory), stored as a reference plus a length, that lets code read, or for Span<T> write, that memory in place without copying it out first."
+aliases: ["Span<T>"]
+seeAlso: ["csharp-dotnet/span-and-memory"]

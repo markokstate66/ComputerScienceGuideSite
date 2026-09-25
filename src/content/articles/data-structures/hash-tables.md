@@ -75,7 +75,7 @@ p: 2
 s: 4
 ```
 
-`c - 'a'` maps each of the 26 letters to a distinct slot, so lookup, insert and update are all one array access: O(1) worst case, exactly like indexing an array. Direct addressing breaks the moment the key space stops being small and dense. A table keyed by `int` would need 4 billion slots to hold one entry for `-2147483648`. A table keyed by `string` cannot be indexed by an array at all — `"carol"` is not a number. A [hash function](/glossary/#hash-function) is what bridges the gap: it turns any key into a small integer, so the same one-array-access idea still applies, approximately.
+`c - 'a'` maps each of the 26 letters to a distinct slot, so lookup, insert and update are all one array access: O(1) worst case, [exactly like indexing an array](/data-structures/arrays-and-dynamic-arrays/). Direct addressing breaks the moment the key space stops being small and dense. A table keyed by `int` would need 4 billion slots to hold one entry for `-2147483648`. A table keyed by `string` cannot be indexed by an array at all — `"carol"` is not a number. A [hash function](/glossary/#hash-function) is what bridges the gap: it turns any key into a small integer, so the same one-array-access idea still applies, approximately.
 
 ## Turning a key into an index: hash functions
 
@@ -162,7 +162,7 @@ Both give expected O(1) operations when the table is not too full, but they fail
 
 ### Building `HashMap<K,V>`: real chaining, not pseudocode
 
-`HashMap<TKey,TValue>` below is a complete chained hash table: an array of bucket heads, each a singly linked list of `Node`s. `Set` walks the target bucket looking for an existing key to overwrite before linking a new node at the front; `TryGet` does the same walk without writing. When the table gets more than three-quarters full it doubles and relinks every node — the load-factor section below measures exactly what that buys.
+`HashMap<TKey,TValue>` below is a complete chained hash table: an array of bucket heads, each a singly [linked list](/data-structures/linked-lists/) of `Node`s. `Set` walks the target bucket looking for an existing key to overwrite before linking a new node at the front; `TryGet` does the same walk without writing. When the table gets more than three-quarters full it doubles and relinks every node — the load-factor section below measures exactly what that buys.
 
 ```csharp run id=hashmap
 var ages = new HashMap<string, int>();
@@ -985,5 +985,6 @@ lookup (1,1): True second
 - **Key might otherwise be mutated after insertion:** key on an immutable id, not the mutable object itself.
 - **Keys are attacker-influenced strings:** already covered — `string.GetHashCode()` is randomized per process, and `Dictionary<TKey,TValue>` escalates to it under a collision attack.
 - **Cache-friendliness matters more than deletion:** open addressing keeps everything in one array with no chain pointers at all, at the cost of a trickier `Remove` and a hard ceiling at 100% full.
+- **Keys must be enumerated in order:** a hash table keeps no key order; reach for [`SortedDictionary`/`SortedSet`](/data-structures/binary-search-trees/) instead.
 
 Whichever is picked, the two questions from this article decide correctness before performance ever enters it: does the key type's `GetHashCode` agree with its `Equals`, and can anything mutate that key while it is in the table.

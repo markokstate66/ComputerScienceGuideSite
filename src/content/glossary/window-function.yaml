@@ -1,0 +1,4 @@
+term: "Window function"
+definition: "A SQL function, marked with an OVER clause, that computes a value for each row using a set of related rows (its partition, and optionally a frame) without collapsing those rows into one, unlike an aggregate function used with GROUP BY. Because it is evaluated as part of building the SELECT list, after FROM, WHERE, GROUP BY and HAVING, it cannot appear in a WHERE or HAVING clause."
+aliases: []
+seeAlso: ["databases/aggregation-and-window-functions"]

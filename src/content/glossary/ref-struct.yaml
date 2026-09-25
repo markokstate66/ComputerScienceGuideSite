@@ -1,0 +1,4 @@
+term: "Ref struct"
+definition: "A struct type restricted to the stack: an instance cannot be boxed, stored in a field of a heap object, captured by a lambda, or kept alive across an await or yield boundary. Those restrictions guarantee that any pointer-like data it holds, such as the reference inside a Span<T>, never outlives whatever it points at."
+aliases: []
+seeAlso: ["csharp-dotnet/span-and-memory"]

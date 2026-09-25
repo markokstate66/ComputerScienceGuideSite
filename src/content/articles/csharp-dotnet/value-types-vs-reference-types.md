@@ -301,7 +301,7 @@ The four by-reference modifiers differ only in what each side promises ([Method 
 
 ## Are structs "on the stack"? Measure it
 
-The usual shorthand says value types live on the [call stack](/glossary/#call-stack) and reference types on the managed heap, the memory the [garbage collector](/glossary/#garbage-collection) looks after. Both halves can be tested, because .NET reports heap allocation per thread: [`GC.GetAllocatedBytesForCurrentThread`](https://learn.microsoft.com/en-us/dotnet/api/system.gc.getallocatedbytesforcurrentthread) returns the bytes allocated on the managed heap so far, so the difference around a call is what that call put on the heap. Anything that shows 0 was placed somewhere else (the stack, or CPU registers) or optimized out of existence.
+The usual shorthand says value types live on the [call stack](/glossary/#call-stack) and reference types on the managed heap, the memory the [garbage collector](/csharp-dotnet/garbage-collection/) looks after. Both halves can be tested, because .NET reports heap allocation per thread: [`GC.GetAllocatedBytesForCurrentThread`](https://learn.microsoft.com/en-us/dotnet/api/system.gc.getallocatedbytesforcurrentthread) returns the bytes allocated on the managed heap so far, so the difference around a call is what that call put on the heap. Anything that shows 0 was placed somewhere else (the stack, or CPU registers) or optimized out of existence.
 
 The measurements on this page were taken with .NET 10.0.10 on Windows 11, x64, on a desktop Core i7-11700K. Byte counts depend on the runtime version and on 64-bit pointers; they did not vary between runs here. Three details of the program:
 
@@ -594,7 +594,7 @@ List<int>      4,000,[...] B[...] ms
 List<object>  32,000,[...] B[...] ms
 ```
 
-On this machine the `int` version took about 3 ms and the `object` version about 95 to 100 ms, roughly thirty times slower. The byte counts explain it. `List<int>` allocated one 4 MB array with the integers inline. `List<object>` allocated an 8 MB array of references and then a million boxes of 24 bytes each: 24 MB of tiny objects for 4 MB of data, every one of them work for the garbage collector. Avoiding this is a large part of what generics are for: `List<int>` has an `int[]` inside it, not an `object[]`.
+On this machine the `int` version took about 3 ms and the `object` version about 95 to 100 ms, roughly thirty times slower. The byte counts explain it. `List<int>` allocated one 4 MB array with the integers inline. `List<object>` allocated an 8 MB array of references and then a million boxes of 24 bytes each: 24 MB of tiny objects for 4 MB of data, every one of them work for the garbage collector. Avoiding this is a large part of [what generics are for](/csharp-dotnet/generics/): `List<int>` has an `int[]` inside it, not an `object[]`.
 
 Boxing happens wherever a value meets a location typed as `object`, `System.ValueType`, `System.Enum` or an interface: non-generic collections such as `ArrayList`, a `params object[]` parameter, a struct stored in an interface-typed field, a struct passed to a method that takes an interface. For that last case there is a way out. A generic method with an interface *constraint* accepts the same arguments, but `T` is the struct type itself, so no reference, and no box, is needed:
 

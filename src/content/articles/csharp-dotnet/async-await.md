@@ -88,7 +88,7 @@ static string ReadSensor(int id)
 read 4 sensors in [...] ms
 ```
 
-Measured on .NET 10.0.12 on Windows 11, x64, on a Core i7-11700K, four 100 ms reads cost just over 400 ms of wall time, and every one of those milliseconds the thread was doing nothing but waiting. It couldn't run another line of this program. If this were the one thread pumping a UI's message loop, the window would stop repainting; if it were a thread pool worker handling one HTTP request, that worker couldn't pick up another request until this one finished sleeping.
+Measured on .NET 10.0.12 on Windows 11, x64, on a Core i7-11700K, four 100 ms reads cost just over 400 ms of wall time, and every one of those milliseconds the thread was doing nothing but waiting. It couldn't run another line of this program. If this were the one thread pumping a UI's message loop, the window would stop repainting; if it were [a thread pool worker handling one HTTP request](/operating-systems/processes-and-threads/), that worker couldn't pick up another request until this one finished sleeping.
 
 `async` and `await` exist to get that thread back during the wait without inverting the code into callbacks. The `async` modifier on a method "doesn't force a method to run asynchronously on another thread. It enables `await`, and the method runs synchronously until it reaches an incomplete awaitable" ([Task-based Asynchronous Pattern](https://learn.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap)). `await` names the mechanism precisely: it "suspends evaluation of the enclosing `async` method until the asynchronous operation represented by its operand completes... The `await` operator doesn't block the thread that evaluates the async method. When the `await` operator suspends the enclosing async method, the control returns to the caller of the method" ([await operator](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/await)). The operand is usually a `Task` or `Task<TResult>`, the types .NET uses to represent "an asynchronous operation that might not be complete" under the Task-based Asynchronous Pattern.
 
@@ -491,7 +491,7 @@ finished before the timeout: no deadlock
 The [`SynchronizationContext.Current` experiment](#where-the-rest-of-the-method-runs-synchronizationcontext) showed it is `null` throughout an ordinary console program. `ExclusiveContext` exists only to give this console program the one property — a single thread that every queued continuation must share — that a real WPF, Windows Forms, or classic ASP.NET host installs automatically. The deadlock is the same deadlock; this page just had to build the context a GUI framework would otherwise hand you for free.
 :::
 
-Two threads deadlocking over a `lock` is a different, more familiar failure with its own detection technique; it belongs to a dedicated article on race conditions and locks rather than a repeat here.
+Two threads deadlocking over a `lock` is a different, more familiar failure with its own detection technique; it belongs to a [dedicated article on race conditions and locks](/operating-systems/concurrency-race-conditions-locks/) rather than a repeat here.
 
 ## Running several awaits at once: `Task.WhenAll`
 

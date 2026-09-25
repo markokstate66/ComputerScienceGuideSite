@@ -571,6 +571,7 @@ figure.diagram svg text.d-bold { font-weight: 700; }
 .reading-list h3 a::after { content: ""; position: absolute; inset: 0; border-radius: 10px; }
 .reading-list p { color: var(--text-muted); font-size: 0.9375rem; line-height: 1.55; margin-top: 0.35rem; }
 .reading-list .card-meta { padding-top: 0.6rem; }
+.reading-list .reading-why { color: var(--text); border-left: 3px solid var(--accent); padding-left: 0.7rem; margin-top: 0.6rem; }
 @media (max-width: 30em) {
   .reading-list > li { padding-left: 1.15rem; padding-top: 3.4rem; }
   .reading-list > li::before { left: 1.15rem; }

@@ -1,4 +1,4 @@
 term: "Heap (data structure)"
 definition: "A tree, normally stored in an array, in which every parent is ordered before its children. A min-heap gives the smallest element in O(1) and removes it in O(log n), which is why heaps implement priority queues. It is unrelated to the managed heap, the region of memory where .NET allocates objects."
-aliases: ["binary heap","priority queue"]
+aliases: ["binary heap"]
 seeAlso: ["data-structures/heaps-and-priority-queues"]

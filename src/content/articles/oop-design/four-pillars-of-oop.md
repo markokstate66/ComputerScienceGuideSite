@@ -659,7 +659,7 @@ The object is a `PerSeatPlan` both times. The first call picks `Log(Plan)` becau
 
 ### Do you need inheritance to get polymorphism?
 
-No. The essential ingredient is a call whose target is chosen at run time, and a base class is only one way to get that. An interface gives the same substitutability with no shared code, and a delegate is a single replaceable method with no type hierarchy at all:
+No. The essential ingredient is a call whose target is chosen at run time, and a base class is only one way to get that. [An interface gives the same substitutability](/oop-design/interfaces-vs-abstract-classes/) with no shared code, and [a delegate is a single replaceable method](/oop-design/strategy-observer-decorator/) with no type hierarchy at all:
 
 ```csharp run
 Func<int, decimal>[] seatPricing =
@@ -685,7 +685,7 @@ The loop calls `price(25)` without knowing which formula it holds, which is the 
 
 Inheritance lets a class start from another class: it receives the base class's members, and it can be used wherever the base class is expected. That is two things at once, subtyping (the substitution) and reuse (the free code). The plans above use both: `Name` and the default `Describe` are written once.
 
-The costs come from the reuse. In C#, a class can have only one direct base class [[2]](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/inheritance), so that one choice had better be the right axis of variation. And a derived class does more than use the base's public surface; it runs *inside* the base's control flow. Gamma et al. make this point in chapter 1 of *Design Patterns*: a subclass is exposed to details of its parent's implementation, so inheritance weakens encapsulation, and they advise favoring object composition [[13]](https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480).
+The costs come from the reuse. In C#, a class can have only one direct base class [[2]](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/inheritance), so that one choice had better be the right axis of variation. And a derived class does more than use the base's public surface; it runs *inside* the base's control flow. Gamma et al. make this point in chapter 1 of *Design Patterns*: a subclass is exposed to details of its parent's implementation, so inheritance weakens encapsulation, and they advise [favoring object composition](/oop-design/composition-over-inheritance/) [[13]](https://www.pearson.com/en-us/subject-catalog/p/design-patterns-elements-of-reusable-object-oriented-software/P200000009480).
 
 Two concrete forms of that coupling follow. Both compile without a warning under the default settings.
 
@@ -792,7 +792,7 @@ PriceFor: -11
 Amounts are above zero.
 ```
 
-The exception comes from `AddLine` and talks about line amounts. The code at fault is `PromoPlan`, which may live in a different file written by someone else a year later. For a derived class to be usable wherever its base is expected, it has to keep what the base promises: what callers may assume about results, and the invariants the base maintains. The unwritten promises count too. That requirement is known as the Liskov substitution principle; Liskov and Wing give its formal definition in "A Behavioral Notion of Subtyping" [[17]](https://www.cs.cmu.edu/~wing/publications/LiskovWing94.pdf), and here `PromoPlan` weakens the base's unwritten postcondition that the price is not negative. The compiler checks none of it beyond method signatures.
+The exception comes from `AddLine` and talks about line amounts. The code at fault is `PromoPlan`, which may live in a different file written by someone else a year later. For a derived class to be usable wherever its base is expected, it has to keep what the base promises: what callers may assume about results, and the invariants the base maintains. The unwritten promises count too. That requirement is known as the [Liskov substitution principle](/oop-design/solid-principles/); Liskov and Wing give its formal definition in "A Behavioral Notion of Subtyping" [[17]](https://www.cs.cmu.edu/~wing/publications/LiskovWing94.pdf), and here `PromoPlan` weakens the base's unwritten postcondition that the price is not negative. The compiler checks none of it beyond method signatures.
 
 ::::exercise[Move the check to where the promise is made]
 Change `Plan` so that a caller holding a `Plan` reference can never receive a negative price from `PriceFor`, and so that the error names the plan at fault. Derived classes should still supply the pricing formula.
@@ -991,7 +991,7 @@ Globex: declined
 
 The design work is in choosing what the interface *admits*. `Charge` has no URL, no API key and no JSON, because those belong to one processor. It does have `Unreachable`, because any gateway reached over a network can be down, and `Collector` must decide what to do about that. An interface that pretended charging either succeeds or is declined would be simpler and wrong: the network failure would arrive anyway, as an exception that `Collector` was never written to expect. A good abstraction leaves out what varies between implementations and keeps what is true of all of them, failure modes included.
 
-Abstractions have a cost too. Each one is a layer a reader has to see through, and an interface with a single implementation and no test double is a guess about variation that may never come. Introduce one when a second implementation exists (a test double counts) or when a boundary such as the network, a database or the clock needs to be kept out of the core logic.
+Abstractions have a cost too. Each one is a layer a reader has to see through, and an interface with a single implementation and no test double is a guess about variation that may never come. Introduce one when a second implementation exists ([a test double counts](/oop-design/dependency-injection/)) or when a boundary such as the network, a database or the clock needs to be kept out of the core logic.
 
 ## How do the four fit together?
 

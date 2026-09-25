@@ -183,7 +183,7 @@ static int[] CountBytes(byte[] data)
 
 ## The call stack spends memory too
 
-`ReverseInPlace` above has no [recursion](/glossary/#recursion), so its [call stack](/glossary/#call-stack) usage never came up. A recursive function's stack usage is real memory, and it is easy to lose sight of because it never appears in a `new` expression. Consider a recursive version of the same kind of sum a loop would compute in Θ(1) space:
+`ReverseInPlace` above has no [recursion](/algorithms/recursion/), so its [call stack](/glossary/#call-stack) usage never came up. A recursive function's stack usage is real memory, and it is easy to lose sight of because it never appears in a `new` expression. Consider a recursive version of the same kind of sum a loop would compute in Θ(1) space:
 
 ```csharp run id=recursive-sum-intro
 int[] values = [3, 1, 4, 1, 5, 9, 2, 6];
@@ -460,7 +460,7 @@ static void Split(int[] items, int[] buffer, int lo, int hi)
  8,000       0 B   32,024 B
 ```
 
-`QuickSortInPlace` allocates nothing at any size — every swap happens inside the caller's array. `MergeSortSharedBuffer` allocates exactly one buffer per call, sized to the input, and its bytes scale linearly with *n* (4 bytes per `int`, plus the fixed 24-byte array header): textbook Θ(*n*) auxiliary space, confirmed rather than assumed.
+`QuickSortInPlace` allocates nothing at any size — every swap happens inside the caller's array. `MergeSortSharedBuffer` allocates exactly one buffer per call, sized to the input, and its bytes scale linearly with *n* (4 bytes per `int`, plus the fixed 24-byte array header): textbook Θ(*n*) auxiliary space, confirmed rather than assumed — [sorting algorithms compared](/algorithms/sorting-algorithms-compared/) covers the full lineup and the time side of this trade.
 
 `GC.GetAllocatedBytesForCurrentThread` only sees the *managed heap*: its documentation is explicit that it counts "bytes allocated on the managed heap," and says nothing about the stack. Quicksort's 0 B rows are real, but they are not the whole story — recursive quicksort still uses the call stack measured in the previous section, and this counter is blind to it. How much stack it uses depends entirely on how lucky the partition is:
 
@@ -521,7 +521,7 @@ random  n=5000  max depth = 26
 sorted  n=5000  max depth = 4999
 ```
 
-On shuffled input, 5,000 values recurse only 26 levels deep — close to log₂(5,000) ≈ 12.3, the balanced-partition case. Feed the same code its own worst case, already-sorted input with the last element as pivot, and every partition peels off exactly one item: depth 4,999, one frame per element, O(*n*) auxiliary space from the call stack alone. At the ~64 bytes a plain frame costs here (this function's frames are a little larger, but the shape is the same), a sorted array of about 20,000 items — four times the size just sorted above — would be well on its way to the ~14,300-frame ceiling the previous section measured on a 1 MiB stack. "Small auxiliary stack" is a claim about *typical* partitions, not a guarantee; a later article in this pillar on best, average and worst case covers what forces the bad case and how randomization avoids it. Sorting on the smaller of the two partitions first, rather than always the left one, caps the *guaranteed* recursion depth at O(log *n*) regardless of input.
+On shuffled input, 5,000 values recurse only 26 levels deep — close to log₂(5,000) ≈ 12.3, the balanced-partition case. Feed the same code its own worst case, already-sorted input with the last element as pivot, and every partition peels off exactly one item: depth 4,999, one frame per element, O(*n*) auxiliary space from the call stack alone. At the ~64 bytes a plain frame costs here (this function's frames are a little larger, but the shape is the same), a sorted array of about 20,000 items — four times the size just sorted above — would be well on its way to the ~14,300-frame ceiling the previous section measured on a 1 MiB stack. "Small auxiliary stack" is a claim about *typical* partitions, not a guarantee; [best, average and worst case](/complexity/best-average-worst-case/) covers what forces the bad case and how randomization avoids it. Sorting on the smaller of the two partitions first, rather than always the left one, caps the *guaranteed* recursion depth at O(log *n*) regardless of input.
 
 :::pitfall
 "In-place" does not mean "zero extra memory," and it is not a synonym for Θ(1). It means the extra memory is O(1) or O(log *n*) rather than Θ(*n*) — and, for a recursive in-place algorithm, that extra memory includes the call stack, which a heap-only counter like `GC.GetAllocatedBytesForCurrentThread` will not show you.
@@ -764,7 +764,7 @@ time (ms)
 
 The naive version's time grows exponentially — from under a millisecond at *n* = 20 to 165 ms at *n* = 38 — while memoized and iterative both stay near a hundredth of a millisecond regardless of *n*, since each does O(*n*) work total instead of O(2ⁿ). The byte table is the more surprising half. Naive recursion allocates exactly 0 heap bytes at every size: it uses only `long` locals and no collection, so its real cost — the O(*n*)-deep call stack from the previous two sections — never touches the heap this counter watches. Memoization allocates about 2,000 bytes, the internal arrays `Dictionary<int, long>` grows into as it fills; that number does not grow further from *n* = 20 to *n* = 38 because a dictionary sized for ~20 entries already has room for ~38 (see [Amortized Analysis](/complexity/amortized-analysis/) for the same growth-by-doubling story, told there for `List<T>`). Iteration allocates nothing: no recursion, no cache, just two `long` variables reused every step.
 
-So the trade memoization makes is specific: it buys the same asymptotic time as the loop, at the price of the cache — here a few kilobytes, for `Fib`, but scaling with the number of distinct subproblems for a harder recurrence. Whether that price is worth it, and how to shrink it once you have paid it, is the subject of dynamic programming, covered in its own article in the algorithms pillar; this page's point is narrower: "add memoization" is a time-space trade you can and should measure on both sides, not just the time side.
+So the trade memoization makes is specific: it buys the same asymptotic time as the loop, at the price of the cache — here a few kilobytes, for `Fib`, but scaling with the number of distinct subproblems for a harder recurrence. Whether that price is worth it, and how to shrink it once you have paid it, is the subject of [dynamic programming](/algorithms/dynamic-programming/), covered in its own article in the algorithms pillar; this page's point is narrower: "add memoization" is a time-space trade you can and should measure on both sides, not just the time side.
 
 ## What an object actually costs: struct vs class in an array
 

@@ -2,8 +2,8 @@
 
 One line each: anchor text | target route | where in the article. Targets are planned in CONTENT_PLAN.md section 7 and were unpublished on 2026-09-22, so the body does not link them yet. Each sentence reads correctly with or without the link.
 
-- "a growable array elsewhere on this site" | /data-structures/arrays-and-dynamic-arrays/ | "One end only: array-backed or linked", first paragraph, describing the array-backed stack's growth policy.
-- "linked-node stack" | /data-structures/linked-lists/ | "One end only: array-backed or linked", second paragraph.
+- "a growable array elsewhere on this site" | /data-structures/arrays-and-dynamic-arrays/ | "One end only: array-backed or linked", first paragraph, describing the array-backed stack's growth policy. — Status: wired
+- "linked-node stack" | /data-structures/linked-lists/ | "One end only: array-backed or linked", second paragraph. — Status: wired (same paragraph as the array-backed-stack link, since the two sentences share one paragraph in the published text)
 
 ## Boundaries with siblings
 

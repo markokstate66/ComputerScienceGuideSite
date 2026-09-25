@@ -2,7 +2,7 @@
 
 One line each: anchor text | target route | where in the article. Target was unpublished when this round was written (2026-09-22, `dynamic-programming` is being drafted concurrently this same round), so the body does not link it yet. The sentence reads correctly with or without the link.
 
-- "the DP article on this site covers that construction" | /algorithms/dynamic-programming/ | End of the "Extend the code: when the exchange argument stops applying" exercise solution, in the interval-scheduling section — the sentence explaining that weighted interval scheduling needs a DP table (take-or-skip per job) rather than a single greedy pass.
+- "the DP article on this site covers that construction" | /algorithms/dynamic-programming/ | End of the "Extend the code: when the exchange argument stops applying" exercise solution, in the interval-scheduling section — the sentence explaining that weighted interval scheduling needs a DP table (take-or-skip per job) rather than a single greedy pass. — Status: wired (body, exercise solution closing sentence)
 
 ## Boundaries with the planned sibling
 

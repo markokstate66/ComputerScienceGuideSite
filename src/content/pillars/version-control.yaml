@@ -5,4 +5,17 @@ accent:
   light: "#c2410c"
   dark: "#fdba74"
 blurb: >-
-  Git explained from its object model outwards: blobs, trees, commits and refs, then branching, merging and conflicts, rebase, undoing mistakes, and team workflows. Every command sequence shown is executed in a scratch repository by the verification tool before publication, so the output you see is the output Git really produced.
+  Git explained from its object model outwards: blobs, trees, commits and refs, then branching, merging and conflicts, rebase, undoing mistakes, and team workflows. Every command sequence runs in a scratch repository before publication, so the output you see is the output Git really produced.
+hubIntro: >-
+  Git is explained here from the inside out: first the object model, blobs, trees, commits and refs, built by hand with plumbing commands, then the everyday operations, branching, merging, rebasing and undoing mistakes, that manipulate those objects, and finally the team workflows built on top of all of it. Start with how Git works internally even if you already use Git daily; the later articles on merge conflicts, rebase and reflog make far more sense once a branch is just a 41-byte pointer rather than a metaphor. Git workflows at the end assumes you're comfortable with the four operations covered before it.
+readingNotes:
+  how-git-works: >-
+    Opens the pillar with the object model, blobs, trees, commits and refs, that every later article's explanations of branching and rebasing depend on.
+  branching-and-merging: >-
+    Follows directly because a fast-forward or three-way merge is best understood as an operation on the commit graph just introduced, not as a separate mechanism.
+  rebase-vs-merge: >-
+    Needs merging already covered so the same diverged branches can be merged twice, once each way, and the resulting graphs compared directly.
+  undoing-things-in-git: >-
+    Comes after how Git works and branching and merging because two of its five mistakes, an already-pushed commit and a deleted branch, depend on refs and the reflog introduced there.
+  git-workflows: >-
+    Closes the pillar because choosing trunk-based development, GitHub Flow or Git Flow assumes you're already comfortable with the branching and merging covered before it.

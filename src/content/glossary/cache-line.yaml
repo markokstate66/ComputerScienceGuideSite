@@ -1,0 +1,4 @@
+term: "Cache line"
+definition: "The fixed-size block of memory, typically 64 bytes on current hardware, that moves as a single unit between a CPU core's cache and the memory behind it. Reading or writing any byte inside a line pulls the entire line in on the first access, so nearby bytes come along for free afterward, but it also means two unrelated variables that happen to share a line are tracked, and invalidated, together."
+aliases: []
+seeAlso: ["operating-systems/memory-hierarchy-and-caches"]
