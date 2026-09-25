@@ -38,7 +38,7 @@ sources:
     url: "https://github.com/coverlet-coverage/coverlet"
     publisher: "Coverlet (GitHub)"
     accessed: 2026-09-24
-draft: true
+draft: false
 ---
 
 This test really runs, and it really passes.
