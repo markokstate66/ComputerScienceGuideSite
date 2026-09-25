@@ -1,6 +1,7 @@
 ---
 // Every statement here describes what the code in this repository does. If you change
-// src/scripts/site.ts (analytics), api/contact (form), or add any third-party resource, update this
+// src/scripts/site.ts (analytics), the consent defaults or AdSense tag in src/layouts/BaseLayout.astro,
+// api/contact (form), or add any third-party resource, update this
 // page and its date in src/data/site-pages.ts in the same change.
 import PageLayout from '../layouts/PageLayout.astro';
 import { SITE } from '../lib/site';
@@ -8,8 +9,8 @@ import { SITE } from '../lib/site';
 <PageLayout
   title="Privacy policy"
   path="/privacy/"
-  description="What data Computer Science Guide processes: cookieless Google Analytics, the contact form, and a theme preference stored in your browser. No accounts, no ads."
-  lede="The short version: no accounts, no advertising, no tracking cookies. Analytics runs without cookies, and the contact form emails your message to the author."
+  description="What data Computer Science Guide processes: Google AdSense adverts, Google Analytics, their cookies and your choices, the contact form, and your theme preference."
+  lede="The short version: the site is funded by Google AdSense adverts and measured with Google Analytics, and both can use cookies. In the EEA, the UK and Switzerland they do so only with your consent. There are no accounts, and the contact form simply emails your message to the site's operator."
 >
   <h2 id="who">Who is responsible</h2>
   <p>This website, computerscienceguide.com, is operated by <a href="https://stgengineer.com">Summit Technology Group LLC</a>. For any privacy question or request, use the <a href="/contact/?topic=privacy">contact form</a> and choose "A privacy or data request", or email <a href="mailto:mark@stgengineer.com">mark@stgengineer.com</a> directly.</p>
@@ -22,27 +23,28 @@ import { SITE } from '../lib/site';
       </thead>
       <tbody>
         <tr><td>Reading any page</td><td>IP address, browser type and the page requested, as with every website</td><td>Microsoft Azure, which hosts the site</td></tr>
-        <tr><td>Analytics</td><td>Page address, referrer, approximate location derived from IP, device and browser type. No cookies.</td><td>Google (Google Analytics 4)</td></tr>
+        <tr><td>Advertising</td><td>Cookies or similar identifiers, IP address, the page you are reading, device and browser information</td><td>Google (AdSense) and the advertising partners Google works with</td></tr>
+        <tr><td>Analytics</td><td>Page address, referrer, approximate location derived from IP, device and browser type; analytics cookies where your consent settings allow</td><td>Google (Google Analytics 4)</td></tr>
         <tr><td>Contact form</td><td>The name, email address, subject and message you type</td><td>Microsoft Azure (to send the email), then the author's mailbox</td></tr>
         <tr><td>Theme preference</td><td>The word "light" or "dark"</td><td>Nobody. It stays in your browser.</td></tr>
         <tr><td>Site search</td><td>Your search terms</td><td>Nobody. Search runs in your browser.</td></tr>
       </tbody>
     </table>
   </div>
-  <p>The site has no user accounts, comments, newsletter, advertising, social media widgets, embedded video, web fonts or content delivery networks other than its host. Apart from Google Analytics, every file a page loads comes from computerscienceguide.com itself.</p>
+  <p>The site has no user accounts, comments, newsletter, social media widgets, embedded video, web fonts or content delivery networks other than its host. Apart from Google AdSense (and the adverts and consent message it loads) and Google Analytics, every file a page loads comes from computerscienceguide.com itself.</p>
 
   <h2 id="hosting">Hosting</h2>
   <p>The site is a set of static files hosted on Microsoft Azure Static Web Apps. To deliver a page, Microsoft's servers necessarily process your IP address and the details your browser sends with every request. The site's own code does not log or store this information. Microsoft's handling of it is described in the <a href="https://privacy.microsoft.com/privacystatement">Microsoft Privacy Statement</a>.</p>
 
   <h2 id="analytics">Analytics</h2>
-  <p>The site uses Google Analytics 4 (measurement ID <code>{SITE.gaId}</code>) to see which articles are read and how visitors find them. It is the only analytics or tracking service in use.</p>
+  <p>The site uses Google Analytics 4 (measurement ID <code>{SITE.gaId}</code>) to see which articles are read and how visitors find them. It is the only analytics service in use.</p>
   <p>It is configured as follows:</p>
   <ul>
-    <li><strong>No analytics cookies.</strong> Google's consent mode is set to "denied" for analytics and for all advertising purposes before the analytics script loads. In this mode Google Analytics does not set or read cookies (such as <code>_ga</code>) and does not use advertising identifiers; it sends cookieless measurement pings instead.</li>
+    <li><strong>Consent first.</strong> Before any Google script loads, the site sets Google's consent mode. In the European Economic Area, the United Kingdom and Switzerland it starts as "denied" and changes only if you give consent in the consent message described under <a href="#advertising">Advertising</a>. While it is denied, Google Analytics does not set or read cookies and sends cookieless measurement pings instead. Everywhere else it starts as "granted", and Google Analytics may set its own cookies (such as <code>_ga</code>) to recognise a returning browser.</li>
     <li><strong>Respect for browser signals.</strong> If your browser sends Global Privacy Control or Do Not Track, the analytics script is not loaded at all.</li>
     <li><strong>Production only.</strong> The script loads only on computerscienceguide.com, not on preview or development copies of the site.</li>
   </ul>
-  <p>The pings still reach Google's servers from your IP address, and Google uses the IP address to derive an approximate location before discarding it. Google acts as a data processor for this information; see <a href="https://policies.google.com/privacy">Google's privacy policy</a> and <a href="https://support.google.com/analytics/answer/12017362">how Google Analytics 4 handles IP addresses and data collection</a>. You can block Google Analytics on every site with Google's <a href="https://tools.google.com/dlpage/gaoptout">opt-out browser add-on</a> or any content blocker; the site works identically without it.</p>
+  <p>Measurement data reaches Google's servers from your IP address, and Google uses the IP address to derive an approximate location before discarding it. Google acts as a data processor for this information; see <a href="https://policies.google.com/privacy">Google's privacy policy</a> and <a href="https://support.google.com/analytics/answer/12017362">how Google Analytics 4 handles IP addresses and data collection</a>. You can block Google Analytics on every site with Google's <a href="https://tools.google.com/dlpage/gaoptout">opt-out browser add-on</a> or any content blocker; the site works identically without it.</p>
 
   <h2 id="contact-form">Contact form</h2>
   <p>When you submit the <a href="/contact/">contact form</a>, your browser sends the name, email address, subject and message you entered to a server function that belongs to this site (<code>/api/contact</code>, running on Azure Functions). The function checks that the fields are present, builds an email containing them, and sends it to the author through Azure Communication Services, Microsoft's email delivery service. The function does not write your message to a database or file.</p>
@@ -50,22 +52,29 @@ import { SITE } from '../lib/site';
   <p>Contact-form messages are sent to <a href="mailto:mark@stgengineer.com">mark@stgengineer.com</a>, the site operator's mailbox. Messages are kept only as long as needed to read and respond to them, then deleted.</p>
 
   <h2 id="local-storage">Storage in your browser</h2>
-  <p>When you use the light/dark switch, the site saves your choice in your browser's local storage under the key <code>theme</code>, with the value <code>light</code> or <code>dark</code>. It is read by a script on each page to avoid a flash of the wrong colours. It is never transmitted, and you can remove it by clearing site data in your browser. This is the only thing the site itself stores on your device. The site sets no cookies.</p>
+  <p>When you use the light/dark switch, the site saves your choice in your browser's local storage under the key <code>theme</code>, with the value <code>light</code> or <code>dark</code>. It is read by a script on each page to avoid a flash of the wrong colours. It is never transmitted, and you can remove it by clearing site data in your browser. This is the only thing the site's own code stores on your device. Google AdSense and Google Analytics may set cookies, as described in their sections.</p>
 
   <h2 id="search">Site search</h2>
   <p>Search uses a static index that your browser downloads from this site; matching happens on your device and your search terms are not sent anywhere. One caveat: if you open or share a link that already contains a search term in its address (for example <code>/search/?q=heap</code>), that address is requested from the host like any other page address and, if analytics is active, is included in the page address sent to Google Analytics.</p>
 
   <h2 id="advertising">Advertising</h2>
-  <p>The site does not show advertising and loads no advertising scripts. The author intends to apply for Google AdSense. If advertising is added, this policy will be updated before any advertising code is switched on, to describe the cookies and data sharing involved and to name the specific consent management platform in use. Visitors in the European Economic Area, the United Kingdom and Switzerland will be asked for consent through a Google-certified consent management platform before any personalised advertising or advertising cookies are used; no such platform is active today because no advertising is active today.</p>
+  <p>The site shows adverts served by Google AdSense (publisher ID <code>pub-6676281664229738</code>). Adverts are chosen and delivered by Google, not by the site's operator, and advertisers have no influence over what is written.</p>
+  <ul>
+    <li><strong>Cookies.</strong> Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to you based on your visits to this site and/or other sites on the Internet.</li>
+    <li><strong>Opting out.</strong> You can opt out of personalised advertising in Google's <a href="https://adssettings.google.com">Ads Settings</a>. You can opt out of some other vendors' use of cookies for personalised advertising at <a href="https://www.aboutads.info/choices/">aboutads.info</a>. Google explains how it uses information from sites that show its ads in <a href="https://policies.google.com/technologies/partner-sites">How Google uses information from sites or apps that use our services</a>.</li>
+    <li><strong>Consent in the EEA, the UK and Switzerland.</strong> Visitors there are shown a consent message from Google's certified consent management platform (Google AdSense "Privacy &amp; messaging"). Until you make a choice, advertising and analytics storage stay "denied" in Google's consent mode. You can change your choice at any time from the privacy settings link or button that the consent message provides.</li>
+    <li><strong>Global Privacy Control.</strong> If your browser sends a Global Privacy Control signal, the site asks Google for non-personalised ads only, sets ad personalisation to "denied" in consent mode, and does not load Google Analytics.</li>
+    <li><strong>Blocking.</strong> Every article works the same with an ad blocker or content blocker.</li>
+  </ul>
 
   <h2 id="links">Links to other sites</h2>
   <p>Articles link to documentation, specifications and other sources on external websites. Those sites have their own privacy policies, and this policy does not cover them.</p>
 
   <h2 id="rights">Your rights</h2>
-  <p>Depending on where you live, data protection law (for example the GDPR in the EEA and the UK, or the CCPA in California) may give you the right to ask what personal data is held about you, to have it corrected or deleted, and to object to its processing. The only personal data the author can identify you by is a contact-form message you sent. To exercise any of these rights, send a request through the <a href="/contact/?topic=privacy">contact form</a>. You also have the right to complain to your local data protection authority.</p>
+  <p>Depending on where you live, data protection law (for example the GDPR in the EEA and the UK, or the CCPA in California) may give you the right to ask what personal data is held about you, to have it corrected or deleted, and to object to its processing. The only personal data the site's operator holds and can identify you by is a contact-form message you sent. Data collected for advertising and analytics is held by Google; use the choices above, or <a href="https://myaccount.google.com/data-and-privacy">Google's own privacy tools</a>, to control it. To exercise any of these rights, send a request through the <a href="/contact/?topic=privacy">contact form</a>. You also have the right to complain to your local data protection authority.</p>
 
   <h2 id="children">Children</h2>
-  <p>The site is written for adult and student programmers and does not knowingly collect personal data from children. The only way to give the site personal data is the contact form.</p>
+  <p>The site is written for adult and student programmers and does not knowingly collect personal data from children. The only way to give the site's operator personal data is the contact form.</p>
 
   <h2 id="changes">Changes to this policy</h2>
   <p>When the way the site handles data changes, this page is updated in the same release and the date at the top changes. Earlier versions are available on request.</p>

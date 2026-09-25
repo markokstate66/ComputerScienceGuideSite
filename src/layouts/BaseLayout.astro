@@ -88,12 +88,39 @@ const website = {
     <meta name="google-site-verification" content="W1fRrbtzjKXN6cAPGyiSBlyKfNfyY23qQgSy-q4-vMg" />
     <meta name="msvalidate.01" content="E4792860CAB72733FACE91C7EE52BB14" />
 
-    <!-- ADSENSE-VERIFICATION-SNIPPET: paste the site-verification snippet from the AdSense "Sites" page on the line below
-         when applying (docs/NEEDS_MARKUS.md item 11). This is the only place ad-related code may go. No ad units. -->
+    <!-- Large image previews in search results and Discover. -->
+    <meta name="robots" content="max-image-preview:large" />
+
+    <!-- Google consent mode defaults, set before any Google tag loads (the privacy policy describes this).
+         Outside the EEA, UK and Switzerland: granted, except that a Global Privacy Control signal turns off
+         ad personalisation. In the EEA, UK and Switzerland: denied until the visitor answers the consent
+         message from Google's certified CMP (AdSense "Privacy & messaging"), which updates these values. -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      (function () {
+        var gpc = navigator.globalPrivacyControl === true;
+        gtag('consent', 'default', {
+          ad_storage: 'granted',
+          ad_user_data: gpc ? 'denied' : 'granted',
+          ad_personalization: gpc ? 'denied' : 'granted',
+          analytics_storage: 'granted',
+        });
+        gtag('consent', 'default', {
+          ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied',
+          wait_for_update: 500,
+          region: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH'],
+        });
+        if (gpc) (window.adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds = 1;
+      })();
+    </script>
+    <!-- Google AdSense (publisher ID matches public/ads.txt). Auto ads and the consent message are configured in the
+         AdSense account, not here. This is the only place ad-related code may go. -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6676281664229738" crossorigin="anonymous"></script>
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE.name} />
-    <meta property="og:locale" content="en_GB" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

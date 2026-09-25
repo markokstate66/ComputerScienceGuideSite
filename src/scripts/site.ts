@@ -117,9 +117,7 @@ if ((SITE.productionHosts as readonly string[]).includes(location.hostname) && !
     const w = window as unknown as { dataLayer: unknown[] };
     w.dataLayer = w.dataLayer || [];
     function gtag(..._args: unknown[]) { w.dataLayer.push(arguments); }
-    // Consent Mode: everything denied, so GA4 sets and reads no cookies and sends cookieless pings only.
-    // This stays until a consent tool is chosen (docs/NEEDS_MARKUS.md item 9); the privacy policy says so.
-    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    // Consent defaults are set inline in BaseLayout's <head>, before AdSense or this script load.
     gtag('js', new Date());
     gtag('config', SITE.gaId);
     const s = document.createElement('script');

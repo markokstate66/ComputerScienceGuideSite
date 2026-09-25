@@ -54,7 +54,8 @@ const structuredData = [
     keywords: data.tags.join(', '),
     image: abs(`/og/${data.pillar}.png`),
     mainEntityOfPage: { '@type': 'WebPage', '@id': abs(url) },
-    author: { '@type': 'Person', name: author.data.name, url: abs('/about/') },
+    // The publication is the author (owner's decision, docs/NEEDS_MARKUS.md item 1), so it is the Organization, not a Person.
+    author: { '@type': 'Organization', '@id': `${SITE.url}/#organization`, name: author.data.name, url: abs('/about/') },
     publisher: { '@id': `${SITE.url}/#organization` },
     citation: data.sources.map((s) => ({ '@type': 'CreativeWork', name: s.title, url: s.url })),
   },
