@@ -1,0 +1,35 @@
+{
+  "role": "adsense",
+  "article": "src/content/articles/algorithms/dynamic-programming.md",
+  "route": "/algorithms/dynamic-programming/",
+  "round": 2,
+  "score": 9.0,
+  "comparedAgainst": [
+    "https://www.geeksforgeeks.org/dsa/coin-change-dp-7/",
+    "https://en.wikipedia.org/wiki/Longest_common_subsequence",
+    "https://en.wikipedia.org/wiki/Edit_distance",
+    "https://xlinux.nist.gov/dads/HTML/longestCommonSubsequence.html",
+    "https://xlinux.nist.gov/dads/HTML/Levenshtein.html",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2",
+    "src/content/articles/algorithms/greedy-algorithms.md (sibling, parallel worktree issue-109-greedy-algorithms)"
+  ],
+  "consoleErrors": null,
+  "brokenLinks": null,
+  "justification": "Re-check focused on the two round-1 findings and a fresh full read; the rest of the article is unchanged in substance from round 1's 8.8 pass. (1) Near-duplicate opening example, now resolved. The article's opening now uses amount 12 (coins {1,4,5}) instead of 8: greedy picks 5+5+1+1=4 coins, brute force finds the true minimum is 3 (4+4+4), verified independently by re-running the exact MinCoins(12, [1,4,5]) recursion (best=3, calls=180 -- matches the article's 'min coins for 12: 3' / 'recursive calls: 180' exactly, digit for digit). This no longer collides with greedy-algorithms.md, which still asks its own 'prove it' exercise about amount 8 on the same coin set (greedy 5+1+1+1=4 vs. optimal 4+4=2) -- different amount, different optimal count, different pedagogical role (a reader-solved exercise there vs. the motivating worked example here), so a reviewer reading both pages back-to-back no longer sees the same instance solved twice. Figure 1 was correctly redrawn for amount 12: I traced the SVG's branch structure against the actual code (coins iterated in order [1,4,5], so 12 branches to 11/8/7, 11 branches to 10/7/6, 8 branches to 7/4/3) and it matches both the drawing and the caption's claim that remaining amount 7 is reached three times, via a 5 from 12, a 4 from 11, and a 1 from 8. The prose right after ('Four coins, but three 4s also add up to 12', 'confirming the 4-plus-4-plus-4 guess and beating greedy's four') reads as native to amount 12, not a patched find-and-replace -- no stray reference to 8, 2 coins, or the old figure anywhere in the file. 'How bad it gets' (amounts 10/20/30/40) and every section after tabulation (amount 23, the 0..200 agreement check) were already independent of the opening instance and needed no rederivation; none shows any inconsistency with the new amount 12. (2) The CLRS chapter-14 citation is unchanged (front matter + two inline citations, all chapter 14) and per this round's brief is confirmed correct and out of scope; worth noting the sibling greedy-algorithms.md has also since settled on chapter 14 for Dynamic Programming in its own source list, so the two articles that previously disagreed now agree. (3) The knapsack-cost gap from round 1 is NOT fixed: the closing paragraph still states knapsack's recurrence (best[i,w] = skip vs. take) and says it reuses 'the identical row-by-row fill and the identical space-optimization argument' but never states the cost itself (O(items x capacity) time, reducible to O(capacity) space) the way every other named technique on the page does -- see issues[]. Nothing else regressed: no filler, no NEEDS_MARKUS, no ad code, front matter still accurate and non-clickbait, exercises still varied in form and free of giveaways, and the article still delivers the 'one problem through every stage' structural angle that differentiates it from GeeksforGeeks (which solves a different coin-change variant) and Wikipedia's abstract LCS/edit-distance pages. Score moves up from 8.8 because two of the three round-1 findings are now closed (the duplicate resolved, the citation confirmed non-issue) and only the pre-existing low-severity knapsack-cost gap remains open.",
+  "issues": [
+    {
+      "severity": "low",
+      "location": "Closing section, the 0/1 knapsack paragraph ('...fits the same mold without needing its own worked example here...')",
+      "problem": "Unchanged since round 1: every other technique on the page states its cost explicitly (memoization's O(amount) computed subproblems, the 2D table's O(amount x coins), the 1D table's O(amount) space with a concrete before/after integer count, LCS's stated O(n x m), edit distance's stated Theta(m x n)). The knapsack paragraph gives the recurrence and says it reuses 'the identical row-by-row fill and the identical space-optimization argument' but never states knapsack's own cost (O(items x capacity) time and, before optimization, space), leaving one named algorithm without the explicit cost the editorial brief requires for every algorithm named.",
+      "fixLooksLike": "Add one clause stating knapsack's time/space cost in the same terms as the rest of the page (e.g. 'O(items x capacity) time and space, one-dimensionally reducible the same way').",
+      "owner": "writer"
+    },
+    {
+      "severity": "low",
+      "location": "docs/crosslinks/algorithms/dynamic-programming.md, first bullet ('...right after the greedy-coin-change code block shows 4 coins instead of 2')",
+      "problem": "This integrator-facing note was written against the round-1 opening example (amount 8: greedy 4 coins, optimal 2). After the amount-12 rewrite the opening still shows greedy at 4 coins (coincidentally), but the optimal is now 3, not 2 -- the note's '4 coins instead of 2' is stale. Not reader-visible and not part of the article itself, so it does not affect this score, but it will mislead whoever next reads the crosslinks file expecting the article to say '2'.",
+      "fixLooksLike": "Update the crosslinks bullet to '...shows 4 coins instead of 3' (or drop the specific counts and just say 'shows greedy beaten by the exact method').",
+      "owner": "writer"
+    }
+  ]
+}

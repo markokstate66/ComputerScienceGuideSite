@@ -1,0 +1,50 @@
+{
+  "article": "src/content/articles/csharp-dotnet/exceptions.md",
+  "route": "/csharp-dotnet/exceptions/",
+  "round": 2,
+  "role": "design",
+  "score": 9.2,
+  "scores": {
+    "structureFlow": 9.4,
+    "diagramQuality": 9.0,
+    "codeReadabilityFormatting": 9.1
+  },
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/dotnet/standard/exceptions/best-practices-for-exceptions",
+    "https://stackify.com/csharp-exception-handling-best-practices/"
+  ],
+  "lighthouse": { "performance": 100, "accessibility": 100, "best-practices": 100, "seo": 100 },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "verify": {
+    "checkedAt": "2026-09-24T20:35:43.470Z",
+    "runs": 1,
+    "words": 5087,
+    "proseWords": 3082,
+    "codeBlocks": 33,
+    "runBlocks": 17,
+    "figures": 1,
+    "h1": 1,
+    "h2": 9,
+    "mobileOverflowPx": 0,
+    "consoleWarnings": 0,
+    "failures": [],
+    "fleschReadingEase": 48.7
+  },
+  "screenshotsOpened": {
+    "desktop-light": "fold, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14 (all 15)",
+    "desktop-dark": "fold, 04, 10",
+    "mobile-light": "fold, 05, 18",
+    "mobile-dark": "fold, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 (all 23)"
+  },
+  "justification": "Ran node tools/check-article.mjs, node tools/run-code.mjs and node tools/gate.mjs csharp-dotnet/exceptions from PowerShell in the worktree; gate.mjs's browser pass reported lockWaitSeconds=0 and finished GATE PASS in full. Real numbers from .verify/csharp-dotnet__exceptions/gate.json (checkedAt 2026-09-24T20:35:43.470Z, git issue-125-exceptions@fb0f0c9+dirty, host .NET 10.0.401 / Node v24.11.1 / Windows_NT 10.0.22631): check-article ok (errors=0, warnings=0, words=5087, prose=3082, h2=9, h3=0, figures=1, sources=6, flesch=48.7); run-code ok (blocks=33, executed=17, failures=[]); verify-page ok, Lighthouse performance/accessibility/best-practices/seo = 100/100/100/100, consoleErrors=0, brokenInternalLinks=0, mobileOverflowPx=0px, failures=[]. 76 screenshots were produced; I opened every desktop-light part (fold + 01-14, all 15) and every mobile-dark part (fold + 01-22, all 23) as required, plus fold and two further parts each of desktop-dark (04, 10) and mobile-light (05, 18). Rendering is pixel-consistent with round 1 across every part checked, in both themes and both widths, with the theme-appropriate palette and zero visible horizontal overflow, matching the tool's own mobileOverflowPx=0.\n\nThis is round 2: the writer's changes since round 1 were entirely textual/citation fixes driven by the technical and AdSense critics (re-pointed two mis-cited quotes to the pages that actually contain them, added a missing inline citation for the CA2201 sentence, attributed the reverse-Dispose-order claim to the parenthesized-form quote plus the nested-try/finally reasoning instead of a mismatched quote, corrected the throw-ex-vs-throw-new-InvalidOperationException(ex.Message) object-identity claim, and renamed the first exercise from 'Predict it' to 'Trace it' so this article no longer opens with the same exercise label as async-await.md and garbage-collection.md). None of that touches layout, code-block structure, the diagram, or exercise placement, so I formed a fresh judgement of the whole rendered page rather than assuming the round-1 score still applies, and it holds up: structure/flow, diagram quality and code/readability are all still exactly as I would score them having never seen round 1.\n\nCompared against the two real top results for 'c# exception handling best practices' I re-fetched this round: Microsoft Learn's own 'Best practices for exceptions' (word_count 2553 per its own front matter, still cited six times in this article) is thorough prose-and-code with H2/H3 headings and no diagram, no dark-mode indicator, and no measured benchmark — it asserts a throwing call 'can be orders of magnitude slower' and stops there. Stackify's blog piece opens with an 881x441 hero image, uses H2/H3 sections and monospace code blocks, but has no diagrams, no benchmarked numbers and no interactive exercises. This article's design still clears both: a real three-frame propagation diagram with accessible title/desc, consistent light/dark theming confirmed across all four theme/viewport combinations, four progressively-placed exercises with collapsed solutions (now varied in their opening label), and two real Stopwatch-measured benchmarks with a stated toolchain (.NET 10.0.12, Windows 11, x64, i7-11700K) that turn the sources' unquantified 'orders of magnitude slower' into an actual run. That is a genuine value-add over both comparison pages, not just a restatement of them.\n\nStructure/flow (9.4): unchanged from round 1 and still earns the same score. All nine H2s are phrased as the specific question that section answers, headings never skip a level (h2=9, h3=0), and the rhythm of prose -> run block -> output panel -> callout/figure/exercise never runs long without a break across either the 15-part desktop-light scroll or the full 23-part mobile-dark scroll I opened this round. The four exercises are distributed through the body at the point each technique is introduced, and the round-1 AdSense finding about the pillar-wide 'Predict it' opener is now resolved cosmetically at the design level too: the first exercise reads 'EXERCISE 1: TRACE IT: HOW MANY FRAMES SURVIVE' in every screenshot I opened, not 'Predict it'.\n\nDiagram quality (9.0): the single Figure 1 (three-frame exception-propagation stack) is unchanged, still markup-correct and theme-correct in every screenshot opened this round -- confirmed again in desktop-light-part02/03 and mobile-dark-part03/04, with the red 'no catch: keeps climbing' arrows, dashed neutral box, and green 'first frame that knows what to do' box all rendering correctly in both themes. Caption and title/desc are unchanged and still correct. Held at 9.0 for the same reason as round 1: it is one clean, correct diagram carrying a narrow slice of a dense, multi-claim article.\n\nCode/readability formatting (9.1): run-code still passes with 33 blocks / 17 executed and zero failures, and no fenced C# line exceeds the mobile-safe width used elsewhere in this pillar. The one round-1 minor finding is still present and unfixed: in the ExceptionDispatchInfo section's crash-output panel, 'at System.Number.ThrowFormatException[TChar](ReadOnlySpan`1 value)' (69 columns, still the widest line in the article) clips mid-token on mobile -- reconfirmed directly in mobile-dark-part08 this round, pixel-identical to the round-1 screenshot. The writer's round-2 changes were citation and prose fixes elsewhere in the article and never touched this output block, so an unfixed-but-still-minor carryover is expected and correctly scoped: the prose still never names this specific runtime-internal frame (it discusses int.Parse inside LineParser.Parse, fully visible a few lines below), so no reader-facing claim depends on the clipped text. I am not raising or lowering the score for this carryover since it was already priced into the 9.1 in round 1 and nothing has changed about it. Exercises remain well-formed, collapsed by default, correctly themed in both dark and light mobile screenshots.",
+  "issues": [
+    {
+      "severity": "minor",
+      "owner": "writer",
+      "location": "\"What if the rethrow has to happen somewhere else entirely?\" section, the `edi` run block's crash output panel (source ~line 356): `   at System.Number.ThrowFormatException[TChar](ReadOnlySpan\\`1 value)`",
+      "problem": "Carried over from round 1, unfixed: at 69 columns this is still the widest line in the article, and on mobile the fade still cuts it off mid-token (inside `[TChar]`) rather than at a clean boilerplate boundary -- reconfirmed in mobile-dark-part08 this round. Every other stack-trace line in the article keeps the meaningful class/method name inside the visible ~40 columns and only truncates the `[...]:line [...]` boilerplate tail; this is the one line where that pattern slips, because it is a real, unedited runtime-internal frame with no path/line suffix to wildcard away.",
+      "fixLooksLike": "Still low priority since the prose never refers to this specific frame by name (it only discusses `int.Parse` inside `LineParser.Parse`, a few lines below and fully visible). If it is worth tightening, a short prose note near the output ('the top two frames are runtime internals; the trace of interest starts at LineParser.Parse') would point the reader past the clipped line instead of leaving it as unexplained overflow. Not a blocker for this round; carried forward as an optional polish item."
+    }
+  ]
+}

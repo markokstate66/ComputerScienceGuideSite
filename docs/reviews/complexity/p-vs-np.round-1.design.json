@@ -1,0 +1,54 @@
+{
+  "article": "src/content/articles/complexity/p-vs-np.md",
+  "route": "/complexity/p-vs-np/",
+  "round": 1,
+  "role": "design",
+  "score": 8.8,
+  "comparedAgainst": [
+    "https://en.wikipedia.org/wiki/P_versus_NP_problem (Wikipedia, P versus NP problem; fetched: 22 numbered sections, two Euler diagrams plus one empirical knapsack-timing graph, no runnable code, no exercises, moves from an informal Sudoku-style example to formal Turing-machine definitions)",
+    "https://www.geeksforgeeks.org/dsa/p-np-np-complete-np-hard-problems-in-computer-science/ (attempted fetch returned HTTP 404, not read, not counted)",
+    "General knowledge of the genre (GeeksforGeeks/tutorial-style P vs NP explainers: text-only class definitions, little to no diagram, no runnable/verified code, no exercises) used only as background, not cited as a source read this round"
+  ],
+  "justification": "Re-ran node tools/verify-page.mjs --drafts /complexity/p-vs-np/ myself from PowerShell, serially, with Lighthouse enabled (the writer's own claimed --no-lighthouse PASS is now superseded by a real measurement): PASS, words=3764, code=17, fig=2, Lighthouse 96/100/100/100, 0 console errors, 0 console warnings, 0 broken links (30 internal + 15 external, all resolved), mobileOverflowPx=0, placeholders=[] (the usual expected NEEDS_MARKUS placeholder failure does not even apply here; the byline already resolves to 'By Computer Science Guide' at the shell level). I opened both required figures at 390 px and desktop, light and dark, and specifically checked the two bugs the writer claims to have fixed. Both are genuinely fixed: in Figure 2 (the Venn diagram) the halting-problem marker <circle cx=283 cy=54 r=4> sits with its bottom edge at y=58 while the 'halting problem' <text> baseline is at y=72 (cap-height top around y=63) — a clean ~5-unit gap, confirmed visually in mobile-light-part11.png, mobile-dark-part11.png, desktop-light-part08.png and desktop-dark-part08.png: the dot sits clearly above the caption text with white space between them, not overlapping it. In Figure 1 (the reduction diagram) the two down-arrows are drawn at x=288 while both annotation text blocks ('transform f, polynomial time: target = sum / 2 = 16' and 'solved by any Subset-Sum method: {9, 7} sums to 16') sit at x=30 and never reach past roughly x=204 — confirmed visually in mobile-light-part10.png, mobile-dark-part10.png, desktop-light-part07.png and desktop-dark-part07.png: the arrow shafts and arrowheads are clearly to the right of the annotation text in every screenshot, no crossing. Both figures also pass the markup hygiene checks: no blank line inside either <figure>...</figure> block in the source, unique prefixed ids (pnp-reduce-*, pnp-classes-*), <svg> first child/<figcaption> last, role=img with title+desc, only the documented diagram classes (d-box, d-box-accent, d-box-good, d-accent, d-fill-accent, d-muted, d-small, d-mono, d-bold) and no literal fill/stroke colours, so both are theme-aware by construction and render correctly in both themes at both viewport widths. Structurally the article follows shape Q well: 11 h2 sections (not 12; the true count from the rendered page, worth noting for tracking but not a defect), almost all phrased as real questions, covering exactly the CONTENT_PLAN row's outline (decision problem -> P -> NP as checkable -> brute force vs DP/pseudo-polynomial -> reductions -> NP-complete vs NP-hard with the P!=NP caveat -> has it been proven -> recognise it at work -> what to do -> a verifier that lies), with no Introduction/Conclusion boilerplate and no restated-title filler; the opening paragraph delivers the invoice-batch hook immediately (rule 6). All four required exercise forms are present, correctly nested with the four-colon/three-colon directive syntax, well placed mid-article rather than bunched at the end, and none gives away its answer under the question (the find-the-bug exercise shows the buggy function as a plain, non-executed `text` block, only the solution runs it). Code fences are used correctly against tools/run-code.mjs conventions throughout: every `csharp run id=...` is immediately followed by a `text output` block with `[...]` wildcards for the machine-dependent timing runs, each of those is then followed by a real, non-executed `text` block showing one actual run's numbers within 40 columns (the 'One run on this machine printed:' pattern) — this is exactly the fix the big-o-notation design review asked for last round, applied consistently here from the first timing table onward, and it means the article's two central measured claims (2^n doubling and the pseudo-polynomial bit-doubling result) are both visible to a phone reader as real numbers, not just wildcards. This, plus the clean Lighthouse/console/link numbers and both confirmed diagram fixes, is well clear of a text-only, diagram-light, non-runnable reference page like Wikipedia's, and above a typical tutorial-site P-vs-NP explainer on every axis the design rubric covers. It is not a full 10 because of two remaining phone-width nits in code blocks (below), both readily fixable and neither touching a diagram or the measured-results pattern that the previous round's finding was about.",
+  "issues": [
+    {
+      "severity": "minor",
+      "location": "First code block, id=subset-sum-verifier ('## What does \"NP\" mean — checking, not solving?'), the `correctPick` and `wrongPick` array-literal lines and their trailing comments.",
+      "problem": "At 390 px (mobile-light-part03.png / mobile-dark equivalent) `bool[] correctPick = [true, false, false, false, false, false, true, true];   // 8 + 21 + 4` and the `wrongPick` line below it are clipped after roughly 40 characters, hiding several of the boolean values and the entire trailing comment that explains which items each certificate picks. This is the very first code example on the page and the one the running 'candidate A / candidate B' example depends on, so a phone reader cannot see, without side-scrolling, why candidate A is valid and candidate B is not.",
+      "fixLooksLike": "Move the explanatory comment above the line ('// candidate A: 8 + 21 + 4') instead of trailing it, or break the array literal across two lines / shorten the item list so the full boolean sequence fits within about 40 columns; re-run tools/run-code.mjs and re-screenshot mobile to confirm the certificate values are visible without scrolling.",
+      "owner": "writer"
+    },
+    {
+      "severity": "minor",
+      "location": "Code block id=subset-sum-dp-scaling ('## A dynamic-programming subset-sum...'), the `int[] targets = [50_000, 100_000, 200_000, 400_000, 800_000, 1_600_000];` declaration.",
+      "problem": "At 390 px (mobile-light-part07.png) this line is clipped after `400_000, 8`, hiding the last two target values. Low severity because the same six values are fully visible a few lines later in both the wildcarded OUTPUT block and the real-run TEXT table, so nothing about the article's argument is actually lost — but it is still an operative line a reader might want to see in place.",
+      "fixLooksLike": "Wrap the array literal onto its own indented lines (one or two values per line) the way the site's phone rules suggest for long statements.",
+      "owner": "writer"
+    }
+  ],
+  "lighthouse": {
+    "performance": 96,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "note": "Measured with the full serial run (node tools/verify-page.mjs --drafts /complexity/p-vs-np/), nothing else running concurrently, so this is a reliable real number, not the writer's --no-lighthouse skip. Failing/near-failing Lighthouse audits noted in lighthouse.json: total-blocking-time (250ms, score 0.85), max-potential-fid (350ms, score 0.26), bf-cache (0), forced-reflow-insight (0), network-dependency-tree-insight (0) — none of these pull the category below 90 and all look like shell-level (framework/hydration) characteristics rather than anything in the article content."
+  },
+  "consoleErrors": 0,
+  "brokenLinks": 0,
+  "otherMeasured": {
+    "consoleWarnings": 0,
+    "mobileOverflowPx": 0,
+    "words": 3764,
+    "codeBlocks": 17,
+    "figures": 2,
+    "internalLinks": 30,
+    "externalLinks": 15,
+    "verifyPagePass": true,
+    "verifyPageFailures": [],
+    "diagramBugFixesConfirmed": {
+      "haltingProblemDotVsCaption": "fixed — circle bottom edge (y=58) sits about 5 viewBox units above the 'halting problem' text's cap-height top (~y=63); confirmed visually in light/dark, desktop/mobile",
+      "reductionArrowsVsAnnotationText": "fixed — both down-arrows are drawn at x=288, both annotation text blocks end by roughly x=204; confirmed visually in light/dark, desktop/mobile, no crossing in any screenshot"
+    },
+    "screenshotsRead": "desktop-light fold, parts 04-08; desktop-dark parts 07-08; mobile-light fold, parts 01-11, 13-15; mobile-dark parts 10-11"
+  }
+}

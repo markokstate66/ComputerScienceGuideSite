@@ -1,0 +1,35 @@
+{
+  "article": "databases/sql-injection-and-parameters",
+  "route": "/databases/sql-injection-and-parameters/",
+  "round": 1,
+  "role": "technical",
+  "score": 7.0,
+  "runCodePass": true,
+  "comparedAgainst": [
+    "https://learn.microsoft.com/en-us/sql/relational-databases/security/sql-injection",
+    "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+    "https://www.acunetix.com/blog/web-security-zone/how-to-prevent-sql-injection-in-csharp/",
+    "https://www.stackhawk.com/blog/net-sql-injection-guide-examples-and-prevention/"
+  ],
+  "justification": "This is a strong, deep article that clears the bar of the blog-level competitors for its target query ('sql injection prevention c#') by a wide margin: it runs a real, self-contained exploit against an in-memory SQLite database (verified myself with node tools/run-code.mjs, PASS, 22 blocks / 11 executed), then genuinely traces why escaping fails on a second, unquoted endpoint rather than asserting it, and correctly distinguishes FromSqlInterpolated from FromSqlRaw against EF Core's own documentation. Acunetix's and StackHawk's competing pages for the same query show non-executable snippets and no discussion of why escaping specifically fails on non-string fields; Microsoft's own SQL Server injection page (also a listed source) is less concrete about .NET code than this article. Every one of the 7 listed sources is fetched, read, and actually cited inline (checked by grep), and I re-verified five of the direct quotes (OWASP escaping/parameters quotes, MITRE CWE-89's definition sentence, Microsoft's SQL Server injection walkthrough and its 'Redmond';drop table...' example, Microsoft.Data.Sqlite's Parameters and Mode=ReadOnly pages, EF Core's FromSql/FromSqlRaw warning and its own caller-supplied-column-name example, and SQLite's SQLITE_READONLY description) word-for-word against the live pages; all matched. However, one specific, checkable claim about a cited source is wrong (see issue 1), which the editorial brief's rubric caps at 7 regardless of how strong the rest of the piece is. A second claim central to the 'stacked query' section is uncited despite an exact, on-point Microsoft Learn page existing for it. Neither issue touches the code, which is idiomatic, minimal, and runs exactly as claimed; gate.mjs also passed clean (Lighthouse 100/100/100/100, 0 console errors, 0 broken links) but that is the design critic's remit, not mine.",
+  "issues": [
+    {
+      "severity": "major",
+      "location": "Body, section \"Least privilege limits the damage, not the injection\", the sentence ending \"...and [CWE-89's own list of consequences](https://cwe.mitre.org/data/definitions/89.html) still opens with reading confidential data...\" (source line ~724)",
+      "problem": "Factual error: I fetched CWE-89's live 'Common Consequences' table directly (twice, independently) and it does not open with reading confidential data. Its first row is 'Execute Unauthorized Code or Commands' (Scope: Confidentiality/Integrity/Availability); 'Read Application Data' (Confidentiality) is the second row. The article's citation makes a specific, verifiable claim about the structure of a primary source, and that claim is false as written, even though the surrounding argument (least privilege doesn't stop a read-only leak) is otherwise sound.",
+      "fixLooksLike": "Either drop the ordinal claim ('CWE-89's own list of consequences includes reading confidential data' instead of 'opens with'), or, if the ordering point matters rhetorically, make the true point instead: CWE-89 lists 'Execute Unauthorized Code or Commands' first and 'Read Application Data' second, and a read-only connection removes the first without touching the second -- which is an even sharper version of the article's own argument."
+    },
+    {
+      "severity": "minor",
+      "location": "Section \"The same gap reaches further than a login form\" (the claim \"Microsoft.Data.Sqlite really will execute every statement it finds\", ~line 153) and the `Exec` helper's comment \"Drain every batched statement...\" (~line 166)",
+      "problem": "This is a non-obvious, security-relevant claim about a specific library's runtime behavior (semicolon-separated statements run sequentially; ExecuteReader stops at the first result-returning statement; NextResult() advances through the rest; disposing an undrained reader silently runs the remainder), and it is not covered by any of the article's 7 listed sources or cited inline, contrary to Editorial Brief rule 3 ('every non-obvious factual claim has a primary source... cite inline where the claim is made'). An exact, official source for this exists and was not used: Microsoft Learn, 'Batching - Microsoft.Data.Sqlite' (https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/batching), which documents this precise mechanism, including the 'disposing runs remaining statements' caveat that motivates the article's own 'drain every batched statement' comment.",
+      "fixLooksLike": "Add the Batching page to front-matter `sources` and cite it inline at the sentence asserting the semicolon/NextResult behavior, the same way every other library-behavior claim in the article is sourced."
+    },
+    {
+      "severity": "minor",
+      "location": "Section \"Parameters keep the value out of the command text\", the sentence \"$id is bound as the text value \\\"1 OR 1=1\\\", which SQLite compares against the integer id column and matches nothing\" (~line 496)",
+      "problem": "The article states the outcome (no match) without explaining the mechanism, which is more specific than 'a value that isn't a number can't equal a number': SQLite's type-affinity/storage-class comparison rules mean a TEXT-typed bound value and an INTEGER-typed column value are never equal regardless of content, even if the text looked like a plain number. As written, a strong reader is left unsure whether this is a guaranteed rule or an accident of this one payload not parsing as a number.",
+      "fixLooksLike": "One added sentence naming SQLite's storage-class comparison rule (INTEGER/REAL affinity vs. TEXT never compare equal), cited to SQLite's own 'Datatypes In SQLite' documentation, so the reader can tell this is guaranteed behavior rather than a lucky payload."
+    }
+  ]
+}
